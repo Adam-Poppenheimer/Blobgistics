@@ -11,7 +11,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobEngine {
 
-    public class ResourcePool : MonoBehaviour, IPointerClickHandler {
+    public class ResourcePool : MonoBehaviour, IPointerClickHandler, IBlobSource, IBlobTarget {
 
         #region static fields and properties
 
@@ -30,8 +30,8 @@ namespace Assets.BlobEngine {
         [SerializeField] private uint Width = 2;
         [SerializeField] private uint Height = 2;
 
-        private Queue<ResourceBlob> BlobQueue =
-            new Queue<ResourceBlob>();
+        private HashSet<ResourceBlob> BlobsInPool =
+            new HashSet<ResourceBlob>();
 
         #endregion
 
@@ -52,41 +52,75 @@ namespace Assets.BlobEngine {
         #region from IPointerClickHandler
 
         public void OnPointerClick(PointerEventData eventData) {
-            if(CanInsertBlob()) {
-                InsertBlob(ResourceBlobBuilder.BuildBlob(ResourceType.Red));
+            if(CanPlaceBlobOfTypeInto(ResourceType.Red)) {
+                PlaceBlobInto(ResourceBlobBuilder.BuildBlob(ResourceType.Red));
             }
         }
 
         #endregion
 
-        public bool CanExtractBlob() {
-            return BlobQueue.Count > 0;
+        #region from IBlobSource
+
+        public bool CanExtractAnyBlob() {
+            return BlobsInPool.Count > 0;
         }
 
-        public ResourceBlob ExtractBlob() {
-            if(CanExtractBlob()) {
-                return BlobQueue.Dequeue();
+        public bool CanExtractBlobOfType(ResourceType type) {
+            return BlobsInPool.Where(candidate => candidate.BlobType == type).Count() > 0;
+        }
+
+        public ResourceType GetTypeOfNextExtractedBlob() {
+            if(CanExtractAnyBlob()) {
+                return BlobsInPool.Last().BlobType;
             }else {
-                throw new BlobException("Cannot extract a blob from this ResourcePool");
+                throw new BlobException("There is no next blob to extract from this BlobSource");
             }
         }
 
-        public bool CanInsertBlob() {
-            return BlobQueue.Count < MaxCapacity;
+        public ResourceBlob ExtractAnyBlob() {
+            if(BlobsInPool.Count > 0) {
+                var retval = BlobsInPool.Last();
+                BlobsInPool.Remove(retval);
+                return retval;
+            }else {
+                throw new BlobException("Cannot extract any blob from this BlobSource");
+            }
+            
         }
 
-        public void InsertBlob(ResourceBlob blobToInsert) {
-            if(CanInsertBlob()) {
-                blobToInsert.transform.SetParent(this.transform, false);
-                BlobQueue.Enqueue(blobToInsert);
+        public ResourceBlob ExtractBlobOfType(ResourceType type) {
+            var retval = BlobsInPool.Where(candidate => candidate.BlobType == type).Last();
+            if(retval != null) {
+                BlobsInPool.Remove(retval);
+                RealignBlobs();
+                return retval;
+            }else {
+                throw new BlobException("Cannot extract a blob of the specified type from this BlobSource");
+            }
+        }
+
+        #endregion
+
+        #region from IBlobTarget
+
+        public bool CanPlaceBlobOfTypeInto(ResourceType type) {
+            return BlobsInPool.Count < MaxCapacity;
+        }
+
+        public void PlaceBlobInto(ResourceBlob blob) {
+            if(CanPlaceBlobOfTypeInto(blob.BlobType)) {
+                BlobsInPool.Add(blob);
+                blob.transform.SetParent(this.transform, false);
                 RealignBlobs();
             }else {
-                throw new BlobException("Cannot insert a blob into this ResourcePool");
+                throw new BlobException("Cannot place a blob into a BlobTarget");
             }
         }
 
+        #endregion
+
         public void ClearAllBlobs() {
-            var blobsToDestroy = new List<ResourceBlob>(BlobQueue);
+            var blobsToDestroy = new List<ResourceBlob>(BlobsInPool);
             for(int i = blobsToDestroy.Count - 1; i >= 0; --i) {
                 GameObject.Destroy(blobsToDestroy[i]);
             }
@@ -94,7 +128,7 @@ namespace Assets.BlobEngine {
 
         private void RealignBlobs() {
             int blobIndex = 0;
-            var blobList = new List<ResourceBlob>(BlobQueue);
+            var blobList = new List<ResourceBlob>(BlobsInPool);
 
             for(int verticalIndex = 0; verticalIndex < 5; ++verticalIndex) {
                 for(int horizontalIndex = 0; horizontalIndex < 5; ++horizontalIndex){

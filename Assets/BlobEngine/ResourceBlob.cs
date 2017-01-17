@@ -19,7 +19,7 @@ namespace Assets.BlobEngine {
 
         #region instance fields and properties
 
-        public ResourceType TypeOfResource;
+        public ResourceType BlobType;
 
         private Vector3 ScaleToPopTo;
         private Vector3 CurrentVelocity;
