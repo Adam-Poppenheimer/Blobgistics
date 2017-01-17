@@ -21,9 +21,31 @@ namespace Assets.BlobEngine {
 
         private static uint Depth = 1;
 
+        private static float BlobRealignmentSpeedPerSecond = 2f;
+
         #endregion
 
         #region instance fields and properties
+
+        #region from ITubableObject
+
+        public Vector3 NorthTubeConnectionPoint {
+            get { return new Vector3(0f, Height / 2f, Depth) + transform.position; }
+        }
+
+        public Vector3 SouthTubeConnectionPoint {
+            get { return new Vector3(0f, -Height / 2f, Depth) + transform.position; }
+        }
+
+        public Vector3 EastTubeConnectionPoint {
+            get { return new Vector3(Width / 2f, 0f, Depth) + transform.position; }
+        }
+
+        public Vector3 WestTubeConnectionPoint {
+            get { return new Vector3(-Width / 2f, 0f, Depth) + transform.position; }
+        }
+
+        #endregion
 
         [SerializeField] private int MaxCapacity = 25;
 
@@ -54,6 +76,20 @@ namespace Assets.BlobEngine {
         public void OnPointerClick(PointerEventData eventData) {
             if(CanPlaceBlobOfTypeInto(ResourceType.Red)) {
                 PlaceBlobInto(ResourceBlobBuilder.BuildBlob(ResourceType.Red));
+            }
+        }
+
+        #endregion
+
+        #region from ITubableObject
+
+        public Vector3 GetConnectionPointInDirection(ManhattanDirection direction) {
+            switch(direction) {
+                case ManhattanDirection.North: return NorthTubeConnectionPoint;
+                case ManhattanDirection.South: return SouthTubeConnectionPoint;
+                case ManhattanDirection.East:  return EastTubeConnectionPoint;
+                case ManhattanDirection.West:  return WestTubeConnectionPoint;
+                default: return NorthTubeConnectionPoint;
             }
         }
 
@@ -110,7 +146,7 @@ namespace Assets.BlobEngine {
         public void PlaceBlobInto(ResourceBlob blob) {
             if(CanPlaceBlobOfTypeInto(blob.BlobType)) {
                 BlobsInPool.Add(blob);
-                blob.transform.SetParent(this.transform, false);
+                blob.transform.SetParent(this.transform, true);
                 RealignBlobs();
             }else {
                 throw new BlobException("Cannot place a blob into a BlobTarget");
@@ -136,7 +172,7 @@ namespace Assets.BlobEngine {
                         return;
                     }else {
                         var blobToPlace = blobList[blobIndex++];
-                        blobToPlace.transform.localPosition = new Vector3(
+                        var newBlobLocation = new Vector3(
                             BlobRadius + (BlobRadius / 2f + BlobHorizontalSeparation) * horizontalIndex,
                             -(BlobRadius + (BlobRadius / 2f + BlobVerticalSeparation  ) * verticalIndex),
                             -BlobRadius
@@ -144,7 +180,8 @@ namespace Assets.BlobEngine {
                             -Width / 2f,
                             Height / 2f,
                             -Depth / 2f 
-                        );
+                        ) + transform.position;
+                        blobToPlace.PushNewMovementGoal(new MovementGoal(newBlobLocation, BlobRealignmentSpeedPerSecond));
                     }
                 }
             }

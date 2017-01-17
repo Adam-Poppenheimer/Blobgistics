@@ -6,6 +6,8 @@ using System.Text;
 
 using UnityEngine;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.BlobEngine {
 
     public class BlobGenerator : MonoBehaviour, IBlobSource {
@@ -19,20 +21,33 @@ namespace Assets.BlobEngine {
 
         #region instance fields and properties
 
+        #region from ITubableObject
+
+        public Vector3 NorthTubeConnectionPoint {
+            get { return LocalNorthConnectionPoint + transform.position; }
+        }
+        private Vector3 LocalNorthConnectionPoint = new Vector3(0f, 0.5f, 0f);
+
+        public Vector3 SouthTubeConnectionPoint {
+            get { return LocalSouthConnectionPoint + transform.position; }
+        }
+        private Vector3 LocalSouthConnectionPoint = new Vector3(0f, -0.5f, 0f);
+
+        public Vector3 EastTubeConnectionPoint {
+            get { return LocalEastConnectionPoint + transform.position; }
+        }
+        private Vector3 LocalEastConnectionPoint = new Vector3(0.5f, 0, 0f);
+
+        public Vector3 WestTubeConnectionPoint {
+            get { return LocalWestConnectionPoint + transform.position; }
+        }
+        private Vector3 LocalWestConnectionPoint = new Vector3(-0.5f, 0f, 0f);
+
+        #endregion
+
         [SerializeField] private ResourceType BlobTypeGenerated;
 
-        private ResourceBlob BlobInGenerator {
-            get { return _blobInGenerator; }
-            set {
-                if(value != null) {
-                    _blobInGenerator = value;
-                    _blobInGenerator.transform.SetParent(transform, false);
-                    _blobInGenerator.transform.localPosition = StoredBlobOffset;
-                    RaiseBlobGenerated();
-                }
-            }
-        }
-        private ResourceBlob _blobInGenerator = null;
+        private ResourceBlob BlobInGenerator;
 
         #endregion
 
@@ -52,8 +67,22 @@ namespace Assets.BlobEngine {
 
         #region Unity event methods
 
-        private void OnEnable() {
-            StartCoroutine(GenerateBlob());
+        private void Start() {
+            InvokeRepeating("GenerateBlob", TimeToGenerateBlob, TimeToGenerateBlob);
+        }
+
+        #endregion
+
+        #region from ITubableObject
+
+        public Vector3 GetConnectionPointInDirection(ManhattanDirection direction) {
+            switch(direction) {
+                case ManhattanDirection.North: return NorthTubeConnectionPoint;
+                case ManhattanDirection.South: return SouthTubeConnectionPoint;
+                case ManhattanDirection.East:  return EastTubeConnectionPoint;
+                case ManhattanDirection.West:  return WestTubeConnectionPoint;
+                default: return NorthTubeConnectionPoint;
+            }
         }
 
         #endregion
@@ -81,7 +110,6 @@ namespace Assets.BlobEngine {
             if(CanExtractAnyBlob()) {
                 var retval = BlobInGenerator;
                 BlobInGenerator = null;
-                StartCoroutine(GenerateBlob());
                 return retval;
             }else {
                 throw new BlobException("This generator does not have a blob to extract");
@@ -98,9 +126,13 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        private IEnumerator GenerateBlob() {
-            yield return new WaitForSeconds(TimeToGenerateBlob);
-            BlobInGenerator = ResourceBlobBuilder.BuildBlob(BlobTypeGenerated);
+        private void GenerateBlob() {
+            if(BlobInGenerator == null) {
+                BlobInGenerator = ResourceBlobBuilder.BuildBlob(BlobTypeGenerated);
+                BlobInGenerator.transform.SetParent(transform, false);
+                BlobInGenerator.transform.localPosition = StoredBlobOffset;
+                RaiseBlobGenerated();
+            }
         }
 
         #endregion

@@ -22,8 +22,8 @@ namespace Assets.BlobEngine {
 
         #region instance fields and properties
 
-        private Queue<ResourceBlob> BlobsInTube =
-            new Queue<ResourceBlob>();
+        private Vector3 TubeStart = Vector3.zero;
+        private Vector3 TubeEnd = Vector3.zero;
 
         private IBlobSource SourceToPullFrom;
         private IBlobTarget TargetToPushTo;
@@ -43,6 +43,7 @@ namespace Assets.BlobEngine {
         public void SetEndpoints(IBlobSource source, IBlobTarget target) {
             SourceToPullFrom = source;
             TargetToPushTo   = target;
+            RefreshEndpointLocations();
         }
 
         public bool CanTransportAnyBlob() {
@@ -57,10 +58,23 @@ namespace Assets.BlobEngine {
         public void PullAnyBlobFromSource() {
             if(CanTransportAnyBlob()) {
                 var pulledBlob = SourceToPullFrom.ExtractAnyBlob();
-                TargetToPushTo.PlaceBlobInto(pulledBlob);
+                pulledBlob.transform.SetParent(transform, true);
+
+                pulledBlob.PushNewMovementGoal(new MovementGoal(TubeStart, BlobSpeed));
+                pulledBlob.PushNewMovementGoal(new MovementGoal(TubeEnd, BlobSpeed, delegate() {
+                    TargetToPushTo.PlaceBlobInto(pulledBlob);
+                }));
+
             }else {
                 throw new BlobException("This BlobTube either cannot pull a blob from its source, or push it to its target");
             }
+        }
+
+        private void RefreshEndpointLocations() {
+            var directionFromSource = SourceToPullFrom.transform.GetDominantManhattanDirectionTo(TargetToPushTo.transform);
+            var directionFromTarget = TargetToPushTo.transform.GetDominantManhattanDirectionTo(SourceToPullFrom.transform);
+            TubeStart = SourceToPullFrom.GetConnectionPointInDirection(directionFromSource);
+            TubeEnd = TargetToPushTo.GetConnectionPointInDirection(directionFromTarget);
         }
 
         private IEnumerator BlobPullTick() {

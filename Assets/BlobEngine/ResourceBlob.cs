@@ -22,7 +22,12 @@ namespace Assets.BlobEngine {
         public ResourceType BlobType;
 
         private Vector3 ScaleToPopTo;
-        private Vector3 CurrentVelocity;
+        private Vector3 CurrentScaleVelocity;
+
+        private Queue<MovementGoal> PendingMovementGoals =
+            new Queue<MovementGoal>();
+
+        private Coroutine ActiveMovementCoroutine = null;
 
         #endregion
 
@@ -35,23 +40,50 @@ namespace Assets.BlobEngine {
         }
 
         private void OnEnable() {
-            CurrentVelocity = new Vector3(StartingVelocity.x, StartingVelocity.y, StartingVelocity.z);
+            CurrentScaleVelocity = new Vector3(StartingVelocity.x, StartingVelocity.y, StartingVelocity.z);
             StartCoroutine(PopIn());
         }
 
         #endregion
 
+        public void PushNewMovementGoal(MovementGoal goal) {
+            int previousCount = PendingMovementGoals.Count;
+            PendingMovementGoals.Enqueue(goal);
+            if(previousCount == 0) {
+                StartCoroutine(ExecutePendingMovementGoals());
+            }
+        }
+
         private IEnumerator PopIn() {
             transform.localScale = Vector3.zero;
             while(true) {
                 transform.localScale = Vector3.SmoothDamp(transform.localScale, ScaleToPopTo,
-                    ref CurrentVelocity, SecondsToPopIn);
+                    ref CurrentScaleVelocity, SecondsToPopIn);
                 if(Mathf.Approximately(transform.localScale.x, ScaleToPopTo.x)) {
                     yield break;
                 }else {
                     yield return null;
                 }
             }
+        }
+
+        private IEnumerator ExecutePendingMovementGoals() {
+            while(PendingMovementGoals.Count > 0) {
+                var goalToExecute = PendingMovementGoals.Peek();
+                float currentDistance = Vector3.Distance(transform.position, goalToExecute.DesiredLocation);
+                while(!Mathf.Approximately(currentDistance, 0f) ) {
+                    transform.position = Vector3.MoveTowards(transform.position, goalToExecute.DesiredLocation, 
+                        goalToExecute.SpeedPerSecond * Time.deltaTime);
+                    currentDistance = Vector3.Distance(transform.position, goalToExecute.DesiredLocation);
+                    yield return null;
+                }
+                transform.position = goalToExecute.DesiredLocation;
+                if(goalToExecute.ActionToPerformOnTermination != null) {
+                    goalToExecute.ActionToPerformOnTermination();
+                }
+                PendingMovementGoals.Dequeue();
+            }
+            yield break;
         }
 
         #endregion

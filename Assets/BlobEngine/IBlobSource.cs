@@ -1,8 +1,16 @@
 ﻿using System;
 
+using UnityEngine;
+
 namespace Assets.BlobEngine {
 
-    public interface IBlobSource {
+    public interface IBlobSource : ITubableObject {
+
+        #region properties
+
+        Transform transform { get; }
+
+        #endregion
 
         #region methods
 
