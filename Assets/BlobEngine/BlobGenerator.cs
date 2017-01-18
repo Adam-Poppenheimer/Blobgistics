@@ -5,12 +5,15 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 using UnityCustomUtilities.Extensions;
+using UnityCustomUtilities.UI;
 
 namespace Assets.BlobEngine {
 
-    public class BlobGenerator : MonoBehaviour, IBlobSource {
+    public class BlobGenerator : MonoBehaviour, IBlobSource, IPointerEnterHandler,
+        IPointerExitHandler,  IBeginDragHandler, IDragHandler, IEndDragHandler {
 
         #region static fields and properties
 
@@ -46,6 +49,7 @@ namespace Assets.BlobEngine {
         #endregion
 
         [SerializeField] private ResourceType BlobTypeGenerated;
+        [SerializeField] private UIFSM TopLevelUIFSM;
 
         private ResourceBlob BlobInGenerator;
 
@@ -126,9 +130,33 @@ namespace Assets.BlobEngine {
 
         #endregion
 
+        #region Unity EventSystem message implementations
+
+        public void OnPointerEnter(PointerEventData eventData) {
+            TopLevelUIFSM.HandlePointerEnter(this, eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            TopLevelUIFSM.HandlePointerExit(this, eventData);
+        }
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleBeginDrag(this, eventData);
+        }
+        
+        public void OnDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleDrag(this, eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleEndDrag(this, eventData);
+        }
+
+        #endregion
+
         private void GenerateBlob() {
             if(BlobInGenerator == null) {
-                BlobInGenerator = ResourceBlobBuilder.BuildBlob(BlobTypeGenerated);
+                BlobInGenerator = ResourceBlobBuilder.BuildBlob(BlobTypeGenerated, transform.position);
                 BlobInGenerator.transform.SetParent(transform, false);
                 BlobInGenerator.transform.localPosition = StoredBlobOffset;
                 RaiseBlobGenerated();

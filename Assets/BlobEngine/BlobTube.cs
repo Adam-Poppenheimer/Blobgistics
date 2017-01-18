@@ -17,6 +17,9 @@ namespace Assets.BlobEngine {
 
         private static float BlobSpeed = 2f;
         private static float SecondsBetweenSourceChecks = 1f;
+        
+        private static float TubeWidth = 0.5f;
+        private static float TubeDepth = 0.5f;
 
         #endregion
 
@@ -75,6 +78,17 @@ namespace Assets.BlobEngine {
             var directionFromTarget = TargetToPushTo.transform.GetDominantManhattanDirectionTo(SourceToPullFrom.transform);
             TubeStart = SourceToPullFrom.GetConnectionPointInDirection(directionFromSource);
             TubeEnd = TargetToPushTo.GetConnectionPointInDirection(directionFromTarget);
+            
+            var meshFilter = GetComponent<MeshFilter>();
+            if(meshFilter != null) {
+                meshFilter.sharedMesh = BoxMeshBuilder.BuildMesh(
+                    Vector3.Distance(TubeStart, TubeEnd), TubeWidth, TubeDepth);
+            }
+            transform.position = (TubeStart + TubeEnd ) / 2f;
+
+            var directionFromStartToEnd = TubeEnd - TubeStart;
+            transform.Rotate(new Vector3(0f, 0f,
+                Vector3.Angle(directionFromStartToEnd, Vector3.right)));
         }
 
         private IEnumerator BlobPullTick() {

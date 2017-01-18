@@ -25,7 +25,7 @@ namespace Assets {
         #region Unity event methods
 
         private void Start() {
-            Tube.SetEndpoints(Generator, ResourcePool);
+            
         }
 
         #endregion

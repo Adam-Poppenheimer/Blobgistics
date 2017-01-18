@@ -40,12 +40,13 @@ namespace Assets.BlobEngine {
 
         #region static methods
 
-        public static ResourceBlob BuildBlob(ResourceType typeOfResource) {
+        public static ResourceBlob BuildBlob(ResourceType typeOfResource, Vector3 startingLocation) {
             var blobGameObject = GameObject.Instantiate<GameObject>(BlobPrefab);
             var blobComponent = blobGameObject.GetComponent<ResourceBlob>();
             if(blobComponent == null) {
                 throw new BlobException("BlobBuilder's BlobPrefab lacks a ResourceBlob component");
             }
+            blobGameObject.transform.position = startingLocation;
             var blobRenderer = blobGameObject.GetComponent<MeshRenderer>();
             if(blobRenderer != null) {
                 blobRenderer.material = MaterialDict[typeOfResource];

@@ -8,10 +8,12 @@ using UnityEngine.EventSystems;
 
 using UnityCustomUtilities.Meshes;
 using UnityCustomUtilities.Extensions;
+using UnityCustomUtilities.UI;
 
 namespace Assets.BlobEngine {
 
-    public class ResourcePool : MonoBehaviour, IPointerClickHandler, IBlobSource, IBlobTarget {
+    public class ResourcePool : MonoBehaviour, IBlobSource, IBlobTarget, IPointerEnterHandler,
+        IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler{
 
         #region static fields and properties
 
@@ -55,6 +57,8 @@ namespace Assets.BlobEngine {
         private HashSet<ResourceBlob> BlobsInPool =
             new HashSet<ResourceBlob>();
 
+        public UIFSM TopLevelUIFSM;
+
         #endregion
 
         #region instance methods
@@ -67,16 +71,34 @@ namespace Assets.BlobEngine {
                 attachedMeshFilter.sharedMesh = BoxMeshBuilder.GetAppropriateMesh(
                     new Tuple<uint, uint, uint>(Width, Height, Depth));
             }
+            var boxCollider = GetComponent<BoxCollider2D>();
+            if(boxCollider != null) {
+                boxCollider.size = new Vector2(Width, Height);
+            }
         }
 
         #endregion
 
-        #region from IPointerClickHandler
+        #region Unity EventSystem message implementations
 
-        public void OnPointerClick(PointerEventData eventData) {
-            if(CanPlaceBlobOfTypeInto(ResourceType.Red)) {
-                PlaceBlobInto(ResourceBlobBuilder.BuildBlob(ResourceType.Red));
-            }
+        public void OnPointerEnter(PointerEventData eventData) {
+            TopLevelUIFSM.HandlePointerEnter(this, eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            TopLevelUIFSM.HandlePointerExit(this, eventData);
+        }
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleBeginDrag(this, eventData);
+        }
+        
+        public void OnDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleDrag(this, eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleEndDrag(this, eventData);
         }
 
         #endregion
