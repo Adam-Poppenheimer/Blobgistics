@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 using UnityCustomUtilities.UI;
+using UnityCustomUtilities.Extensions;
 
 using Assets.BlobEngine;
 
@@ -20,6 +21,8 @@ namespace Assets.UI {
 
         private IBlobSource CandidateSource;
         private IBlobTarget CandidateTarget;
+
+        [SerializeField] private TubeGhost TubeGhost;
 
         #endregion
 
@@ -55,9 +58,45 @@ namespace Assets.UI {
             if(obj is IBlobSource) {
                 CandidateSource = obj as IBlobSource;
                 AnchoredTubable = CandidateSource;
+                TubeGhost.gameObject.SetActive(true);
             }else if(obj is IBlobTarget) {
                 CandidateTarget = obj as IBlobTarget;
                 AnchoredTubable = CandidateTarget;
+                TubeGhost.gameObject.SetActive(true);
+            }
+            return UIFSMResponse.Bury;
+        }
+
+        protected override UIFSMResponse HandleDrag<T>(T obj, PointerEventData eventData) {
+
+            var mousePositionInWorld = Camera.main.ScreenToWorldPoint((Vector3)eventData.position + new Vector3(0f, 0f, 10f));
+            Vector3 startingPoint, endingPoint;
+
+            if(CandidateSource != null && CandidateTarget != null) {
+
+                var directionFromSource = CandidateSource.transform.GetDominantManhattanDirectionTo(CandidateTarget.transform);
+                startingPoint = CandidateSource.GetConnectionPointInDirection(directionFromSource);
+                var directionFromTarget = CandidateTarget.transform.GetDominantManhattanDirectionTo(CandidateSource.transform);
+                endingPoint = CandidateTarget.GetConnectionPointInDirection(directionFromTarget);
+
+                TubeGhost.SetEndpoints(startingPoint, endingPoint);
+
+            }else if(CandidateSource != null) {
+
+                var directionFromSource = CandidateSource.transform.position.GetDominantManhattanDirectionTo(mousePositionInWorld);
+                startingPoint = CandidateSource.GetConnectionPointInDirection(directionFromSource);
+                endingPoint = mousePositionInWorld;
+
+                TubeGhost.SetEndpoints(startingPoint, endingPoint);
+
+            }else if(CandidateTarget != null) {
+
+                var directionFromTarget = CandidateTarget.transform.position.GetDominantManhattanDirectionTo(mousePositionInWorld);
+                endingPoint = CandidateTarget.GetConnectionPointInDirection(directionFromTarget);
+                startingPoint = mousePositionInWorld;
+
+                TubeGhost.SetEndpoints(startingPoint, endingPoint);
+
             }
             return UIFSMResponse.Bury;
         }
@@ -71,6 +110,7 @@ namespace Assets.UI {
             CandidateSource = null;
             CandidateTarget = null;
             AnchoredTubable = null;
+            TubeGhost.gameObject.SetActive(false);
             return UIFSMResponse.Bury;
         }
 

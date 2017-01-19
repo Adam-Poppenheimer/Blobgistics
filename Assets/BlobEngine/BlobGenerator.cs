@@ -113,6 +113,7 @@ namespace Assets.BlobEngine {
         public ResourceBlob ExtractAnyBlob() {
             if(CanExtractAnyBlob()) {
                 var retval = BlobInGenerator;
+                BlobInGenerator.transform.SetParent(null, true);
                 BlobInGenerator = null;
                 return retval;
             }else {

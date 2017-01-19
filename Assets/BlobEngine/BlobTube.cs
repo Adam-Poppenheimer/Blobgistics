@@ -11,6 +11,8 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobEngine {
 
+    [RequireComponent(typeof(MeshRenderer))]
+    [RequireComponent(typeof(MeshFilter))]
     public class BlobTube : MonoBehaviour {
 
         #region static fields and properties
@@ -31,6 +33,8 @@ namespace Assets.BlobEngine {
         private IBlobSource SourceToPullFrom;
         private IBlobTarget TargetToPushTo;
 
+        private Coroutine BlobPullingCoroutine;
+
         #endregion
 
         #region instance methods
@@ -38,15 +42,19 @@ namespace Assets.BlobEngine {
         #region Unity event methods
 
         private void Start() {
-            StartCoroutine(BlobPullTick());
+            
         }
 
         #endregion
 
         public void SetEndpoints(IBlobSource source, IBlobTarget target) {
+            if(BlobPullingCoroutine != null) {
+                StopCoroutine(BlobPullingCoroutine);
+            }
             SourceToPullFrom = source;
             TargetToPushTo   = target;
             RefreshEndpointLocations();
+            BlobPullingCoroutine = StartCoroutine(BlobPullTick());
         }
 
         public bool CanTransportAnyBlob() {
@@ -61,7 +69,7 @@ namespace Assets.BlobEngine {
         public void PullAnyBlobFromSource() {
             if(CanTransportAnyBlob()) {
                 var pulledBlob = SourceToPullFrom.ExtractAnyBlob();
-                pulledBlob.transform.SetParent(transform, true);
+                //pulledBlob.transform.SetParent(transform, true);
 
                 pulledBlob.PushNewMovementGoal(new MovementGoal(TubeStart, BlobSpeed));
                 pulledBlob.PushNewMovementGoal(new MovementGoal(TubeEnd, BlobSpeed, delegate() {
@@ -79,16 +87,21 @@ namespace Assets.BlobEngine {
             TubeStart = SourceToPullFrom.GetConnectionPointInDirection(directionFromSource);
             TubeEnd = TargetToPushTo.GetConnectionPointInDirection(directionFromTarget);
             
+            
             var meshFilter = GetComponent<MeshFilter>();
             if(meshFilter != null) {
-                meshFilter.sharedMesh = BoxMeshBuilder.BuildMesh(
-                    Vector3.Distance(TubeStart, TubeEnd), TubeWidth, TubeDepth);
+                meshFilter.sharedMesh = BoxMeshBuilder.GetAppropriateMesh(new Tuple<uint, uint, uint>(1, 1, 1));
             }
+            
+            transform.rotation = Quaternion.identity;
             transform.position = (TubeStart + TubeEnd ) / 2f;
-
-            var directionFromStartToEnd = TubeEnd - TubeStart;
-            transform.Rotate(new Vector3(0f, 0f,
-                Vector3.Angle(directionFromStartToEnd, Vector3.right)));
+            transform.localScale = new Vector3(Vector3.Distance(TubeStart, TubeEnd), TubeWidth, TubeDepth);
+            
+            var zAngleToRotate = Mathf.Rad2Deg * Mathf.Atan(
+                (TubeEnd.y - TubeStart.y) /
+                (TubeEnd.x - TubeStart.x)
+            );
+            transform.Rotate(new Vector3(0f, 0f, zAngleToRotate));
         }
 
         private IEnumerator BlobPullTick() {
