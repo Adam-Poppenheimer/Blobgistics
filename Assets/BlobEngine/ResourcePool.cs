@@ -32,24 +32,24 @@ namespace Assets.BlobEngine {
         #region from ITubableObject
 
         public Vector3 NorthTubeConnectionPoint {
-            get { return new Vector3(0f, Height / 2f, Depth) + transform.position; }
+            get { return new Vector3(0f, Height / 2f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
         }
 
         public Vector3 SouthTubeConnectionPoint {
-            get { return new Vector3(0f, -Height / 2f, Depth) + transform.position; }
+            get { return new Vector3(0f, -Height / 2f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
         }
 
         public Vector3 EastTubeConnectionPoint {
-            get { return new Vector3(Width / 2f, 0f, Depth) + transform.position; }
+            get { return new Vector3(Width / 2f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
         }
 
         public Vector3 WestTubeConnectionPoint {
-            get { return new Vector3(-Width / 2f, 0f, Depth) + transform.position; }
+            get { return new Vector3(-Width / 2f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
         }
 
         #endregion
 
-        [SerializeField] private int MaxCapacity = 25;
+        [SerializeField] private int MaxCapacity = 10;
 
         [SerializeField] private uint Width = 2;
         [SerializeField] private uint Height = 2;
@@ -57,7 +57,22 @@ namespace Assets.BlobEngine {
         private HashSet<ResourceBlob> BlobsInPool =
             new HashSet<ResourceBlob>();
 
+        private HashSet<ResourceBlob> BlobsWithReservedPositions =
+            new HashSet<ResourceBlob>();
+
         public UIFSM TopLevelUIFSM;
+
+        #endregion
+
+        #region events
+
+        public event EventHandler<BlobEventArgs> NewBlobAvailable;
+
+        protected void RaiseNewBlobAvailable(ResourceBlob newBlob) {
+            if(NewBlobAvailable != null) {
+                NewBlobAvailable(this, new BlobEventArgs(newBlob));
+            }
+        }
 
         #endregion
 
@@ -139,6 +154,8 @@ namespace Assets.BlobEngine {
             if(BlobsInPool.Count > 0) {
                 var retval = BlobsInPool.Last();
                 BlobsInPool.Remove(retval);
+                retval.transform.SetParent(null, true);
+                RealignBlobs();
                 return retval;
             }else {
                 throw new BlobException("Cannot extract any blob from this BlobSource");
@@ -150,6 +167,7 @@ namespace Assets.BlobEngine {
             var retval = BlobsInPool.Where(candidate => candidate.BlobType == type).Last();
             if(retval != null) {
                 BlobsInPool.Remove(retval);
+                retval.transform.SetParent(null, true);
                 RealignBlobs();
                 return retval;
             }else {
@@ -162,17 +180,31 @@ namespace Assets.BlobEngine {
         #region from IBlobTarget
 
         public bool CanPlaceBlobOfTypeInto(ResourceType type) {
-            return BlobsInPool.Count < MaxCapacity;
+            return BlobsInPool.Count + BlobsWithReservedPositions.Count < MaxCapacity;
         }
 
         public void PlaceBlobInto(ResourceBlob blob) {
+            BlobsWithReservedPositions.Remove(blob);
             if(CanPlaceBlobOfTypeInto(blob.BlobType)) {
                 BlobsInPool.Add(blob);
                 blob.transform.SetParent(this.transform, true);
                 RealignBlobs();
+                RaiseNewBlobAvailable(blob);
             }else {
-                throw new BlobException("Cannot place a blob into a BlobTarget");
+                throw new BlobException("Cannot place a blob into this BlobTarget");
             }
+        }
+
+        public void ReservePlaceForBlob(ResourceBlob blob) {
+            if(CanPlaceBlobOfTypeInto(blob.BlobType)) {
+                BlobsWithReservedPositions.Add(blob);
+            }else {
+                throw new BlobException("Cannot reserve a place for a blob in this BlobTarget");
+            }
+        }
+
+        public void UnreservePlaceForBlob(ResourceBlob blob) {
+            BlobsWithReservedPositions.Remove(blob);
         }
 
         #endregion

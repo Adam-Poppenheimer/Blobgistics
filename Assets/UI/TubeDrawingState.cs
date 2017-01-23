@@ -17,10 +17,8 @@ namespace Assets.UI {
 
         #region instance fields and properties
 
-        private ITubableObject AnchoredTubable;
-
-        private IBlobSource CandidateSource;
-        private IBlobTarget CandidateTarget;
+        private ITubableObject FirstDraggedTubable;
+        private ITubableObject SecondDraggedTubable;
 
         [SerializeField] private TubeGhost TubeGhost;
 
@@ -31,37 +29,28 @@ namespace Assets.UI {
         #region from UIFSMState
 
         protected override UIFSMResponse HandlePointerEnter<T>(T obj, PointerEventData eventData) {
-            if(eventData.dragging && obj != AnchoredTubable) {
-                if(obj is IBlobSource && CandidateSource == null) {
-                    CandidateSource = obj as IBlobSource;
-                }else if(obj is IBlobTarget && CandidateTarget == null) {
-                    CandidateTarget = obj as IBlobTarget;
+            if(eventData.dragging && FirstDraggedTubable != null && obj != FirstDraggedTubable) {
+                if(obj is ITubableObject) {
+                    SecondDraggedTubable = obj as ITubableObject;
                 }
             }
             return UIFSMResponse.Bury;
         }
 
         protected override UIFSMResponse HandlePointerExit<T>(T obj, PointerEventData eventData) {
-            if(eventData.dragging && obj != AnchoredTubable) {
-                if(obj is IBlobSource && AnchoredTubable != CandidateSource) {
-                    CandidateSource = null;
-                }else if(obj is IBlobTarget && AnchoredTubable != CandidateTarget) {
-                    CandidateTarget = null;
+            if(eventData.dragging && FirstDraggedTubable != null && obj != FirstDraggedTubable) {
+                if(obj is ITubableObject) {
+                    SecondDraggedTubable = null;
                 }
             }
             return UIFSMResponse.Bury;
         }
 
         protected override UIFSMResponse HandleBeginDrag<T>(T obj, PointerEventData eventData) {
-            CandidateSource = null;
-            CandidateTarget = null;
-            if(obj is IBlobSource) {
-                CandidateSource = obj as IBlobSource;
-                AnchoredTubable = CandidateSource;
-                TubeGhost.gameObject.SetActive(true);
-            }else if(obj is IBlobTarget) {
-                CandidateTarget = obj as IBlobTarget;
-                AnchoredTubable = CandidateTarget;
+            FirstDraggedTubable = null;
+            SecondDraggedTubable = null;
+            if(obj is ITubableObject) {
+                FirstDraggedTubable = obj as ITubableObject;
                 TubeGhost.gameObject.SetActive(true);
             }
             return UIFSMResponse.Bury;
@@ -72,44 +61,62 @@ namespace Assets.UI {
             var mousePositionInWorld = Camera.main.ScreenToWorldPoint((Vector3)eventData.position + new Vector3(0f, 0f, 10f));
             Vector3 startingPoint, endingPoint;
 
-            if(CandidateSource != null && CandidateTarget != null) {
+            if(FirstDraggedTubable != null && SecondDraggedTubable != null) {
 
-                var directionFromSource = CandidateSource.transform.GetDominantManhattanDirectionTo(CandidateTarget.transform);
-                startingPoint = CandidateSource.GetConnectionPointInDirection(directionFromSource);
-                var directionFromTarget = CandidateTarget.transform.GetDominantManhattanDirectionTo(CandidateSource.transform);
-                endingPoint = CandidateTarget.GetConnectionPointInDirection(directionFromTarget);
+                var directionFromSource = FirstDraggedTubable.transform.GetDominantManhattanDirectionTo(SecondDraggedTubable.transform);
+                startingPoint = FirstDraggedTubable.GetConnectionPointInDirection(directionFromSource);
+                var directionFromTarget = SecondDraggedTubable.transform.GetDominantManhattanDirectionTo(FirstDraggedTubable.transform);
+                endingPoint = SecondDraggedTubable.GetConnectionPointInDirection(directionFromTarget);
 
                 TubeGhost.SetEndpoints(startingPoint, endingPoint);
 
-            }else if(CandidateSource != null) {
+            }else if(FirstDraggedTubable != null) {
 
-                var directionFromSource = CandidateSource.transform.position.GetDominantManhattanDirectionTo(mousePositionInWorld);
-                startingPoint = CandidateSource.GetConnectionPointInDirection(directionFromSource);
+                var directionFromSource = FirstDraggedTubable.transform.position.GetDominantManhattanDirectionTo(mousePositionInWorld);
+                startingPoint = FirstDraggedTubable.GetConnectionPointInDirection(directionFromSource);
                 endingPoint = mousePositionInWorld;
 
                 TubeGhost.SetEndpoints(startingPoint, endingPoint);
 
-            }else if(CandidateTarget != null) {
+            }else if(SecondDraggedTubable != null) {
 
-                var directionFromTarget = CandidateTarget.transform.position.GetDominantManhattanDirectionTo(mousePositionInWorld);
-                endingPoint = CandidateTarget.GetConnectionPointInDirection(directionFromTarget);
+                var directionFromTarget = SecondDraggedTubable.transform.position.GetDominantManhattanDirectionTo(mousePositionInWorld);
+                endingPoint = SecondDraggedTubable.GetConnectionPointInDirection(directionFromTarget);
                 startingPoint = mousePositionInWorld;
 
                 TubeGhost.SetEndpoints(startingPoint, endingPoint);
 
             }
+
+            if(FirstDraggedTubable != null && SecondDraggedTubable != null) {
+                TubeGhost.SetBuildable(BlobTubeFactory.CanBuildTubeBetween(FirstDraggedTubable, SecondDraggedTubable));
+            }else {
+                TubeGhost.SetBuildable(false);
+            }
+
             return UIFSMResponse.Bury;
         }
 
         protected override UIFSMResponse HandleEndDrag<T>(T obj, PointerEventData eventData) {
-            if(CandidateSource != null && CandidateTarget != null) {
-                if(BlobTubeFactory.CanBuildTubeBetween(CandidateSource, CandidateTarget)) {
-                    BlobTubeFactory.BuildTubeBetween(CandidateSource, CandidateTarget);
-                }
+            IBlobSource candidateSource = null;
+            IBlobTarget candidateTarget = null;
+
+            if(FirstDraggedTubable is IBlobSource && SecondDraggedTubable is IBlobTarget) {
+                candidateSource = FirstDraggedTubable as IBlobSource;
+                candidateTarget = SecondDraggedTubable as IBlobTarget;
+            }else if(FirstDraggedTubable is IBlobTarget && SecondDraggedTubable is IBlobSource) {
+                candidateSource = SecondDraggedTubable as IBlobSource;
+                candidateTarget = FirstDraggedTubable as IBlobTarget;
             }
-            CandidateSource = null;
-            CandidateTarget = null;
-            AnchoredTubable = null;
+
+            if( candidateSource != null && candidateTarget != null &&
+                BlobTubeFactory.CanBuildTubeBetween(candidateSource, candidateTarget)
+            ){
+                BlobTubeFactory.BuildTubeBetween(candidateSource, candidateTarget);
+            }
+
+            FirstDraggedTubable = null;
+            SecondDraggedTubable = null;
             TubeGhost.gameObject.SetActive(false);
             return UIFSMResponse.Bury;
         }

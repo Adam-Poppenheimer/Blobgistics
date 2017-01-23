@@ -13,6 +13,8 @@ namespace Assets.BlobEngine {
 
         #region properties
 
+        Transform transform { get; }
+
         Vector3 NorthTubeConnectionPoint { get; }
         Vector3 SouthTubeConnectionPoint { get; }
         Vector3 EastTubeConnectionPoint  { get; }

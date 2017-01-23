@@ -18,7 +18,7 @@ namespace Assets.BlobEngine {
         #region static fields and properties
 
         private static float BlobSpeed = 2f;
-        private static float SecondsBetweenSourceChecks = 1f;
+        private static float SecondsBetweenPulls = 1f;
         
         private static float TubeWidth = 0.5f;
         private static float TubeDepth = 0.5f;
@@ -33,7 +33,8 @@ namespace Assets.BlobEngine {
         private IBlobSource SourceToPullFrom;
         private IBlobTarget TargetToPushTo;
 
-        private Coroutine BlobPullingCoroutine;
+        private Coroutine BlobPullCoroutine;
+        private bool ReadyToPullBlob = true;
 
         #endregion
 
@@ -42,19 +43,23 @@ namespace Assets.BlobEngine {
         #region Unity event methods
 
         private void Start() {
-            
+            BlobPullCoroutine = StartCoroutine(BlobPullTick());
         }
 
         #endregion
 
         public void SetEndpoints(IBlobSource source, IBlobTarget target) {
-            if(BlobPullingCoroutine != null) {
-                StopCoroutine(BlobPullingCoroutine);
+            if(SourceToPullFrom != null) {
+                SourceToPullFrom.NewBlobAvailable -= OnSourceHasNewBlob;
             }
             SourceToPullFrom = source;
             TargetToPushTo   = target;
             RefreshEndpointLocations();
-            BlobPullingCoroutine = StartCoroutine(BlobPullTick());
+            
+            SourceToPullFrom.NewBlobAvailable += OnSourceHasNewBlob;
+            if(ReadyToPullBlob && CanTransportAnyBlob()) {
+                PullAnyBlobFromSource();
+            }
         }
 
         public bool CanTransportAnyBlob() {
@@ -71,6 +76,7 @@ namespace Assets.BlobEngine {
                 var pulledBlob = SourceToPullFrom.ExtractAnyBlob();
                 //pulledBlob.transform.SetParent(transform, true);
 
+                TargetToPushTo.ReservePlaceForBlob(pulledBlob);
                 pulledBlob.PushNewMovementGoal(new MovementGoal(TubeStart, BlobSpeed));
                 pulledBlob.PushNewMovementGoal(new MovementGoal(TubeEnd, BlobSpeed, delegate() {
                     TargetToPushTo.PlaceBlobInto(pulledBlob);
@@ -94,7 +100,7 @@ namespace Assets.BlobEngine {
             }
             
             transform.rotation = Quaternion.identity;
-            transform.position = (TubeStart + TubeEnd ) / 2f;
+            transform.position = (TubeStart + TubeEnd ) / 2f + new Vector3(0f, 0f, TubeDepth);
             transform.localScale = new Vector3(Vector3.Distance(TubeStart, TubeEnd), TubeWidth, TubeDepth);
             
             var zAngleToRotate = Mathf.Rad2Deg * Mathf.Atan(
@@ -104,12 +110,24 @@ namespace Assets.BlobEngine {
             transform.Rotate(new Vector3(0f, 0f, zAngleToRotate));
         }
 
+        private void OnSourceHasNewBlob(object sender, BlobEventArgs args) {
+            if(ReadyToPullBlob && CanTransportAnyBlob()) {
+                PullAnyBlobFromSource();
+                ReadyToPullBlob = false;
+                StopCoroutine(BlobPullCoroutine);
+                BlobPullCoroutine = StartCoroutine(BlobPullTick());
+            }
+        }
+
         private IEnumerator BlobPullTick() {
             while(true) {
+                yield return new WaitForSeconds(SecondsBetweenPulls);
                 if(CanTransportAnyBlob()) {
                     PullAnyBlobFromSource();
+                    ReadyToPullBlob = false;
+                }else {
+                    ReadyToPullBlob = true;
                 }
-                yield return new WaitForSeconds(SecondsBetweenSourceChecks);
             }
         }
 

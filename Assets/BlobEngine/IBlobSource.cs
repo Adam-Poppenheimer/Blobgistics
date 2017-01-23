@@ -6,9 +6,9 @@ namespace Assets.BlobEngine {
 
     public interface IBlobSource : ITubableObject {
 
-        #region properties
+        #region events
 
-        Transform transform { get; }
+        event EventHandler<BlobEventArgs> NewBlobAvailable;
 
         #endregion
 

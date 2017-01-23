@@ -19,7 +19,21 @@ namespace Assets.UI {
 
         #endregion
 
+        #region instance fields and properties
+
+        [SerializeField] private Material IsBuildableMaterial;
+        [SerializeField] private Material IsUnbuildableMaterial;
+
+        #endregion
+
         #region instance methods
+
+        public void SetBuildable(bool isBuildable) {
+            var meshRenderer = GetComponent<MeshRenderer>();
+            if(meshRenderer != null) {
+                meshRenderer.sharedMaterial = isBuildable ? IsBuildableMaterial : IsUnbuildableMaterial;
+            }
+        }
 
         public void SetEndpoints(Vector3 start, Vector3 end) {
             transform.rotation = Quaternion.identity;

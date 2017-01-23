@@ -62,6 +62,20 @@ namespace Assets.BlobEngine {
             return ObjectsAttachedToObject.ContainsKey(obj1);
         }
 
+        public static bool CanBuildTubeBetween(ITubableObject obj1, ITubableObject obj2) {
+            if(obj1 == null) {
+                throw new ArgumentNullException("source");
+            }else if(obj2 == null) {
+                throw new ArgumentNullException("target");
+            }else if(obj1 is IBlobSource && obj2 is IBlobTarget) {
+                return CanBuildTubeBetween(obj1 as IBlobSource, obj2 as IBlobTarget);
+            }else if(obj1 is IBlobTarget && obj2 is IBlobSource) {
+                return CanBuildTubeBetween(obj2 as IBlobSource, obj1 as IBlobTarget);
+            }else {
+                return false;
+            }
+        }
+
         public static bool CanBuildTubeBetween(IBlobSource source, IBlobTarget target) {
             if(source == null) {
                 throw new ArgumentNullException("source");

@@ -17,8 +17,7 @@ namespace Assets.BlobEngine {
 
         #region static fields and properties
 
-        private static float TimeToGenerateBlob = 3f;
-        private static Vector3 StoredBlobOffset = new Vector3(0f, 0f, -1f);
+        private static float SecondsToGenerate = 3f;
 
         #endregion
 
@@ -29,41 +28,46 @@ namespace Assets.BlobEngine {
         public Vector3 NorthTubeConnectionPoint {
             get { return LocalNorthConnectionPoint + transform.position; }
         }
-        private Vector3 LocalNorthConnectionPoint = new Vector3(0f, 0.5f, 0f);
+        private Vector3 LocalNorthConnectionPoint = new Vector3(0f, 0.5f, ResourceBlob.DesiredZPositionOfAllBlobs);
 
         public Vector3 SouthTubeConnectionPoint {
             get { return LocalSouthConnectionPoint + transform.position; }
         }
-        private Vector3 LocalSouthConnectionPoint = new Vector3(0f, -0.5f, 0f);
+        private Vector3 LocalSouthConnectionPoint = new Vector3(0f, -0.5f, ResourceBlob.DesiredZPositionOfAllBlobs);
 
         public Vector3 EastTubeConnectionPoint {
             get { return LocalEastConnectionPoint + transform.position; }
         }
-        private Vector3 LocalEastConnectionPoint = new Vector3(0.5f, 0, 0f);
+        private Vector3 LocalEastConnectionPoint = new Vector3(0.5f, 0, ResourceBlob.DesiredZPositionOfAllBlobs);
 
         public Vector3 WestTubeConnectionPoint {
             get { return LocalWestConnectionPoint + transform.position; }
         }
-        private Vector3 LocalWestConnectionPoint = new Vector3(-0.5f, 0f, 0f);
+        private Vector3 LocalWestConnectionPoint = new Vector3(-0.5f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs);
 
         #endregion
 
         [SerializeField] private ResourceType BlobTypeGenerated;
         [SerializeField] private UIFSM TopLevelUIFSM;
 
+        private Coroutine BlobGenerationCoroutine;
         private ResourceBlob BlobInGenerator;
 
         #endregion
 
         #region events
 
-        public event EventHandler<EventArgs> BlobGenerated;
+        #region from IBlobSource
 
-        protected void RaiseBlobGenerated() {
-            if(BlobGenerated != null) {
-                BlobGenerated(this, EventArgs.Empty);
+        public event EventHandler<BlobEventArgs> NewBlobAvailable;
+
+        protected void RaiseNewBlobAvailable() {
+            if(NewBlobAvailable != null) {
+                NewBlobAvailable(this, new BlobEventArgs(BlobInGenerator));
             }
         }
+
+        #endregion
 
         #endregion
 
@@ -72,7 +76,31 @@ namespace Assets.BlobEngine {
         #region Unity event methods
 
         private void Start() {
-            InvokeRepeating("GenerateBlob", TimeToGenerateBlob, TimeToGenerateBlob);
+            BlobGenerationCoroutine = StartCoroutine(BlobGenerationTick());
+        }
+
+        #endregion
+
+        #region Unity EventSystem message implementations
+
+        public void OnPointerEnter(PointerEventData eventData) {
+            TopLevelUIFSM.HandlePointerEnter(this, eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            TopLevelUIFSM.HandlePointerExit(this, eventData);
+        }
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleBeginDrag(this, eventData);
+        }
+        
+        public void OnDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleDrag(this, eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            TopLevelUIFSM.HandleEndDrag(this, eventData);
         }
 
         #endregion
@@ -115,6 +143,7 @@ namespace Assets.BlobEngine {
                 var retval = BlobInGenerator;
                 BlobInGenerator.transform.SetParent(null, true);
                 BlobInGenerator = null;
+                StartCoroutine(BlobGenerationTick());
                 return retval;
             }else {
                 throw new BlobException("This generator does not have a blob to extract");
@@ -131,36 +160,21 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        #region Unity EventSystem message implementations
-
-        public void OnPointerEnter(PointerEventData eventData) {
-            TopLevelUIFSM.HandlePointerEnter(this, eventData);
-        }
-
-        public void OnPointerExit(PointerEventData eventData) {
-            TopLevelUIFSM.HandlePointerExit(this, eventData);
-        }
-
-        public void OnBeginDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleBeginDrag(this, eventData);
-        }
-        
-        public void OnDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleDrag(this, eventData);
-        }
-
-        public void OnEndDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleEndDrag(this, eventData);
-        }
-
-        #endregion
-
         private void GenerateBlob() {
             if(BlobInGenerator == null) {
                 BlobInGenerator = ResourceBlobBuilder.BuildBlob(BlobTypeGenerated, transform.position);
-                BlobInGenerator.transform.SetParent(transform, false);
-                BlobInGenerator.transform.localPosition = StoredBlobOffset;
-                RaiseBlobGenerated();
+                var currentBlobPosition = BlobInGenerator.transform.position;
+                BlobInGenerator.transform.position = new Vector3(currentBlobPosition.x, 
+                    currentBlobPosition.y, ResourceBlob.DesiredZPositionOfAllBlobs);
+                BlobInGenerator.transform.SetParent(transform, true);
+                RaiseNewBlobAvailable();
+            }
+        }
+
+        private IEnumerator BlobGenerationTick() {
+            yield return new WaitForSeconds(SecondsToGenerate);
+            if(BlobInGenerator == null) {
+                GenerateBlob();
             }
         }
 
