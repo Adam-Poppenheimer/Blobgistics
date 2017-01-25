@@ -8,12 +8,13 @@ using UnityEngine.EventSystems;
 
 using UnityCustomUtilities.UI;
 using UnityCustomUtilities.Extensions;
+using UnityCustomUtilities.Misc;
 
 using Assets.BlobEngine;
 
 namespace Assets.UI {
 
-    public class TubeDrawingState : UIFSMState {
+    public class TubeDrawingState : UIFSMState, IInjectionTarget<IBlobTubeFactory> {
 
         #region instance fields and properties
 
@@ -21,6 +22,24 @@ namespace Assets.UI {
         private ITubableObject SecondDraggedTubable;
 
         [SerializeField] private TubeGhost TubeGhost;
+
+        public IBlobTubeFactory TubeFactory {
+            get {
+                if(_tubeFactory == null) {
+                    throw new InvalidOperationException("TubeFactory is uninitialized");
+                } else {
+                    return _tubeFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _tubeFactory = value;
+                }
+            }
+        }
+        private IBlobTubeFactory _tubeFactory;
 
         #endregion
 
@@ -89,7 +108,7 @@ namespace Assets.UI {
             }
 
             if(FirstDraggedTubable != null && SecondDraggedTubable != null) {
-                TubeGhost.SetBuildable(BlobTubeFactory.CanBuildTubeBetween(FirstDraggedTubable, SecondDraggedTubable));
+                TubeGhost.SetBuildable(TubeFactory.CanBuildTubeBetween(FirstDraggedTubable, SecondDraggedTubable));
             }else {
                 TubeGhost.SetBuildable(false);
             }
@@ -110,15 +129,23 @@ namespace Assets.UI {
             }
 
             if( candidateSource != null && candidateTarget != null &&
-                BlobTubeFactory.CanBuildTubeBetween(candidateSource, candidateTarget)
+                TubeFactory.CanBuildTubeBetween(candidateSource, candidateTarget)
             ){
-                BlobTubeFactory.BuildTubeBetween(candidateSource, candidateTarget);
+                TubeFactory.BuildTubeBetween(candidateSource, candidateTarget);
             }
 
             FirstDraggedTubable = null;
             SecondDraggedTubable = null;
             TubeGhost.gameObject.SetActive(false);
             return UIFSMResponse.Bury;
+        }
+
+        #endregion
+
+        #region from IInjectionTarget
+
+        public void InjectDependency(IBlobTubeFactory dependency, string tag) {
+            TubeFactory = dependency;   
         }
 
         #endregion

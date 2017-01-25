@@ -12,14 +12,10 @@ using UnityCustomUtilities.UI;
 
 namespace Assets.BlobEngine {
 
-    public class ResourcePool : MonoBehaviour, IBlobSource, IBlobTarget, IPointerEnterHandler,
-        IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler{
+    public class ResourcePool : MonoBehaviour, IResourcePool, IPointerEnterHandler,
+        IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
 
         #region static fields and properties
-
-        private static float BlobRadius = 0.25f;
-        private static float BlobHorizontalSeparation = 0.25f;
-        private static float BlobVerticalSeparation = 0.25f;
 
         private static uint Depth = 1;
 
@@ -60,7 +56,25 @@ namespace Assets.BlobEngine {
         private HashSet<ResourceBlob> BlobsWithReservedPositions =
             new HashSet<ResourceBlob>();
 
-        public UIFSM TopLevelUIFSM;
+        public UIFSM TopLevelUIFSM {
+            get {
+                if(_topLevelUIFSM == null) {
+                    throw new InvalidOperationException("TopLevelUIFSM is uninitialized");
+                } else {
+                    return _topLevelUIFSM;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _topLevelUIFSM = value;
+                }
+            }
+        }
+        [SerializeField, HideInInspector] private UIFSM _topLevelUIFSM;
+
+        private IBlobAlignmentStrategy AlignmentStrategy;
 
         #endregion
 
@@ -90,6 +104,11 @@ namespace Assets.BlobEngine {
             if(boxCollider != null) {
                 boxCollider.size = new Vector2(Width, Height);
             }
+            AlignmentStrategy = new BoxyBlobAlignmentStrategy(Width, Height, 5, 5);
+        }
+
+        private void Awake() {
+
         }
 
         #endregion
@@ -155,7 +174,7 @@ namespace Assets.BlobEngine {
                 var retval = BlobsInPool.Last();
                 BlobsInPool.Remove(retval);
                 retval.transform.SetParent(null, true);
-                RealignBlobs();
+                AlignmentStrategy.RealignBlobs(BlobsInPool, transform.position, BlobRealignmentSpeedPerSecond);
                 return retval;
             }else {
                 throw new BlobException("Cannot extract any blob from this BlobSource");
@@ -168,7 +187,7 @@ namespace Assets.BlobEngine {
             if(retval != null) {
                 BlobsInPool.Remove(retval);
                 retval.transform.SetParent(null, true);
-                RealignBlobs();
+                AlignmentStrategy.RealignBlobs(BlobsInPool, transform.position, BlobRealignmentSpeedPerSecond);
                 return retval;
             }else {
                 throw new BlobException("Cannot extract a blob of the specified type from this BlobSource");
@@ -188,7 +207,7 @@ namespace Assets.BlobEngine {
             if(CanPlaceBlobOfTypeInto(blob.BlobType)) {
                 BlobsInPool.Add(blob);
                 blob.transform.SetParent(this.transform, true);
-                RealignBlobs();
+                AlignmentStrategy.RealignBlobs(BlobsInPool, transform.position, BlobRealignmentSpeedPerSecond);
                 RaiseNewBlobAvailable(blob);
             }else {
                 throw new BlobException("Cannot place a blob into this BlobTarget");
@@ -213,31 +232,6 @@ namespace Assets.BlobEngine {
             var blobsToDestroy = new List<ResourceBlob>(BlobsInPool);
             for(int i = blobsToDestroy.Count - 1; i >= 0; --i) {
                 GameObject.Destroy(blobsToDestroy[i]);
-            }
-        }
-
-        private void RealignBlobs() {
-            int blobIndex = 0;
-            var blobList = new List<ResourceBlob>(BlobsInPool);
-
-            for(int verticalIndex = 0; verticalIndex < 5; ++verticalIndex) {
-                for(int horizontalIndex = 0; horizontalIndex < 5; ++horizontalIndex){
-                    if(blobIndex == blobList.Count) {
-                        return;
-                    }else {
-                        var blobToPlace = blobList[blobIndex++];
-                        var newBlobLocation = new Vector3(
-                            BlobRadius + (BlobRadius / 2f + BlobHorizontalSeparation) * horizontalIndex,
-                            -(BlobRadius + (BlobRadius / 2f + BlobVerticalSeparation  ) * verticalIndex),
-                            -BlobRadius
-                        ) + new Vector3(
-                            -Width / 2f,
-                            Height / 2f,
-                            -Depth / 2f 
-                        ) + transform.position;
-                        blobToPlace.PushNewMovementGoal(new MovementGoal(newBlobLocation, BlobRealignmentSpeedPerSecond));
-                    }
-                }
             }
         }
 

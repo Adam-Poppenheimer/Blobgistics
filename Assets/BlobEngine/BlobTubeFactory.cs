@@ -9,38 +9,66 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobEngine {
 
-    public static class BlobTubeFactory {
+    [ExecuteInEditMode]
+    public class BlobTubeFactory : IBlobTubeFactory {
 
-        #region static fields and properties
+        #region instance fields and properties
 
-        private static DictionaryOfLists<ITubableObject, ITubableObject> ObjectsAttachedToObject =
+        private DictionaryOfLists<ITubableObject, ITubableObject> ObjectsAttachedToObject =
             new DictionaryOfLists<ITubableObject, ITubableObject>();
 
-        private static GameObject BlobTubePrefab {
+        private DictionaryOfLists<ITubableObject, BlobTube> TubesAttachedToObject =
+            new DictionaryOfLists<ITubableObject, BlobTube>();
+
+        public GameObject TubePrefab {
             get {
-                if(_blobTubePrefab == null) {
-                    _blobTubePrefab = Resources.Load<GameObject>("BlobTubePrefab");
+                if(_tubePrefab == null) {
+                    throw new InvalidOperationException("TubePrefab is uninitialized");
+                } else {
+                    return _tubePrefab;
                 }
-                return _blobTubePrefab;
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _tubePrefab = value;
+                }
             }
         }
-        private static GameObject _blobTubePrefab;
+        private GameObject _tubePrefab;
 
-        private static Transform MapAnchor {
+        public Transform MapRoot {
             get {
                 if(_mapAnchor == null) {
-                    _mapAnchor = GameObject.Find("Map").transform;
+                    throw new InvalidOperationException("MapAnchor is uninitialized");
+                } else {
+                    return _mapAnchor;
                 }
-                return _mapAnchor;
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _mapAnchor = value;
+                }
             }
         }
-        private static Transform _mapAnchor;
+        private Transform _mapAnchor;
 
         #endregion
 
-        #region static methods
+        #region constructors
 
-        public static IEnumerable<ITubableObject> GetObjectsTubedToObject(ITubableObject obj) {
+        public BlobTubeFactory() { }
+
+        #endregion
+
+        #region instance methods
+
+        #region from IBlobTubeFactory
+
+        public IEnumerable<ITubableObject> GetObjectsTubedToObject(ITubableObject obj) {
             if(obj == null) {
                 throw new ArgumentNullException("obj");
             }
@@ -53,16 +81,16 @@ namespace Assets.BlobEngine {
             }
         }
 
-        public static bool TubeExistsBetweenObjects(ITubableObject obj1, ITubableObject obj2) {
+        public bool TubeExistsBetweenObjects(ITubableObject obj1, ITubableObject obj2) {
             if(obj1 == null) {
                 throw new ArgumentNullException("obj1");
             }else if(obj2 == null) {
                 throw new ArgumentNullException("obj2");
             }
-            return ObjectsAttachedToObject.ContainsKey(obj1);
+            return ObjectsAttachedToObject.Contains(new KeyValuePair<ITubableObject, ITubableObject>(obj1, obj2));
         }
 
-        public static bool CanBuildTubeBetween(ITubableObject obj1, ITubableObject obj2) {
+        public bool CanBuildTubeBetween(ITubableObject obj1, ITubableObject obj2) {
             if(obj1 == null) {
                 throw new ArgumentNullException("source");
             }else if(obj2 == null) {
@@ -76,7 +104,7 @@ namespace Assets.BlobEngine {
             }
         }
 
-        public static bool CanBuildTubeBetween(IBlobSource source, IBlobTarget target) {
+        public bool CanBuildTubeBetween(IBlobSource source, IBlobTarget target) {
             if(source == null) {
                 throw new ArgumentNullException("source");
             }else if(target == null) {
@@ -85,22 +113,42 @@ namespace Assets.BlobEngine {
             return source != target && !TubeExistsBetweenObjects(source, target);
         }
 
-        public static BlobTube BuildTubeBetween(IBlobSource source, IBlobTarget target) {
+        public BlobTube BuildTubeBetween(IBlobSource source, IBlobTarget target) {
             if(!CanBuildTubeBetween(source, target)) {
                 throw new BlobException("Cannot build a tube between these two objects");
             }
 
-            var newTubeObject = GameObject.Instantiate(BlobTubePrefab);
+            var newTubeObject = GameObject.Instantiate(TubePrefab);
             var tubeBehaviour = newTubeObject.GetComponent<BlobTube>();
             if(tubeBehaviour == null) {
                 throw new BlobException("Prefab failed to produce a BlobTube component");
             }
 
-            newTubeObject.transform.SetParent(MapAnchor, false);
+            newTubeObject.transform.SetParent(MapRoot, false);
             tubeBehaviour.SetEndpoints(source, target);
+
+            TubesAttachedToObject.AddElementToList(source, tubeBehaviour);
+            TubesAttachedToObject.AddElementToList(target, tubeBehaviour);
+            ObjectsAttachedToObject.AddElementToList(source, target);
+            ObjectsAttachedToObject.AddElementToList(target, source);
+
             return tubeBehaviour;
         }
 
+        public void DestroyAllTubesConnectingTo(ITubableObject obj) {
+            List<BlobTube> tubesToDestroy;
+            TubesAttachedToObject.TryGetValue(obj, out tubesToDestroy);
+            for(int i = tubesToDestroy.Count - 1; i >= 0; --i) {
+                var tubeToDestroy = tubesToDestroy[i];
+                ObjectsAttachedToObject[tubeToDestroy.SourceToPullFrom].Remove(tubeToDestroy.TargetToPushTo  );
+                ObjectsAttachedToObject[tubeToDestroy.TargetToPushTo  ].Remove(tubeToDestroy.SourceToPullFrom);
+
+                GameObject.Destroy(tubeToDestroy.gameObject);
+            }
+            TubesAttachedToObject.RemoveList(obj);
+        }
+
+        #endregion
 
         #endregion
 

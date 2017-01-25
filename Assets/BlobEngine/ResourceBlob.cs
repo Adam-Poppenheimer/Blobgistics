@@ -12,10 +12,11 @@ namespace Assets.BlobEngine {
 
         #region static fields and properties
 
-        public static float DesiredZPositionOfAllBlobs = -1f;
+        public static readonly float DesiredZPositionOfAllBlobs = -1f;
+        public static readonly float RadiusOfBlobs = 0.25f;
 
-        private static float SecondsToPopIn = 0.25f;
-        private static Vector3 StartingVelocity = new Vector3(5f, 5f, 5f);
+        private static readonly float SecondsToPopIn = 0.25f;
+        private static readonly Vector3 StartingVelocity = new Vector3(5f, 5f, 5f);
 
         #endregion
 

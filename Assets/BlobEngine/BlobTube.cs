@@ -30,8 +30,29 @@ namespace Assets.BlobEngine {
         private Vector3 TubeStart = Vector3.zero;
         private Vector3 TubeEnd = Vector3.zero;
 
-        private IBlobSource SourceToPullFrom;
-        private IBlobTarget TargetToPushTo;
+        public IBlobSource SourceToPullFrom {
+            get { return _sourceToPullFrom; }
+            private set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _sourceToPullFrom = value;
+                }
+            }
+        }
+        private IBlobSource _sourceToPullFrom;
+
+        public IBlobTarget TargetToPushTo {
+            get { return _targetToPushTo; }
+            private set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _targetToPushTo = value;
+                }
+            }
+        }
+        private IBlobTarget _targetToPushTo;
 
         private Coroutine BlobPullCoroutine;
         private bool ReadyToPullBlob = true;
