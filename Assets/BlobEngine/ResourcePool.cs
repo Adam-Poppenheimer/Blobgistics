@@ -56,23 +56,23 @@ namespace Assets.BlobEngine {
         private HashSet<ResourceBlob> BlobsWithReservedPositions =
             new HashSet<ResourceBlob>();
 
-        public UIFSM TopLevelUIFSM {
+        public ResourcePoolPrivateData PrivateData {
             get {
-                if(_topLevelUIFSM == null) {
-                    throw new InvalidOperationException("TopLevelUIFSM is uninitialized");
+                if(_privateData == null) {
+                    throw new InvalidOperationException("PrivateData is uninitialized");
                 } else {
-                    return _topLevelUIFSM;
+                    return _privateData;
                 }
             }
             set {
                 if(value == null) {
                     throw new ArgumentNullException("value");
                 } else {
-                    _topLevelUIFSM = value;
+                    _privateData = value;
                 }
             }
         }
-        [SerializeField, HideInInspector] private UIFSM _topLevelUIFSM;
+        [SerializeField] private ResourcePoolPrivateData _privateData;
 
         private IBlobAlignmentStrategy AlignmentStrategy;
 
@@ -104,11 +104,10 @@ namespace Assets.BlobEngine {
             if(boxCollider != null) {
                 boxCollider.size = new Vector2(Width, Height);
             }
-            AlignmentStrategy = new BoxyBlobAlignmentStrategy(Width, Height, 5, 5);
         }
 
         private void Awake() {
-
+            AlignmentStrategy = new BoxyBlobAlignmentStrategy(Width, Height, 5, 5);
         }
 
         #endregion
@@ -116,23 +115,23 @@ namespace Assets.BlobEngine {
         #region Unity EventSystem message implementations
 
         public void OnPointerEnter(PointerEventData eventData) {
-            TopLevelUIFSM.HandlePointerEnter(this, eventData);
+            PrivateData.TopLevelUIFSM.HandlePointerEnter(this, eventData);
         }
 
         public void OnPointerExit(PointerEventData eventData) {
-            TopLevelUIFSM.HandlePointerExit(this, eventData);
+            PrivateData.TopLevelUIFSM.HandlePointerExit(this, eventData);
         }
 
         public void OnBeginDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleBeginDrag(this, eventData);
+            PrivateData.TopLevelUIFSM.HandleBeginDrag(this, eventData);
         }
         
         public void OnDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleDrag(this, eventData);
+            PrivateData.TopLevelUIFSM.HandleDrag(this, eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleEndDrag(this, eventData);
+            PrivateData.TopLevelUIFSM.HandleEndDrag(this, eventData);
         }
 
         #endregion

@@ -59,41 +59,23 @@ namespace Assets.BlobEngine {
         [SerializeField] private uint Width;
         [SerializeField] private uint Height;
 
-        public UIFSM TopLevelUIFSM {
+        public BuildingPlotPrivateData PrivateData {
             get {
-                if(_topLevelUIFSM == null) {
-                    throw new InvalidOperationException("TopLevelUIFSM is uninitialized");
+                if(_privateData == null) {
+                    throw new InvalidOperationException("PrivateData is uninitialized");
                 } else {
-                    return _topLevelUIFSM;
+                    return _privateData;
                 }
             }
             set {
                 if(value == null) {
                     throw new ArgumentNullException("value");
                 } else {
-                    _topLevelUIFSM = value;
+                    _privateData = value;
                 }
             }
         }
-        [SerializeField, HideInInspector] private UIFSM _topLevelUIFSM;
-
-        public IBlobTubeFactory TubeFactory {
-            get {
-                if(_tubeFactory == null) {
-                    throw new InvalidOperationException("TubeFactory is uninitialized");
-                } else {
-                    return _tubeFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _tubeFactory = value;
-                }
-            }
-        }
-        [SerializeField, HideInInspector] private IBlobTubeFactory _tubeFactory;
+        [SerializeField] private BuildingPlotPrivateData _privateData;
 
         private IBlobAlignmentStrategy AlignmentStrategy;
 
@@ -121,29 +103,29 @@ namespace Assets.BlobEngine {
         #region Unity EventSystem message implementations
 
         public void OnPointerClick(PointerEventData eventData) {
-            Schematic = BuildingSchematicRepository.Instance.GetSchematicOfName("ResourcePool");
+            Schematic = PrivateData.SchematicRepository.GetSchematicOfName("ResourcePool");
             Debug.Log("Changed schematic");
-            TopLevelUIFSM.HandlePointerClick(this, eventData);
+            PrivateData.TopLevelUIFSM.HandlePointerClick(this, eventData);
         }
 
         public void OnPointerEnter(PointerEventData eventData) {
-            TopLevelUIFSM.HandlePointerEnter(this, eventData);
+            PrivateData.TopLevelUIFSM.HandlePointerEnter(this, eventData);
         }
 
         public void OnPointerExit(PointerEventData eventData) {
-            TopLevelUIFSM.HandlePointerExit(this, eventData);
+            PrivateData.TopLevelUIFSM.HandlePointerExit(this, eventData);
         }
 
         public void OnBeginDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleBeginDrag(this, eventData);
+            PrivateData.TopLevelUIFSM.HandleBeginDrag(this, eventData);
         }
 
         public void OnDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleDrag(this, eventData);
+            PrivateData.TopLevelUIFSM.HandleDrag(this, eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData) {
-            TopLevelUIFSM.HandleEndDrag(this, eventData);
+            PrivateData.TopLevelUIFSM.HandleEndDrag(this, eventData);
         }
 
         #endregion
@@ -153,7 +135,7 @@ namespace Assets.BlobEngine {
         protected override void OnBlobPlacedInto(ResourceBlob blobPlaced) {
             if(Schematic != null && BlobsWithin.IsAtCapacity()) {
                 Schematic.PerformConstruction(this);
-                TubeFactory.DestroyAllTubesConnectingTo(this);
+                PrivateData.TubeFactory.DestroyAllTubesConnectingTo(this);
                 Destroy(gameObject);
             }else {
                 AlignmentStrategy.RealignBlobs(BlobsWithin.Blobs, (Vector2)transform.position, RealignmentSpeedPerSecond);

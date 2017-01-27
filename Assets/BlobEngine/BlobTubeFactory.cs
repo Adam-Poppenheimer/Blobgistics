@@ -10,7 +10,7 @@ using UnityCustomUtilities.Extensions;
 namespace Assets.BlobEngine {
 
     [ExecuteInEditMode]
-    public class BlobTubeFactory : IBlobTubeFactory {
+    public class BlobTubeFactory : BlobTubeFactoryBase {
 
         #region instance fields and properties
 
@@ -20,41 +20,9 @@ namespace Assets.BlobEngine {
         private DictionaryOfLists<ITubableObject, BlobTube> TubesAttachedToObject =
             new DictionaryOfLists<ITubableObject, BlobTube>();
 
-        public GameObject TubePrefab {
-            get {
-                if(_tubePrefab == null) {
-                    throw new InvalidOperationException("TubePrefab is uninitialized");
-                } else {
-                    return _tubePrefab;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _tubePrefab = value;
-                }
-            }
-        }
-        private GameObject _tubePrefab;
+        [SerializeField] private GameObject TubePrefab;
 
-        public Transform MapRoot {
-            get {
-                if(_mapAnchor == null) {
-                    throw new InvalidOperationException("MapAnchor is uninitialized");
-                } else {
-                    return _mapAnchor;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _mapAnchor = value;
-                }
-            }
-        }
-        private Transform _mapAnchor;
+        [SerializeField] private Transform MapRoot;
 
         #endregion
 
@@ -66,9 +34,9 @@ namespace Assets.BlobEngine {
 
         #region instance methods
 
-        #region from IBlobTubeFactory
+        #region from BlobTubeFactoryBase
 
-        public IEnumerable<ITubableObject> GetObjectsTubedToObject(ITubableObject obj) {
+        public override IEnumerable<ITubableObject> GetObjectsTubedToObject(ITubableObject obj) {
             if(obj == null) {
                 throw new ArgumentNullException("obj");
             }
@@ -81,7 +49,7 @@ namespace Assets.BlobEngine {
             }
         }
 
-        public bool TubeExistsBetweenObjects(ITubableObject obj1, ITubableObject obj2) {
+        public override bool TubeExistsBetweenObjects(ITubableObject obj1, ITubableObject obj2) {
             if(obj1 == null) {
                 throw new ArgumentNullException("obj1");
             }else if(obj2 == null) {
@@ -90,7 +58,7 @@ namespace Assets.BlobEngine {
             return ObjectsAttachedToObject.Contains(new KeyValuePair<ITubableObject, ITubableObject>(obj1, obj2));
         }
 
-        public bool CanBuildTubeBetween(ITubableObject obj1, ITubableObject obj2) {
+        public override bool CanBuildTubeBetween(ITubableObject obj1, ITubableObject obj2) {
             if(obj1 == null) {
                 throw new ArgumentNullException("source");
             }else if(obj2 == null) {
@@ -104,7 +72,7 @@ namespace Assets.BlobEngine {
             }
         }
 
-        public bool CanBuildTubeBetween(IBlobSource source, IBlobTarget target) {
+        public override bool CanBuildTubeBetween(IBlobSource source, IBlobTarget target) {
             if(source == null) {
                 throw new ArgumentNullException("source");
             }else if(target == null) {
@@ -113,7 +81,7 @@ namespace Assets.BlobEngine {
             return source != target && !TubeExistsBetweenObjects(source, target);
         }
 
-        public BlobTube BuildTubeBetween(IBlobSource source, IBlobTarget target) {
+        public override BlobTube BuildTubeBetween(IBlobSource source, IBlobTarget target) {
             if(!CanBuildTubeBetween(source, target)) {
                 throw new BlobException("Cannot build a tube between these two objects");
             }
@@ -135,7 +103,7 @@ namespace Assets.BlobEngine {
             return tubeBehaviour;
         }
 
-        public void DestroyAllTubesConnectingTo(ITubableObject obj) {
+        public override void DestroyAllTubesConnectingTo(ITubableObject obj) {
             List<BlobTube> tubesToDestroy;
             TubesAttachedToObject.TryGetValue(obj, out tubesToDestroy);
             for(int i = tubesToDestroy.Count - 1; i >= 0; --i) {

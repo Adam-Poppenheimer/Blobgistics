@@ -14,7 +14,7 @@ using Assets.BlobEngine;
 
 namespace Assets.UI {
 
-    public class TubeDrawingState : UIFSMState, IInjectionTarget<IBlobTubeFactory> {
+    public class TubeDrawingState : UIFSMState, IInjectionTarget<BlobTubeFactoryBase> {
 
         #region instance fields and properties
 
@@ -23,7 +23,7 @@ namespace Assets.UI {
 
         [SerializeField] private TubeGhost TubeGhost;
 
-        public IBlobTubeFactory TubeFactory {
+        public BlobTubeFactoryBase TubeFactory {
             get {
                 if(_tubeFactory == null) {
                     throw new InvalidOperationException("TubeFactory is uninitialized");
@@ -39,7 +39,7 @@ namespace Assets.UI {
                 }
             }
         }
-        private IBlobTubeFactory _tubeFactory;
+        private BlobTubeFactoryBase _tubeFactory;
 
         #endregion
 
@@ -144,7 +144,7 @@ namespace Assets.UI {
 
         #region from IInjectionTarget
 
-        public void InjectDependency(IBlobTubeFactory dependency, string tag) {
+        public void InjectDependency(BlobTubeFactoryBase dependency, string tag) {
             TubeFactory = dependency;   
         }
 

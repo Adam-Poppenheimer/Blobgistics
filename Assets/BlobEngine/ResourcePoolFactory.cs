@@ -10,45 +10,13 @@ using UnityCustomUtilities.UI;
 namespace Assets.BlobEngine {
 
     [ExecuteInEditMode]
-    public class ResourcePoolFactory : IResourcePoolFactory {
+    public class ResourcePoolFactory : ResourcePoolFactoryBase {
 
         #region instance fields and properties
 
-        public UIFSM TopLevelUIFSM {
-            get {
-                if(_topLevelUIFSM == null) {
-                    throw new InvalidOperationException("TopLevelUIFSM is uninitialized");
-                } else {
-                    return _topLevelUIFSM;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _topLevelUIFSM = value;
-                }
-            }
-        }
-        private UIFSM _topLevelUIFSM;
+        [SerializeField] private ResourcePoolPrivateData PoolPrivateData;
 
-        public GameObject PoolPrefab {
-            get {
-                if(_poolPrefab == null) {
-                    throw new InvalidOperationException("PoolPrefab is uninitialized");
-                } else {
-                    return _poolPrefab;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _poolPrefab = value;
-                }
-            }
-        }
-        private GameObject _poolPrefab;
+        [SerializeField] private GameObject PoolPrefab;
 
         #endregion
 
@@ -60,13 +28,13 @@ namespace Assets.BlobEngine {
 
         #region instance methods
 
-        #region from IResourcePoolFactory
+        #region from ResourcePoolFactoryBase
 
-        public IResourcePool BuildResourcePool(Vector3 localPosition, Transform parent) {
+        public override IResourcePool BuildResourcePool(Vector3 localPosition, Transform parent) {
             var poolObject = GameObject.Instantiate(PoolPrefab);
             var poolBehaviour = poolObject.GetComponent<ResourcePool>();
             if(poolBehaviour != null) {
-                poolBehaviour.TopLevelUIFSM = TopLevelUIFSM;
+                poolBehaviour.PrivateData = PoolPrivateData;
                 poolBehaviour.transform.SetParent(parent);
                 poolBehaviour.transform.localPosition = localPosition;
             }else {

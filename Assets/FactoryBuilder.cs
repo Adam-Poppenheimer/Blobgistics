@@ -27,9 +27,14 @@ namespace Assets {
         [SerializeField] private Transform CanvasRoot;
         [SerializeField] private Transform MapRoot;
 
-        private BuildingPlotFactory BuildingPlotFactory;
-        private ResourcePoolFactory ResourcePoolFactory;
-        private BlobTubeFactory     BlobTubeFactory;
+        [SerializeField] private BuildingPlotFactory BuildingPlotFactory = null;
+        [SerializeField] private ResourcePoolFactory ResourcePoolFactory = null;
+        [SerializeField] private BlobTubeFactory     BlobTubeFactory = null;
+
+        [SerializeField] private BuildingPlotPrivateData BuildingPlotPrivateData = null;
+        [SerializeField] private ResourcePoolPrivateData ResourcePoolPrivateData = null;
+
+        [SerializeField] private BuildingSchematicRepository SchematicRepository = null;
 
         #endregion
 
@@ -37,26 +42,20 @@ namespace Assets {
 
         #region Unity event methods
 
+        private void OnValidate() {
+            PushData();
+        }
+
         private void Awake() {
-            BuildingPlotFactory = new BuildingPlotFactory();
-            ResourcePoolFactory = new ResourcePoolFactory();
-            BlobTubeFactory     = new BlobTubeFactory();;
+            PushData();
+        }
 
-            BuildingPlotFactory.TopLevelUIFSM = TopLevelUIFSM;
-            BuildingPlotFactory.TubeFactory   = BlobTubeFactory;
-            BuildingPlotFactory.PlotPrefab    = BuildingPlotPrefab;
-
-            ResourcePoolFactory.TopLevelUIFSM = TopLevelUIFSM;
-            ResourcePoolFactory.PoolPrefab    = ResourcePoolPrefab;
-
-            BlobTubeFactory.MapRoot    = MapRoot;
-            BlobTubeFactory.TubePrefab = BlobTubePrefab;
-
-            ObjectGraphDependencyInjector.InjectDependency<IBuildingPlotFactory>(BuildingPlotFactory,
+        private void PushData() {
+            ObjectGraphDependencyInjector.InjectDependency<BuildingPlotFactoryBase>(BuildingPlotFactory,
                 "BuildingPlotFactory", CanvasRoot, MapRoot);
-            ObjectGraphDependencyInjector.InjectDependency<IResourcePoolFactory>(ResourcePoolFactory,
+            ObjectGraphDependencyInjector.InjectDependency<ResourcePoolFactoryBase>(ResourcePoolFactory,
                 "ResourcePoolFactory", CanvasRoot, MapRoot);
-            ObjectGraphDependencyInjector.InjectDependency<IBlobTubeFactory    >(BlobTubeFactory,
+            ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase    >(BlobTubeFactory,
                 "BlobTubeFactory"    , CanvasRoot, MapRoot);
 
             EditorPrefabBuilder.PlotFactory = BuildingPlotFactory;

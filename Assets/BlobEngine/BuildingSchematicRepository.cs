@@ -7,21 +7,7 @@ using UnityEngine;
 
 namespace Assets.BlobEngine {
 
-    public class BuildingSchematicRepository {
-
-        #region static fields and properties
-
-        public static BuildingSchematicRepository Instance {
-            get {
-                if(_instance == null) {
-                    _instance = new BuildingSchematicRepository();
-                }
-                return _instance;
-            }
-        }
-        private static BuildingSchematicRepository _instance;
-
-        #endregion
+    public class BuildingSchematicRepository : MonoBehaviour {
 
         #region instance fields and properties
 
@@ -30,18 +16,7 @@ namespace Assets.BlobEngine {
 
         private bool SchematicsAreLoaded = false;
 
-        private readonly Dictionary<string, BlobPileCapacity> BuildableSchematicData =
-            new Dictionary<string, BlobPileCapacity>() {
-                { "ResourcePool", new BlobPileCapacity(new Dictionary<ResourceType, int>() {
-                    { ResourceType.Red, 10 },
-                })},
-        };
-
-        #endregion
-
-        #region constructors
-
-        private BuildingSchematicRepository() { }
+        [SerializeField] private ResourcePoolFactoryBase ResourcePoolFactory;
 
         #endregion
 
@@ -61,26 +36,19 @@ namespace Assets.BlobEngine {
         }
 
         private void LoadSchematics() {
-            foreach(var schematicName in BuildableSchematicData.Keys) {
-                var schematicPrefab = Resources.Load<GameObject>(schematicName + "Prefab");
-                if(schematicPrefab == null) {
-                    throw new BlobException("Could not load prefab for schematic of name " + schematicName);
+            SchematicOfName["ResourcePool"] = new BuildingSchematic(
+                new BlobPileCapacity(
+                    new Dictionary<ResourceType, int>() {
+                        { ResourceType.Red, 10 },
+                    }
+                ),
+                delegate(BuildingPlot plotToBuildOn) {
+                    ResourcePoolFactory.BuildResourcePool(plotToBuildOn.transform.localPosition, 
+                        plotToBuildOn.transform.parent);
                 }
-                SchematicOfName[schematicName] = new BuildingSchematic(
-                    BuildableSchematicData[schematicName],
-                    ConstructFromPrefabFactory(schematicPrefab)
-                );
-            }
+            );
 
             SchematicsAreLoaded = true;
-        }
-
-        private Action<BuildingPlot> ConstructFromPrefabFactory(GameObject prefab) {
-            return delegate(BuildingPlot plotToBuildOn) {
-                var buildingGameObject = GameObject.Instantiate(prefab);
-                buildingGameObject.transform.position = plotToBuildOn.transform.position;
-                buildingGameObject.SetActive(true);
-            };
         }
 
         #endregion
