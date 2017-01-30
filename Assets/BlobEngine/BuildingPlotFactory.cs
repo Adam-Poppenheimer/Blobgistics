@@ -16,8 +16,10 @@ namespace Assets.BlobEngine {
         #region instance fields and properties
 
         [SerializeField] private BuildingPlotPrivateData PlotPrivateData;
-
         [SerializeField] private GameObject PlotPrefab;
+
+        [SerializeField] private BuildingPlotPrivateData GyserPrivateData;
+        [SerializeField] private GameObject GyserPrefab;
 
         #endregion
 
@@ -25,7 +27,7 @@ namespace Assets.BlobEngine {
 
         #region from IBuildingPlotFactory
 
-        public override IBuildingPlot BuildBuildingPlot(Vector3 localPosition, Transform parent) {
+        public override IBuildingPlot ConstructBuildingPlot(Vector3 localPosition, Transform parent) {
             var plotObject = GameObject.Instantiate(PlotPrefab);
             var plotBehaviour = plotObject.GetComponent<BuildingPlot>();
             if(plotBehaviour != null) {
@@ -38,10 +40,25 @@ namespace Assets.BlobEngine {
             return plotBehaviour;
         }
 
+        public override IResourceGyser ConstructResourceGyser(Vector3 localPosition, Transform parent,
+            ResourceType typeProduced) {
+            
+            var gyserObject = Instantiate(GyserPrefab);
+            var gyserBehaviour = gyserObject.GetComponent<ResourceGyser>();
+            if(gyserBehaviour != null) {
+                gyserBehaviour.PrivateData = GyserPrivateData;
+                gyserObject.transform.SetParent(parent);
+                gyserObject.transform.localEulerAngles = localPosition;
+            }else {
+                throw new BlobException("The ResourceGyser prefab did not contain a ResourceGyser component");
+            }
+            return gyserBehaviour;
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

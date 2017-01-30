@@ -14,7 +14,7 @@ using Assets.BlobEngine;
 
 namespace Assets.UI {
 
-    public class TubeDrawingState : UIFSMState, IInjectionTarget<BlobTubeFactoryBase> {
+    public class BuildingState : UIFSMState, IInjectionTarget<BlobTubeFactoryBase> {
 
         #region instance fields and properties
 
@@ -22,6 +22,7 @@ namespace Assets.UI {
         private ITubableObject SecondDraggedTubable;
 
         [SerializeField] private TubeGhost TubeGhost;
+        [SerializeField] private SchematicSelector BuildingSchematicSelector;
 
         public BlobTubeFactoryBase TubeFactory {
             get {
@@ -65,12 +66,23 @@ namespace Assets.UI {
             return UIFSMResponse.Bury;
         }
 
+        protected override UIFSMResponse HandlePointerClick<T>(T obj, PointerEventData eventData) {
+            if(obj is IBuildingPlot) {
+                return HandleBuildingPlotClicked(obj as IBuildingPlot, eventData);
+            }else {
+                BuildingSchematicSelector.Deactivate();
+                return UIFSMResponse.Bury;
+            }
+        }
+
         protected override UIFSMResponse HandleBeginDrag<T>(T obj, PointerEventData eventData) {
-            FirstDraggedTubable = null;
-            SecondDraggedTubable = null;
-            if(obj is ITubableObject) {
-                FirstDraggedTubable = obj as ITubableObject;
-                TubeGhost.gameObject.SetActive(true);
+            if(Input.GetMouseButton(0)) {
+                FirstDraggedTubable = null;
+                SecondDraggedTubable = null;
+                if(obj is ITubableObject) {
+                    FirstDraggedTubable = obj as ITubableObject;
+                    TubeGhost.gameObject.SetActive(true);
+                }
             }
             return UIFSMResponse.Bury;
         }
@@ -149,6 +161,12 @@ namespace Assets.UI {
         }
 
         #endregion
+
+        private UIFSMResponse HandleBuildingPlotClicked(IBuildingPlot plot, PointerEventData eventData) {
+            BuildingSchematicSelector.Activate(plot);
+            BuildingSchematicSelector.transform.position = eventData.position;
+            return UIFSMResponse.Bury;
+        }
 
         #endregion
 

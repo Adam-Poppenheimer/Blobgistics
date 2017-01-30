@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -42,17 +43,21 @@ namespace Assets.BlobEngine {
             get { return new Vector3(-Width / 2f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
         }
 
-        public BuildingSchematic Schematic {
-            get { return _schematic; }
+        public Schematic ActiveSchematic {
+            get { return _activeSchematic; }
             set {
                 if(value == null) {
                     throw new ArgumentNullException("value");
                 }
-                _schematic = value;
-                Capacity = _schematic.Cost;
+                _activeSchematic = value;
+                Capacity = _activeSchematic.Cost;
             }
         }
-        private BuildingSchematic _schematic;
+        private Schematic _activeSchematic;
+
+        public ReadOnlyCollection<Schematic> AvailableSchematics {
+            get { return PrivateData.AvailableSchematics; }
+        }
 
         #endregion
 
@@ -103,8 +108,6 @@ namespace Assets.BlobEngine {
         #region Unity EventSystem message implementations
 
         public void OnPointerClick(PointerEventData eventData) {
-            Schematic = PrivateData.SchematicRepository.GetSchematicOfName("ResourcePool");
-            Debug.Log("Changed schematic");
             PrivateData.TopLevelUIFSM.HandlePointerClick(this, eventData);
         }
 
@@ -133,8 +136,8 @@ namespace Assets.BlobEngine {
         #region from BlobTargetBehaviour
 
         protected override void OnBlobPlacedInto(ResourceBlob blobPlaced) {
-            if(Schematic != null && BlobsWithin.IsAtCapacity()) {
-                Schematic.PerformConstruction(this);
+            if(ActiveSchematic != null && BlobsWithin.IsAtCapacity()) {
+                ActiveSchematic.PerformConstruction(transform);
                 PrivateData.TubeFactory.DestroyAllTubesConnectingTo(this);
                 Destroy(gameObject);
             }else {

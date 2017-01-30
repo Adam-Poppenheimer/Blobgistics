@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -23,10 +24,21 @@ namespace Assets.BlobEngine {
         }
         [SerializeField] private BlobTubeFactoryBase _tubeFactory;
 
-        public BuildingSchematicRepository SchematicRepository {
-            get { return _schematicRepository; }
+        public ReadOnlyCollection<Schematic> AvailableSchematics {
+            get {
+                if(_availableSchematics == null) {
+                    _availableSchematics = new List<Schematic>();
+                    foreach(var name in NamesOfAvailableSchematics) {
+                        _availableSchematics.Add(SchematicRepository.GetSchematicOfName(name));
+                    }
+                }
+                return _availableSchematics.AsReadOnly();
+            }
         }
-        [SerializeField] private BuildingSchematicRepository _schematicRepository;
+        private List<Schematic> _availableSchematics = null;
+
+        [SerializeField] private List<string> NamesOfAvailableSchematics;
+        [SerializeField] private SchematicRepository SchematicRepository;
 
         #endregion
 

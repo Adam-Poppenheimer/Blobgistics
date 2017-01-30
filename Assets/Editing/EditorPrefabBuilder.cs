@@ -70,6 +70,24 @@ namespace Assets.Editor {
         }
         private static BlobTubeFactory _tubeFactory;
 
+        public static BlobGeneratorFactory GeneratorFactory {
+            get {
+                if(_generatorFactory == null) {
+                    throw new InvalidOperationException("GeneratorFactory is uninitialized");
+                } else {
+                    return _generatorFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _generatorFactory = value;
+                }
+            }
+        }
+        private static BlobGeneratorFactory _generatorFactory;
+
         public static Transform MapRoot {
             get {
                 if(_mapRoot == null) {
@@ -94,12 +112,38 @@ namespace Assets.Editor {
 
         [MenuItem("GameObject/Strategy Blobs/Building Plot", false, 10)]
         private static void BuildBuildingPlot(MenuCommand command) {
-            HandleContext((PlotFactory.BuildBuildingPlot(Vector3.zero, MapRoot) as BuildingPlot).gameObject, command);
+            var newPlot = PlotFactory.ConstructBuildingPlot(Vector3.zero, MapRoot);
+            HandleContext((newPlot as BuildingPlot).gameObject, command);
         }
 
         [MenuItem("GameObject/Strategy Blobs/Resource Pool", false, 10)]
         private static void BuildResourcePool(MenuCommand command) {
-            HandleContext((PoolFactory.BuildResourcePool(Vector3.zero, MapRoot) as ResourcePool).gameObject, command);
+            var newPool = PoolFactory.BuildResourcePool(MapRoot, Vector3.zero);
+            HandleContext((newPool as ResourcePool).gameObject, command);
+        }
+
+        [MenuItem("GameObject/Strategy Blobs/Resource Gyser", false, 10)]
+        private static void BuildResourceGyser(MenuCommand command) {
+            var newGyser = PlotFactory.ConstructResourceGyser(Vector3.zero, MapRoot, ResourceType.Red);
+            HandleContext((newGyser as ResourceGyser).gameObject, command);
+        }
+
+        [MenuItem("GameObject/Strategy Blobs/Resource Generator (Red)")]
+        private static void BuildGeneratorRed(MenuCommand command) {
+            var newGenerator = GeneratorFactory.ConstructGenerator(MapRoot, Vector3.zero, ResourceType.Red);
+            HandleContext((newGenerator as BlobGenerator).gameObject, command);
+        }
+
+        [MenuItem("GameObject/Strategy Blobs/Resource Generator (Green)")]
+        private static void BuildGeneratorGreen(MenuCommand command) {
+            var newGenerator = GeneratorFactory.ConstructGenerator(MapRoot, Vector3.zero, ResourceType.Green);
+            HandleContext((newGenerator as BlobGenerator).gameObject, command);
+        }
+
+        [MenuItem("GameObject/Strategy Blobs/Resource Generator (Blue)")]
+        private static void BuildGeneratorBlue(MenuCommand command) {
+            var newGenerator = GeneratorFactory.ConstructGenerator(MapRoot, Vector3.zero, ResourceType.Blue);
+            HandleContext((newGenerator as BlobGenerator).gameObject, command);
         }
 
         private static void HandleContext(GameObject objectToManage, MenuCommand issuingCommand) {

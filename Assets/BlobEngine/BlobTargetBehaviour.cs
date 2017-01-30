@@ -100,6 +100,13 @@ namespace Assets.BlobEngine {
             BlobsWithReservedPositions.TryExtractBlob(blob);
         }
 
+        public void ClearAllBlobs() {
+            var blobsToDestroy = new List<ResourceBlob>(BlobsWithin.Blobs);
+            for(int i = blobsToDestroy.Count - 1; i >= 0; --i) {
+                GameObject.Destroy(blobsToDestroy[i]);
+            }
+        }
+
         #endregion
 
         protected virtual void OnBlobPlacedInto(ResourceBlob blobPlaced) { }

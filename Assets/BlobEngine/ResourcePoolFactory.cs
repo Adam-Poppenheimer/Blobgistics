@@ -30,7 +30,7 @@ namespace Assets.BlobEngine {
 
         #region from ResourcePoolFactoryBase
 
-        public override IResourcePool BuildResourcePool(Vector3 localPosition, Transform parent) {
+        public override IResourcePool BuildResourcePool(Transform parent, Vector3 localPosition) {
             var poolObject = GameObject.Instantiate(PoolPrefab);
             var poolBehaviour = poolObject.GetComponent<ResourcePool>();
             if(poolBehaviour != null) {
@@ -41,6 +41,14 @@ namespace Assets.BlobEngine {
                 throw new BlobException("The ResourcePool prefab did not contain a ResourcePool component");
             }
             return poolBehaviour;
+        }
+
+        public override Schematic BuildSchematic() {
+            var cost = ResourcePool.Cost;
+            Action<Transform> constructionAction = delegate(Transform locationToConstruct) {
+                BuildResourcePool(locationToConstruct.parent, locationToConstruct.localPosition);
+            };
+            return new Schematic(SchematicName, cost, constructionAction);
         }
 
         #endregion

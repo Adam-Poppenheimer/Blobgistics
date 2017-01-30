@@ -18,8 +18,10 @@ namespace Assets.BlobEngine {
         #region static fields and properties
 
         private static uint Depth = 1;
-
         private static float BlobRealignmentSpeedPerSecond = 2f;
+        public static readonly BlobPileCapacity Cost = new BlobPileCapacity(new Dictionary<ResourceType, int>() {
+            { ResourceType.Red, 10 },
+        });
 
         #endregion
 

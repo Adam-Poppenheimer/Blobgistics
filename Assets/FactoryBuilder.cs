@@ -27,14 +27,12 @@ namespace Assets {
         [SerializeField] private Transform CanvasRoot;
         [SerializeField] private Transform MapRoot;
 
-        [SerializeField] private BuildingPlotFactory BuildingPlotFactory = null;
-        [SerializeField] private ResourcePoolFactory ResourcePoolFactory = null;
-        [SerializeField] private BlobTubeFactory     BlobTubeFactory = null;
+        [SerializeField] private BuildingPlotFactory  BuildingPlotFactory = null;
+        [SerializeField] private ResourcePoolFactory  ResourcePoolFactory = null;
+        [SerializeField] private BlobTubeFactory      BlobTubeFactory     = null;
+        [SerializeField] private BlobGeneratorFactory GeneratorFactory    = null;
 
-        [SerializeField] private BuildingPlotPrivateData BuildingPlotPrivateData = null;
-        [SerializeField] private ResourcePoolPrivateData ResourcePoolPrivateData = null;
-
-        [SerializeField] private BuildingSchematicRepository SchematicRepository = null;
+        [SerializeField] private SchematicRepository BuildingSchematicRepository;
 
         #endregion
 
@@ -51,17 +49,23 @@ namespace Assets {
         }
 
         private void PushData() {
-            ObjectGraphDependencyInjector.InjectDependency<BuildingPlotFactoryBase>(BuildingPlotFactory,
-                "BuildingPlotFactory", CanvasRoot, MapRoot);
-            ObjectGraphDependencyInjector.InjectDependency<ResourcePoolFactoryBase>(ResourcePoolFactory,
-                "ResourcePoolFactory", CanvasRoot, MapRoot);
-            ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase    >(BlobTubeFactory,
-                "BlobTubeFactory"    , CanvasRoot, MapRoot);
+            ObjectGraphDependencyInjector.InjectDependency<BuildingPlotFactoryBase    >(BuildingPlotFactory,
+                "BuildingPlotFactory"       , CanvasRoot, MapRoot);
+            ObjectGraphDependencyInjector.InjectDependency<ResourcePoolFactoryBase    >(ResourcePoolFactory,
+                "ResourcePoolFactory"       , CanvasRoot, MapRoot);
+            ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase        >(BlobTubeFactory,
+                "BlobTubeFactory"           , CanvasRoot, MapRoot);
+            ObjectGraphDependencyInjector.InjectDependency<BlobGeneratorFactoryBase   >(GeneratorFactory,
+                "GeneratorFactory"         , CanvasRoot, MapRoot);
+            ObjectGraphDependencyInjector.InjectDependency<SchematicRepository>(BuildingSchematicRepository,
+                "BuildingSchematiRepository", CanvasRoot, MapRoot);
+            
 
-            EditorPrefabBuilder.PlotFactory = BuildingPlotFactory;
-            EditorPrefabBuilder.PoolFactory = ResourcePoolFactory;
-            EditorPrefabBuilder.TubeFactory = BlobTubeFactory;
-            EditorPrefabBuilder.MapRoot     = MapRoot;
+            EditorPrefabBuilder.PlotFactory      = BuildingPlotFactory;
+            EditorPrefabBuilder.PoolFactory      = ResourcePoolFactory;
+            EditorPrefabBuilder.TubeFactory      = BlobTubeFactory;
+            EditorPrefabBuilder.GeneratorFactory = GeneratorFactory;
+            EditorPrefabBuilder.MapRoot = MapRoot;
         }
 
         #endregion

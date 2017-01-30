@@ -24,7 +24,7 @@ namespace Assets.BlobEngine {
 
         protected abstract BlobPileCapacity Capacity { get; }
 
-        private BlobPile BlobsWithin;
+        protected BlobPile BlobsWithin;
 
         #endregion
 
@@ -33,6 +33,12 @@ namespace Assets.BlobEngine {
         #region from IBlobSource
 
         public event EventHandler<BlobEventArgs> NewBlobAvailable;
+
+        protected void RaiseNewBlobAvailable(ResourceBlob newBlob) {
+            if(NewBlobAvailable != null) {
+                NewBlobAvailable(this, new BlobEventArgs(newBlob));
+            }
+        }
 
         #endregion
 
@@ -79,6 +85,7 @@ namespace Assets.BlobEngine {
             if(CanExtractAnyBlob()) {
                 var blobToExtract = BlobsWithin.LastBlobInserted;
                 BlobsWithin.ExtractBlob(blobToExtract);
+                DoOnBlobBeingExtracted(blobToExtract);
                 return blobToExtract;
             }else {
                 throw new NotImplementedException("Cannot extract any blob from this BlobSource");
@@ -87,7 +94,9 @@ namespace Assets.BlobEngine {
 
         public ResourceBlob ExtractBlobOfType(ResourceType type) {
             if(CanExtractBlobOfType(type)) {
-                return BlobsWithin.ExtractBlobOfType(type);
+                var blobToExtract = BlobsWithin.ExtractBlobOfType(type);
+                DoOnBlobBeingExtracted(blobToExtract);
+                return blobToExtract;
             }else {
                 throw new BlobException("Cannot extract a blob of this type from this BlobSource");
             }
@@ -102,6 +111,8 @@ namespace Assets.BlobEngine {
         }
 
         #endregion
+
+        protected virtual void DoOnBlobBeingExtracted(ResourceBlob blobExtracted) { }
 
         #endregion
 

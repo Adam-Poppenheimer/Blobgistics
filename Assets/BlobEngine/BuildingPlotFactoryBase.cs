@@ -11,7 +11,8 @@ namespace Assets.BlobEngine {
 
         #region instance methods
 
-        public abstract IBuildingPlot BuildBuildingPlot(Vector3 localPosition, Transform parent);
+        public abstract IBuildingPlot ConstructBuildingPlot(Vector3 localPosition, Transform parent);
+        public abstract IResourceGyser ConstructResourceGyser(Vector3 localPosition, Transform parent, ResourceType typeProduced);
 
         #endregion
 
