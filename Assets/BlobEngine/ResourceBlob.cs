@@ -18,6 +18,8 @@ namespace Assets.BlobEngine {
         private static readonly float SecondsToPopIn = 0.25f;
         private static readonly Vector3 StartingVelocity = new Vector3(5f, 5f, 5f);
 
+        private static readonly float DestinationSnapDelta = 0.01f;
+
         #endregion
 
         #region instance fields and properties
@@ -29,8 +31,6 @@ namespace Assets.BlobEngine {
 
         private Queue<MovementGoal> PendingMovementGoals =
             new Queue<MovementGoal>();
-
-        private Coroutine ActiveMovementCoroutine = null;
 
         #endregion
 
@@ -74,7 +74,7 @@ namespace Assets.BlobEngine {
             while(PendingMovementGoals.Count > 0) {
                 var goalToExecute = PendingMovementGoals.Peek();
                 float currentDistance = Vector3.Distance(transform.position, goalToExecute.DesiredLocation);
-                while(!Mathf.Approximately(currentDistance, 0f) ) {
+                while(currentDistance > DestinationSnapDelta) {
                     transform.position = Vector3.MoveTowards(transform.position, goalToExecute.DesiredLocation, 
                         goalToExecute.SpeedPerSecond * Time.deltaTime);
                     currentDistance = Vector3.Distance(transform.position, goalToExecute.DesiredLocation);

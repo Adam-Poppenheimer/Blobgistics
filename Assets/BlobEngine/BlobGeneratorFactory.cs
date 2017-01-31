@@ -30,6 +30,7 @@ namespace Assets.BlobEngine {
                 generatorBehaviour.BlobTypeGenerated = blobTypeGenerated;
                 generatorBehaviour.transform.SetParent(parent);
                 generatorBehaviour.transform.localPosition = localPosition;
+                generatorBehaviour.Initialize();
             }else {
                 throw new BlobException("The ResourcePool prefab did not contain a ResourcePool component");
             }

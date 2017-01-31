@@ -38,19 +38,19 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        #region instance methods
+        #region events
 
-        #region Unity event methods
+        public event EventHandler<BlobEventArgs> BlobInsertedInto;
 
-        private void Awake() {
-            BlobsWithin = new BlobPile(Capacity);
-            BlobsWithReservedPositions = new BlobPile(Capacity);
-            DoOnAwake();
+        protected void RaiseBlobInsertedInto(ResourceBlob blobInserted) {
+            if(BlobInsertedInto != null) {
+                BlobInsertedInto(this, new BlobEventArgs(blobInserted));
+            }
         }
 
-        protected virtual void DoOnAwake() { }
-
         #endregion
+
+        #region instance methods
 
         #region from ITubableObject
 
@@ -108,6 +108,16 @@ namespace Assets.BlobEngine {
         }
 
         #endregion
+
+        public void Initialize() {
+            BlobsWithin = new BlobPile();
+            BlobsWithin.Capacity = BlobPileCapacity.NoCapacity;
+            BlobsWithReservedPositions = new BlobPile();
+            BlobsWithReservedPositions.Capacity = BlobPileCapacity.NoCapacity;
+            DoOnInitialize();
+        }
+
+        protected virtual void DoOnInitialize() { }
 
         protected virtual void OnBlobPlacedInto(ResourceBlob blobPlaced) { }
 

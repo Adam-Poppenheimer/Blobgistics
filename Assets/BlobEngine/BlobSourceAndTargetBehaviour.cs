@@ -3,40 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using UnityCustomUtilities.Extensions;
-
 using UnityEngine;
 
 namespace Assets.BlobEngine {
 
-    public abstract class BlobSourceBehaviour : MonoBehaviour, IBlobSource {
-
-        #region instance fields and properties
-
-        #region from ITubableObject
-
-        public abstract Vector3 EastTubeConnectionPoint  { get; }
-        public abstract Vector3 NorthTubeConnectionPoint { get; }
-        public abstract Vector3 SouthTubeConnectionPoint { get; }
-        public abstract Vector3 WestTubeConnectionPoint  { get; }
-
-        #endregion
-
-        protected BlobPileCapacity Capacity {
-            get { return _capacity; }
-            set {
-                if(value == null){
-                    throw new ArgumentNullException("Value");
-                }
-                _capacity = value;
-                BlobsWithin.Capacity = _capacity;
-            }
-        }
-        private BlobPileCapacity _capacity = BlobPileCapacity.NoCapacity;
-
-        protected BlobPile BlobsWithin;
-
-        #endregion
+    public abstract class BlobSourceAndTargetBehaviour : BlobTargetBehaviour, IBlobSource {
 
         #region events
 
@@ -55,20 +26,6 @@ namespace Assets.BlobEngine {
         #endregion
 
         #region instance methods
-
-        #region from ITubableObject
-
-        public Vector3 GetConnectionPointInDirection(ManhattanDirection direction) {
-            switch(direction) {
-                case ManhattanDirection.North: return NorthTubeConnectionPoint;
-                case ManhattanDirection.South: return SouthTubeConnectionPoint;
-                case ManhattanDirection.East:  return EastTubeConnectionPoint;
-                case ManhattanDirection.West:  return WestTubeConnectionPoint;
-                default: return NorthTubeConnectionPoint;
-            }
-        }
-
-        #endregion
 
         #region from IBlobSource
 
@@ -111,15 +68,20 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        public void Initialize() {
+        public new void Initialize() {
             BlobsWithin = new BlobPile();
             BlobsWithin.Capacity = BlobPileCapacity.NoCapacity;
+            BlobsWithReservedPositions = new BlobPile();
+            BlobsWithReservedPositions.Capacity = BlobPileCapacity.NoCapacity;
+            BlobInsertedInto += BlobSourceAndTargetBehaviour_BlobInsertedInto;
             DoOnInitialize();
         }
 
-        protected virtual void DoOnInitialize() { }
-
         protected virtual void DoOnBlobBeingExtracted(ResourceBlob blobExtracted) { }
+
+        private void BlobSourceAndTargetBehaviour_BlobInsertedInto(object sender, BlobEventArgs e) {
+            RaiseBlobInsertedInto(e.Blob);
+        }
 
         #endregion
 

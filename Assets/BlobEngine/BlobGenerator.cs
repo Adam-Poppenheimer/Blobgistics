@@ -35,10 +35,6 @@ namespace Assets.BlobEngine {
             get { return PrivateData.LocalWestConnectionPoint + transform.position; }
         }
 
-        protected override BlobPileCapacity Capacity {
-            get { return PrivateData.Capacity; }
-        }
-
         #endregion
 
         public BlobGeneratorPrivateData PrivateData {
@@ -72,6 +68,8 @@ namespace Assets.BlobEngine {
         #region Unity event methods
 
         private void Start() {
+            Initialize();
+            Capacity = PrivateData.Capacity;
             StartCoroutine(BlobGenerationTick());
         }
 

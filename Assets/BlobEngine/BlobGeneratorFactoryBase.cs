@@ -14,7 +14,7 @@ namespace Assets.BlobEngine {
         public string SchematicName {
             get { return _schematicName; }
         }
-        private string _schematicName = "ResourcePool";
+        private string _schematicName = "Generator";
 
         #endregion
 

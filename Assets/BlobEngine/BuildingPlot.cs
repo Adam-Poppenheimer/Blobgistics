@@ -61,8 +61,8 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        [SerializeField] private uint Width;
-        [SerializeField] private uint Height;
+        [SerializeField] private uint Width = 2;
+        [SerializeField] private uint Height = 2;
 
         public BuildingPlotPrivateData PrivateData {
             get {
@@ -77,6 +77,7 @@ namespace Assets.BlobEngine {
                     throw new ArgumentNullException("value");
                 } else {
                     _privateData = value;
+                    RealignToDimensions();
                 }
             }
         }
@@ -90,17 +91,9 @@ namespace Assets.BlobEngine {
 
         #region Unity event methods
 
-        private void OnValidate() {
-            AlignmentStrategy = new BoxyBlobAlignmentStrategy(Width, Height, 5, 5);
-            var attachedMeshFilter = GetComponent<MeshFilter>();
-            if(attachedMeshFilter != null) {
-                attachedMeshFilter.sharedMesh = BoxMeshBuilder.GetAppropriateMesh(
-                    new Tuple<uint, uint, uint>(Width, Height, Depth));
-            }
-            var boxCollider = GetComponent<BoxCollider2D>();
-            if(boxCollider != null) {
-                boxCollider.size = new Vector2(Width, Height);
-            }
+        private void Start() {
+            RealignToDimensions();
+            Initialize();
         }
 
         #endregion
@@ -146,6 +139,19 @@ namespace Assets.BlobEngine {
         }
 
         #endregion
+
+        protected void RealignToDimensions() {
+            AlignmentStrategy = new BoxyBlobAlignmentStrategy(Width, Height, 5, 5);
+            var attachedMeshFilter = GetComponent<MeshFilter>();
+            if(attachedMeshFilter != null) {
+                attachedMeshFilter.sharedMesh = BoxMeshBuilder.GetAppropriateMesh(
+                    new Tuple<uint, uint, uint>(Width, Height, Depth));
+            }
+            var boxCollider = GetComponent<BoxCollider2D>();
+            if(boxCollider != null) {
+                boxCollider.size = new Vector2(Width, Height);
+            }
+        }
 
         #endregion
 

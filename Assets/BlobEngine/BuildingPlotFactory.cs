@@ -32,8 +32,9 @@ namespace Assets.BlobEngine {
             var plotBehaviour = plotObject.GetComponent<BuildingPlot>();
             if(plotBehaviour != null) {
                 plotBehaviour.PrivateData = PlotPrivateData;
-                plotObject.transform.SetParent(parent);
-                plotObject.transform.localPosition = localPosition;
+                plotBehaviour.transform.SetParent(parent);
+                plotBehaviour.transform.localPosition = localPosition;
+                plotBehaviour.Initialize();
             }else {
                 throw new BlobException("The BuildingPlot prefab did not contain a BuildingPlot component");
             }

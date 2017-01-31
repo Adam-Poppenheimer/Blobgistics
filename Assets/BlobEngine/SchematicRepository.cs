@@ -14,8 +14,8 @@ namespace Assets.BlobEngine {
         private Dictionary<string, Schematic> SchematicOfName =
             new Dictionary<string, Schematic>();
 
-        [SerializeField] private ResourcePoolFactoryBase  PoolFactory;
-        [SerializeField] private BlobGeneratorFactoryBase GeneratorFactory;
+        [SerializeField] private ResourcePoolFactoryBase  PoolFactory = null;
+        [SerializeField] private BlobGeneratorFactoryBase GeneratorFactory = null;
 
         private bool SchematicsAreLoaded = false;
 

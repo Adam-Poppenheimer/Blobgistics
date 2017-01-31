@@ -37,6 +37,7 @@ namespace Assets.BlobEngine {
                 poolBehaviour.PrivateData = PoolPrivateData;
                 poolBehaviour.transform.SetParent(parent);
                 poolBehaviour.transform.localPosition = localPosition;
+                poolBehaviour.Initialize();
             }else {
                 throw new BlobException("The ResourcePool prefab did not contain a ResourcePool component");
             }
@@ -44,7 +45,7 @@ namespace Assets.BlobEngine {
         }
 
         public override Schematic BuildSchematic() {
-            var cost = ResourcePool.Cost;
+            var cost = PoolPrivateData.Cost;
             Action<Transform> constructionAction = delegate(Transform locationToConstruct) {
                 BuildResourcePool(locationToConstruct.parent, locationToConstruct.localPosition);
             };

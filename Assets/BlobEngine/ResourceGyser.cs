@@ -27,6 +27,19 @@ namespace Assets.BlobEngine {
 
         #endregion
 
+        #region instance methods
+
+        #region Unity event methods
+
+        private void Start() {
+            Initialize();
+            RealignToDimensions();
+        }
+
+        #endregion
+
+        #endregion
+
     }
 
 }

@@ -6,6 +6,12 @@ namespace Assets.BlobEngine {
 
     public interface IBlobTarget : ITubableObject {
 
+        #region events
+
+        event EventHandler<BlobEventArgs> BlobInsertedInto;
+
+        #endregion
+
         #region methods
 
         bool CanPlaceBlobOfTypeInto(ResourceType type);

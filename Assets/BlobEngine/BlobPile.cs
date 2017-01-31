@@ -18,10 +18,22 @@ namespace Assets.BlobEngine {
         public IEnumerable<ResourceBlob> Blobs {
             get { return AllBlobs; }
         }
-        
+
         public BlobPileCapacity Capacity {
-            get { return _capacity; }
-            set { _capacity = value; }
+            get {
+                if(_capacity == null) {
+                    throw new InvalidOperationException("Capacity is uninitialized");
+                } else {
+                    return _capacity;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _capacity = value;
+                }
+            }
         }
         private BlobPileCapacity _capacity;
 
@@ -35,15 +47,14 @@ namespace Assets.BlobEngine {
 
         #region constructors
 
-        public BlobPile(BlobPileCapacity capacity){
+        public BlobPile(){
             BlobsOfType = new Dictionary<ResourceType, HashSet<ResourceBlob>>();
             AllBlobs = new HashSet<ResourceBlob>();
-            Capacity = capacity;
         }
-        public BlobPile(BlobPile otherPile, BlobPileCapacity capacity){
+        public BlobPile(BlobPile otherPile){
             BlobsOfType = new Dictionary<ResourceType, HashSet<ResourceBlob>>(otherPile.BlobsOfType);
             AllBlobs = new HashSet<ResourceBlob>(otherPile.AllBlobs);
-            Capacity = capacity;
+            Capacity = otherPile.Capacity;
         }
 
         #endregion

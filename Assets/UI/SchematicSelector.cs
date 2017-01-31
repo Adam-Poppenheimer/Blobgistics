@@ -51,6 +51,7 @@ namespace Assets.UI {
                 ButtonOfLabelName.TryGetValue(schematic.Name, out buttonForSchematic);
                 if(buttonForSchematic != null) {
                     buttonForSchematic.onClick.AddListener(BuildSchematicListener(schematic));
+                    buttonForSchematic.gameObject.SetActive(true);
                 }
             }
             gameObject.SetActive(true);
@@ -60,14 +61,14 @@ namespace Assets.UI {
             SelectedPlot = null;
             foreach(var button in ButtonOfLabelName.Values) {
                 button.onClick.RemoveAllListeners();
+                button.gameObject.SetActive(false);
             }
             gameObject.SetActive(false);
         }
 
         private Dictionary<string, Button> LoadButtons() {
-            Debug.Log("Loading buttons");
             var retval = new Dictionary<string, Button>();
-            foreach(var button in GetComponentsInChildren<Button>()) {
+            foreach(var button in GetComponentsInChildren<Button>(true)) {
                 var label = button.GetComponent<Label>();
                 if(label != null && SchematicRepository.HasSchematicOfName(label.Text)) {
                     retval[label.Text] = button;
