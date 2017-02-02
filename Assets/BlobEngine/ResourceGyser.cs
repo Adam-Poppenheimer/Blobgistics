@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Map;
+
 namespace Assets.BlobEngine {
 
     public class ResourceGyser : BuildingPlot, IResourceGyser {
@@ -16,12 +18,11 @@ namespace Assets.BlobEngine {
         public ResourceType BlobTypeGenerated {
             get { return _resourceTypeGenerated; }
         }
-
-        public Transform Transform {
-            get { return transform; }
-        }
-
         [SerializeField] private ResourceType _resourceTypeGenerated;
+
+        public new MapNode Location {
+            get { return base.Location; }
+        }
 
         #endregion
 

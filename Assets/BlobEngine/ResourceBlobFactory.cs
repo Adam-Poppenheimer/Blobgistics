@@ -9,28 +9,26 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobEngine {
 
-    public static class ResourceBlobBuilder {
+    public class ResourceBlobFactory : MonoBehaviour {
 
         #region static fields and properties
-
-        private static GameObject BlobPrefab {
-            get {
-                if(_blobPrefab == null) {
-                    _blobPrefab = Resources.Load("BlobPrefab") as GameObject;
-                }
-                return _blobPrefab;
-            }
-        }
-        private static GameObject _blobPrefab;
 
         private static Dictionary<ResourceType, Material> MaterialDict =
             new Dictionary<ResourceType, Material>();
 
         #endregion
 
-        #region static constructors
+        #region instance fields and properties
 
-        static ResourceBlobBuilder() {
+        [SerializeField] private GameObject BlobPrefab = null;
+
+        #endregion
+
+        #region instance methods
+
+        #region Unity event methods
+
+        private void Awake() {
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                 MaterialDict[resourceType] = Resources.Load<Material>("ResourceTypeMaterials/" + resourceType.ToString());
             }
@@ -38,10 +36,8 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        #region static methods
-
-        public static ResourceBlob BuildBlob(ResourceType typeOfResource, Vector3 startingLocation) {
-            var blobGameObject = GameObject.Instantiate<GameObject>(BlobPrefab);
+        public ResourceBlob BuildBlob(ResourceType typeOfResource, Vector3 startingLocation) {
+            var blobGameObject = Instantiate<GameObject>(BlobPrefab);
             var blobComponent = blobGameObject.GetComponent<ResourceBlob>();
             if(blobComponent == null) {
                 throw new BlobException("BlobBuilder's BlobPrefab lacks a ResourceBlob component");

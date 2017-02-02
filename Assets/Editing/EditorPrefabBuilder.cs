@@ -8,7 +8,7 @@ using UnityEngine;
 
 using Assets.BlobEngine;
 
-namespace Assets.Editor {
+namespace Assets.Editing {
 
     [ExecuteInEditMode]
     public static class EditorPrefabBuilder {
@@ -110,41 +110,7 @@ namespace Assets.Editor {
 
         #region static methods
 
-        [MenuItem("GameObject/Strategy Blobs/Building Plot", false, 10)]
-        private static void BuildBuildingPlot(MenuCommand command) {
-            var newPlot = PlotFactory.ConstructBuildingPlot(Vector3.zero, MapRoot);
-            HandleContext((newPlot as BuildingPlot).gameObject, command);
-        }
-
-        [MenuItem("GameObject/Strategy Blobs/Resource Pool", false, 10)]
-        private static void BuildResourcePool(MenuCommand command) {
-            var newPool = PoolFactory.BuildResourcePool(MapRoot, Vector3.zero);
-            HandleContext((newPool as ResourcePool).gameObject, command);
-        }
-
-        [MenuItem("GameObject/Strategy Blobs/Resource Gyser", false, 10)]
-        private static void BuildResourceGyser(MenuCommand command) {
-            var newGyser = PlotFactory.ConstructResourceGyser(Vector3.zero, MapRoot, ResourceType.Red);
-            HandleContext((newGyser as ResourceGyser).gameObject, command);
-        }
-
-        [MenuItem("GameObject/Strategy Blobs/Resource Generator (Red)")]
-        private static void BuildGeneratorRed(MenuCommand command) {
-            var newGenerator = GeneratorFactory.ConstructGenerator(MapRoot, Vector3.zero, ResourceType.Red);
-            HandleContext((newGenerator as BlobGenerator).gameObject, command);
-        }
-
-        [MenuItem("GameObject/Strategy Blobs/Resource Generator (Green)")]
-        private static void BuildGeneratorGreen(MenuCommand command) {
-            var newGenerator = GeneratorFactory.ConstructGenerator(MapRoot, Vector3.zero, ResourceType.Green);
-            HandleContext((newGenerator as BlobGenerator).gameObject, command);
-        }
-
-        [MenuItem("GameObject/Strategy Blobs/Resource Generator (Blue)")]
-        private static void BuildGeneratorBlue(MenuCommand command) {
-            var newGenerator = GeneratorFactory.ConstructGenerator(MapRoot, Vector3.zero, ResourceType.Blue);
-            HandleContext((newGenerator as BlobGenerator).gameObject, command);
-        }
+        
 
         private static void HandleContext(GameObject objectToManage, MenuCommand issuingCommand) {
             GameObjectUtility.SetParentAndAlign(objectToManage, issuingCommand.context as GameObject);

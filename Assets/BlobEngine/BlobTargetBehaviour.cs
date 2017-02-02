@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityCustomUtilities.Extensions;
+
 using UnityEngine;
+
+using UnityCustomUtilities.Extensions;
+
+using Assets.Map;
 
 namespace Assets.BlobEngine {
 
-    public abstract class BlobTargetBehaviour : MonoBehaviour, IBlobTarget {
+    public abstract class BlobTargetBehaviour : NodeOccupyingObject, IBlobTarget {
 
         #region instance fields and properties
 
@@ -100,10 +104,13 @@ namespace Assets.BlobEngine {
             BlobsWithReservedPositions.TryExtractBlob(blob);
         }
 
-        public void ClearAllBlobs() {
+        public void ClearAllBlobs(bool includeReserved = false) {
             var blobsToDestroy = new List<ResourceBlob>(BlobsWithin.Blobs);
+            if(includeReserved) {
+                blobsToDestroy.AddRange(BlobsWithReservedPositions.Blobs);
+            }
             for(int i = blobsToDestroy.Count - 1; i >= 0; --i) {
-                GameObject.Destroy(blobsToDestroy[i]);
+                GameObject.Destroy(blobsToDestroy[i].gameObject);
             }
         }
 

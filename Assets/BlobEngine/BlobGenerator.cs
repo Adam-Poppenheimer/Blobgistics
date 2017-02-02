@@ -108,7 +108,7 @@ namespace Assets.BlobEngine {
         #endregion
 
         private void GenerateBlob() {
-            var newBlob = ResourceBlobBuilder.BuildBlob(BlobTypeGenerated, transform.position);
+            var newBlob = PrivateData.BlobFactory.BuildBlob(BlobTypeGenerated, transform.position);
             BlobsWithin.InsertBlob(newBlob);
             var currentBlobPosition = newBlob.transform.position;
             newBlob.transform.position = new Vector3(currentBlobPosition.x, 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Assets.Map;
 using UnityEngine;
 
 namespace Assets.BlobEngine {
@@ -11,7 +12,7 @@ namespace Assets.BlobEngine {
         #region properties
 
         ResourceType BlobTypeGenerated { get; }
-        Transform Transform { get; }
+        MapNode Location { get; }
 
         #endregion
 

@@ -20,7 +20,7 @@ namespace Assets.BlobEngine {
         void ReservePlaceForBlob(ResourceBlob blob);
         void UnreservePlaceForBlob(ResourceBlob blob);
 
-        void ClearAllBlobs();
+        void ClearAllBlobs(bool includeReserved = false);
 
         #endregion
 

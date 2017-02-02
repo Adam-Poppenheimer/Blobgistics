@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using Assets.Map;
+
 namespace Assets.BlobEngine {
 
     public abstract class ResourcePoolFactoryBase : MonoBehaviour {
@@ -15,7 +17,7 @@ namespace Assets.BlobEngine {
 
         #region instance methods
 
-        public abstract IResourcePool BuildResourcePool(Transform parent, Vector3 localPosition);
+        public abstract IResourcePool BuildResourcePool(MapNode location);
         public abstract Schematic BuildSchematic();
 
         #endregion

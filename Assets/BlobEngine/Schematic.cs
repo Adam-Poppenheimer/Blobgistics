@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Map;
+
 namespace Assets.BlobEngine {
 
     public class Schematic {
@@ -22,24 +24,23 @@ namespace Assets.BlobEngine {
 
         private readonly BlobPileCapacity _cost;
 
-        private readonly Action<Transform> ConstructionAction;
+        private readonly Action<MapNode> ConstructionAction;
 
         #endregion
 
         #region constructors
 
-        public Schematic(string name, BlobPileCapacity cost, Action<Transform> constructionAction) {
+        public Schematic(string name, BlobPileCapacity cost, Action<MapNode> constructionAction) {
             _name = name;
             _cost = cost;
             ConstructionAction = constructionAction;
-
         }
 
         #endregion
 
         #region instance methods
 
-        public void PerformConstruction(Transform locationToConstruct) {
+        public void PerformConstruction(MapNode locationToConstruct) {
             ConstructionAction(locationToConstruct);
         }
 

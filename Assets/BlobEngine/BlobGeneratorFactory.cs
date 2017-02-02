@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Map;
+
 namespace Assets.BlobEngine {
 
     public class BlobGeneratorFactory : BlobGeneratorFactoryBase {
@@ -21,15 +23,14 @@ namespace Assets.BlobEngine {
 
         #region from BlobGeneratorFactoryBase
 
-        public override IBlobGenerator ConstructGenerator(Transform parent, Vector3 localPosition,
-            ResourceType blobTypeGenerated) {
+        public override IBlobGenerator ConstructGenerator(MapNode location, ResourceType blobTypeGenerated) {
             var generatorObject = Instantiate(GeneratorPrefab);
             var generatorBehaviour = generatorObject.GetComponent<BlobGenerator>();
             if(generatorBehaviour != null) {
                 generatorBehaviour.PrivateData = GeneratorPrivateData;
                 generatorBehaviour.BlobTypeGenerated = blobTypeGenerated;
-                generatorBehaviour.transform.SetParent(parent);
-                generatorBehaviour.transform.localPosition = localPosition;
+                generatorBehaviour.transform.SetParent(location.transform);
+                generatorBehaviour.transform.localPosition = Vector3.zero;
                 generatorBehaviour.Initialize();
             }else {
                 throw new BlobException("The ResourcePool prefab did not contain a ResourcePool component");
@@ -38,16 +39,16 @@ namespace Assets.BlobEngine {
         }
 
         public override IBlobGenerator ConstructGeneratorOnGyser(IResourceGyser gyser) {
-            return ConstructGenerator(gyser.transform.parent, gyser.transform.localPosition, gyser.BlobTypeGenerated);
+            return ConstructGenerator(gyser.Location, gyser.BlobTypeGenerated);
         }
 
         public override Schematic BuildSchematic() {
-            return new Schematic("Generator", GeneratorPrivateData.Cost, delegate(Transform locationToConstruct) {
+            return new Schematic("Generator", GeneratorPrivateData.Cost, delegate(MapNode locationToConstruct) {
                 var gyserOnLocation = locationToConstruct.GetComponent<IResourceGyser>();
                 if(gyserOnLocation != null) {
                     ConstructGeneratorOnGyser(gyserOnLocation);
                 }else {
-                    ConstructGenerator(locationToConstruct.parent, Vector3.zero, ResourceType.Red);
+                    ConstructGenerator(locationToConstruct, ResourceType.Red);
                 }
             });
         }

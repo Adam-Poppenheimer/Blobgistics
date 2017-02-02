@@ -130,7 +130,7 @@ namespace Assets.BlobEngine {
 
         protected override void OnBlobPlacedInto(ResourceBlob blobPlaced) {
             if(ActiveSchematic != null && BlobsWithin.IsAtCapacity()) {
-                ActiveSchematic.PerformConstruction(transform);
+                ActiveSchematic.PerformConstruction(Location);
                 PrivateData.TubeFactory.DestroyAllTubesConnectingTo(this);
                 Destroy(gameObject);
             }else {

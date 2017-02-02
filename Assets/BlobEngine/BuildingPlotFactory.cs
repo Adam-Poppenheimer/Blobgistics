@@ -8,6 +8,8 @@ using UnityEditor;
 
 using UnityCustomUtilities.UI;
 
+using Assets.Map;
+
 namespace Assets.BlobEngine {
 
     [ExecuteInEditMode]
@@ -27,13 +29,13 @@ namespace Assets.BlobEngine {
 
         #region from IBuildingPlotFactory
 
-        public override IBuildingPlot ConstructBuildingPlot(Vector3 localPosition, Transform parent) {
+        public override IBuildingPlot ConstructBuildingPlot(MapNode location) {
             var plotObject = GameObject.Instantiate(PlotPrefab);
             var plotBehaviour = plotObject.GetComponent<BuildingPlot>();
             if(plotBehaviour != null) {
                 plotBehaviour.PrivateData = PlotPrivateData;
-                plotBehaviour.transform.SetParent(parent);
-                plotBehaviour.transform.localPosition = localPosition;
+                plotBehaviour.transform.SetParent(location.transform);
+                plotBehaviour.transform.localPosition = Vector3.zero;
                 plotBehaviour.Initialize();
             }else {
                 throw new BlobException("The BuildingPlot prefab did not contain a BuildingPlot component");
@@ -41,15 +43,13 @@ namespace Assets.BlobEngine {
             return plotBehaviour;
         }
 
-        public override IResourceGyser ConstructResourceGyser(Vector3 localPosition, Transform parent,
-            ResourceType typeProduced) {
-            
+        public override IResourceGyser ConstructResourceGyser(MapNode location, ResourceType typeProduced) {
             var gyserObject = Instantiate(GyserPrefab);
             var gyserBehaviour = gyserObject.GetComponent<ResourceGyser>();
             if(gyserBehaviour != null) {
                 gyserBehaviour.PrivateData = GyserPrivateData;
-                gyserObject.transform.SetParent(parent);
-                gyserObject.transform.localEulerAngles = localPosition;
+                gyserObject.transform.SetParent(location.transform);
+                gyserObject.transform.localEulerAngles = Vector3.zero;
             }else {
                 throw new BlobException("The ResourceGyser prefab did not contain a ResourceGyser component");
             }

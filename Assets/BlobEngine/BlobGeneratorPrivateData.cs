@@ -79,6 +79,11 @@ namespace Assets.BlobEngine {
         }
         private BlobPileCapacity _cost;
 
+        public ResourceBlobFactory BlobFactory {
+            get { return _blobFactory; }
+        }
+        [SerializeField] private ResourceBlobFactory _blobFactory;
+
         #endregion
 
     }

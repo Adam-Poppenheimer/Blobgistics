@@ -5,14 +5,16 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Map;
+
 namespace Assets.BlobEngine {
 
     public abstract class BuildingPlotFactoryBase : MonoBehaviour {
 
         #region instance methods
 
-        public abstract IBuildingPlot ConstructBuildingPlot(Vector3 localPosition, Transform parent);
-        public abstract IResourceGyser ConstructResourceGyser(Vector3 localPosition, Transform parent, ResourceType typeProduced);
+        public abstract IBuildingPlot ConstructBuildingPlot(MapNode location);
+        public abstract IResourceGyser ConstructResourceGyser(MapNode location, ResourceType typeProduced);
 
         #endregion
 

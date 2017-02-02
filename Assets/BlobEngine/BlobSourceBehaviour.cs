@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using UnityCustomUtilities.Extensions;
 
-using UnityEngine;
+using Assets.Map;
 
 namespace Assets.BlobEngine {
 
-    public abstract class BlobSourceBehaviour : MonoBehaviour, IBlobSource {
+    public abstract class BlobSourceBehaviour : NodeOccupyingObject, IBlobSource {
 
         #region instance fields and properties
 

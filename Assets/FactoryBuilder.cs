@@ -9,7 +9,7 @@ using UnityCustomUtilities.UI;
 using UnityCustomUtilities.Misc;
 
 using Assets.BlobEngine;
-using Assets.Editor;
+using Assets.Editing;
 
 namespace Assets {
 

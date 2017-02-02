@@ -7,6 +7,8 @@ using UnityEngine;
 
 using UnityCustomUtilities.UI;
 
+using Assets.Map;
+
 namespace Assets.BlobEngine {
 
     [ExecuteInEditMode]
@@ -30,13 +32,13 @@ namespace Assets.BlobEngine {
 
         #region from ResourcePoolFactoryBase
 
-        public override IResourcePool BuildResourcePool(Transform parent, Vector3 localPosition) {
+        public override IResourcePool BuildResourcePool(MapNode location) {
             var poolObject = GameObject.Instantiate(PoolPrefab);
             var poolBehaviour = poolObject.GetComponent<ResourcePool>();
             if(poolBehaviour != null) {
                 poolBehaviour.PrivateData = PoolPrivateData;
-                poolBehaviour.transform.SetParent(parent);
-                poolBehaviour.transform.localPosition = localPosition;
+                poolBehaviour.transform.SetParent(location.transform);
+                poolBehaviour.transform.localPosition = Vector3.zero;
                 poolBehaviour.Initialize();
             }else {
                 throw new BlobException("The ResourcePool prefab did not contain a ResourcePool component");
@@ -46,8 +48,8 @@ namespace Assets.BlobEngine {
 
         public override Schematic BuildSchematic() {
             var cost = PoolPrivateData.Cost;
-            Action<Transform> constructionAction = delegate(Transform locationToConstruct) {
-                BuildResourcePool(locationToConstruct.parent, locationToConstruct.localPosition);
+            Action<MapNode> constructionAction = delegate(MapNode locationToConstruct) {
+                BuildResourcePool(locationToConstruct);
             };
             return new Schematic(SchematicName, cost, constructionAction);
         }
