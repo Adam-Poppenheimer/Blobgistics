@@ -10,6 +10,7 @@ using UnityCustomUtilities.Misc;
 
 using Assets.BlobEngine;
 using Assets.Editing;
+using Assets.Map;
 
 namespace Assets {
 
@@ -25,7 +26,7 @@ namespace Assets {
         [SerializeField] private GameObject BlobTubePrefab;
 
         [SerializeField] private Transform CanvasRoot;
-        [SerializeField] private Transform MapRoot;
+        [SerializeField] private MapGraph  MapGraph;
 
         [SerializeField] private BuildingPlotFactory  BuildingPlotFactory = null;
         [SerializeField] private ResourcePoolFactory  ResourcePoolFactory = null;
@@ -50,22 +51,22 @@ namespace Assets {
 
         private void PushData() {
             ObjectGraphDependencyInjector.InjectDependency<BuildingPlotFactoryBase    >(BuildingPlotFactory,
-                "BuildingPlotFactory"       , CanvasRoot, MapRoot);
+                "BuildingPlotFactory"       , CanvasRoot, MapGraph.transform);
             ObjectGraphDependencyInjector.InjectDependency<ResourcePoolFactoryBase    >(ResourcePoolFactory,
-                "ResourcePoolFactory"       , CanvasRoot, MapRoot);
+                "ResourcePoolFactory"       , CanvasRoot, MapGraph.transform);
             ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase        >(BlobTubeFactory,
-                "BlobTubeFactory"           , CanvasRoot, MapRoot);
+                "BlobTubeFactory"           , CanvasRoot, MapGraph.transform);
             ObjectGraphDependencyInjector.InjectDependency<BlobGeneratorFactoryBase   >(GeneratorFactory,
-                "GeneratorFactory"         , CanvasRoot, MapRoot);
+                "GeneratorFactory"          , CanvasRoot, MapGraph.transform);
             ObjectGraphDependencyInjector.InjectDependency<SchematicRepository>(BuildingSchematicRepository,
-                "BuildingSchematiRepository", CanvasRoot, MapRoot);
+                "BuildingSchematiRepository", CanvasRoot, MapGraph.transform);
             
 
             EditorPrefabBuilder.PlotFactory      = BuildingPlotFactory;
             EditorPrefabBuilder.PoolFactory      = ResourcePoolFactory;
             EditorPrefabBuilder.TubeFactory      = BlobTubeFactory;
             EditorPrefabBuilder.GeneratorFactory = GeneratorFactory;
-            EditorPrefabBuilder.MapRoot = MapRoot;
+            EditorPrefabBuilder.MapGraph         = MapGraph;
         }
 
         #endregion

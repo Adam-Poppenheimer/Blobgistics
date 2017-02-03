@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 
 using Assets.BlobEngine;
+using Assets.Map;
 
 namespace Assets.Editing {
 
@@ -14,7 +15,6 @@ namespace Assets.Editing {
     public static class EditorPrefabBuilder {
 
         #region static fields and properties
-
 
         public static BuildingPlotFactory PlotFactory {
             get {
@@ -88,29 +88,40 @@ namespace Assets.Editing {
         }
         private static BlobGeneratorFactory _generatorFactory;
 
-        public static Transform MapRoot {
+        public static MapGraph MapGraph {
             get {
-                if(_mapRoot == null) {
-                    throw new InvalidOperationException("MapRoot is uninitialized");
+                if(_mapGraph == null) {
+                    throw new InvalidOperationException("MapGraph is uninitialized");
                 } else {
-                    return _mapRoot;
+                    return _mapGraph;
                 }
             }
             set {
                 if(value == null) {
                     throw new ArgumentNullException("value");
                 } else {
-                    _mapRoot = value;
+                    _mapGraph = value;
                 }
             }
         }
-        private static Transform _mapRoot;
+        private static MapGraph _mapGraph;
 
         #endregion
 
         #region static methods
 
-        
+        [MenuItem("GameObject/Strategy Blobs/Map Node", false, 10)]
+        private static void CreateMapNode(MenuCommand command) {
+            Vector3 positionOfNode;
+            var commandGameObject = command.context as GameObject;
+            if(commandGameObject != null) {
+                positionOfNode = commandGameObject.transform.position;
+            }else {
+                positionOfNode = Vector3.zero;
+            }
+            var newNode = MapGraph.BuildNode(positionOfNode);
+            HandleContext(newNode.gameObject, command);
+        }
 
         private static void HandleContext(GameObject objectToManage, MenuCommand issuingCommand) {
             GameObjectUtility.SetParentAndAlign(objectToManage, issuingCommand.context as GameObject);

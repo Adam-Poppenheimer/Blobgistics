@@ -38,6 +38,7 @@ namespace Assets.Map {
             }
 
             if(FromNode != null) {
+                Handles.color = Color.white;
                 if(ToNode != null) {
                     Handles.DrawLine(FromNode.transform.position, ToNode.transform.position);
                 }else {
@@ -54,6 +55,7 @@ namespace Assets.Map {
                 case EventType.MouseUp:   HandleMouseUp  (currentEvent, GetCandidateNode(currentEvent)); break;
             }
             
+            HandleUtility.Repaint();
         }
 
         #endregion
@@ -79,8 +81,6 @@ namespace Assets.Map {
 
         private void HandleMouseUp(Event evnt, MapNode candidateNode) {
             if(FromNode != null && ToNode != null) {
-                TargetedGraph.TryAddNode(FromNode);
-                TargetedGraph.TryAddNode(ToNode);
                 if(!TargetedGraph.HasEdge(FromNode, ToNode)) {
                     Debug.Log("Adding edge");
                     TargetedGraph.AddUndirectedEdge(FromNode, ToNode);
@@ -105,9 +105,14 @@ namespace Assets.Map {
         }
 
         private void DrawAllEdges(IEnumerable<MapNode> allNodes) {
-            foreach(var activeNode in allNodes) {
-                foreach(var neighbor in activeNode.Neighbors) {
-                    Handles.DrawLine(activeNode.transform.position, neighbor.transform.position);
+            foreach(var edge in TargetedGraph.Edges) {
+                Handles.color = Color.white;
+                Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);
+                var midpoint = (edge.FirstNode.transform.position + edge.SecondNode.transform.position ) / 2f;
+                Handles.color = Color.red;
+                if(Handles.Button(midpoint, Quaternion.identity, 0.25f, 0.25f, Handles.SphereCap)) {
+                    TargetedGraph.RemoveUndirectedEdge(edge);
+                    break;
                 }
             }
         }

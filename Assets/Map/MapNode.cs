@@ -8,30 +8,46 @@ using UnityEngine;
 
 namespace Assets.Map {
 
+    [ExecuteInEditMode]
     public class MapNode : MonoBehaviour {
 
         #region instance fields and properties
 
-        public ReadOnlyCollection<MapNode> Neighbors {
-            get { return neighbors.AsReadOnly(); }
+        public IEnumerable<MapNode> Neighbors {
+            get { return ManagingGraph.GetNeighborsOfNode(this); }
         }
-        [SerializeField] private List<MapNode> neighbors;
+
+        public MapGraph ManagingGraph {
+            get { return _managingGraph; }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _managingGraph = value;
+                }
+            }
+        }
+        [SerializeField] private MapGraph _managingGraph;
 
         #endregion
 
         #region instance methods
 
-        public void AddNeighbor(MapNode newNeighbor) {
-            if(!neighbors.Contains(newNeighbor)) {
-                neighbors.Add(newNeighbor);
-            }else {
-                throw new MapGraphException("This node already considers that node as its neighbor");
+        #region Unity event methods
+
+        private void Awake() {
+            if(ManagingGraph != null && !ManagingGraph.Nodes.Contains(this)) {
+                ManagingGraph.SubscribeNode(this);
             }
         }
 
-        public bool RemoveNeighbor(MapNode oldNeighbor) {
-            return neighbors.Remove(oldNeighbor);
+        private void OnDestroy() {
+            if(ManagingGraph != null) {
+                ManagingGraph.RemoveNode(this);
+            }
         }
+
+        #endregion
 
         #endregion
 
