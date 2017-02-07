@@ -7,6 +7,8 @@ using UnityEngine;
 
 using UnityCustomUtilities.Extensions;
 
+using Assets.Map;
+
 namespace Assets.BlobEngine {
 
     [ExecuteInEditMode]
@@ -22,7 +24,7 @@ namespace Assets.BlobEngine {
 
         [SerializeField] private GameObject TubePrefab;
 
-        [SerializeField] private Transform MapRoot;
+        [SerializeField] private MapGraph Map;
 
         #endregion
 
@@ -78,7 +80,8 @@ namespace Assets.BlobEngine {
             }else if(target == null) {
                 throw new ArgumentNullException("target");
             }
-            return source != target && !TubeExistsBetweenObjects(source, target);
+            return source != target && !TubeExistsBetweenObjects(source, target) && 
+                Map.HasEdge(source.Location, target.Location);
         }
 
         public override BlobTube BuildTubeBetween(IBlobSource source, IBlobTarget target) {
@@ -92,7 +95,7 @@ namespace Assets.BlobEngine {
                 throw new BlobException("Prefab failed to produce a BlobTube component");
             }
 
-            newTubeObject.transform.SetParent(MapRoot, false);
+            newTubeObject.transform.SetParent(Map.transform, false);
             tubeBehaviour.SetEndpoints(source, target);
 
             TubesAttachedToObject.AddElementToList(source, tubeBehaviour);

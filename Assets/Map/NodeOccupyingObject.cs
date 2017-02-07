@@ -11,7 +11,25 @@ namespace Assets.Map {
 
         #region instance fields and properties
 
-        public MapNode Location;
+        public MapNode Location {
+            get {
+                if(_location == null) {
+                    throw new InvalidOperationException("Location is uninitialized");
+                } else {
+                    return _location;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _location = value;
+                    transform.SetParent(_location.transform, true);
+                    transform.localPosition = Vector3.zero;
+                }
+            }
+        }
+        [SerializeField] private MapNode _location;
 
         #endregion
 

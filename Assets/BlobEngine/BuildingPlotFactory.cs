@@ -27,15 +27,14 @@ namespace Assets.BlobEngine {
 
         #region instance methods
 
-        #region from IBuildingPlotFactory
+        #region from BuildingPlotFactoryBase
 
         public override IBuildingPlot ConstructBuildingPlot(MapNode location) {
-            var plotObject = GameObject.Instantiate(PlotPrefab);
+            var plotObject = Instantiate(PlotPrefab, location.transform, false) as GameObject;
             var plotBehaviour = plotObject.GetComponent<BuildingPlot>();
             if(plotBehaviour != null) {
                 plotBehaviour.PrivateData = PlotPrivateData;
-                plotBehaviour.transform.SetParent(location.transform);
-                plotBehaviour.transform.localPosition = Vector3.zero;
+                plotBehaviour.Location = location;
                 plotBehaviour.Initialize();
             }else {
                 throw new BlobException("The BuildingPlot prefab did not contain a BuildingPlot component");
@@ -44,12 +43,11 @@ namespace Assets.BlobEngine {
         }
 
         public override IResourceGyser ConstructResourceGyser(MapNode location, ResourceType typeProduced) {
-            var gyserObject = Instantiate(GyserPrefab);
+            var gyserObject = Instantiate(GyserPrefab, location.transform, false) as GameObject;
             var gyserBehaviour = gyserObject.GetComponent<ResourceGyser>();
             if(gyserBehaviour != null) {
                 gyserBehaviour.PrivateData = GyserPrivateData;
-                gyserObject.transform.SetParent(location.transform);
-                gyserObject.transform.localEulerAngles = Vector3.zero;
+                gyserBehaviour.Location = location;
             }else {
                 throw new BlobException("The ResourceGyser prefab did not contain a ResourceGyser component");
             }

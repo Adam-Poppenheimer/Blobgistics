@@ -17,7 +17,7 @@ namespace Assets.BlobEngine {
 
         #region instance methods
 
-        public abstract IResourcePool BuildResourcePool(MapNode location);
+        public abstract IResourcePool ConstructResourcePool(MapNode location);
         public abstract Schematic BuildSchematic();
 
         #endregion

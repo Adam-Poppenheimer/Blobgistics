@@ -82,7 +82,6 @@ namespace Assets.Map {
         private void HandleMouseUp(Event evnt, MapNode candidateNode) {
             if(FromNode != null && ToNode != null) {
                 if(!TargetedGraph.HasEdge(FromNode, ToNode)) {
-                    Debug.Log("Adding edge");
                     TargetedGraph.AddUndirectedEdge(FromNode, ToNode);
                 }
                 evnt.Use();

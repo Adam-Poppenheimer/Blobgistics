@@ -15,7 +15,7 @@ namespace Assets.BlobEngine {
 
         #region instance fields and properties
 
-        #region from ITubableObject
+        #region from IBlobSource
 
         public abstract Vector3 EastTubeConnectionPoint  { get; }
         public abstract Vector3 NorthTubeConnectionPoint { get; }

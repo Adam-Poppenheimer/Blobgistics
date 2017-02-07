@@ -8,6 +8,8 @@ using UnityEngine;
 
 using UnityCustomUtilities.Extensions;
 
+using Assets.BlobEngine;
+
 namespace Assets.Map {
 
     public class MapGraph : MonoBehaviour {
@@ -17,14 +19,15 @@ namespace Assets.Map {
         public ReadOnlyCollection<MapNode> Nodes {
             get { return NodeSet.AsReadOnly(); }
         }
-        [SerializeField] private List<MapNode> NodeSet = new List<MapNode>();
+        [SerializeField, HideInInspector] private List<MapNode> NodeSet = new List<MapNode>();
 
         public ReadOnlyCollection<MapEdge> Edges {
             get { return EdgeSet.AsReadOnly(); }
         }
-        [SerializeField] private List<MapEdge> EdgeSet = new List<MapEdge>();
+        [SerializeField, HideInInspector] private List<MapEdge> EdgeSet = new List<MapEdge>();
 
         [SerializeField] private GameObject NodePrefab;
+        [SerializeField] private FactoryPileBase FactoryPile;
 
         private DictionaryOfLists<MapNode, MapNode> NeighborsOfNode {
             get {
@@ -44,8 +47,20 @@ namespace Assets.Map {
 
         #region instance methods
 
+        #region Unity event methods
+
+        private void OnValidate() {
+            if(FactoryPile != null) {
+                foreach(var node in NodeSet) {
+                    node.FactoryPile = FactoryPile;
+                }
+            }
+        }
+
+        #endregion
+
         public MapNode BuildNode(Vector3 localPosition) {
-            var nodeObject = Instantiate(NodePrefab);
+            var nodeObject = Instantiate(NodePrefab, this.transform, false) as GameObject;
             var nodeBehaviour = nodeObject.GetComponent<MapNode>();
             if(nodeBehaviour != null) {
                 SubscribeNode(nodeBehaviour);
@@ -60,8 +75,9 @@ namespace Assets.Map {
             if(node == null) {
                 throw new ArgumentNullException("node");
             }else if(!NodeSet.Contains(node)){
-                node.transform.SetParent(this.transform, true);
+                node.transform.SetParent(this.transform, false);
                 node.ManagingGraph = this;
+                node.FactoryPile = FactoryPile;
                 NodeSet.Add(node);
             }else {
                 throw new MapGraphException("This node has already been subscribed to this MapGraph");
@@ -98,8 +114,12 @@ namespace Assets.Map {
 
         public bool RemoveUndirectedEdge(MapEdge edge) {
             var retval = EdgeSet.Remove(edge);
-            NeighborsOfNode[edge.FirstNode ].Remove(edge.SecondNode);
-            NeighborsOfNode[edge.SecondNode].Remove(edge.FirstNode );
+            if(NeighborsOfNode.ContainsKey(edge.FirstNode)) {
+                NeighborsOfNode[edge.FirstNode ].Remove(edge.SecondNode);
+            }
+            if(NeighborsOfNode.ContainsKey(edge.SecondNode)) {
+                NeighborsOfNode[edge.SecondNode].Remove(edge.FirstNode );
+            }
             return retval;
         }
 
@@ -149,6 +169,14 @@ namespace Assets.Map {
             }else {
                 return neighbors;
             }
+        }
+
+        public IEnumerable<MapEdge> GetEdgesAttachedToNode(MapNode node) {
+            var retval = new List<MapEdge>();
+            foreach(var neighbor in GetNeighborsOfNode(node)) {
+                retval.Add(GetEdge(node, neighbor));
+            }
+            return retval;
         }
 
         private float GetEdgeWeight(MapNode first, MapNode second) {

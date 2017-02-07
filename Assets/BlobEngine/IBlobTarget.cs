@@ -1,10 +1,16 @@
 ﻿using System;
 
-using UnityEngine;
+using Assets.Map;
 
 namespace Assets.BlobEngine {
 
     public interface IBlobTarget : ITubableObject {
+
+        #region properties
+
+        MapNode Location { get; }
+
+        #endregion
 
         #region events
 

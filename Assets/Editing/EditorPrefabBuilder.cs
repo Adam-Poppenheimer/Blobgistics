@@ -124,7 +124,6 @@ namespace Assets.Editing {
         }
 
         private static void HandleContext(GameObject objectToManage, MenuCommand issuingCommand) {
-            GameObjectUtility.SetParentAndAlign(objectToManage, issuingCommand.context as GameObject);
             Undo.RegisterCreatedObjectUndo(objectToManage, "Create " + objectToManage.name);
             Selection.activeObject = objectToManage;
         }

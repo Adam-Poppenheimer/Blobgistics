@@ -35,8 +35,6 @@ namespace Assets.BlobEngine {
             get { return PrivateData.LocalWestConnectionPoint + transform.position; }
         }
 
-        
-
         #endregion
 
         public ResourcePoolPrivateData PrivateData {

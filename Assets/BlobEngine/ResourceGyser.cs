@@ -20,10 +20,6 @@ namespace Assets.BlobEngine {
         }
         [SerializeField] private ResourceType _resourceTypeGenerated;
 
-        public new MapNode Location {
-            get { return base.Location; }
-        }
-
         #endregion
 
         #endregion

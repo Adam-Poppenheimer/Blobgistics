@@ -12,7 +12,6 @@ namespace Assets.BlobEngine {
         #region properties
 
         ResourceType BlobTypeGenerated { get; }
-        MapNode Location { get; }
 
         #endregion
 
