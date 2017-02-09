@@ -89,6 +89,11 @@ namespace Assets.Map {
             FactoryPile.BlobGeneratorFactory.ConstructGenerator(this, ResourceType.Red);
         }
 
+        [ContextMenu("Construct Bloblet Barracks")]
+        private void ConstructBlobletBarracks() {
+            FactoryPile.BlobletBarracksFactory.ConstructBlobletBarracks(this);
+        }
+
         #endregion
 
     }

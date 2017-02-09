@@ -8,16 +8,19 @@ using UnityEngine.EventSystems;
 
 using UnityCustomUtilities.Meshes;
 using UnityCustomUtilities.Extensions;
-using UnityCustomUtilities.UI;
+using UnityCustomUtilities.AI;
 
-namespace Assets.BlobEngine {
+using Assets.BlobEngine;
+using Assets.Map;
 
-    public class ResourcePool : BlobSourceAndTargetBehaviour, IResourcePool, IPointerEnterHandler,
-        IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler {
+namespace Assets.Mobs {
+
+    public class BlobletBarracks : BlobletBarracksBase, IPointerEnterHandler,
+        IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler  {
 
         #region instance fields and properties
 
-        #region from BlobSourceAndTargetBehaviour
+        #region from BlobTargetBehaviour
 
         public override Vector3 NorthTubeConnectionPoint {
             get { return PrivateData.LocalNorthConnectionPoint + transform.position; }
@@ -37,7 +40,7 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        public ResourcePoolPrivateData PrivateData {
+        public BlobletBarracksPrivateData PrivateData {
             get {
                 if(_privateData == null) {
                     throw new InvalidOperationException("PrivateData is uninitialized");
@@ -57,9 +60,11 @@ namespace Assets.BlobEngine {
                 }
             }
         }
-        [SerializeField] private ResourcePoolPrivateData _privateData;
+        [SerializeField] private BlobletBarracksPrivateData _privateData;
 
         private IBlobAlignmentStrategy AlignmentStrategy;
+
+        private List<MapNode> NodesToSendBlobletsTo = new List<MapNode>();
 
         #endregion
 
@@ -74,6 +79,8 @@ namespace Assets.BlobEngine {
                 new Tuple<uint, uint, uint>(PrivateData.Width, PrivateData.Height, PrivateData.Depth),
                 out AlignmentStrategy
             );
+            NodesToSendBlobletsTo.Clear();
+            NodesToSendBlobletsTo.AddRange(PrivateData.Map.GetNeighborsOfNode(Location));
         }
 
         #endregion
@@ -91,7 +98,7 @@ namespace Assets.BlobEngine {
         public void OnBeginDrag(PointerEventData eventData) {
             PrivateData.TopLevelUIFSM.HandleBeginDrag(this, eventData);
         }
-        
+
         public void OnDrag(PointerEventData eventData) {
             PrivateData.TopLevelUIFSM.HandleDrag(this, eventData);
         }
@@ -102,14 +109,26 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        #region from BlobSourceAndTargetBehaviour
+        #region from BlobSourceBehaviour
 
         protected override void OnBlobPlacedInto(ResourceBlob blobPlaced) {
+            if(BlobsWithin.IsAtCapacity()) {
+                ClearAllBlobs(false);
+                Debug.Log("IsAtCapacity: " + BlobsWithin.IsAtCapacity());
+                BuildBloblet();
+            }
             AlignmentStrategy.RealignBlobs(BlobsWithin.Blobs, (Vector2)transform.position,
                 PrivateData.RealignmentSpeedPerSecond);
         }
 
         #endregion
+
+        private void BuildBloblet() {
+            var newBloblet = PrivateData.BlobletFactory.ConstructBloblet(Location.transform.position);
+            foreach(var nodeToSeek in NodesToSendBlobletsTo) {
+                newBloblet.EnqueueNewMovementGoal(nodeToSeek);
+            }
+        }
 
         #endregion
 

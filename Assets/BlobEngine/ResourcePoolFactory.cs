@@ -22,12 +22,6 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        #region constructors
-
-        public ResourcePoolFactory() { }
-
-        #endregion
-
         #region instance methods
 
         #region from ResourcePoolFactoryBase
@@ -39,10 +33,10 @@ namespace Assets.BlobEngine {
                 poolBehaviour.PrivateData = PoolPrivateData;
                 poolBehaviour.Location = location;
                 poolBehaviour.Initialize();
+                return poolBehaviour;
             }else {
                 throw new BlobException("The ResourcePool prefab did not contain a ResourcePool component");
             }
-            return poolBehaviour;
         }
 
         public override Schematic BuildSchematic() {

@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Mobs;
+
 namespace Assets.BlobEngine {
 
     public class FactoryPile : FactoryPileBase {
@@ -25,6 +27,11 @@ namespace Assets.BlobEngine {
             get { return _resourcePoolFactory; }
         }
         [SerializeField] private ResourcePoolFactoryBase _resourcePoolFactory;
+
+        public override BlobletBarracksFactoryBase BlobletBarracksFactory {
+            get { return _blobletBarracksFactory; }
+        }
+        [SerializeField] private BlobletBarracksFactoryBase _blobletBarracksFactory;
 
         #endregion
 

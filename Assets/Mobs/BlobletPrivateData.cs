@@ -11,7 +11,7 @@ using Assets.Map;
 
 namespace Assets.Mobs {
 
-    public class BlobletConfig : MonoBehaviour {
+    public class BlobletPrivateData : MonoBehaviour {
 
         public float Mass {
             get { return _mass; }

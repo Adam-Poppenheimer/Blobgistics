@@ -11,6 +11,7 @@ using UnityCustomUtilities.Misc;
 using Assets.BlobEngine;
 using Assets.Editing;
 using Assets.Map;
+using Assets.Mobs;
 
 namespace Assets {
 
@@ -28,10 +29,12 @@ namespace Assets {
         [SerializeField] private Transform CanvasRoot;
         [SerializeField] private MapGraph  MapGraph;
 
-        [SerializeField] private BuildingPlotFactory  BuildingPlotFactory = null;
-        [SerializeField] private ResourcePoolFactory  ResourcePoolFactory = null;
-        [SerializeField] private BlobTubeFactory      BlobTubeFactory     = null;
-        [SerializeField] private BlobGeneratorFactory GeneratorFactory    = null;
+        [SerializeField] private BuildingPlotFactory    BuildingPlotFactory    = null;
+        [SerializeField] private ResourcePoolFactory    ResourcePoolFactory    = null;
+        [SerializeField] private BlobTubeFactory        BlobTubeFactory        = null;
+        [SerializeField] private BlobGeneratorFactory   GeneratorFactory       = null;
+        [SerializeField] private BlobletFactory         BlobletFactory         = null;
+        [SerializeField] private BlobletBarracksFactory BlobletBarracksFactory = null;
 
         [SerializeField] private SchematicRepository BuildingSchematicRepository;
 
