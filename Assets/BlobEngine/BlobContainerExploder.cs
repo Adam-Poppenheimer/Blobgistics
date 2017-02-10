@@ -40,13 +40,10 @@ namespace Assets.BlobEngine {
         #endregion
 
         public void ExplodeObject() {
-            var attachedBlobTarget = GetComponent<IBlobTarget>();
-            if(attachedBlobTarget != null) {
-                attachedBlobTarget.ClearAllBlobs(true);
-            }
-            var attachedTubeObject = GetComponent<ITubableObject>();
-            if(attachedTubeObject != null) {
-                TubeFactory.DestroyAllTubesConnectingTo(attachedTubeObject);
+            var attachedBlobSite = GetComponent<IBlobSite>();
+            if(attachedBlobSite != null) {
+                attachedBlobSite.ClearAllBlobs(true, true);
+                TubeFactory.DestroyAllTubesConnectingTo(attachedBlobSite);
             }
             Destroy(gameObject);
         }

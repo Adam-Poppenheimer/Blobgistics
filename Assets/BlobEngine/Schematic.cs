@@ -18,11 +18,11 @@ namespace Assets.BlobEngine {
         }
         private readonly string _name;
 
-        public BlobPileCapacity Cost {
+        public Dictionary<ResourceType, int> Cost {
             get { return _cost; }
         }
 
-        private readonly BlobPileCapacity _cost;
+        private readonly Dictionary<ResourceType, int> _cost;
 
         private readonly Action<MapNode> ConstructionAction;
 
@@ -30,9 +30,9 @@ namespace Assets.BlobEngine {
 
         #region constructors
 
-        public Schematic(string name, BlobPileCapacity cost, Action<MapNode> constructionAction) {
+        public Schematic(string name, Dictionary<ResourceType, int> cost, Action<MapNode> constructionAction) {
             _name = name;
-            _cost = cost;
+            _cost = new Dictionary<ResourceType, int>(cost);
             ConstructionAction = constructionAction;
         }
 

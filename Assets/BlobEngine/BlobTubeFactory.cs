@@ -16,11 +16,11 @@ namespace Assets.BlobEngine {
 
         #region instance fields and properties
 
-        private DictionaryOfLists<ITubableObject, ITubableObject> ObjectsAttachedToObject =
-            new DictionaryOfLists<ITubableObject, ITubableObject>();
+        private DictionaryOfLists<IBlobSite, IBlobSite> ObjectsAttachedToObject =
+            new DictionaryOfLists<IBlobSite, IBlobSite>();
 
-        private DictionaryOfLists<ITubableObject, BlobTube> TubesAttachedToObject =
-            new DictionaryOfLists<ITubableObject, BlobTube>();
+        private DictionaryOfLists<IBlobSite, BlobTube> TubesAttachedToObject =
+            new DictionaryOfLists<IBlobSite, BlobTube>();
 
         [SerializeField] private GameObject TubePrefab;
 
@@ -38,56 +38,53 @@ namespace Assets.BlobEngine {
 
         #region from BlobTubeFactoryBase
 
-        public override IEnumerable<ITubableObject> GetObjectsTubedToObject(ITubableObject obj) {
+        public override IEnumerable<IBlobSite> GetSitesTubedToSite(IBlobSite obj) {
             if(obj == null) {
                 throw new ArgumentNullException("obj");
             }
-            List<ITubableObject> objectsTubedTo;
+            List<IBlobSite> objectsTubedTo;
             ObjectsAttachedToObject.TryGetValue(obj, out objectsTubedTo);
             if(objectsTubedTo == null) {
-                return new List<ITubableObject>();
+                return new List<IBlobSite>();
             }else {
                 return objectsTubedTo;
             }
         }
 
-        public override bool TubeExistsBetweenObjects(ITubableObject obj1, ITubableObject obj2) {
-            if(obj1 == null) {
-                throw new ArgumentNullException("obj1");
-            }else if(obj2 == null) {
-                throw new ArgumentNullException("obj2");
+        public override bool TubeExistsBetweenSites(IBlobSite site1, IBlobSite site2) {
+            if(site1 == null) {
+                throw new ArgumentNullException("site1");
+            }else if(site2 == null) {
+                throw new ArgumentNullException("site2");
             }
-            return ObjectsAttachedToObject.Contains(new KeyValuePair<ITubableObject, ITubableObject>(obj1, obj2));
+            return ObjectsAttachedToObject.Contains(new KeyValuePair<IBlobSite, IBlobSite>(site1, site2));
         }
 
-        public override bool CanBuildTubeBetween(ITubableObject obj1, ITubableObject obj2) {
-            if(obj1 == null) {
+        public override bool CanBuildTubeBetween(IBlobSite site1, IBlobSite site2) {
+            if(site1 == null) {
                 throw new ArgumentNullException("source");
-            }else if(obj2 == null) {
-                throw new ArgumentNullException("target");
-            }else if(obj1 is IBlobSource && obj2 is IBlobTarget) {
-                return CanBuildTubeBetween(obj1 as IBlobSource, obj2 as IBlobTarget);
-            }else if(obj1 is IBlobTarget && obj2 is IBlobSource) {
-                return CanBuildTubeBetween(obj2 as IBlobSource, obj1 as IBlobTarget);
-            }else {
-                return false;
-            }
-        }
-
-        public override bool CanBuildTubeBetween(IBlobSource source, IBlobTarget target) {
-            if(source == null) {
-                throw new ArgumentNullException("source");
-            }else if(target == null) {
+            }else if(site2 == null) {
                 throw new ArgumentNullException("target");
             }
-            return source != target && !TubeExistsBetweenObjects(source, target) && 
-                Map.HasEdge(source.Location, target.Location);
+
+            return (
+                site1 != site2
+                && !TubeExistsBetweenSites(site1, site2)
+                && Map.HasEdge(site1.Location, site2.Location)
+                && (
+                    (site1.AcceptsExtraction && site2.AcceptsPlacement)
+                    || (site2.AcceptsPlacement && site1.AcceptsExtraction)
+                )
+            );
         }
 
-        public override BlobTube BuildTubeBetween(IBlobSource source, IBlobTarget target) {
-            if(!CanBuildTubeBetween(source, target)) {
+        public override BlobTube BuildTubeBetween(IBlobSite site1, IBlobSite site2) {
+            if(!CanBuildTubeBetween(site1, site2)) {
                 throw new BlobException("Cannot build a tube between these two objects");
             }
+
+            var source = site1.AcceptsExtraction ? site1 : site2;
+            var target = site2.AcceptsPlacement  ? site2 : site1;
 
             var newTubeObject = GameObject.Instantiate(TubePrefab);
             var tubeBehaviour = newTubeObject.GetComponent<BlobTube>();
@@ -106,9 +103,9 @@ namespace Assets.BlobEngine {
             return tubeBehaviour;
         }
 
-        public override void DestroyAllTubesConnectingTo(ITubableObject obj) {
+        public override void DestroyAllTubesConnectingTo(IBlobSite site) {
             List<BlobTube> tubesToDestroy;
-            TubesAttachedToObject.TryGetValue(obj, out tubesToDestroy);
+            TubesAttachedToObject.TryGetValue(site, out tubesToDestroy);
             for(int i = tubesToDestroy.Count - 1; i >= 0; --i) {
                 var tubeToDestroy = tubesToDestroy[i];
                 ObjectsAttachedToObject[tubeToDestroy.SourceToPullFrom].Remove(tubeToDestroy.TargetToPushTo  );
@@ -116,7 +113,7 @@ namespace Assets.BlobEngine {
 
                 GameObject.Destroy(tubeToDestroy.gameObject);
             }
-            TubesAttachedToObject.RemoveList(obj);
+            TubesAttachedToObject.RemoveList(site);
         }
 
         #endregion

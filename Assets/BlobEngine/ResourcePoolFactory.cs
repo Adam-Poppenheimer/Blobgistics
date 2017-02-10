@@ -32,7 +32,6 @@ namespace Assets.BlobEngine {
             if(poolBehaviour != null) {
                 poolBehaviour.PrivateData = PoolPrivateData;
                 poolBehaviour.Location = location;
-                poolBehaviour.Initialize();
                 return poolBehaviour;
             }else {
                 throw new BlobException("The ResourcePool prefab did not contain a ResourcePool component");

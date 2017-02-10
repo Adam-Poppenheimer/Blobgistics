@@ -13,35 +13,50 @@ using UnityCustomUtilities.UI;
 
 namespace Assets.BlobEngine {
 
-    public class BuildingPlot : BlobTargetBehaviour, IBuildingPlot, IPointerClickHandler,
+    public class BuildingPlot : BlobSiteBase, IBuildingPlot, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler  {
-
-        #region static fields and properties
-
-        private static readonly uint Depth = 1;
-        private static readonly float RealignmentSpeedPerSecond = 2f;
-
-        #endregion
 
         #region instance fields and properties
 
-        #region from IBuildingPlot
+        #region from BlobSiteBase
 
         public override Vector3 NorthTubeConnectionPoint {
-            get { return new Vector3(0f, Height / 2f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
+            get { return PrivateData.LocalNorthConnectionPoint + transform.position; }
         }
 
         public override Vector3 SouthTubeConnectionPoint {
-            get { return new Vector3(0f, -Height / 2f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
+            get { return PrivateData.LocalSouthConnectionPoint + transform.position; }
         }
 
         public override Vector3 EastTubeConnectionPoint {
-            get { return new Vector3(Width / 2f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
+            get { return PrivateData.LocalEastConnectionPoint + transform.position; }
         }
 
         public override Vector3 WestTubeConnectionPoint {
-            get { return new Vector3(-Width / 2f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs) + transform.position; }
+            get { return PrivateData.LocalWestConnectionPoint + transform.position; }
         }
+
+        public override bool AcceptsExtraction {
+            get { return false; }
+        }
+
+        public override bool AcceptsPlacement {
+            get { return true; }
+        }
+
+        protected override BlobPileBase BlobsWithin {
+            get { return blobsWithin; }
+        }
+        private BlobPileBase blobsWithin = new AmbivalentBlobPile(0);
+
+        protected override BlobPileBase BlobsWithReservedPositions {
+            get { return blobsWithReservedPositions; }
+        }
+        private BlobPileBase blobsWithReservedPositions = new AmbivalentBlobPile(0);
+
+        #endregion
+
+        #region from IBuildingPlot
 
         public Schematic ActiveSchematic {
             get { return _activeSchematic; }
@@ -50,7 +65,8 @@ namespace Assets.BlobEngine {
                     throw new ArgumentNullException("value");
                 }
                 _activeSchematic = value;
-                Capacity = _activeSchematic.Cost;
+                blobsWithin = new TypeConstrainedBlobPile(_activeSchematic.Cost);
+                blobsWithReservedPositions = new TypeConstrainedBlobPile(_activeSchematic.Cost);
             }
         }
         private Schematic _activeSchematic;
@@ -60,9 +76,6 @@ namespace Assets.BlobEngine {
         }
 
         #endregion
-
-        [SerializeField] private uint Width = 2;
-        [SerializeField] private uint Height = 2;
 
         public BuildingPlotPrivateData PrivateData {
             get {
@@ -77,7 +90,7 @@ namespace Assets.BlobEngine {
                     throw new ArgumentNullException("value");
                 } else {
                     _privateData = value;
-                    RealignToDimensions();
+                    Util.MeshResizerUtility.RealignToDimensions(gameObject, PrivateData.Dimensions);
                 }
             }
         }
@@ -92,8 +105,7 @@ namespace Assets.BlobEngine {
         #region Unity event methods
 
         private void Start() {
-            RealignToDimensions();
-            Initialize();
+            Util.MeshResizerUtility.RealignToDimensions(gameObject, PrivateData.Dimensions, out AlignmentStrategy);
         }
 
         #endregion
@@ -126,7 +138,7 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        #region from BlobTargetBehaviour
+        #region from BlobSiteBase
 
         protected override void OnBlobPlacedInto(ResourceBlob blobPlaced) {
             if(ActiveSchematic != null && BlobsWithin.IsAtCapacity()) {
@@ -134,24 +146,12 @@ namespace Assets.BlobEngine {
                 PrivateData.TubeFactory.DestroyAllTubesConnectingTo(this);
                 Destroy(gameObject);
             }else {
-                AlignmentStrategy.RealignBlobs(BlobsWithin.Blobs, (Vector2)transform.position, RealignmentSpeedPerSecond);
+                AlignmentStrategy.RealignBlobs(BlobsWithin.Contents,
+                    (Vector2)transform.position, PrivateData.RealignmentSpeedPerSecond);
             }
         }
 
         #endregion
-
-        protected void RealignToDimensions() {
-            AlignmentStrategy = new BoxyBlobAlignmentStrategy(Width, Height, 5, 5);
-            var attachedMeshFilter = GetComponent<MeshFilter>();
-            if(attachedMeshFilter != null) {
-                attachedMeshFilter.sharedMesh = BoxMeshBuilder.GetAppropriateMesh(
-                    new Tuple<uint, uint, uint>(Width, Height, Depth));
-            }
-            var boxCollider = GetComponent<BoxCollider2D>();
-            if(boxCollider != null) {
-                boxCollider.size = new Vector2(Width, Height);
-            }
-        }
 
         #endregion
 

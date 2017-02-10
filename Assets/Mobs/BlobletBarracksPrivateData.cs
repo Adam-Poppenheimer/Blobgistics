@@ -45,29 +45,29 @@ namespace Assets.Mobs {
             get { return new Vector3(-Width / 2f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs); }
         }
 
-        public BlobPileCapacity Capacity {
+        public Dictionary<ResourceType, int> Capacity {
             get {
                 if(_capacity == null) {
-                    _capacity = new BlobPileCapacity(new Dictionary<ResourceType, int>() {
+                    _capacity = new Dictionary<ResourceType, int>() {
                         { ResourceType.Red, 3 },
-                    });
+                    };
                 }
                 return _capacity;
             }
         }
-        private BlobPileCapacity _capacity = null;
+        private Dictionary<ResourceType, int> _capacity = null;
 
-        public BlobPileCapacity Cost {
+        public Dictionary<ResourceType, int> Cost {
             get {
                 if(_cost == null) {
-                    _cost = new BlobPileCapacity(new Dictionary<ResourceType, int>() {
+                    _cost = new Dictionary<ResourceType, int>() {
                         { ResourceType.Red, 10 },
-                    });
+                    };
                 }
                 return _cost;
             }
         }
-        private BlobPileCapacity _cost = null;
+        private Dictionary<ResourceType, int> _cost = null;
 
         public UIFSM TopLevelUIFSM {
             get { return _topLevelUIFSM; }

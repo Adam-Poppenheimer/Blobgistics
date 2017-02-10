@@ -49,29 +49,22 @@ namespace Assets.BlobEngine {
             get { return new Vector3(-Width / 2f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs); }
         }
 
-        public BlobPileCapacity Capacity {
-            get {
-                if(_capacity == null) {
-                    _capacity = new BlobPileCapacity(new Dictionary<ResourceType, int>() {
-                        { ResourceType.Red, 25 },
-                    });
-                }
-                return _capacity;
-            }
+        public int Capacity {
+            get { return _capacity; }
         }
-        private BlobPileCapacity _capacity = null;
+        [SerializeField] private int _capacity = 25;
 
-        public BlobPileCapacity Cost {
+        public Dictionary<ResourceType, int> Cost {
             get {
                 if(_cost == null) {
-                    _cost = new BlobPileCapacity(new Dictionary<ResourceType, int>() {
+                    new Dictionary<ResourceType, int>() {
                         { ResourceType.Red, 10 },
-                    });
+                    };
                 }
                 return _cost;
             }
         }
-        private BlobPileCapacity _cost = null;
+        private Dictionary<ResourceType, int> _cost = null;
         
         public float RealignmentSpeedPerSecond {
             get { return _realignmentSpeedPerSecond; }

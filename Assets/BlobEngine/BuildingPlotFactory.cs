@@ -35,7 +35,6 @@ namespace Assets.BlobEngine {
             if(plotBehaviour != null) {
                 plotBehaviour.PrivateData = PlotPrivateData;
                 plotBehaviour.Location = location;
-                plotBehaviour.Initialize();
             }else {
                 throw new BlobException("The BuildingPlot prefab did not contain a BuildingPlot component");
             }

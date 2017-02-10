@@ -2,7 +2,7 @@
 
 namespace Assets.BlobEngine {
 
-    public interface IBlobGenerator : IBlobSource {
+    public interface IBlobGenerator : IBlobSite {
 
         #region properties
 

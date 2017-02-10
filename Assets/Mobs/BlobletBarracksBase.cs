@@ -10,7 +10,7 @@ using Assets.BlobEngine;
 
 namespace Assets.Mobs {
 
-    public abstract class BlobletBarracksBase : BlobTargetBehaviour {
+    public abstract class BlobletBarracksBase : BlobSiteBase {
 
 
 

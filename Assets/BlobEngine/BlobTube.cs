@@ -30,7 +30,7 @@ namespace Assets.BlobEngine {
         private Vector3 TubeStart = Vector3.zero;
         private Vector3 TubeEnd = Vector3.zero;
 
-        public IBlobSource SourceToPullFrom {
+        public IBlobSite SourceToPullFrom {
             get { return _sourceToPullFrom; }
             private set {
                 if(value == null) {
@@ -40,9 +40,9 @@ namespace Assets.BlobEngine {
                 }
             }
         }
-        private IBlobSource _sourceToPullFrom;
+        private IBlobSite _sourceToPullFrom;
 
-        public IBlobTarget TargetToPushTo {
+        public IBlobSite TargetToPushTo {
             get { return _targetToPushTo; }
             private set {
                 if(value == null) {
@@ -52,7 +52,7 @@ namespace Assets.BlobEngine {
                 }
             }
         }
-        private IBlobTarget _targetToPushTo;
+        private IBlobSite _targetToPushTo;
 
         private Coroutine BlobPullCoroutine;
         private bool ReadyToPullBlob = true;
@@ -69,27 +69,37 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        public void SetEndpoints(IBlobSource source, IBlobTarget target) {
+        public void SetEndpoints(IBlobSite source, IBlobSite target) {
+            if(!source.AcceptsExtraction || !target.AcceptsPlacement) {
+                throw new BlobException("The given source and target do not represent a valid endpoint configuration");
+            }
             if(SourceToPullFrom != null) {
-                SourceToPullFrom.NewBlobAvailable -= OnSourceHasNewBlob;
+                SourceToPullFrom.BlobPlacedInto -= OnSourceHasNewBlob;
             }
             SourceToPullFrom = source;
             TargetToPushTo   = target;
             RefreshEndpointLocations();
             
-            SourceToPullFrom.NewBlobAvailable += OnSourceHasNewBlob;
+            SourceToPullFrom.BlobPlacedInto += OnSourceHasNewBlob;
             if(ReadyToPullBlob && CanTransportAnyBlob()) {
                 PullAnyBlobFromSource();
             }
         }
 
         public bool CanTransportAnyBlob() {
-            return (
+            var meetsBasicConditions = (
                 SourceToPullFrom != null &&
                 TargetToPushTo   != null && 
-                SourceToPullFrom.CanExtractAnyBlob() &&
-                TargetToPushTo.CanPlaceBlobOfTypeInto( SourceToPullFrom.GetTypeOfNextExtractedBlob() )
-            );  
+                SourceToPullFrom.CanExtractAnyBlob()
+            );
+            if(meetsBasicConditions) {
+                foreach(var extractableType in SourceToPullFrom.GetExtractableTypes()) {
+                    if(TargetToPushTo.CanPlaceBlobOfTypeInto(extractableType)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public void PullAnyBlobFromSource() {

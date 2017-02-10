@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Assets.BlobEngine {
 
-    public interface IBuildingPlot : IBlobTarget {
+    public interface IBuildingPlot : IBlobSite {
 
         #region properties
 

@@ -11,16 +11,14 @@ namespace Assets.BlobEngine {
 
         #region instance methods
 
-        public abstract IEnumerable<ITubableObject> GetObjectsTubedToObject(ITubableObject obj);
+        public abstract IEnumerable<IBlobSite> GetSitesTubedToSite(IBlobSite site);
 
-        public abstract bool TubeExistsBetweenObjects(ITubableObject obj1, ITubableObject obj2);
+        public abstract bool TubeExistsBetweenSites(IBlobSite site1, IBlobSite site2);
 
-        public abstract bool CanBuildTubeBetween(ITubableObject obj1, ITubableObject obj2);
-        public abstract bool CanBuildTubeBetween(IBlobSource source,  IBlobTarget target);
+        public abstract bool     CanBuildTubeBetween(IBlobSite site1, IBlobSite site2);
+        public abstract BlobTube BuildTubeBetween   (IBlobSite site1, IBlobSite site2);
 
-        public abstract BlobTube BuildTubeBetween(IBlobSource source, IBlobTarget target);
-
-        public abstract void DestroyAllTubesConnectingTo(ITubableObject obj);
+        public abstract void DestroyAllTubesConnectingTo(IBlobSite site);
 
         #endregion
 

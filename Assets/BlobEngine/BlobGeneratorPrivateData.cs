@@ -53,31 +53,22 @@ namespace Assets.BlobEngine {
             get { return new Vector3(-Width / 2f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs); }
         }
 
-        public BlobPileCapacity Capacity {
-            get {
-                if(_capacity == null) {
-                    var capacityDict = new Dictionary<ResourceType, int>();
-                    foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                        capacityDict[resourceType] = 1;
-                    }
-                    _capacity = new BlobPileCapacity(capacityDict);
-                }
-                return _capacity;
-            }
+        public int Capacity {
+            get { return _capacity; }
         }
-        private BlobPileCapacity _capacity = null;
+        [SerializeField] private int _capacity = 1;
 
-        public BlobPileCapacity Cost {
+        public Dictionary<ResourceType, int> Cost {
             get {
                 if(_cost == null) {
-                    _cost = new BlobPileCapacity(new Dictionary<ResourceType, int>() {
+                    _cost = new Dictionary<ResourceType, int>() {
                         { ResourceType.Red, 10 },
-                    });
+                    };
                 }
                 return _cost;
             }
         }
-        private BlobPileCapacity _cost;
+        private Dictionary<ResourceType, int> _cost;
 
         public ResourceBlobFactory BlobFactory {
             get { return _blobFactory; }
