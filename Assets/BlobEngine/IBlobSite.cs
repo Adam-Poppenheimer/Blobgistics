@@ -33,6 +33,7 @@ namespace Assets.BlobEngine {
 
         event EventHandler<BlobEventArgs> BlobPlacedInto;
         event EventHandler<BlobEventArgs> BlobExtractedFrom;
+        event EventHandler<EventArgs>     AllBlobsCleared;
 
         #endregion
 

@@ -5,18 +5,11 @@ using System.Text;
 
 using UnityEngine;
 
-using Assets.Mobs;
-
 namespace Assets.BlobEngine {
 
     public class FactoryPile : FactoryPileBase {
 
         #region instance fields and properties
-
-        public override BlobGeneratorFactoryBase BlobGeneratorFactory {
-            get { return _blobGeneratorFactory; }
-        }
-        [SerializeField] private BlobGeneratorFactoryBase _blobGeneratorFactory;
 
         public override BuildingPlotFactoryBase BuildingPlotFactory {
             get { return _buildingPlotFactory; }
@@ -27,11 +20,6 @@ namespace Assets.BlobEngine {
             get { return _resourcePoolFactory; }
         }
         [SerializeField] private ResourcePoolFactoryBase _resourcePoolFactory;
-
-        public override BlobletBarracksFactoryBase BlobletBarracksFactory {
-            get { return _blobletBarracksFactory; }
-        }
-        [SerializeField] private BlobletBarracksFactoryBase _blobletBarracksFactory;
 
         #endregion
 

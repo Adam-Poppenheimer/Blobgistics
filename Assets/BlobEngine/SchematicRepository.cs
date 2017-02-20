@@ -15,7 +15,6 @@ namespace Assets.BlobEngine {
             new Dictionary<string, Schematic>();
 
         [SerializeField] private ResourcePoolFactoryBase  PoolFactory = null;
-        [SerializeField] private BlobGeneratorFactoryBase GeneratorFactory = null;
 
         private bool SchematicsAreLoaded = false;
 
@@ -45,7 +44,6 @@ namespace Assets.BlobEngine {
 
         private void LoadSchematics() {
             SchematicOfName[PoolFactory.SchematicName     ] = PoolFactory.BuildSchematic();
-            SchematicOfName[GeneratorFactory.SchematicName] = GeneratorFactory.BuildSchematic();
 
             SchematicsAreLoaded = true;
         }

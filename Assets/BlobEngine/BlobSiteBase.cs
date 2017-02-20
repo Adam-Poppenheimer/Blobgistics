@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Assets.Map;
-using UnityCustomUtilities.Extensions;
+
 using UnityEngine;
+
+using UnityCustomUtilities.Extensions;
+
+using Assets.Map;
+
 
 namespace Assets.BlobEngine {
 
@@ -20,7 +23,7 @@ namespace Assets.BlobEngine {
         public abstract Vector3 NorthTubeConnectionPoint { get; }
         public abstract Vector3 SouthTubeConnectionPoint { get; }
         public abstract Vector3 EastTubeConnectionPoint  { get; }
-        public abstract Vector3 WestTubeConnectionPoint  { get; }        
+        public abstract Vector3 WestTubeConnectionPoint  { get; }      
 
         #endregion
 
@@ -35,9 +38,11 @@ namespace Assets.BlobEngine {
 
         public event EventHandler<BlobEventArgs> BlobPlacedInto;
         public event EventHandler<BlobEventArgs> BlobExtractedFrom;
+        public event EventHandler<EventArgs>     AllBlobsCleared;
 
         protected void RaiseBlobPlacedInto   (ResourceBlob blob) { RaiseEvent(BlobPlacedInto,    new BlobEventArgs(blob)); }
         protected void RaiseBlobExtractedFrom(ResourceBlob blob) { RaiseEvent(BlobExtractedFrom, new BlobEventArgs(blob)); }
+        protected void RaiseAllBlobsCleared  ()                  { RaiseEvent(AllBlobsCleared,       EventArgs.Empty    ); }
 
         protected void RaiseEvent<T>(EventHandler<T> handler, T e) where T : EventArgs {
             if(handler != null) {
@@ -163,6 +168,7 @@ namespace Assets.BlobEngine {
                     Destroy(blob.gameObject);
                 }
             }
+            RaiseAllBlobsCleared();
         }
 
         #endregion

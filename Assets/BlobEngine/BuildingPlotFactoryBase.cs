@@ -14,7 +14,6 @@ namespace Assets.BlobEngine {
         #region instance methods
 
         public abstract IBuildingPlot ConstructBuildingPlot(MapNode location);
-        public abstract IResourceGyser ConstructResourceGyser(MapNode location, ResourceType typeProduced);
 
         #endregion
 

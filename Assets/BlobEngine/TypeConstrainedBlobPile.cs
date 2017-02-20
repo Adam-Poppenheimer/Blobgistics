@@ -34,6 +34,9 @@ namespace Assets.BlobEngine {
 
         public TypeConstrainedBlobPile(Dictionary<ResourceType, int> capacityByType) {
             CapacityByType = new Dictionary<ResourceType, int>(capacityByType);
+            foreach(var typePermitted in capacityByType.Keys) {
+                BlobsOfType.CreateList(typePermitted);
+            }
         }
 
         #endregion
@@ -101,7 +104,9 @@ namespace Assets.BlobEngine {
 
         public override void Clear() {
             AllBlobs.Clear();
-            BlobsOfType.Clear();
+            foreach(var blobList in BlobsOfType.Values) {
+                blobList.Clear();
+            }
         }
 
         public override IEnumerable<ResourceType> GetAllTypesWithin() {

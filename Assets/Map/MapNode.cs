@@ -69,11 +69,6 @@ namespace Assets.Map {
 
         #endregion
 
-        [ContextMenu("Construct Resource Gyser")]
-        private void ConstructResourceGyser() {
-            FactoryPile.BuildingPlotFactory.ConstructResourceGyser(this, ResourceType.Red);
-        }
-
         [ContextMenu("Construct Building Plot")]
         private void ConstructBuildingPlot() {
             FactoryPile.BuildingPlotFactory.ConstructBuildingPlot(this);
@@ -82,16 +77,6 @@ namespace Assets.Map {
         [ContextMenu("Construct Resource Pool")]
         private void ConstructResourcePool() {
             FactoryPile.ResourcePoolFactory.ConstructResourcePool(this);
-        }
-
-        [ContextMenu("Construct Blob Generator")]
-        private void ConstructBlobGenerator() {
-            FactoryPile.BlobGeneratorFactory.ConstructGenerator(this, ResourceType.Red);
-        }
-
-        [ContextMenu("Construct Bloblet Barracks")]
-        private void ConstructBlobletBarracks() {
-            FactoryPile.BlobletBarracksFactory.ConstructBlobletBarracks(this);
         }
 
         #endregion

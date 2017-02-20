@@ -55,35 +55,27 @@ namespace Assets.BlobEngine {
         private IBlobSite _targetToPushTo;
 
         private Coroutine BlobPullCoroutine;
-        private bool ReadyToPullBlob = true;
 
         #endregion
 
         #region instance methods
 
-        #region Unity event methods
-
-        private void Start() {
-            BlobPullCoroutine = StartCoroutine(BlobPullTick());
-        }
-
-        #endregion
-
         public void SetEndpoints(IBlobSite source, IBlobSite target) {
-            if(!source.AcceptsExtraction || !target.AcceptsPlacement) {
+            if(source == null) {
+                throw new ArgumentNullException("source");
+            }else if (target == null) {
+                throw new ArgumentNullException("target");
+            }else if(!source.AcceptsExtraction || !target.AcceptsPlacement) {
                 throw new BlobException("The given source and target do not represent a valid endpoint configuration");
             }
             if(SourceToPullFrom != null) {
-                SourceToPullFrom.BlobPlacedInto -= OnSourceHasNewBlob;
+                StopCoroutine(BlobPullCoroutine);
             }
             SourceToPullFrom = source;
             TargetToPushTo   = target;
             RefreshEndpointLocations();
-            
-            SourceToPullFrom.BlobPlacedInto += OnSourceHasNewBlob;
-            if(ReadyToPullBlob && CanTransportAnyBlob()) {
-                PullAnyBlobFromSource();
-            }
+
+            BlobPullCoroutine = StartCoroutine(BlobPullTick());
         }
 
         public bool CanTransportAnyBlob() {
@@ -141,24 +133,12 @@ namespace Assets.BlobEngine {
             transform.Rotate(new Vector3(0f, 0f, zAngleToRotate));
         }
 
-        private void OnSourceHasNewBlob(object sender, BlobEventArgs args) {
-            if(ReadyToPullBlob && CanTransportAnyBlob()) {
-                PullAnyBlobFromSource();
-                ReadyToPullBlob = false;
-                StopCoroutine(BlobPullCoroutine);
-                BlobPullCoroutine = StartCoroutine(BlobPullTick());
-            }
-        }
-
         private IEnumerator BlobPullTick() {
             while(true) {
-                yield return new WaitForSeconds(SecondsBetweenPulls);
                 if(CanTransportAnyBlob()) {
                     PullAnyBlobFromSource();
-                    ReadyToPullBlob = false;
-                }else {
-                    ReadyToPullBlob = true;
                 }
+                yield return new WaitForSeconds(SecondsBetweenPulls);
             }
         }
 

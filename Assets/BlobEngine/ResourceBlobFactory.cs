@@ -36,13 +36,14 @@ namespace Assets.BlobEngine {
 
         #endregion
 
-        public ResourceBlob BuildBlob(ResourceType typeOfResource, Vector3 startingLocation) {
+        public ResourceBlob BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
             var blobGameObject = Instantiate<GameObject>(BlobPrefab);
             var blobComponent = blobGameObject.GetComponent<ResourceBlob>();
             if(blobComponent == null) {
                 throw new BlobException("BlobBuilder's BlobPrefab lacks a ResourceBlob component");
             }
-            blobGameObject.transform.position = startingLocation;
+            blobGameObject.transform.position = (Vector3)startingXYCoordinates +
+                new Vector3(0f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs);
             var blobRenderer = blobGameObject.GetComponent<MeshRenderer>();
             if(blobRenderer != null) {
                 blobRenderer.material = MaterialDict[typeOfResource];

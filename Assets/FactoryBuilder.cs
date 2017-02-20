@@ -11,8 +11,6 @@ using UnityCustomUtilities.Misc;
 using Assets.BlobEngine;
 using Assets.Editing;
 using Assets.Map;
-using Assets.Mobs;
-
 namespace Assets {
 
     [ExecuteInEditMode]
@@ -32,9 +30,6 @@ namespace Assets {
         [SerializeField] private BuildingPlotFactory    BuildingPlotFactory    = null;
         [SerializeField] private ResourcePoolFactory    ResourcePoolFactory    = null;
         [SerializeField] private BlobTubeFactory        BlobTubeFactory        = null;
-        [SerializeField] private BlobGeneratorFactory   GeneratorFactory       = null;
-        [SerializeField] private BlobletFactory         BlobletFactory         = null;
-        [SerializeField] private BlobletBarracksFactory BlobletBarracksFactory = null;
 
         [SerializeField] private SchematicRepository BuildingSchematicRepository;
 
@@ -59,8 +54,6 @@ namespace Assets {
                 "ResourcePoolFactory"       , CanvasRoot, MapGraph.transform);
             ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase        >(BlobTubeFactory,
                 "BlobTubeFactory"           , CanvasRoot, MapGraph.transform);
-            ObjectGraphDependencyInjector.InjectDependency<BlobGeneratorFactoryBase   >(GeneratorFactory,
-                "GeneratorFactory"          , CanvasRoot, MapGraph.transform);
             ObjectGraphDependencyInjector.InjectDependency<SchematicRepository>(BuildingSchematicRepository,
                 "BuildingSchematiRepository", CanvasRoot, MapGraph.transform);
             
@@ -68,7 +61,6 @@ namespace Assets {
             EditorPrefabBuilder.PlotFactory      = BuildingPlotFactory;
             EditorPrefabBuilder.PoolFactory      = ResourcePoolFactory;
             EditorPrefabBuilder.TubeFactory      = BlobTubeFactory;
-            EditorPrefabBuilder.GeneratorFactory = GeneratorFactory;
             EditorPrefabBuilder.MapGraph         = MapGraph;
         }
 

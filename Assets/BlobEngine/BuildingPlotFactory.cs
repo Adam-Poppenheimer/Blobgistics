@@ -20,9 +20,6 @@ namespace Assets.BlobEngine {
         [SerializeField] private BuildingPlotPrivateData PlotPrivateData;
         [SerializeField] private GameObject PlotPrefab;
 
-        [SerializeField] private BuildingPlotPrivateData GyserPrivateData;
-        [SerializeField] private GameObject GyserPrefab;
-
         #endregion
 
         #region instance methods
@@ -39,18 +36,6 @@ namespace Assets.BlobEngine {
                 throw new BlobException("The BuildingPlot prefab did not contain a BuildingPlot component");
             }
             return plotBehaviour;
-        }
-
-        public override IResourceGyser ConstructResourceGyser(MapNode location, ResourceType typeProduced) {
-            var gyserObject = Instantiate(GyserPrefab, location.transform, false) as GameObject;
-            var gyserBehaviour = gyserObject.GetComponent<ResourceGyser>();
-            if(gyserBehaviour != null) {
-                gyserBehaviour.PrivateData = GyserPrivateData;
-                gyserBehaviour.Location = location;
-            }else {
-                throw new BlobException("The ResourceGyser prefab did not contain a ResourceGyser component");
-            }
-            return gyserBehaviour;
         }
 
         #endregion

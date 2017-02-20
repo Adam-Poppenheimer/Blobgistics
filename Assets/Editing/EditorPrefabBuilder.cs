@@ -70,24 +70,6 @@ namespace Assets.Editing {
         }
         private static BlobTubeFactory _tubeFactory;
 
-        public static BlobGeneratorFactory GeneratorFactory {
-            get {
-                if(_generatorFactory == null) {
-                    throw new InvalidOperationException("GeneratorFactory is uninitialized");
-                } else {
-                    return _generatorFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _generatorFactory = value;
-                }
-            }
-        }
-        private static BlobGeneratorFactory _generatorFactory;
-
         public static MapGraph MapGraph {
             get {
                 if(_mapGraph == null) {
