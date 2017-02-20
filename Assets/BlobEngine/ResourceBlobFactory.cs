@@ -13,6 +13,10 @@ namespace Assets.BlobEngine {
 
         #region static fields and properties
 
+        [SerializeField] private Material MaterialForRed   = null;
+        [SerializeField] private Material MaterialForGreen = null;
+        [SerializeField] private Material MaterialForBlue  = null;
+
         private static Dictionary<ResourceType, Material> MaterialDict =
             new Dictionary<ResourceType, Material>();
 
@@ -29,9 +33,9 @@ namespace Assets.BlobEngine {
         #region Unity event methods
 
         private void Awake() {
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                MaterialDict[resourceType] = Resources.Load<Material>("ResourceTypeMaterials/" + resourceType.ToString());
-            }
+            MaterialDict[ResourceType.Red]   = MaterialForRed;
+            MaterialDict[ResourceType.Green] = MaterialForGreen;
+            MaterialDict[ResourceType.Blue]  = MaterialForBlue;
         }
 
         #endregion
