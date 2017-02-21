@@ -9,7 +9,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Societies {
 
-    public interface ISocietyComplexityDefinition {
+    public interface IComplexityDefinition {
 
         #region properties
 

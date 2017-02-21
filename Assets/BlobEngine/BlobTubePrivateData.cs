@@ -7,9 +7,14 @@ using UnityEngine;
 
 namespace Assets.BlobEngine {
 
-    public class BlobTubePrivateData : MonoBehaviour {
+    public class BlobTubePrivateData : MonoBehaviour, IBlobTubePrivateData {
 
+        #region instance fields and properties
 
+        public float TransportSpeedPerSecond { get; set; }
+        public int Capacity { get; set; }
+
+        #endregion
 
     }
 

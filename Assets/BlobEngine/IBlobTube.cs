@@ -10,8 +10,8 @@ namespace Assets.BlobEngine {
 
         #region properties
 
-        Vector3 LocationOfSourceToPullFrom { get; }
-        Vector3 LocationOfTargetToPushTo   { get; }
+        Vector3 SourceLocation { get; }
+        Vector3 TargetLocation   { get; }
 
         ReadOnlyCollection<ResourceBlob> BlobsWithin { get; }
 
@@ -25,7 +25,9 @@ namespace Assets.BlobEngine {
         bool CanPullBlobFrom(ResourceBlob blob);
         void PullBlobFrom   (ResourceBlob blob);
 
-        void TickMovement();
+        void SetPermissionForResourceType(ResourceType type, bool isPermitted);
+
+        void TickMovement(float secondsPassed);
 
         void SetEndpoints(Vector3 sourceLocation, Vector3 targetLocation);
 

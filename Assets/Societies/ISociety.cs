@@ -13,9 +13,8 @@ namespace Assets.Societies {
 
         #region properties
 
-        ISocietyComplexityDefinition CurrentComplexity { get; }
-        ISocietyComplexityDefinition ComplexityBelow { get; }
-        ISocietyComplexityDefinition ComplexityAbove { get; } 
+        IComplexityDefinition CurrentComplexity  { get; }
+        IComplexityLadder ActiveComplexityLadder { get; }
 
         bool NeedsAreSatisfied { get; }
         float SecondsUntilComplexityDescent { get; }
@@ -33,8 +32,8 @@ namespace Assets.Societies {
         void AscendComplexityLadder();
         void DescendComplexityLadder();
 
-        void PerformProduction();
-        void PerformConsumption();
+        void TickProduction(float timeElapsed);
+        void TickConsumption(float timeElapsed);
 
         IReadOnlyDictionary<ResourceType, int> GetResourcesUntilSocietyAscent();
 

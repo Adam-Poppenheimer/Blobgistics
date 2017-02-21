@@ -93,7 +93,7 @@ namespace Assets.BlobEngine {
             }
 
             newTubeObject.transform.SetParent(Map.transform, false);
-            tubeBehaviour.SetEndpoints(source, target);
+            tubeBehaviour.SetEndpoints(source.transform.position, target.transform.position);
 
             TubesAttachedToObject.AddElementToList(source, tubeBehaviour);
             TubesAttachedToObject.AddElementToList(target, tubeBehaviour);
@@ -104,16 +104,7 @@ namespace Assets.BlobEngine {
         }
 
         public override void DestroyAllTubesConnectingTo(IBlobSite site) {
-            List<BlobTube> tubesToDestroy;
-            TubesAttachedToObject.TryGetValue(site, out tubesToDestroy);
-            for(int i = tubesToDestroy.Count - 1; i >= 0; --i) {
-                var tubeToDestroy = tubesToDestroy[i];
-                ObjectsAttachedToObject[tubeToDestroy.SourceToPullFrom].Remove(tubeToDestroy.TargetToPushTo  );
-                ObjectsAttachedToObject[tubeToDestroy.TargetToPushTo  ].Remove(tubeToDestroy.SourceToPullFrom);
-
-                GameObject.Destroy(tubeToDestroy.gameObject);
-            }
-            TubesAttachedToObject.RemoveList(site);
+            throw new NotImplementedException();
         }
 
         #endregion
