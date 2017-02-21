@@ -22,7 +22,6 @@ namespace Assets.UI {
         private IBlobSite SecondDraggedBlobSite;
 
         [SerializeField] private TubeGhost TubeGhost;
-        [SerializeField] private SchematicSelector BuildingSchematicSelector;
 
         public BlobTubeFactoryBase TubeFactory {
             get {
@@ -64,15 +63,6 @@ namespace Assets.UI {
                 }
             }
             return UIFSMResponse.Bury;
-        }
-
-        protected override UIFSMResponse HandlePointerClick<T>(T obj, PointerEventData eventData) {
-            if(obj is IBuildingPlot) {
-                return HandleBuildingPlotClicked(obj as IBuildingPlot, eventData);
-            }else {
-                BuildingSchematicSelector.Deactivate();
-                return UIFSMResponse.Bury;
-            }
         }
 
         protected override UIFSMResponse HandleBeginDrag<T>(T obj, PointerEventData eventData) {
@@ -149,12 +139,6 @@ namespace Assets.UI {
         }
 
         #endregion
-
-        private UIFSMResponse HandleBuildingPlotClicked(IBuildingPlot plot, PointerEventData eventData) {
-            BuildingSchematicSelector.Activate(plot);
-            BuildingSchematicSelector.transform.position = eventData.position;
-            return UIFSMResponse.Bury;
-        }
 
         #endregion
 

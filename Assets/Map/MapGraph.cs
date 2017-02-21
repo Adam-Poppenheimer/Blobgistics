@@ -27,7 +27,6 @@ namespace Assets.Map {
         [SerializeField, HideInInspector] private List<MapEdge> EdgeSet = new List<MapEdge>();
 
         [SerializeField] private GameObject NodePrefab;
-        [SerializeField] private FactoryPileBase FactoryPile;
 
         private DictionaryOfLists<MapNode, MapNode> NeighborsOfNode {
             get {
@@ -47,18 +46,6 @@ namespace Assets.Map {
 
         #region instance methods
 
-        #region Unity event methods
-
-        private void OnValidate() {
-            if(FactoryPile != null) {
-                foreach(var node in NodeSet) {
-                    node.FactoryPile = FactoryPile;
-                }
-            }
-        }
-
-        #endregion
-
         public MapNode BuildNode(Vector3 localPosition) {
             var nodeObject = Instantiate(NodePrefab, this.transform, false) as GameObject;
             var nodeBehaviour = nodeObject.GetComponent<MapNode>();
@@ -77,7 +64,6 @@ namespace Assets.Map {
             }else if(!NodeSet.Contains(node)){
                 node.transform.SetParent(this.transform, false);
                 node.ManagingGraph = this;
-                node.FactoryPile = FactoryPile;
                 NodeSet.Add(node);
             }else {
                 throw new MapGraphException("This node has already been subscribed to this MapGraph");

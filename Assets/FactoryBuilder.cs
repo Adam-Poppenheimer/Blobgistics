@@ -20,18 +20,12 @@ namespace Assets {
 
         [SerializeField] private UIFSM TopLevelUIFSM;
 
-        [SerializeField] private GameObject BuildingPlotPrefab;
-        [SerializeField] private GameObject ResourcePoolPrefab;
         [SerializeField] private GameObject BlobTubePrefab;
 
         [SerializeField] private Transform CanvasRoot;
         [SerializeField] private MapGraph  MapGraph;
 
-        [SerializeField] private BuildingPlotFactory    BuildingPlotFactory    = null;
-        [SerializeField] private ResourcePoolFactory    ResourcePoolFactory    = null;
         [SerializeField] private BlobTubeFactory        BlobTubeFactory        = null;
-
-        [SerializeField] private SchematicRepository BuildingSchematicRepository;
 
         #endregion
 
@@ -48,18 +42,9 @@ namespace Assets {
         }
 
         private void PushData() {
-            ObjectGraphDependencyInjector.InjectDependency<BuildingPlotFactoryBase    >(BuildingPlotFactory,
-                "BuildingPlotFactory"       , CanvasRoot, MapGraph.transform);
-            ObjectGraphDependencyInjector.InjectDependency<ResourcePoolFactoryBase    >(ResourcePoolFactory,
-                "ResourcePoolFactory"       , CanvasRoot, MapGraph.transform);
             ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase        >(BlobTubeFactory,
                 "BlobTubeFactory"           , CanvasRoot, MapGraph.transform);
-            ObjectGraphDependencyInjector.InjectDependency<SchematicRepository>(BuildingSchematicRepository,
-                "BuildingSchematiRepository", CanvasRoot, MapGraph.transform);
-            
 
-            EditorPrefabBuilder.PlotFactory      = BuildingPlotFactory;
-            EditorPrefabBuilder.PoolFactory      = ResourcePoolFactory;
             EditorPrefabBuilder.TubeFactory      = BlobTubeFactory;
             EditorPrefabBuilder.MapGraph         = MapGraph;
         }

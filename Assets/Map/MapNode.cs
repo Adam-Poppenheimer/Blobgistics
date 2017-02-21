@@ -31,24 +31,6 @@ namespace Assets.Map {
         }
         [SerializeField, HideInInspector] private MapGraph _managingGraph;
 
-        public FactoryPileBase FactoryPile {
-            get {
-                if(_factoryPile == null) {
-                    throw new InvalidOperationException("FactoryPile is uninitialized");
-                } else {
-                    return _factoryPile;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _factoryPile = value;
-                }
-            }
-        }
-        [SerializeField, HideInInspector] private FactoryPileBase _factoryPile;
-
         #endregion
 
         #region instance methods
@@ -68,16 +50,6 @@ namespace Assets.Map {
         }
 
         #endregion
-
-        [ContextMenu("Construct Building Plot")]
-        private void ConstructBuildingPlot() {
-            FactoryPile.BuildingPlotFactory.ConstructBuildingPlot(this);
-        }
-        
-        [ContextMenu("Construct Resource Pool")]
-        private void ConstructResourcePool() {
-            FactoryPile.ResourcePoolFactory.ConstructResourcePool(this);
-        }
 
         #endregion
 

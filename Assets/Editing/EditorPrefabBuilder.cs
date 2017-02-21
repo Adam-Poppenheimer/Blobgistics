@@ -16,42 +16,6 @@ namespace Assets.Editing {
 
         #region static fields and properties
 
-        public static BuildingPlotFactory PlotFactory {
-            get {
-                if(_plotFactory == null) {
-                    throw new InvalidOperationException("PlotFactory is uninitialized");
-                } else {
-                    return _plotFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _plotFactory = value;
-                }
-            }
-        }
-        private static BuildingPlotFactory _plotFactory;
-
-        public static ResourcePoolFactory PoolFactory {
-            get {
-                if(_poolFactory == null) {
-                    throw new InvalidOperationException("PoolFactory is uninitialized");
-                } else {
-                    return _poolFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _poolFactory = value;
-                }
-            }
-        }
-        private static ResourcePoolFactory _poolFactory;
-
         public static BlobTubeFactory TubeFactory {
             get {
                 if(_tubeFactory == null) {
