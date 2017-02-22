@@ -27,6 +27,8 @@ namespace Assets.BlobEngine {
         bool AcceptsPlacement  { get; }
         bool AcceptsExtraction { get; }
 
+        ReadOnlyBlobPile ReadOnlyBlobsWithin { get; }
+
         #endregion
 
         #region events

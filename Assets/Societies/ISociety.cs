@@ -17,6 +17,7 @@ namespace Assets.Societies {
         IComplexityLadder ActiveComplexityLadder { get; }
 
         bool NeedsAreSatisfied { get; }
+        float SecondsOfUnsatisfiedNeeds { get; }
         float SecondsUntilComplexityDescent { get; }
 
         #endregion
@@ -32,8 +33,8 @@ namespace Assets.Societies {
         void AscendComplexityLadder();
         void DescendComplexityLadder();
 
-        void TickProduction(float timeElapsed);
-        void TickConsumption(float timeElapsed);
+        void TickProduction(float secondsPassed);
+        void TickConsumption(float secondsPassed);
 
         IReadOnlyDictionary<ResourceType, int> GetResourcesUntilSocietyAscent();
 

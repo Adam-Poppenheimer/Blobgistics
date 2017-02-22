@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Assets.BlobEngine;
+
 namespace Assets.Societies {
 
     public interface ISocietyPrivateData {

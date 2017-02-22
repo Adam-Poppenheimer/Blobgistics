@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Assets.BlobEngine;
 
 namespace Assets.Societies.Editor {
@@ -10,18 +11,14 @@ namespace Assets.Societies.Editor {
 
         #region instance fields and properties
 
-        private readonly List<IComplexityDefinition> AscentChain;
-        private readonly Dictionary<IComplexityDefinition, Dictionary<ResourceType, int>> Costs;
+        public List<IComplexityDefinition> AscentChain { get; set; }
+        public Dictionary<IComplexityDefinition, ResourceSummary> CostsToReach { get; set; }
 
         #endregion
 
         #region constructors
 
-        public MockComplexityLadder(List<IComplexityDefinition> ascentChain,
-            Dictionary<IComplexityDefinition, Dictionary<ResourceType, int>> costs) {
-            AscentChain = ascentChain;
-            Costs = costs;
-        }
+        public MockComplexityLadder() { }
 
         #endregion
 
@@ -29,20 +26,27 @@ namespace Assets.Societies.Editor {
 
         #region from IComplexityLadder
 
-        public IComplexityDefinition GetAscentTransition(IComplexityDefinition currentComplexity) {
+        public AscentSummary GetAscentTransition(IComplexityDefinition currentComplexity) {
+            if(AscentChain == null) {
+                return new AscentSummary(currentComplexity, null, ResourceSummary.Empty);
+            }
+
             var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
             if(indexOfCurrent == -1 || indexOfCurrent == AscentChain.Count - 1) {
-                return AscentChain[0];
+                return new AscentSummary(currentComplexity, AscentChain[0], ResourceSummary.Empty);
             }else {
-                return AscentChain[indexOfCurrent + 1];
+                var nextComplexity = AscentChain[indexOfCurrent + 1];
+                ResourceSummary costsForTransition = ResourceSummary.Empty;
+                CostsToReach.TryGetValue(nextComplexity, out costsForTransition);
+
+                return new AscentSummary(currentComplexity, nextComplexity, costsForTransition);
             }
         }
 
-        public Dictionary<ResourceType, int> GetCostOfAscentTransition(IComplexityDefinition resultOfTransition) {
-            throw new NotImplementedException();
-        }
-
         public IComplexityDefinition GetDescentTransition(IComplexityDefinition currentComplexity) {
+            if(AscentChain == null) {
+                return null;
+            }
             var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
             return AscentChain[Math.Max(indexOfCurrent, 0)];
         }

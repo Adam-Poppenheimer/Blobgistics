@@ -16,15 +16,11 @@ namespace Assets.Societies {
         #region from BlobSiteBase
 
         public override bool AcceptsExtraction {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return true; }
         }
 
         public override bool AcceptsPlacement {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return true; }
         }
 
         public override Vector3 EastTubeConnectionPoint {
@@ -85,6 +81,12 @@ namespace Assets.Societies {
             }
         }
 
+        public float SecondsOfUnsatisfiedNeeds {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         public float SecondsUntilComplexityDescent {
             get {
                 throw new NotImplementedException();
@@ -129,11 +131,11 @@ namespace Assets.Societies {
             throw new NotImplementedException();
         }
 
-        public void TickConsumption(float timeElapsed) {
+        public void TickConsumption(float secondsPassed) {
             throw new NotImplementedException();
         }
 
-        public void TickProduction(float timeElapsed) {
+        public void TickProduction(float secondsPassed) {
             throw new NotImplementedException();
         }
 

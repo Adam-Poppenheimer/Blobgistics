@@ -35,6 +35,10 @@ namespace Assets.BlobEngine {
 
         public abstract bool IsAtCapacity();
 
+        public bool ContainsResourceSummary(ResourceSummary summary) {
+            return summary.IsContainedWithinBlobPile(this);
+        }
+
         #endregion
                 
     }

@@ -23,7 +23,11 @@ namespace Assets.BlobEngine {
         public abstract Vector3 NorthTubeConnectionPoint { get; }
         public abstract Vector3 SouthTubeConnectionPoint { get; }
         public abstract Vector3 EastTubeConnectionPoint  { get; }
-        public abstract Vector3 WestTubeConnectionPoint  { get; }      
+        public abstract Vector3 WestTubeConnectionPoint  { get; }
+        
+        public ReadOnlyBlobPile ReadOnlyBlobsWithin {
+            get { return new ReadOnlyBlobPile(BlobsWithin); }
+        }    
 
         #endregion
 

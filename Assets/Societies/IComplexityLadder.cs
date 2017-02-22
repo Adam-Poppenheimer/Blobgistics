@@ -9,10 +9,8 @@ namespace Assets.Societies {
 
         #region methods
 
-        IComplexityDefinition GetAscentTransition(IComplexityDefinition currentComplexity);
+        AscentSummary GetAscentTransition(IComplexityDefinition currentComplexity);
         IComplexityDefinition GetDescentTransition(IComplexityDefinition currentComplexity);
-
-        Dictionary<ResourceType, int> GetCostOfAscentTransition(IComplexityDefinition resultOfTransition);
 
         #endregion
 
