@@ -81,8 +81,10 @@ namespace Assets.BlobEngine {
         }
 
         public bool CanPlaceBlobOfTypeInto(ResourceType type) {
-            return AcceptsPlacement && CanPlaceBlobOfTypeInto_Internal(type);
+            return AcceptsPlacement && BlobTypeMeetsExternalPlacementConditions(type) && CanPlaceBlobOfTypeInto_Internal(type);
         }
+
+        protected virtual bool BlobTypeMeetsExternalPlacementConditions(ResourceType type) { return true; }
 
         protected bool CanPlaceBlobOfTypeInto_Internal(ResourceType type) {
             bool canPlaceInto = BlobsWithin.CanPlaceBlobOfTypeInto(type);
@@ -131,7 +133,13 @@ namespace Assets.BlobEngine {
         }
 
         public bool CanExtractBlobOfType(ResourceType type) {
-            return AcceptsExtraction && BlobsWithin.CanExtractBlobOfType(type);
+            return AcceptsExtraction && BlobTypeMeetsExternalExtractionConditions(type) && CanExtractBlobOfType_Internal(type);
+        }
+
+        protected virtual bool BlobTypeMeetsExternalExtractionConditions(ResourceType type) { return true; }
+
+        protected bool CanExtractBlobOfType_Internal(ResourceType type) {
+            return BlobsWithin.CanExtractBlobOfType(type);
         }
 
         public ResourceBlob ExtractAnyBlob() {
@@ -147,12 +155,20 @@ namespace Assets.BlobEngine {
 
         public ResourceBlob ExtractBlobOfType(ResourceType type) {
             if(CanExtractBlobOfType(type)) {
+                return ExtractBlobOfType_Internal(type);
+            }else {
+                throw new BlobException("Cannot extract a blob of this type from this BlobSite");
+            }
+        }
+
+        protected ResourceBlob ExtractBlobOfType_Internal(ResourceType type) {
+            if(CanExtractBlobOfType_Internal(type)) {
                 var blobExtracted = BlobsWithin.ExtractBlobOfType(type);
                 DoOnBlobBeingExtracted(blobExtracted);
                 RaiseBlobExtractedFrom(blobExtracted);
                 return blobExtracted;
             }else {
-                throw new BlobException("Cannot extract a blob of this type from this BlobSite");
+                throw new BlobException("Cannot internally extract a blob of this type from this BlobSite");
             }
         }
 

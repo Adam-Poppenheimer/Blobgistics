@@ -11,6 +11,8 @@ namespace Assets.Societies {
         IComplexityLadder ActiveComplexityLadder { get; }
         IComplexityDefinition StartingComplexity { get; }
 
+        IResourceBlobFactory BlobFactory { get; }
+
         #endregion
 
     }

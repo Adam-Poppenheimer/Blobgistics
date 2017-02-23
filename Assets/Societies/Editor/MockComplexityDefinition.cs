@@ -73,12 +73,6 @@ namespace Assets.Societies.Editor {
         }
         private float _secondsToFullyConsumeNeeds = 1f;
 
-        public float SecondsToConsumeSomeWants {
-            get { return _secondsToConsumeSomeWants; }
-            set { _secondsToConsumeSomeWants = value; }
-        }
-        private float _secondsToConsumeSomeWants = 1f;
-
         #endregion
 
         #endregion

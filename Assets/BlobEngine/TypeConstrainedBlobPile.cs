@@ -25,18 +25,25 @@ namespace Assets.BlobEngine {
         private List<ResourceBlob> AllBlobs =
             new List<ResourceBlob>();
 
-        private Dictionary<ResourceType, int> CapacityByType = 
-            new Dictionary<ResourceType, int>();
+        public ResourceSummary Capacity {
+            get { return _capacity; }
+            set {
+                _capacity = value;
+                foreach(var resourceType in Capacity) {
+                    if(!BlobsOfType.ContainsKey(resourceType)) {
+                        BlobsOfType.CreateList(resourceType);
+                    }
+                }
+            }
+        }
+        private ResourceSummary _capacity;
 
         #endregion
 
         #region constructors
 
-        public TypeConstrainedBlobPile(Dictionary<ResourceType, int> capacityByType) {
-            CapacityByType = new Dictionary<ResourceType, int>(capacityByType);
-            foreach(var typePermitted in capacityByType.Keys) {
-                BlobsOfType.CreateList(typePermitted);
-            }
+        public TypeConstrainedBlobPile(ResourceSummary capacity) {
+            Capacity = capacity;
         }
 
         #endregion
@@ -50,12 +57,11 @@ namespace Assets.BlobEngine {
         }
 
         public override bool CanPlaceBlobOfTypeInto(ResourceType type) {
-            int desiredCapacity = 0;
-            CapacityByType.TryGetValue(type, out desiredCapacity);
+            int desiredCapacity = Capacity[type];
             List<ResourceBlob> blobsOfRequestedType;
             BlobsOfType.TryGetValue(type, out blobsOfRequestedType);
 
-            return blobsOfRequestedType != null && blobsOfRequestedType.Count < desiredCapacity;
+            return blobsOfRequestedType.Count < desiredCapacity;
         }
 
         public override void PlaceBlobInto(ResourceBlob blob) {
@@ -120,8 +126,7 @@ namespace Assets.BlobEngine {
         }
 
         public override int GetSpaceLeftForBlobOfType(ResourceType type) {
-            int desiredCapacity = 0;
-            CapacityByType.TryGetValue(type, out desiredCapacity);
+            int desiredCapacity = Capacity[type];
             return desiredCapacity - GetAllBlobsOfType(type).Count();
         }
 
@@ -134,8 +139,8 @@ namespace Assets.BlobEngine {
         }
 
         public override bool IsAtCapacity() {
-            foreach(var resourceType in CapacityByType.Keys) {
-                if(!BlobsOfType.ContainsKey(resourceType) || BlobsOfType[resourceType].Count < CapacityByType[resourceType]) {
+            foreach(var resourceType in Capacity) {
+                if(!BlobsOfType.ContainsKey(resourceType) || BlobsOfType[resourceType].Count < Capacity[resourceType]) {
                     return false;
                 }
             }

@@ -25,7 +25,6 @@ namespace Assets.Societies {
 
         float SecondsToPerformFullProduction { get; }
         float SecondsToFullyConsumeNeeds { get; }
-        float SecondsToConsumeSomeWants { get; }
 
         float ComplexityDescentDuration { get; }
 

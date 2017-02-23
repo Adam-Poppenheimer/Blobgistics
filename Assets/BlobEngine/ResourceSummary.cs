@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobEngine {
 
-    public class ResourceSummary {
+    public class ResourceSummary : IEnumerable<ResourceType> {
 
         #region static fields and properties
 
@@ -27,7 +28,9 @@ namespace Assets.BlobEngine {
 
         public int this[ResourceType type] {
             get {
-                return ResourceCountByType[type];
+                int retval;
+                ResourceCountByType.TryGetValue(type, out retval);
+                return retval;
             }
         }
 
@@ -55,8 +58,30 @@ namespace Assets.BlobEngine {
 
         #region instance methods
 
+        #region from IEnumerable<ResourceType>
+
+        public IEnumerator<ResourceType> GetEnumerator() {
+            return ResourceCountByType.Keys.GetEnumerator();
+        }
+
+        #endregion
+
+        #region from IEnumerable
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return ResourceCountByType.Keys.GetEnumerator();
+        }
+
+        #endregion
+
         public int GetTotalResourceCount() {
             return ((IDictionary<ResourceType, int>)ResourceCountByType).Values.Sum();
+        }
+
+        public int GetCountOfResourceType(ResourceType type) {
+            int retval;
+            ResourceCountByType.TryGetValue(type, out retval);
+            return retval;
         }
 
         public bool IsContainedWithinBlobPile(BlobPileBase pile) {

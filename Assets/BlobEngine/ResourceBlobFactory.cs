@@ -9,7 +9,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobEngine {
 
-    public class ResourceBlobFactory : MonoBehaviour {
+    public class ResourceBlobFactory : MonoBehaviour, IResourceBlobFactory {
 
         #region static fields and properties
 
@@ -40,6 +40,10 @@ namespace Assets.BlobEngine {
 
         #endregion
 
+        public ResourceBlob BuildBlob(ResourceType typeOfResource) {
+            return BuildBlob(typeOfResource, Vector2.zero);
+        }
+
         public ResourceBlob BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
             var blobGameObject = Instantiate<GameObject>(BlobPrefab);
             var blobComponent = blobGameObject.GetComponent<ResourceBlob>();
@@ -53,6 +57,10 @@ namespace Assets.BlobEngine {
                 blobRenderer.material = MaterialDict[typeOfResource];
             }
             return blobComponent;
+        }
+
+        public void DestroyBlob(ResourceBlob blob) {
+            Destroy(blob);
         }
 
         #endregion

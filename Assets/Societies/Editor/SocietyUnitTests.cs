@@ -40,7 +40,6 @@ namespace Assets.Societies.Editor {
 
                     _complexityTest1.SecondsToPerformFullProduction = 1f;
                     _complexityTest1.SecondsToFullyConsumeNeeds     = 1f;
-                    _complexityTest1.SecondsToConsumeSomeWants      = 1f;
                 }
                 return _complexityTest1;
             }
@@ -69,6 +68,7 @@ namespace Assets.Societies.Editor {
             Assert.That(newSociety.CurrentComplexity == startingComplexity);
         }
 
+        [Test]
         public void OnCurrentComplexityChanged_NeedsWantsAndProductionCorrectlyAffectCapacity() {
             //Setup
             var newSocietyObject = new GameObject();
@@ -93,20 +93,24 @@ namespace Assets.Societies.Editor {
             newSociety.PrivateData = privateData;
 
             //Validation
-            Assert.That(
-                newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Red)   == 40 &&
-                newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Green) == 100 &&
-                newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Blue)  == 180
-            );
+            Assert.AreEqual(40, newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Red),
+                "Incorrect Red Capacity");
+            Assert.AreEqual(100, newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Green),
+                "Incorrect Green Capacity");
+            Assert.AreEqual(180, newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Blue),
+                "Incorrect Blue Capacity");
         }
 
+        [Test]
         public void OnCurrentComplexityChanged_AscentCostsCorrectlyAffectCapacity() {
             //Setup
             var currentComplexity = new MockComplexityDefinition();
             var ascentComplexity = new MockComplexityDefinition();
+            currentComplexity.Name = "Current";
+            ascentComplexity.Name = "Ascent";
 
             var ascentChain = new List<IComplexityDefinition>() { currentComplexity, ascentComplexity };
-            var ascentCosts = new Dictionary<IComplexityDefinition, ResourceSummary>() {
+            var costsToReach = new Dictionary<IComplexityDefinition, ResourceSummary>() {
                 { ascentComplexity, new ResourceSummary(
                     new KeyValuePair<ResourceType, int>(ResourceType.Red, 5)
                 ) }
@@ -114,14 +118,14 @@ namespace Assets.Societies.Editor {
 
             var complexityLadder = new MockComplexityLadder();
             complexityLadder.AscentChain = ascentChain;
+            complexityLadder.CostsToReach = costsToReach;
 
             //Execute
             var societyToTest = BuildSociety(complexityLadder, currentComplexity);
 
             //Validate
-            Assert.That(
-                societyToTest.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Red) == 5
-            );
+            Assert.AreEqual(5, societyToTest.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Red),
+                "Incorrect Red Capacity");
         }
 
         [Test]
@@ -190,13 +194,15 @@ namespace Assets.Societies.Editor {
             societyToTest.TickConsumption(1f);
 
             //Validation
-            Assert.That(
-                societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red).Count() == 1 &&
-                societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red).Count() == 2 &&
-                societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red).Count() == 3
-            );
+            Assert.AreEqual(1, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red).Count(),
+                "Red blob count is incorrect");
+            Assert.AreEqual(2, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Green).Count(),
+                "Green blob count is incorrect");
+            Assert.AreEqual(3, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Blue).Count(),
+                "Blue blob count is incorrect");
         }
 
+        [Test]
         public void OnConsumptionPerformed_AndNeedsAreAvailable_NeedsBecomeSatisfied() {
             //Setup
             var complexityToUse = new MockComplexityDefinition();
@@ -260,8 +266,8 @@ namespace Assets.Societies.Editor {
             societyToTest.TickConsumption(2f);
 
             //Validation
-            Assert.That(Mathf.Approximately(societyToTest.SecondsOfUnsatisfiedNeeds, 1f));
-            Assert.That(Mathf.Approximately(societyToTest.SecondsUntilComplexityDescent, 9f));
+            Assert.AreEqual(1f, societyToTest.SecondsOfUnsatisfiedNeeds, float.Epsilon);
+            Assert.AreEqual(9f, societyToTest.SecondsUntilComplexityDescent, float.Epsilon);
         }
 
         [Test]
@@ -284,8 +290,10 @@ namespace Assets.Societies.Editor {
 
             //Validation
             Assert.That(societyToTest.NeedsAreSatisfied);
-            Assert.That(Mathf.Approximately(societyToTest.SecondsOfUnsatisfiedNeeds, 0f));
-            Assert.That(Mathf.Approximately(societyToTest.SecondsUntilComplexityDescent, -1f));
+            Assert.That(Mathf.Approximately(societyToTest.SecondsOfUnsatisfiedNeeds, 0f), 
+                "SecondsOfUnsatisfiedNeeds is not approximately zero");
+            Assert.That(Mathf.Approximately(societyToTest.SecondsUntilComplexityDescent, -1f),
+                "SecondsUntilComplexityDescent is not approximately -1");
         }
 
         [Test]
@@ -412,12 +420,32 @@ namespace Assets.Societies.Editor {
             societyToTest.TickProduction(1f);
 
             //Validation
-            Assert.That(societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Green).Count() == 1);
+            Assert.AreEqual(1, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red).Count());
         }
 
         [Test]
         public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_AndOthersAreNot_WantsAreStillConsideredSatisfied() {
-            throw new NotImplementedException();
+            //Setup
+            var currentComplexity = new MockComplexityDefinition();
+            currentComplexity.Needs = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1));
+            currentComplexity.Wants = new List<ResourceSummary>() {
+                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red,   1)),
+                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
+            };
+            currentComplexity.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1));
+            currentComplexity.WantsCapacityCoefficient = 5;
+            currentComplexity.ProductionCapacityCoefficient = 5;
+            currentComplexity.NeedsCapacityCoefficient = 5;
+            currentComplexity.SecondsToPerformFullProduction = 1f;
+
+            var societyToTest = BuildSociety(null, currentComplexity);
+
+            //Execution
+            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.TickProduction(1f);
+
+            //Validation
+            Assert.AreEqual(2, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Blue).Count());
         }
 
         [Test]
@@ -426,11 +454,16 @@ namespace Assets.Societies.Editor {
             var currentComplexity = new MockComplexityDefinition();
             currentComplexity.ComplexityDescentDuration = 1f;
             currentComplexity.Needs = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1));
+            currentComplexity.Name = "Current";
 
             var descentComplexity = new MockComplexityDefinition();
+            descentComplexity.Name = "Descent";
 
             var activeLadder = new MockComplexityLadder();
             activeLadder.AscentChain = new List<IComplexityDefinition>() { descentComplexity, currentComplexity };
+            activeLadder.CostsToReach = new Dictionary<IComplexityDefinition, ResourceSummary>() {
+                { currentComplexity, new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue)) }
+            };
 
             var societyToTest = BuildSociety(activeLadder, currentComplexity);
 
@@ -448,6 +481,11 @@ namespace Assets.Societies.Editor {
             var ascentComplexity = new MockComplexityDefinition();
 
             currentComplexity.Needs = ResourceSummary.Empty;
+            currentComplexity.Production = new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
+            );
             currentComplexity.SecondsToFullyConsumeNeeds = 1f;
 
             var activeLadder = new MockComplexityLadder();
@@ -474,6 +512,11 @@ namespace Assets.Societies.Editor {
             var currentComplexity = new MockComplexityDefinition();
             currentComplexity.ComplexityDescentDuration = 1f;
             currentComplexity.Needs = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1));
+            currentComplexity.Production = new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
+            );
 
             var descentComplexity = new MockComplexityDefinition();
 
@@ -516,6 +559,28 @@ namespace Assets.Societies.Editor {
             Assert.That( societyToTest.CanExtractBlobOfType(ResourceType.Blue ));
         }
 
+        [Test]
+        public void OnProductionTicked_WhenAllWantsOnlyPartiallyFulfillable_NoResourcesPartiallyFulfillingWantsConsumed() {
+            //Setup
+            var currentComplexity = new MockComplexityDefinition();
+            currentComplexity.Wants = new List<ResourceSummary>() { 
+                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 2))
+            };
+            currentComplexity.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1));
+            currentComplexity.NeedsCapacityCoefficient = 5;
+            currentComplexity.WantsCapacityCoefficient = 5;
+
+            var societyToTest = BuildSociety(null, currentComplexity);
+
+            //Execution
+            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.TickProduction(1f);
+
+            //Validation
+            Assert.AreEqual(1f, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Green).Count(),
+                "Partially fulfilled needs were consumed");
+        }
+
         #endregion
 
         #region utility methods
@@ -531,9 +596,13 @@ namespace Assets.Societies.Editor {
             var newSocietyObject = new GameObject();
             var newSociety = newSocietyObject.AddComponent<Society>();
             var privateData = new MockSocietyPrivateData();
-            privateData.ActiveComplexityLadder = activeLadder;
-            privateData.StartingComplexity = startingComplexity;
 
+            if(activeLadder != null) {
+                privateData.ActiveComplexityLadder = activeLadder;
+            }
+            if(startingComplexity != null) {
+                privateData.StartingComplexity = startingComplexity;
+            }
             newSociety.PrivateData = privateData;
             return newSociety;
         }

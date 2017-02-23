@@ -11,8 +11,18 @@ namespace Assets.Societies.Editor {
 
         #region instance fields and properties
 
-        public List<IComplexityDefinition> AscentChain { get; set; }
-        public Dictionary<IComplexityDefinition, ResourceSummary> CostsToReach { get; set; }
+        public List<IComplexityDefinition> AscentChain {
+            get { return _ascentChain; }
+            set { _ascentChain = value; }
+        }
+        private List<IComplexityDefinition> _ascentChain = new List<IComplexityDefinition>() { null };
+
+        public Dictionary<IComplexityDefinition, ResourceSummary> CostsToReach {
+            get { return _costsToReach; }
+            set { _costsToReach = value; }
+        }
+        private Dictionary<IComplexityDefinition, ResourceSummary> _costsToReach =
+            new Dictionary<IComplexityDefinition, ResourceSummary>();
 
         #endregion
 
@@ -33,13 +43,14 @@ namespace Assets.Societies.Editor {
 
             var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
             if(indexOfCurrent == -1 || indexOfCurrent == AscentChain.Count - 1) {
-                return new AscentSummary(currentComplexity, AscentChain[0], ResourceSummary.Empty);
+                return new AscentSummary(currentComplexity, null, ResourceSummary.Empty);
             }else {
                 var nextComplexity = AscentChain[indexOfCurrent + 1];
-                ResourceSummary costsForTransition = ResourceSummary.Empty;
+                ResourceSummary costsForTransition;
                 CostsToReach.TryGetValue(nextComplexity, out costsForTransition);
 
-                return new AscentSummary(currentComplexity, nextComplexity, costsForTransition);
+                return new AscentSummary(currentComplexity, nextComplexity,
+                    costsForTransition ?? ResourceSummary.Empty);
             }
         }
 
@@ -48,7 +59,11 @@ namespace Assets.Societies.Editor {
                 return null;
             }
             var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
-            return AscentChain[Math.Max(indexOfCurrent, 0)];
+            if(indexOfCurrent > 0) {
+                return AscentChain[indexOfCurrent - 1];
+            }else {
+                return null;
+            }
         }
 
         #endregion
