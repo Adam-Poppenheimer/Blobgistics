@@ -7,13 +7,13 @@ using UnityEditor;
 
 using NUnit.Framework;
 
-using Assets.BlobEngine;
+using Assets.Blobs;
 
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Societies.Editor {
 
-    public class SocietyUnitTests {
+    /*public class SocietyUnitTests {
 
         #region instance fields and properties
 
@@ -109,8 +109,8 @@ namespace Assets.Societies.Editor {
             currentComplexity.Name = "Current";
             ascentComplexity.Name = "Ascent";
 
-            var ascentChain = new List<IComplexityDefinition>() { currentComplexity, ascentComplexity };
-            var costsToReach = new Dictionary<IComplexityDefinition, ResourceSummary>() {
+            var ascentChain = new List<ComplexityDefinitionBase>() { currentComplexity, ascentComplexity };
+            var costsToReach = new Dictionary<ComplexityDefinitionBase, ResourceSummary>() {
                 { ascentComplexity, new ResourceSummary(
                     new KeyValuePair<ResourceType, int>(ResourceType.Red, 5)
                 ) }
@@ -329,8 +329,8 @@ namespace Assets.Societies.Editor {
             currentComplexity.SecondsToFullyConsumeNeeds = 1f;
 
             var activeLadder = new MockComplexityLadder();
-            activeLadder.AscentChain = new List<IComplexityDefinition>() { currentComplexity, ascentComplexity };
-            activeLadder.CostsToReach = new Dictionary<IComplexityDefinition, ResourceSummary>() {
+            activeLadder.AscentChain = new List<ComplexityDefinitionBase>() { currentComplexity, ascentComplexity };
+            activeLadder.CostsToReach = new Dictionary<ComplexityDefinitionBase, ResourceSummary>() {
                 { ascentComplexity, new ResourceSummary(
                     new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
                 ) }
@@ -460,8 +460,8 @@ namespace Assets.Societies.Editor {
             descentComplexity.Name = "Descent";
 
             var activeLadder = new MockComplexityLadder();
-            activeLadder.AscentChain = new List<IComplexityDefinition>() { descentComplexity, currentComplexity };
-            activeLadder.CostsToReach = new Dictionary<IComplexityDefinition, ResourceSummary>() {
+            activeLadder.AscentChain = new List<ComplexityDefinitionBase>() { descentComplexity, currentComplexity };
+            activeLadder.CostsToReach = new Dictionary<ComplexityDefinitionBase, ResourceSummary>() {
                 { currentComplexity, new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue)) }
             };
 
@@ -489,8 +489,8 @@ namespace Assets.Societies.Editor {
             currentComplexity.SecondsToFullyConsumeNeeds = 1f;
 
             var activeLadder = new MockComplexityLadder();
-            activeLadder.AscentChain = new List<IComplexityDefinition>() { currentComplexity, ascentComplexity };
-            activeLadder.CostsToReach = new Dictionary<IComplexityDefinition, ResourceSummary>() {
+            activeLadder.AscentChain = new List<ComplexityDefinitionBase>() { currentComplexity, ascentComplexity };
+            activeLadder.CostsToReach = new Dictionary<ComplexityDefinitionBase, ResourceSummary>() {
                 { ascentComplexity, ResourceSummary.Empty }
             };
 
@@ -521,7 +521,7 @@ namespace Assets.Societies.Editor {
             var descentComplexity = new MockComplexityDefinition();
 
             var activeLadder = new MockComplexityLadder();
-            activeLadder.AscentChain = new List<IComplexityDefinition>() { descentComplexity, currentComplexity };
+            activeLadder.AscentChain = new List<ComplexityDefinitionBase>() { descentComplexity, currentComplexity };
 
             var societyToTest = BuildSociety(activeLadder, currentComplexity);
 
@@ -592,7 +592,7 @@ namespace Assets.Societies.Editor {
             return newBlob;
         }
 
-        private Society BuildSociety(IComplexityLadder activeLadder, IComplexityDefinition startingComplexity) {
+        private Society BuildSociety(ComplexityLadderBase activeLadder, ComplexityDefinitionBase startingComplexity) {
             var newSocietyObject = new GameObject();
             var newSociety = newSocietyObject.AddComponent<Society>();
             var privateData = new MockSocietyPrivateData();
@@ -611,7 +611,7 @@ namespace Assets.Societies.Editor {
 
         #endregion
 
-    }
+    }*/
 
 }
 

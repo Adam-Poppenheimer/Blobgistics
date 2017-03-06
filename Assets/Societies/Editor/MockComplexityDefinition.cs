@@ -2,76 +2,103 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.BlobEngine;
+using Assets.Blobs;
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Societies.Editor {
 
-    public class MockComplexityDefinition : IComplexityDefinition {
+    public class MockComplexityDefinition : ComplexityDefinitionBase {
 
         #region instance fields and properties
 
         #region from IComplexityDefinition
 
-        public float ComplexityDescentDuration {
+        public override float ComplexityDescentDuration {
             get { return _complexityDescentDuration; }
-            set { _complexityDescentDuration = value; }
+        }
+        private void SetComplexityDescentDuration(float value) {
+            _complexityDescentDuration = value;
         }
         private float _complexityDescentDuration = 1f;
 
-        public string Name {
+        public override string Name {
             get { return _name; }
-            set { _name = value; }
+        }
+        public void SetName(string value) {
+            _name = value;
         }
         private string _name = "DEFAULT";
 
-        public ResourceSummary Needs {
+        public override ResourceSummary Needs {
             get { return _needs; }
-            set { _needs = value; }
+        }
+        public void SetNeeds(ResourceSummary value) {
+            _needs = value;
         }
         private ResourceSummary _needs = ResourceSummary.Empty;
 
-        public ResourceSummary Production {
+        public override ResourceSummary Production {
             get { return _production; }
-            set { _production = value; }
+        }
+        public void SetProduction(ResourceSummary value) {
+            _production = value;
         }
         private ResourceSummary _production = ResourceSummary.Empty;
 
-        public IEnumerable<ResourceSummary> Wants {
+        public override IEnumerable<ResourceSummary> Wants {
             get { return _wants; }
-            set { _wants = value; }
+        }
+        public void SetWants(IEnumerable<ResourceSummary> value) {
+            _wants = value;
         }
         private IEnumerable<ResourceSummary> _wants = new List<ResourceSummary>();
 
-        public uint ProductionCapacityCoefficient {
+        public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }
-            set { _productionCapacityCoefficient = value; }
+        }
+        public void SetProductionCapacityCoefficient(uint value) {
+            _productionCapacityCoefficient = value;
         }
         private uint _productionCapacityCoefficient = 1;
 
-        public uint NeedsCapacityCoefficient {
+        public override uint NeedsCapacityCoefficient {
             get { return _needsCapacityCoefficient; }
-            set { _needsCapacityCoefficient = value; }
         }
-        private uint _needsCapacityCoefficient = 1;
+        public void SeNeedsCapacityCoefficient(uint value) {
+            _needsCapacityCoefficient = value;
+        }
+        public uint _needsCapacityCoefficient = 1;
 
-        public uint WantsCapacityCoefficient {
+        public override uint WantsCapacityCoefficient {
             get { return _wantsCapacityCoefficient; }
-            set { _wantsCapacityCoefficient = value; }
+        }
+        public void SetWantsCapacityCoefficient(uint value) {
+            _wantsCapacityCoefficient = value;
         }
         private uint _wantsCapacityCoefficient;
 
-        public float SecondsToPerformFullProduction {
+        public override float SecondsToPerformFullProduction {
             get { return _secondsToPerformFullProduction; }
-            set { _secondsToPerformFullProduction = value; }
+        }
+        public void SetSecondsToPerformFullProduction(float value) {
+            _secondsToPerformFullProduction = value;
         }
         private float _secondsToPerformFullProduction = 1f;
 
-        public float SecondsToFullyConsumeNeeds {
+        public override float SecondsToFullyConsumeNeeds {
             get { return _secondsToFullyConsumeNeeds; }
-            set { _secondsToFullyConsumeNeeds = value; }
+        }
+        public void SetSecondsToFullyConsumeNeeds(float value) {
+            _secondsToFullyConsumeNeeds = value;
         }
         private float _secondsToFullyConsumeNeeds = 1f;
+
+         public override ResourceSummary CostOfAscent {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
 
         #endregion
 

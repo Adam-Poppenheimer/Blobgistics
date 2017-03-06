@@ -3,26 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Assets.BlobEngine;
+using Assets.Blobs;
 
 namespace Assets.Societies.Editor {
 
-    public class MockComplexityLadder : IComplexityLadder {
+    public class MockComplexityLadder : ComplexityLadderBase {
 
         #region instance fields and properties
 
-        public List<IComplexityDefinition> AscentChain {
+        public List<ComplexityDefinitionBase> AscentChain {
             get { return _ascentChain; }
             set { _ascentChain = value; }
         }
-        private List<IComplexityDefinition> _ascentChain = new List<IComplexityDefinition>() { null };
-
-        public Dictionary<IComplexityDefinition, ResourceSummary> CostsToReach {
-            get { return _costsToReach; }
-            set { _costsToReach = value; }
-        }
-        private Dictionary<IComplexityDefinition, ResourceSummary> _costsToReach =
-            new Dictionary<IComplexityDefinition, ResourceSummary>();
+        private List<ComplexityDefinitionBase> _ascentChain = new List<ComplexityDefinitionBase>() { null };
 
         #endregion
 
@@ -36,25 +29,20 @@ namespace Assets.Societies.Editor {
 
         #region from IComplexityLadder
 
-        public AscentSummary GetAscentTransition(IComplexityDefinition currentComplexity) {
+        public override ComplexityDefinitionBase GetAscentTransition(ComplexityDefinitionBase currentComplexity) {
             if(AscentChain == null) {
-                return new AscentSummary(currentComplexity, null, ResourceSummary.Empty);
+                return null;
             }
 
             var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
             if(indexOfCurrent == -1 || indexOfCurrent == AscentChain.Count - 1) {
-                return new AscentSummary(currentComplexity, null, ResourceSummary.Empty);
+                return currentComplexity;
             }else {
-                var nextComplexity = AscentChain[indexOfCurrent + 1];
-                ResourceSummary costsForTransition;
-                CostsToReach.TryGetValue(nextComplexity, out costsForTransition);
-
-                return new AscentSummary(currentComplexity, nextComplexity,
-                    costsForTransition ?? ResourceSummary.Empty);
+                return AscentChain[indexOfCurrent + 1];
             }
         }
 
-        public IComplexityDefinition GetDescentTransition(IComplexityDefinition currentComplexity) {
+        public override ComplexityDefinitionBase GetDescentTransition(ComplexityDefinitionBase currentComplexity) {
             if(AscentChain == null) {
                 return null;
             }

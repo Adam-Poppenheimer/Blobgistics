@@ -8,9 +8,10 @@ using UnityEngine;
 using UnityCustomUtilities.UI;
 using UnityCustomUtilities.Misc;
 
-using Assets.BlobEngine;
+using Assets.Highways;
 using Assets.Editing;
 using Assets.Map;
+
 namespace Assets {
 
     [ExecuteInEditMode]
@@ -25,7 +26,7 @@ namespace Assets {
         [SerializeField] private Transform CanvasRoot;
         [SerializeField] private MapGraph  MapGraph;
 
-        [SerializeField] private BlobTubeFactory        BlobTubeFactory        = null;
+        [SerializeField] private BlobTubeFactoryBase BlobTubeFactory = null;
 
         #endregion
 
@@ -42,7 +43,7 @@ namespace Assets {
         }
 
         private void PushData() {
-            ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase        >(BlobTubeFactory,
+            ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase>(BlobTubeFactory,
                 "BlobTubeFactory"           , CanvasRoot, MapGraph.transform);
 
             EditorPrefabBuilder.TubeFactory      = BlobTubeFactory;

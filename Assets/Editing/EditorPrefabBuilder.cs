@@ -6,7 +6,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-using Assets.BlobEngine;
+using Assets.Highways;
 using Assets.Map;
 
 namespace Assets.Editing {
@@ -16,7 +16,7 @@ namespace Assets.Editing {
 
         #region static fields and properties
 
-        public static BlobTubeFactory TubeFactory {
+        public static BlobTubeFactoryBase TubeFactory {
             get {
                 if(_tubeFactory == null) {
                     throw new InvalidOperationException("TubeFactory is uninitialized");
@@ -32,7 +32,7 @@ namespace Assets.Editing {
                 }
             }
         }
-        private static BlobTubeFactory _tubeFactory;
+        private static BlobTubeFactoryBase _tubeFactory;
 
         public static MapGraph MapGraph {
             get {

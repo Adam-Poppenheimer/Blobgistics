@@ -6,7 +6,7 @@ using System.Text;
 
 using UnityEngine;
 
-using Assets.BlobEngine;
+using Assets.BlobSites;
 
 namespace Assets.Map {
 
@@ -30,6 +30,12 @@ namespace Assets.Map {
             }
         }
         [SerializeField, HideInInspector] private MapGraph _managingGraph;
+
+        public BlobSiteBase BlobSite {
+            get {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 

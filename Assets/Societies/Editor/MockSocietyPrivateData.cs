@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Assets.BlobEngine;
+using Assets.Blobs;
+using Assets.BlobSites;
 
 namespace Assets.Societies.Editor {
 
-    public class MockSocietyPrivateData : ISocietyPrivateData {
+    public class MockSocietyPrivateData : SocietyPrivateDataBase {
 
         #region static fields and properties
 
-        private static readonly IResourceBlobFactory blobFactory = new MockResourceBlobFactory();
+        private static readonly ResourceBlobFactoryBase blobFactory = new MockResourceBlobFactory();
 
         #endregion
 
@@ -19,26 +20,36 @@ namespace Assets.Societies.Editor {
 
         #region from ISocietyPrivateData
 
-        public IComplexityLadder ActiveComplexityLadder {
+        public override ComplexityLadderBase ActiveComplexityLadder {
             get { return _activeComplexityLadder; }
-            set { _activeComplexityLadder = value; }
         }
-        private IComplexityLadder _activeComplexityLadder = new MockComplexityLadder();
+        public void SetActiveComplexityLadder(ComplexityLadderBase value) {
+            _activeComplexityLadder = value;
+        }
+        private ComplexityLadderBase _activeComplexityLadder = new MockComplexityLadder();
 
-        public IComplexityDefinition StartingComplexity {
+        public override ComplexityDefinitionBase StartingComplexity {
             get { return _startingComplexity; }
-            set { _startingComplexity = value; }
         }
-        private IComplexityDefinition _startingComplexity = new MockComplexityDefinition();
+        public void SetStartingComplexity(MockComplexityDefinition value) {
+            _startingComplexity = value;
+        }
+        private ComplexityDefinitionBase _startingComplexity = new MockComplexityDefinition();
 
-        public IResourceBlobFactory BlobFactory {
+        public override ResourceBlobFactoryBase BlobFactory {
             get { return blobFactory; }
         }
 
+        public override BlobSiteBase BlobSite {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

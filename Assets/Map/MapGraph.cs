@@ -8,7 +8,7 @@ using UnityEngine;
 
 using UnityCustomUtilities.Extensions;
 
-using Assets.BlobEngine;
+using Assets.Blobs;
 
 namespace Assets.Map {
 
@@ -78,7 +78,7 @@ namespace Assets.Map {
             }else if(HasEdge(first, second)) {
                 throw new MapGraphException("There already exists and edge between these two MapNodes");
             }
-            EdgeSet.Add(new MapEdge(first, second, GetEdgeWeight(first, second)));
+            EdgeSet.Add(new MapEdge(first, second));
             NeighborsOfNode.AddElementToList(first, second);
             NeighborsOfNode.AddElementToList(second, first);
         }
@@ -126,6 +126,10 @@ namespace Assets.Map {
             return existedInGraph;
         }
 
+        public MapNode GetNodeOfID(int id) {
+            throw new NotImplementedException();
+        }
+
         public bool HasEdge(MapNode first, MapNode second) {
             if(first == null) {
                 throw new ArgumentNullException("first");
@@ -163,16 +167,6 @@ namespace Assets.Map {
                 retval.Add(GetEdge(node, neighbor));
             }
             return retval;
-        }
-
-        private float GetEdgeWeight(MapNode first, MapNode second) {
-            if(first == null) {
-                throw new ArgumentNullException("first");
-            }else if(second == null) {
-                throw new ArgumentNullException("second");
-            }else {
-                return Vector3.Distance(first.transform.position, second.transform.position);
-            }
         }
 
         private Func<MapEdge, bool> ConstructEdgeExistsTest(MapNode first, MapNode second) {

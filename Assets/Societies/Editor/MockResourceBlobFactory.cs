@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Assets.BlobEngine;
+using Assets.Blobs;
 using UnityEngine;
 
 namespace Assets.Societies.Editor {
 
-    internal class MockResourceBlobFactory : IResourceBlobFactory {
+    internal class MockResourceBlobFactory : ResourceBlobFactoryBase {
 
         #region instance methods
 
-        #region from IResourceBlobFactory
+        #region from ResourceBlobFactoryBase
 
-        public ResourceBlob BuildBlob(ResourceType typeOfResource) {
+        public override ResourceBlob BuildBlob(ResourceType typeOfResource) {
             return BuildBlob(typeOfResource, Vector2.zero);
         }
 
-        public ResourceBlob BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
+        public override ResourceBlob BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
             var hostingGameObject = new GameObject();
             var newBlob = hostingGameObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = typeOfResource;
@@ -26,7 +26,7 @@ namespace Assets.Societies.Editor {
             return newBlob;
         }
 
-        public void DestroyBlob(ResourceBlob blob) {
+        public override void DestroyBlob(ResourceBlob blob) {
             GameObject.DestroyImmediate(blob);
         }
 

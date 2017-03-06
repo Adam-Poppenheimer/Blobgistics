@@ -22,19 +22,13 @@ namespace Assets.Map {
         }
         [SerializeField] private MapNode _secondNode;
 
-        public float Weight {
-            get { return _weight; }
-        }
-        [SerializeField] private float _weight;
-
         #endregion
 
         #region constructors
 
-        public MapEdge(MapNode firstNode, MapNode secondNode, float weight) {
+        public MapEdge(MapNode firstNode, MapNode secondNode) {
             _firstNode = firstNode;
             _secondNode = secondNode;
-            _weight = weight;
         }
 
         #endregion
