@@ -4,8 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
-using Assets.Blobs;
 using UnityEngine;
+
+using Assets.Blobs;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobSites {
 
@@ -16,48 +19,59 @@ namespace Assets.BlobSites {
         #region from BlobSiteBase
 
         public override ReadOnlyCollection<ResourceBlob> Contents {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return contents.AsReadOnly(); }
         }
+        private List<ResourceBlob> contents = new List<ResourceBlob>();
 
         public override Vector3 NorthConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return PrivateData.NorthConnectionOffset + transform.position; }
         }
 
         public override Vector3 SouthConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return PrivateData.SouthConnectionOffset + transform.position; }
         }
 
         public override Vector3 EastConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return PrivateData.EastConnectionOffset + transform.position; }
         }
 
         public override Vector3 WestConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return PrivateData.WestConnectionOffset + transform.position; }
         }
 
-        public override uint TotalSpaceLeft {
-            get {
-                throw new NotImplementedException();
-            }
+        public override int TotalSpaceLeft {
+            get { return TotalCapacity - contents.Count; }
         }
 
         public override bool IsAtCapacity {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return TotalSpaceLeft == 0; }
         }
 
         #endregion
+
+        public BlobSitePrivateDataBase PrivateData {
+            get {
+                if(_privateData == null) {
+                    throw new InvalidOperationException("PrivateData is uninitialized");
+                } else {
+                    return _privateData;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _privateData = value;
+                }
+            }
+        }
+        private BlobSitePrivateDataBase _privateData;
+        
+        private Dictionary<ResourceType, bool> PermissionsByResourceType = 
+            new Dictionary<ResourceType, bool>();
+
+        private Dictionary<ResourceType, int> CapacitiesByResourceType =
+            new Dictionary<ResourceType, int>();
 
         #endregion
 
@@ -66,75 +80,133 @@ namespace Assets.BlobSites {
         #region from BlobSiteBase
 
         public override bool CanExtractAnyBlob() {
-            throw new NotImplementedException();
+            return contents.Count > 0;
         }
 
         public override ResourceBlob ExtractAnyBlob() {
-            throw new NotImplementedException();
+            if(CanExtractAnyBlob()) {
+                var blobToExtract = contents.Last();
+                contents.Remove(blobToExtract);
+                RaiseBlobExtractedFrom(blobToExtract);
+                return blobToExtract;
+            }else {
+                throw new BlobSiteException("Cannot extract any blob from this BlobSite");
+            }
         }
 
         public override bool CanExtractBlobOfType(ResourceType type) {
-            throw new NotImplementedException();
+            return contents.Find(delegate(ResourceBlob blob) {
+                return blob.BlobType == type;
+            }) != null;
         }
 
         public override ResourceBlob ExtractBlobOfType(ResourceType type) {
-            throw new NotImplementedException();
+            if(CanExtractBlobOfType(type)) {
+                var blobToExtract = contents.FindLast(delegate(ResourceBlob blob) {
+                    return blob.BlobType == type;
+                });
+                contents.Remove(blobToExtract);
+                RaiseBlobExtractedFrom(blobToExtract);
+                return blobToExtract;
+            }else {
+                throw new BlobSiteException("Cannot extract a blob of this type from this BlobSite");
+            }
         }
 
         public override bool CanPlaceBlobInto(ResourceBlob blob) {
-            throw new NotImplementedException();
+            if(blob == null) {
+                throw new ArgumentNullException("blob");
+            }
+            return !contents.Contains(blob) && CanPlaceBlobOfTypeInto(blob.BlobType);
         }
 
         public override bool CanPlaceBlobOfTypeInto(ResourceType type) {
-            throw new NotImplementedException();
+            bool isPermitted;
+            PermissionsByResourceType.TryGetValue(type, out isPermitted);
+            bool hasSpecificSpaceLeft = GetSpaceLeftOfType(type) > 0;
+            bool hasGeneralSpaceLeft = TotalSpaceLeft > 0;
+
+            return isPermitted && hasSpecificSpaceLeft && hasGeneralSpaceLeft;
         }
 
         public override void PlaceBlobInto(ResourceBlob blob) {
-            throw new NotImplementedException();
+            if(blob == null) {
+                throw new ArgumentNullException("blob");
+            }
+            if(CanPlaceBlobInto(blob)) {
+                contents.Add(blob);
+                RaiseBlobPlacedInto(blob);
+            }else {
+                throw new BlobSiteException("Cannot place this blob into this BlobSite");
+            }
         }
 
         public override IEnumerable<ResourceType> GetExtractableTypes() {
-            throw new NotImplementedException();
+            HashSet<ResourceType> retval = new HashSet<ResourceType>();
+            foreach(var blob in contents) {
+                retval.Add(blob.BlobType);
+            }
+            return retval;
         }
 
-        public override uint GetCapacityForResourceType(ResourceType type) {
-            throw new NotImplementedException();
+        public override int GetCapacityForResourceType(ResourceType type) {
+            int retval;
+            CapacitiesByResourceType.TryGetValue(type, out retval);
+            return retval;
         }
 
-        public override IEnumerable<ResourceBlob> GetContentsOfType(ResourceType type) {
-            throw new NotImplementedException();
-        }
-
-        public override void SetCapacityForResourceType(ResourceType type, uint newCapacity) {
-            throw new NotImplementedException();
+        public override void SetCapacityForResourceType(ResourceType type, int newCapacity) {
+            CapacitiesByResourceType[type] = newCapacity;
         }
 
         public override bool GetPermissionForResourceType(ResourceType type) {
-            throw new NotImplementedException();
+            bool retval;
+            PermissionsByResourceType.TryGetValue(type, out retval);
+            return retval;
         }
 
         public override void SetPermissionForResourceType(ResourceType type, bool isPermitted) {
-            throw new NotImplementedException();
+            PermissionsByResourceType[type] = isPermitted;
         }
 
         public override void SetPermissionsAndCapacity(ResourceSummary summary) {
-            throw new NotImplementedException();
+            if(summary == null) {
+                throw new ArgumentNullException("summary");
+            }
+            int newTotalCapacity = 0;
+            PermissionsByResourceType.Clear();
+            CapacitiesByResourceType.Clear();
+            foreach(var resourceType in summary) {
+                PermissionsByResourceType[resourceType] = true;
+                CapacitiesByResourceType[resourceType] = summary[resourceType];
+                newTotalCapacity += summary[resourceType];
+            }
+            TotalCapacity = newTotalCapacity;
         }
 
-        public override void Clear() {
-            throw new NotImplementedException();
+        public override IEnumerable<ResourceBlob> GetContentsOfType(ResourceType type) {
+            return contents.Where(delegate(ResourceBlob blob) {
+                return blob.BlobType == type;
+            });
         }
 
-        public override uint GetCountOfContentsOfType(ResourceType type) {
-            throw new NotImplementedException();
+        public override int GetCountOfContentsOfType(ResourceType type) {
+            return GetContentsOfType(type).Count();
         }
 
-        public override uint GetSpaceLeftOfType(ResourceType type) {
-            throw new NotImplementedException();
+        public override int GetSpaceLeftOfType(ResourceType type) {
+            int capacityForType;
+            CapacitiesByResourceType.TryGetValue(type, out capacityForType);
+            return capacityForType - GetCountOfContentsOfType(type);
         }
 
         public override bool GetIsAtCapacityForResource(ResourceType type) {
-            throw new NotImplementedException();
+            return GetSpaceLeftOfType(type) <= 0;
+        }
+
+        public override void Clear() {
+            contents.Clear();
+            RaiseAllBlobsCleared();
         }
 
         #endregion

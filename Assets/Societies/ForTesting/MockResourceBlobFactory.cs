@@ -6,9 +6,9 @@ using System.Text;
 using Assets.Blobs;
 using UnityEngine;
 
-namespace Assets.Societies.Editor {
+namespace Assets.Societies.ForTesting {
 
-    internal class MockResourceBlobFactory : ResourceBlobFactoryBase {
+    public class MockResourceBlobFactory : ResourceBlobFactoryBase {
 
         #region instance methods
 

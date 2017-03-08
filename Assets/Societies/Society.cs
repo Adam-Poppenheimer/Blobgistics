@@ -20,33 +20,22 @@ namespace Assets.Societies {
                 return PrivateData.ActiveComplexityLadder;
             }
         }
-        private ComplexityLadderBase _activeComplexityLadder;
+        [SerializeField] private ComplexityLadderBase _activeComplexityLadder;
 
         public override ComplexityDefinitionBase CurrentComplexity {
-            get {
-                if(_currentComplexity == null) {
-                    throw new InvalidOperationException("CurrentComplexity is uninitialized");
-                } else {
-                    return _currentComplexity;
-                }
-            }
-            protected set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _currentComplexity = value;
-                }
-            }
+            get { return currentComplexity; }
         }
-        private ComplexityDefinitionBase _currentComplexity;
+        [SerializeField] private ComplexityDefinitionBase currentComplexity;
 
         public override bool NeedsAreSatisfied {
-            get { return _needsAreSatisfied; }
-            protected set { _needsAreSatisfied = value; }
+            get { return needsAreSatisfied; }
         }
-        private bool _needsAreSatisfied = true;
+        [SerializeField] private bool needsAreSatisfied = true;
 
-        public override float SecondsOfUnsatisfiedNeeds { get; protected set; }
+        public override float SecondsOfUnsatisfiedNeeds {
+            get { return secondsOfUnsatisfiedNeeds; }
+        }
+        [SerializeField] private float secondsOfUnsatisfiedNeeds;
 
         public override float SecondsUntilComplexityDescent {
             get {
@@ -73,9 +62,9 @@ namespace Assets.Societies {
                     throw new ArgumentNullException("value");
                 } else {
                     _privateData = value;
-                    CurrentComplexity = _privateData.StartingComplexity;
+                    currentComplexity = _privateData.ActiveComplexityLadder.GetStartingComplexity();
                     var updatedCapacity = BuildCapacityForComplexity(CurrentComplexity);
-                    PrivateData.BlobSite.SetPermissionsAndCapacity(updatedCapacity);
+                    PrivateData.Location.BlobSite.SetPermissionsAndCapacity(updatedCapacity);
                 }
             }
         }
@@ -92,18 +81,18 @@ namespace Assets.Societies {
 
         private bool CanAscendComplexityLadder() {
             var complexityAbove = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
-            return complexityAbove != null && complexityAbove.CostOfAscent.IsContainedWithinBlobSite(PrivateData.BlobSite);
+            return complexityAbove != null && complexityAbove.CostOfAscent.IsContainedWithinBlobSite(PrivateData.Location);
         }
 
         public override void AscendComplexityLadder() {
             if(CanAscendComplexityLadder()) {
                 var complexityAbove = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
                 CurrentComplexity = complexityAbove;
-                PrivateData.BlobSite.Clear();
+                PrivateData.Location.Clear();
 
                 var updatedCapacity = BuildCapacityForComplexity(CurrentComplexity);
 
-                PrivateData.BlobSite.SetPermissionsAndCapacity(updatedCapacity);
+                PrivateData.Location.SetPermissionsAndCapacity(updatedCapacity);
             }else {
                 throw new SocietyException("Society cannot ascend its complexity ladder");
             }
@@ -118,11 +107,11 @@ namespace Assets.Societies {
             if(CanDescendComplexityLadder()) {
                 var complexityBelow = ActiveComplexityLadder.GetDescentTransition(CurrentComplexity);
                 CurrentComplexity = complexityBelow;
-                PrivateData.BlobSite.Clear();
+                PrivateData.Location.Clear();
 
                 var updatedCapacity = BuildCapacityForComplexity(CurrentComplexity);
 
-                PrivateData.BlobSite.SetPermissionsAndCapacity(updatedCapacity);
+                PrivateData.Location.SetPermissionsAndCapacity(updatedCapacity);
             }else {
                 throw new SocietyException("Society cannot descend its ComplexityLadder");
             }
@@ -167,8 +156,8 @@ namespace Assets.Societies {
 
             foreach(var resourceType in CurrentComplexity.Needs) {
                 for(int i = 0; i < CurrentComplexity.Needs[resourceType]; ++i) {
-                    if(PrivateData.BlobSite.CanExtractBlobOfType(resourceType)) {
-                        var removedBlob = PrivateData.BlobSite.ExtractBlobOfType(resourceType);
+                    if(PrivateData.Location.CanExtractBlobOfType(resourceType)) {
+                        var removedBlob = PrivateData.Location.ExtractBlobOfType(resourceType);
                         PrivateData.BlobFactory.DestroyBlob(removedBlob);
                     }else {
                         needsSatisfiedThisCycle = false;
@@ -196,8 +185,8 @@ namespace Assets.Societies {
                     ++blobsOfTypeToProduce;
                 }
                 for(int i = 0; i < blobsOfTypeToProduce; ++i) {
-                    if(PrivateData.BlobSite.CanPlaceBlobOfTypeInto(resourceType)) {
-                        PrivateData.BlobSite.PlaceBlobInto(PrivateData.BlobFactory.BuildBlob(resourceType));
+                    if(PrivateData.Location.CanPlaceBlobOfTypeInto(resourceType)) {
+                        PrivateData.Location.PlaceBlobInto(PrivateData.BlobFactory.BuildBlob(resourceType));
                     }else {
                         break;
                     }
@@ -209,10 +198,10 @@ namespace Assets.Societies {
             foreach(var wantSummary in CurrentComplexity.Wants) {
                 if(wantSummary.GetTotalResourceCount() == 0) {
                     continue;
-                }else if(wantSummary.IsContainedWithinBlobSite(PrivateData.BlobSite)) {
+                }else if(wantSummary.IsContainedWithinBlobSite(PrivateData.Location)) {
                     foreach(var resourceType in wantSummary) {
                         for(int i = 0; i < wantSummary[resourceType]; ++i) {
-                            PrivateData.BlobSite.ExtractBlobOfType(resourceType);
+                            PrivateData.Location.ExtractBlobOfType(resourceType);
                         }
                     }
                     return true;

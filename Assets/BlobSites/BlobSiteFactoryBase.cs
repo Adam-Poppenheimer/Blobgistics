@@ -11,7 +11,7 @@ namespace Assets.BlobSites {
 
         #region instance methods
 
-        public abstract BlobSiteBase ConstructBlobSite(Vector3 localPosition, Transform parent);
+        public abstract BlobSiteBase ConstructBlobSite(GameObject hostingObject);
 
         #endregion
 

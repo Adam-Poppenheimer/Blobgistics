@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Assets.BlobSites.Editor {
+namespace Assets.BlobSites.ForTesting {
 
-    internal class MockBlobSitePrivateData : BlobSitePrivateDataBase {
+    public class MockBlobSitePrivateData : BlobSitePrivateDataBase {
 
         #region instance fields and properties
 

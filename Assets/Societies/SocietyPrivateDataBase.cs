@@ -3,7 +3,7 @@
 using UnityEngine;
 
 using Assets.Blobs;
-using Assets.BlobSites;
+using Assets.Map;
 
 namespace Assets.Societies {
 
@@ -12,11 +12,10 @@ namespace Assets.Societies {
         #region instance fields and properties
 
         public abstract ComplexityLadderBase ActiveComplexityLadder { get; }
-        public abstract ComplexityDefinitionBase StartingComplexity { get; }
 
         public abstract ResourceBlobFactoryBase BlobFactory { get; }
 
-        public abstract BlobSiteBase BlobSite { get; }
+        public abstract MapNodeBase Location { get; }
 
         #endregion
 

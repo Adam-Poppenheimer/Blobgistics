@@ -19,14 +19,7 @@ namespace Assets {
 
         #region instance fields and properties
 
-        [SerializeField] private UIFSM TopLevelUIFSM;
-
-        [SerializeField] private GameObject BlobTubePrefab;
-
-        [SerializeField] private Transform CanvasRoot;
-        [SerializeField] private MapGraph  MapGraph;
-
-        [SerializeField] private BlobTubeFactoryBase BlobTubeFactory = null;
+        [SerializeField] private MapGraphBase  MapGraph;
 
         #endregion
 
@@ -43,11 +36,7 @@ namespace Assets {
         }
 
         private void PushData() {
-            ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase>(BlobTubeFactory,
-                "BlobTubeFactory"           , CanvasRoot, MapGraph.transform);
-
-            EditorPrefabBuilder.TubeFactory      = BlobTubeFactory;
-            EditorPrefabBuilder.MapGraph         = MapGraph;
+            EditorPrefabBuilder.MapGraph = MapGraph;
         }
 
         #endregion

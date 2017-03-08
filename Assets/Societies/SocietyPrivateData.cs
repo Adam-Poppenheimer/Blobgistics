@@ -34,7 +34,7 @@ namespace Assets.Societies {
             }
         }
 
-        public override BlobSiteBase BlobSite {
+        public override BlobSiteBase Location {
             get {
                 if(_blobSite == null) {
                     throw new InvalidOperationException("BlobSite is uninitialized");

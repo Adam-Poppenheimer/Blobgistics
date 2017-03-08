@@ -5,7 +5,7 @@ using System.Text;
 
 using Assets.Blobs;
 
-namespace Assets.Societies.Editor {
+namespace Assets.Societies.ForTesting {
 
     public class MockComplexityLadder : ComplexityLadderBase {
 
@@ -33,7 +33,6 @@ namespace Assets.Societies.Editor {
             if(AscentChain == null) {
                 return null;
             }
-
             var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
             if(indexOfCurrent == -1 || indexOfCurrent == AscentChain.Count - 1) {
                 return currentComplexity;
@@ -54,10 +53,14 @@ namespace Assets.Societies.Editor {
             }
         }
 
+        public override ComplexityDefinitionBase GetStartingComplexity() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

@@ -11,43 +11,39 @@ using Assets.BlobSites;
 namespace Assets.Map {
 
     [ExecuteInEditMode]
-    public class MapNode : MonoBehaviour {
+    public class MapNode : MapNodeBase {
 
         #region instance fields and properties
 
-        public IEnumerable<MapNode> Neighbors {
-            get { return ManagingGraph.GetNeighborsOfNode(this); }
+        public override int ID {
+            get { return _id; }
         }
+        public void SetID(int value) {
+            _id = value;
+        }
+        [SerializeField, HideInInspector] private int _id;
 
-        public MapGraph ManagingGraph {
+        public override MapGraphBase ManagingGraph {
             get { return _managingGraph; }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _managingGraph = value;
-                }
-            }
         }
-        [SerializeField, HideInInspector] private MapGraph _managingGraph;
+        public void SetManagingGraph(MapGraphBase value) {
+            _managingGraph = value;
+        }
+        [SerializeField, HideInInspector] private MapGraphBase _managingGraph;
 
-        public BlobSiteBase BlobSite {
-            get {
-                throw new NotImplementedException();
-            }
+        public override BlobSiteBase BlobSite {
+            get { return _blobSite; }
         }
+        public void SetBlobSite(BlobSiteBase value) {
+            _blobSite = value;
+        }
+        [SerializeField, HideInInspector] private BlobSiteBase _blobSite;
 
         #endregion
 
         #region instance methods
 
         #region Unity event methods
-
-        private void Awake() {
-            if(ManagingGraph != null && !ManagingGraph.Nodes.Contains(this)) {
-                ManagingGraph.SubscribeNode(this);
-            }
-        }
 
         private void OnDestroy() {
             if(ManagingGraph != null) {

@@ -16,11 +16,11 @@ namespace Assets.BlobSites {
 
         #region instance fields and properties
 
-        public uint TotalCapacity { get; set; }
+        public int TotalCapacity { get; set; }
 
         public IBlobAlignmentStrategy AlignmentStrategy { get; set; }
 
-        public abstract uint TotalSpaceLeft { get; }
+        public abstract int TotalSpaceLeft { get; }
 
         public abstract bool IsAtCapacity { get; }
 
@@ -76,14 +76,14 @@ namespace Assets.BlobSites {
         public abstract IEnumerable<ResourceType> GetExtractableTypes();
 
         public abstract IEnumerable<ResourceBlob> GetContentsOfType(ResourceType type);
-        public abstract uint GetCountOfContentsOfType(ResourceType type);
-        public abstract uint GetSpaceLeftOfType(ResourceType type);
+        public abstract int GetCountOfContentsOfType(ResourceType type);
+        public abstract int GetSpaceLeftOfType(ResourceType type);
 
         public abstract bool GetPermissionForResourceType(ResourceType type);
         public abstract void SetPermissionForResourceType(ResourceType type, bool isPermitted);
 
-        public abstract uint GetCapacityForResourceType(ResourceType type);
-        public abstract void SetCapacityForResourceType(ResourceType type, uint newCapacity);
+        public abstract int GetCapacityForResourceType(ResourceType type);
+        public abstract void SetCapacityForResourceType(ResourceType type, int newCapacity);
 
         public abstract bool GetIsAtCapacityForResource(ResourceType type);
 

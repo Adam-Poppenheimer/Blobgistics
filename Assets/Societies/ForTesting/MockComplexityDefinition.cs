@@ -5,7 +5,7 @@ using System.Text;
 using Assets.Blobs;
 using UnityCustomUtilities.Extensions;
 
-namespace Assets.Societies.Editor {
+namespace Assets.Societies.ForTesting {
 
     public class MockComplexityDefinition : ComplexityDefinitionBase {
 
@@ -16,7 +16,7 @@ namespace Assets.Societies.Editor {
         public override float ComplexityDescentDuration {
             get { return _complexityDescentDuration; }
         }
-        private void SetComplexityDescentDuration(float value) {
+        public void SetComplexityDescentDuration(float value) {
             _complexityDescentDuration = value;
         }
         private float _complexityDescentDuration = 1f;
@@ -64,7 +64,7 @@ namespace Assets.Societies.Editor {
         public override uint NeedsCapacityCoefficient {
             get { return _needsCapacityCoefficient; }
         }
-        public void SeNeedsCapacityCoefficient(uint value) {
+        public void SetNeedsCapacityCoefficient(uint value) {
             _needsCapacityCoefficient = value;
         }
         public uint _needsCapacityCoefficient = 1;
@@ -93,20 +93,15 @@ namespace Assets.Societies.Editor {
         }
         private float _secondsToFullyConsumeNeeds = 1f;
 
-         public override ResourceSummary CostOfAscent {
-            get {
-                throw new NotImplementedException();
-            }
+        public override ResourceSummary CostOfAscent {
+            get { return _costOfAscent; }
         }
-
+        public void SetCostOfAscent(ResourceSummary value) {
+            _costOfAscent = value;
+        }
+        private ResourceSummary _costOfAscent;
 
         #endregion
-
-        #endregion
-
-        #region constructors
-
-        public MockComplexityDefinition() { }
 
         #endregion
 

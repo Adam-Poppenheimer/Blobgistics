@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 using UnityEditor;
@@ -6,6 +8,7 @@ using UnityEditor;
 using NUnit.Framework;
 
 using Assets.Blobs;
+using Assets.BlobSites.ForTesting;
 
 using UnityCustomUtilities.Extensions;
 
@@ -38,9 +41,11 @@ namespace Assets.BlobSites.Editor {
         public void OnInitialization_ConnectionPointsReturnCurrentPositionPlusValueInPrivateData() {
             //Setup
             var factoryToUse = BuildFactory(PrivateData);
+            var hostingObject = new GameObject();
+            hostingObject.transform.position = new Vector3(1f, 1f, 1f);
 
             //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(new Vector3(1f, 1f, 1f), null);
+            var siteToTest = factoryToUse.ConstructBlobSite(hostingObject);
 
             //Validation
             Assert.That(Mathf.Approximately(0f, Vector3.Distance(
@@ -67,7 +72,7 @@ namespace Assets.BlobSites.Editor {
             var factoryToUse = BuildFactory(PrivateData);
 
             //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(Vector3.zero, null);
+            var siteToTest = factoryToUse.ConstructBlobSite(new GameObject());
 
             //Validation
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
@@ -82,7 +87,7 @@ namespace Assets.BlobSites.Editor {
             var factoryToUse = BuildFactory(PrivateData);
 
             //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(Vector3.zero, null);
+            var siteToTest = factoryToUse.ConstructBlobSite(new GameObject());
 
             //Validation
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
@@ -116,244 +121,836 @@ namespace Assets.BlobSites.Editor {
             siteToTest.SetCapacityForResourceType(ResourceType.Green, 2);
 
             //Validation
-            Assert.AreEqual(1, siteToTest.GetPermissionForResourceType(ResourceType.Red),   "ResourceType.Red has the wrong capacity");
-            Assert.AreEqual(2, siteToTest.GetPermissionForResourceType(ResourceType.Green), "ResourceType.Green has the wrong capacity");
-            Assert.AreEqual(0, !siteToTest.GetPermissionForResourceType(ResourceType.Blue), "ResourceType.Blue has the wrong capacity");
+            Assert.AreEqual(1, siteToTest.GetCapacityForResourceType(ResourceType.Red),   "ResourceType.Red has the wrong capacity");
+            Assert.AreEqual(2, siteToTest.GetCapacityForResourceType(ResourceType.Green), "ResourceType.Green has the wrong capacity");
+            Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(ResourceType.Blue),  "ResourceType.Blue has the wrong capacity");
         }
 
         [Test]
         public void OnSetPermissionAndCapacityCalled_PermissionsAndCapacitiesAreCorrectlyAssigned() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var permissionSummary = new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 2),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 4),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 0)
+            );
+
+            //Execution
+            siteToTest.SetPermissionsAndCapacity(permissionSummary);
+
+            //Validation
+            Assert.That(siteToTest.GetPermissionForResourceType(ResourceType.Red), "Red is not permitted");
+            Assert.AreEqual(2, siteToTest.GetCapacityForResourceType(ResourceType.Red), "Red has the wrong capacity");
+
+            Assert.That(siteToTest.GetPermissionForResourceType(ResourceType.Green), "Green is not permitted");
+            Assert.AreEqual(4, siteToTest.GetCapacityForResourceType(ResourceType.Green), "Green has the wrong capacity");
+
+            Assert.That(siteToTest.GetPermissionForResourceType(ResourceType.Blue), "Blue is permitted");
+            Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(ResourceType.Blue), "Blue has the wrong capacity");
+
+            Assert.AreEqual(6, siteToTest.TotalCapacity, "TotalCapacity is incorrect");
         }
 
         [Test]
-        public void OnPermissionForResourceTypeSetToTrue_CanPlaceBlobOfTypeIntoForThatTypeReturnsTrue() {
-            throw new NotImplementedException();
+        public void OnPermissionForResourceTypeSetToTrue_AndCapacityIsZero_CanPlaceBlobOfTypeIntoForThatTypeReturnsFalse() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+
+            //Validation
+            Assert.That(!siteToTest.CanPlaceBlobOfTypeInto(ResourceType.Red));
         }
 
         [Test]
-        public void OnPermissionForResourceTypeSetToTrue_CanPlaceBlobIntoOfThatTypeReturnsTrue() {
-            throw new NotImplementedException();
+        public void OnPermissionForResourceTypeSetToTrue_AndCapacityIsZero_CanPlaceBlobIntoOfThatTypeReturnsFalse() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+
+            //Validation
+            Assert.That(!siteToTest.CanPlaceBlobInto(blobToInsert));
         }
 
         [Test]
-        public void OnPermissionForResourceTypeSetToFalse_CanPlaceBlobOfTypeIntoForThatTypeReturnsFalse() {
-            throw new NotImplementedException();
+        public void OnPermissionForResourceTypeIsFalse_CanPlaceBlobOfTypeIntoForThatTypeReturnsFalse() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, false);
+
+            //Validation
+            Assert.That(!siteToTest.CanPlaceBlobOfTypeInto(ResourceType.Red));
         }
 
         [Test]
-        public void OnPermissionForResourceTypeSetToFalse_CanPlaceBlobIntoOfThatTypeReturnsFalse() {
-            throw new NotImplementedException();
+        public void OnPermissionForResourceTypeIsFalse_CanPlaceBlobIntoOfThatTypeReturnsFalse() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, false);
+
+            //Validation
+            Assert.That(!siteToTest.CanPlaceBlobInto(blobToInsert));
         }
 
         [Test]
-        public void OnCapacityForResourceTypeSetAboveZero_CanPlaceBlobOfTypeIntoForThatTypeReturnsTrue() {
-            throw new NotImplementedException();
+        public void OnPermissionForResourceTypeGiven_AndCapacitySetAboveZero_AndTotalCapacityIsZero_CanPlaceBlobOfTypeIntoForThatTypeReturnsFalse() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+
+            //Validation
+            Assert.That(!siteToTest.CanPlaceBlobOfTypeInto(ResourceType.Red));
         }
 
         [Test]
-        public void OnCapacityForResourceTypeSetAboveZero_CanPlaceBlobIntoOfThatTypeReturnsTrue() {
-            throw new NotImplementedException();
-        }
+        public void OnPermissionForResourceTypeGiven_AndCapacitySetAboveZero_AndTotalCapacityIsZero_CanPlaceBlobIntoOfThatTypeReturnsFalse() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
 
-        [Test]
-        public void OnCapacityForResourceTypeSetToZero_CanPlaceBlobOfTypeIntoForThatTypeReturnsFalse() {
-            throw new NotImplementedException();
-        }
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
 
-        [Test]
-        public void OnCapacityForResourceTypeSetToOrBelowZero_CanPlaceBlobIntoOfThatTypeReturnsFalse() {
-            throw new NotImplementedException();
+            //Validation
+            Assert.That(!siteToTest.CanPlaceBlobInto(blobToInsert));
         }
 
         [Test]
         public void IfResourceTypePermitted_AndResourceCapacitySetAboveZero_AndTotalCapacitySetAboveZero_CanPlaceBlobOfTypeIntoReturnsTrue() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+
+            //Validation
+            Assert.That(siteToTest.CanPlaceBlobOfTypeInto(ResourceType.Red));
         }
 
         [Test]
-        public void IfResourceTypePermitted_AndResourceCapacitySetAboveZero_AndTotalCapacitySetToZero_CanPlaceBlobOfTypeIntoReturnsFalse() {
-            throw new NotImplementedException();
+        public void IfResourceTypePermitted_AndResourceCapacitySetAboveZero_AndTotalCapacitySetAboveZero_CanPlaceBlobIntoOfThatTypeReturnsTrue() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+
+            //Validation
+            Assert.That(siteToTest.CanPlaceBlobInto(blobToInsert));
         }
 
         [Test]
         public void OnResourceBlobCanBePlaced_AndBlobPlacedInto_BlobAppearsInContents() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.That(siteToTest.Contents.Contains(blobToInsert));
         }
 
         [Test]
         public void OnResourceBlobCanBePlaced_AndBlobPlacedInto_TotalSpaceLeftDecreasesByOne() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 2);
+            siteToTest.TotalCapacity = 2;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.AreEqual(1, siteToTest.TotalSpaceLeft);
         }
 
         [Test]
         public void OnResourceBlobCanBePlaced_AndBlobPlacedInto_GetExtractableTypesContainsTypeOfPlacedBlob() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.That(siteToTest.GetExtractableTypes().Contains(blobToInsert.BlobType));
         }
 
         [Test]
         public void OnResourceBlobCanBePlaced_AndBlobPlacedInto_GetContentsOfTypeOnTypeOfPlacedBlobContainsPlacedBlob() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.That(siteToTest.GetContentsOfType(blobToInsert.BlobType).Contains(blobToInsert));
         }
 
         [Test]
         public void OnResourceBlobCanBePlaced_AndBlobPlacedInto_GetCountOfContentsOfTypeIncreasesByOne() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.AreEqual(1, siteToTest.GetCountOfContentsOfType(blobToInsert.BlobType));
         }
 
         [Test]
         public void OnResourceBlobCanBePlaced_AndBlobPlacedInto_GetSpaceLeftOfTypeDecreasesByOne() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 2);
+            siteToTest.TotalCapacity = 2;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.AreEqual(1, siteToTest.GetSpaceLeftOfType(blobToInsert.BlobType));
         }
 
         [Test]
         public void OnResourceBlobCanBePlaced_AndBlobPlacedInto_CanPlaceBlobIntoOnPlacedBlobReturnsFalse() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 2);
+            siteToTest.TotalCapacity = 2;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.That(!siteToTest.CanPlaceBlobInto(blobToInsert));
         }
 
         [Test]
         public void OnBlobPlacedInto_CanExtractAnyBlobReturnsTrue() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+
+            //Execution
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.That(siteToTest.CanExtractAnyBlob());
         }
 
         [Test]
         public void OnBlobPlacedInto_CanExtractBlobOfTypeOnTypeOfPlacedBlobReturnsTrue() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+
+            //Execution
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.That(siteToTest.CanExtractBlobOfType(blobToInsert.BlobType));
         }
 
         [Test]
         public void OnBlobPlacedInto_CanExtractBlobOfTypeOnADifferentTypeReturnsFalse() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+
+            //Execution
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.That(!siteToTest.CanExtractBlobOfType(ResourceType.Green));
         }
 
         [Test]
         public void OnBlobPlacedInto_BlobPlacedIntoEventFiresWithCorrectBlob() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+
+            bool eventHasFired = false;
+            ResourceBlob blobReturnedByEvent = null;
+            siteToTest.BlobPlacedInto += delegate(object sender, BlobEventArgs e) {
+                eventHasFired = true;
+                blobReturnedByEvent = e.Blob;
+            };
+
+            //Execution
+            
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Validation
+            Assert.That(eventHasFired, "Event did not fire");
+            Assert.AreEqual(blobToInsert, blobReturnedByEvent, "Blob broadcast by the event is not the blob that was placed");
+        }
+
+        [Test]
+        public void OnBlobExtractedFrom_ReturnsTheExpectedBlob() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var redBlob = BuildBlob(ResourceType.Red);
+            var blueBlob = BuildBlob(ResourceType.Blue);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.SetPermissionForResourceType(ResourceType.Blue, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Blue, 1);
+            siteToTest.TotalCapacity = 2;
+            siteToTest.PlaceBlobInto(redBlob);
+            siteToTest.PlaceBlobInto(blueBlob);
+
+            //Execution
+            var extractedBlob = siteToTest.ExtractBlobOfType(redBlob.BlobType);
+
+            //Validation
+            Assert.AreEqual(extractedBlob, redBlob);
         }
 
         [Test]
         public void OnBlobExtractedFrom_ContentsNoLongerContainsBlob() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Execution
+            siteToTest.ExtractBlobOfType(blobToInsert.BlobType);
+
+            //Validation
+            Assert.That(!siteToTest.Contents.Contains(blobToInsert));
         }
 
         [Test]
         public void OnBlobExtractedFrom_TotalSpaceLeftIncreasesByOne() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Execution
+            siteToTest.ExtractBlobOfType(blobToInsert.BlobType);
+
+            //Validation
+            Assert.AreEqual(1, siteToTest.TotalSpaceLeft);
         }
 
         [Test]
         public void OnBlobExtractedFrom_GetContentsOfTypeOfExtractedBlobNoLongerContainsExtractedBlob() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Execution
+            
+            siteToTest.ExtractBlobOfType(blobToInsert.BlobType);
+
+            //Validation
+            Assert.That(!siteToTest.GetContentsOfType(blobToInsert.BlobType).Contains(blobToInsert));
         }
 
         [Test]
         public void OnBlobExtractedFrom_GetCountOfContentsOfTypeOnTypeOfExtractedBlobDecreasesByOne() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Execution
+            
+            siteToTest.ExtractBlobOfType(blobToInsert.BlobType);
+
+            //Validation
+            Assert.AreEqual(0, siteToTest.GetCountOfContentsOfType(blobToInsert.BlobType));
         }
 
         [Test]
         public void OnBlobExtractedFrom_BlobExtractedFromFiresWithCorrectBlob() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            bool eventHasFired = false;
+            ResourceBlob blobExtracted = null;
+            siteToTest.BlobExtractedFrom += delegate(object sender, BlobEventArgs e) {
+                eventHasFired = true;
+                blobExtracted = e.Blob;
+            };
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Execution
+            siteToTest.ExtractBlobOfType(blobToInsert.BlobType);
+
+            //Validation
+            Assert.That(eventHasFired, "Event did not fire");
+            Assert.AreEqual(blobExtracted, blobToInsert, "Blob broadcast as extracted is not the blob that was extracted");
         }
 
         [Test]
         public void OnPermissionSetToFalse_BlobExtractionIsUnaffected() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+            var blobToInsert = BuildBlob(ResourceType.Red);
+
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.Red, 1);
+            siteToTest.TotalCapacity = 1;
+            siteToTest.PlaceBlobInto(blobToInsert);
+
+            //Execution
+            siteToTest.SetPermissionForResourceType(ResourceType.Red, false);
+
+            //Valdiation
+            Assert.That(siteToTest.CanExtractBlobOfType(ResourceType.Red));
         }
 
         [Test]
         public void OnBlobExtractedOfType_BlobReturnedIsOfCorrectType() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            var redBlob   = BuildBlob(ResourceType.Red);
+            var greenBlob = BuildBlob(ResourceType.Green);
+            var blueBlob  = BuildBlob(ResourceType.Blue);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
+            ));
+            siteToTest.TotalCapacity = 3;
+
+            siteToTest.PlaceBlobInto(redBlob);
+            siteToTest.PlaceBlobInto(greenBlob);
+            siteToTest.PlaceBlobInto(blueBlob);
+
+            //Execution
+            var blueExtractedBlob  = siteToTest.ExtractBlobOfType(ResourceType.Blue);
+            var redExtractedBlob   = siteToTest.ExtractBlobOfType(ResourceType.Red);
+            var greenExtractedBlob = siteToTest.ExtractBlobOfType(ResourceType.Green);
+
+            //Validation
+            Assert.AreEqual(ResourceType.Red,   redExtractedBlob.BlobType,   "redExtractedBlob has the wrong BlobType"  );
+            Assert.AreEqual(ResourceType.Green, greenExtractedBlob.BlobType, "greenExtractedBlob has the wrong BlobType");
+            Assert.AreEqual(ResourceType.Blue,  blueExtractedBlob.BlobType,  "blueExtractedBlob has the wrong BlobType" );
         }
 
         [Test]
         public void OnManyBlobsPlacedInto_GetExtractableTypesReturnsAllTypesOfBlobsWithin() {
-            throw new NotImplementedException();
-        }
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
 
-        [Test]
-        public void OnNumberOfBlobsPlacedIntoEqualToTotalCapacity_TotalSpaceLeftReachesZero() {
-            throw new NotImplementedException();
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
+            ));
+            siteToTest.TotalCapacity = 30;
+
+            //Execution
+            for(int i = 0; i < 5; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            }
+
+            var extractableTypes = siteToTest.GetExtractableTypes();
+
+            //Validation
+            Assert.That(extractableTypes.Contains (ResourceType.Red  ), "extractableTypes does not contain Red");
+            Assert.That(extractableTypes.Contains (ResourceType.Green), "extractableTypes does not contain Green");
+            Assert.That(!extractableTypes.Contains(ResourceType.Blue ), "extractableTypes falsely contains Blue");
         }
 
         [Test]
         public void OnNumberOfBlobsPlacedIntoEqualToTotalCapacity_IsAtCapacityBecomesTrue() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 5),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 5),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 5)
+            ));
+            siteToTest.TotalCapacity = 10;
+
+            //Execution
+            for(int i = 0; i < 5; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            }
+            for(int i = 0; i < 5; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            }
+
+            //Validation
+            Assert.That(siteToTest.IsAtCapacity);
         }
 
         [Test]
-        public void OnManyBlobsPlacedIntoAndExtractedFrom_GetExtractableTypesAlwaysReadsTheCorrectValue() {
-            throw new NotImplementedException();
+        public void OnBlobsPlacedIntoAndExtractedFrom_GetExtractableTypesAlwaysReadsTheCorrectValue() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            var redBlob   = BuildBlob(ResourceType.Red);
+            var greenBlob = BuildBlob(ResourceType.Green);
+            var blueBlob  = BuildBlob(ResourceType.Blue);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
+            ));
+            siteToTest.TotalCapacity = 3;
+
+            IEnumerable<ResourceType> extractableTypes;
+
+            //Execution and Validation
+            siteToTest.PlaceBlobInto(redBlob);
+            extractableTypes = siteToTest.GetExtractableTypes();
+            Assert.That(extractableTypes.Contains (ResourceType.Red  ), "Red insertion does not add red as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Green), "Red insertion adds green as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Blue ), "Red insertion adds blue as an extractable type");
+
+            siteToTest.PlaceBlobInto(greenBlob);
+            extractableTypes = siteToTest.GetExtractableTypes();
+            Assert.That(extractableTypes.Contains (ResourceType.Red  ), "Green insertion removes red as an extractable type");
+            Assert.That(extractableTypes.Contains (ResourceType.Green), "Green insertion does not add green as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Blue ), "Green insertion adds blue as an extractable type");
+
+            siteToTest.PlaceBlobInto(blueBlob);
+            extractableTypes = siteToTest.GetExtractableTypes();
+            Assert.That(extractableTypes.Contains(ResourceType.Red  ), "Blue insertion removes red as an extractable type");
+            Assert.That(extractableTypes.Contains(ResourceType.Green), "Blue insertion removes green as an extractable type");
+            Assert.That(extractableTypes.Contains(ResourceType.Blue ), "Blue insertion does not add blue as an extractable type");
+
+            siteToTest.ExtractBlobOfType(ResourceType.Green);
+            extractableTypes = siteToTest.GetExtractableTypes();
+            Assert.That(extractableTypes.Contains (ResourceType.Red  ), "Green extraction removes red as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Green), "Green extraction does not remove green as an extractable type");
+            Assert.That(extractableTypes.Contains (ResourceType.Blue ), "Green extraction removes blue as an extractable type");
+
+            siteToTest.ExtractBlobOfType(ResourceType.Red);
+            extractableTypes = siteToTest.GetExtractableTypes();
+            Assert.That(!extractableTypes.Contains(ResourceType.Red  ), "Red extraction does not remove red as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Green), "Red extraction adds green as an extractable type");
+            Assert.That(extractableTypes.Contains (ResourceType.Blue ), "Red extraction removes blue as an extractable type");
+
+            siteToTest.ExtractBlobOfType(ResourceType.Blue);
+            extractableTypes = siteToTest.GetExtractableTypes();
+            Assert.That(!extractableTypes.Contains(ResourceType.Red  ), "Blue extraction adds red as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Green), "Blue extraction adds green as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Blue ), "Blue extraction does not remove blue as an extractable type");
         }
 
         [Test]
-        public void OnManyBlobsPlacedIntoAndExtractedFrom_GetCountOfContentsOfTypeAlwaysReadsTheCorrectValue() {
-            throw new NotImplementedException();
-        }
+        public void OnSeveralResourceAtCapacity_ButOneIsNot_AndSpaceLeftIsNonZero_IsAtCapacityIsFalse() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
 
-        [Test]
-        public void OnManyBlobsPlacedIntoAndExtractedFrom_GetSpaceLeftOfTypeAlwaysReadsTheCorrectValue() {
-            throw new NotImplementedException();
-        }
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
+            ));
+            siteToTest.TotalCapacity = 3;
 
-        [Test]
-        public void OnManyBlobsPlacedIntoAndExtractedFrom_TotalSpaceLeftAlwaysReadsTheCorrectValue() {
-            throw new NotImplementedException();
-        }
+            //Execution
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
 
-        [Test]
-        public void OnManyBlobsPlacedIntoAndExtractedFrom_ContentsAlwaysReadsTheCorrectValue() {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public void OnManyBlobsPlacedIntoAndExtractedFrom_IsAtCapacityAlwaysReadsTheCorrectValue() {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public void OnManyBlobsPlacedInto_ButTotalSpaceLeftIsNeverZero_IsAtCapacityIsAlwaysFalse() {
-            throw new NotImplementedException();
-        }
-
-        [Test]
-        public void OnOneResourceIsAtCapacity_ButOthersAreNot_IsAtCapacityIsFalse() {
-            throw new NotImplementedException();
+            //Validation
+            Assert.That(!siteToTest.IsAtCapacity);
         }
 
         [Test]
         public void OnManyBlobsPlacedInto_AndThenClearIsCalled_ContentsIsEmpty() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
+            ));
+            siteToTest.TotalCapacity = 30;
+
+            //Execution
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Blue));
+            }
+
+            siteToTest.Clear();
+
+            //Validation
+            Assert.IsEmpty(siteToTest.Contents);
         }
 
         [Test]
         public void OnManyBlobsPlacedInto_AndThenClearIsCalled_TotalSpaceLeftEqualsTotalCapacity() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
+            ));
+            siteToTest.TotalCapacity = 30;
+
+            //Execution
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Blue));
+            }
+
+            siteToTest.Clear();
+
+            //Validation
+            Assert.AreEqual(siteToTest.TotalCapacity, siteToTest.TotalSpaceLeft);
         }
 
         [Test]
         public void OnManyBlobsPlacedInto_AndThenClearIsCalled_GetContentsOfTypeForAllTypesIsEmpty() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
+            ));
+            siteToTest.TotalCapacity = 30;
+
+            //Execution
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Blue));
+            }
+
+            siteToTest.Clear();
+
+            //Validation
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                Assert.IsEmpty(siteToTest.GetContentsOfType(resourceType), "contents are not empty for resource type " + resourceType);
+            }
         }
 
         [Test]
         public void OnManyBlobsPlacedInto_AndThenClearIsCalled_GetCountOfContentsofTypeForAllTypesIsZero() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
+            ));
+            siteToTest.TotalCapacity = 30;
+
+            //Execution
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Blue));
+            }
+
+            siteToTest.Clear();
+
+            //Validation
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                Assert.AreEqual(0, siteToTest.GetCountOfContentsOfType(resourceType), "Count is nonzero for resource type " + resourceType);
+            }
         }
 
         [Test]
         public void OnManyBlobsPlacedInto_AndThenClearIsCalled_ThenForAllTypes_GetSpaceLeftOfTypeEqualsGetCapacityForType() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
+            ));
+            siteToTest.TotalCapacity = 30;
+
+            //Execution
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Blue));
+            }
+
+            siteToTest.Clear();
+
+            //Validation
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                Assert.AreEqual(siteToTest.GetCapacityForResourceType(resourceType), siteToTest.GetSpaceLeftOfType(resourceType),
+                    string.Format("for resource type {0}, space left does not equal capacity", resourceType));
+            }
         }
 
         [Test]
         public void OnManyBlobsPlacedInto_AndThenClearIsCalled_AllBlobsClearedEventIsCalled() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
+            ));
+            siteToTest.TotalCapacity = 30;
+
+            bool siteWasCleared = false;
+            siteToTest.AllBlobsCleared += delegate(object sender, EventArgs e) {
+                siteWasCleared = true;
+            };
+
+            //Execution
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            }
+            for(int i = 0; i < 10; ++i) {
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Blue));
+            }
+
+            siteToTest.Clear();
+
+            //Validation
+            Assert.That(siteWasCleared);
         }
 
         [Test]
-        public void IfIsAtCapacity_ThenGetIsAtCapacityForResourceReturnsTrueForEveryResourceType() {
-            throw new NotImplementedException();
+        public void OnAllBlobTypesFilledToCapacity_ButTotalCapacityNotReached_TotalSpaceLeftIsNonzero_AndIsAtCapacityIsFalse() {
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPermissionsAndCapacity(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
+            ));
+            siteToTest.TotalCapacity = 4;
+
+            //Execution
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Green));
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Blue));
+
+            //Validation
+            Assert.That(!siteToTest.IsAtCapacity);
         }
 
         #endregion
@@ -362,27 +959,59 @@ namespace Assets.BlobSites.Editor {
 
         [Test]
         public void CanPlaceBlobInto_IsPassedNullValue_ThrowsArgumentNullException() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                siteToTest.CanPlaceBlobInto(null);
+            });
         }
 
         [Test]
         public void CanPlaceBlobIntoReturnsFalse_AndPlaceBlobIntoIsCalled_ThrowsBlobSiteException() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            var blobToAdd = BuildBlob(ResourceType.Red);
+
+            //Execution and Validation
+            Assert.Throws<BlobSiteException>(delegate() {
+                siteToTest.PlaceBlobInto(blobToAdd);
+            });
         }
 
         [Test]
         public void CanExtractAnyBlobReturnsFalse_AndExtractAnyBlobIsCalled_ThrowsBlobSiteException() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            //Execution and Validation
+            Assert.Throws<BlobSiteException>(delegate() {
+                siteToTest.ExtractAnyBlob();
+            });
         }
 
         [Test]
         public void CanExtractBlobOfTypeReturnsFalse_AndExtractBlobOfTypeIsCalled_ThrowsBlobSiteException() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            //Execution and Validation
+            Assert.Throws<BlobSiteException>(delegate() {
+                siteToTest.ExtractBlobOfType(ResourceType.Green);
+            });
         }
 
         [Test]
         public void SetPermissionsAndCapacity_IsPassedNullValue_ThrowsArgumentNullException() {
-            throw new NotImplementedException();
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                siteToTest.SetPermissionsAndCapacity(null);
+            });
         }
 
         #endregion
@@ -395,7 +1024,17 @@ namespace Assets.BlobSites.Editor {
         }
 
         private BlobSiteFactory BuildFactory(BlobSitePrivateDataBase privateData) {
+            var hostingObject = new GameObject();
+            var newFactory = hostingObject.AddComponent<BlobSiteFactory>();
+            newFactory.BlobSitePrivateData = privateData;
+            return newFactory;
+        }
 
+        private ResourceBlob BuildBlob(ResourceType type) {
+            var hostingObject = new GameObject();
+            var newBlob = hostingObject.AddComponent<ResourceBlob>();
+            newBlob.BlobType = type;
+            return newBlob;
         }
 
         #endregion

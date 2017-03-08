@@ -5,31 +5,46 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.BlobSites;
+
 namespace Assets.Map {
 
     [Serializable]
-    public struct MapEdge {
+    public class MapEdge : MapEdgeBase {
 
         #region instance fields and properties
 
-        public MapNode FirstNode {
+        public override int ID {
+            get { return _id; }
+        }
+        public void SetID(int value) {
+            _id = value;
+        }
+        [SerializeField] private int _id;
+
+        public override MapNodeBase FirstNode {
             get { return _firstNode; }
         }
-        [SerializeField] private MapNode _firstNode;
+        public void SetFirstNode(MapNodeBase value) {
+            _firstNode = value;
+        }
+        [SerializeField] private MapNodeBase _firstNode;
 
-        public MapNode SecondNode {
+        public override MapNodeBase SecondNode {
             get { return _secondNode; }
         }
-        [SerializeField] private MapNode _secondNode;
-
-        #endregion
-
-        #region constructors
-
-        public MapEdge(MapNode firstNode, MapNode secondNode) {
-            _firstNode = firstNode;
-            _secondNode = secondNode;
+        public void SetSecondNode(MapNodeBase value) {
+            _secondNode = value;
         }
+        [SerializeField] private MapNodeBase _secondNode;
+
+        public override BlobSiteBase BlobSite {
+            get { return _blobSite; }
+        }
+        public void SetBlobSite(BlobSiteBase value) {
+            _blobSite = value;
+        }
+        [SerializeField] private BlobSiteBase _blobSite;
 
         #endregion
 

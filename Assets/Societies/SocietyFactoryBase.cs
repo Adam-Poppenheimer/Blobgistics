@@ -15,8 +15,8 @@ namespace Assets.Societies {
 
         public abstract SocietyBase GetSocietyOfID(int id);
 
-        public abstract bool        CanConstructSocietyAt(MapNode location);
-        public abstract SocietyBase ConstructSocietyAt   (MapNode location);
+        public abstract bool        CanConstructSocietyAt(MapNodeBase location);
+        public abstract SocietyBase ConstructSocietyAt   (MapNodeBase location);
 
         public abstract void DestroySociety(SocietyBase society);
 

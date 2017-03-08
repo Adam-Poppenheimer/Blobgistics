@@ -49,7 +49,7 @@ namespace Assets.Highways.Editor {
             }
         }
 
-        public override uint TotalSpaceLeft {
+        public override int TotalSpaceLeft {
             get {
                 throw new NotImplementedException();
             }
@@ -112,11 +112,11 @@ namespace Assets.Highways.Editor {
             throw new NotImplementedException();
         }
 
-        public override uint GetCapacityForResourceType(ResourceType type) {
+        public override int GetCapacityForResourceType(ResourceType type) {
             throw new NotImplementedException();
         }
 
-        public override void SetCapacityForResourceType(ResourceType type, uint newCapacity) {
+        public override void SetCapacityForResourceType(ResourceType type, int newCapacity) {
             throw new NotImplementedException();
         }
 
@@ -136,11 +136,11 @@ namespace Assets.Highways.Editor {
             throw new NotImplementedException();
         }
 
-        public override uint GetCountOfContentsOfType(ResourceType type) {
+        public override int GetCountOfContentsOfType(ResourceType type) {
             throw new NotImplementedException();
         }
 
-        public override uint GetSpaceLeftOfType(ResourceType type) {
+        public override int GetSpaceLeftOfType(ResourceType type) {
             throw new NotImplementedException();
         }
 

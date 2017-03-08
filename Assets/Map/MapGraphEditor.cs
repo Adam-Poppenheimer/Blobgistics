@@ -103,7 +103,7 @@ namespace Assets.Map {
             return candidateNode;
         }
 
-        private void DrawAllEdges(IEnumerable<MapNode> allNodes) {
+        private void DrawAllEdges(IEnumerable<MapNodeBase> allNodes) {
             foreach(var edge in TargetedGraph.Edges) {
                 Handles.color = Color.white;
                 Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);

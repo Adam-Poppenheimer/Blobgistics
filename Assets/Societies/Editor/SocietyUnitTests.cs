@@ -8,43 +8,62 @@ using UnityEditor;
 using NUnit.Framework;
 
 using Assets.Blobs;
+using Assets.Map;
+using Assets.Societies.ForTesting;
 
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Societies.Editor {
 
-    /*public class SocietyUnitTests {
+    public class SocietyUnitTests {
 
         #region instance fields and properties
 
-        private MockComplexityDefinition TestComplexity1 {
+        private MockComplexityDefinition StandardComplexity {
             get {
-                if(_complexityTest1 == null) {
-                    _complexityTest1 = new MockComplexityDefinition();
-                    _complexityTest1.ComplexityDescentDuration = 10f;
-                    _complexityTest1.Name = "FirstComplexity";
-                    _complexityTest1.Needs = new ResourceSummary(
+                if(_standardComplexity == null) {
+                    var hostingObject = new GameObject();
+                    _standardComplexity = hostingObject.AddComponent<MockComplexityDefinition>();
+                    _standardComplexity.SetComplexityDescentDuration(10f);
+                    _standardComplexity.SetName("StandardComplexity");
+                    _standardComplexity.SetNeeds(new ResourceSummary(
                         new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
-                    );
-                    _complexityTest1.Production = new ResourceSummary(
+                    ));
+                    _standardComplexity.SetProduction(new ResourceSummary(
                         new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)
-                    );
-                    _complexityTest1.Wants = new List<ResourceSummary>() {
+                    ));
+                    _standardComplexity.SetWants(new List<ResourceSummary>() {
                         new ResourceSummary(
                             new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
                         )
-                    };
-                    _complexityTest1.NeedsCapacityCoefficient      = 5;
-                    _complexityTest1.ProductionCapacityCoefficient = 5;
-                    _complexityTest1.WantsCapacityCoefficient      = 5;
+                    });
+                    _standardComplexity.SetNeedsCapacityCoefficient(5);
+                    _standardComplexity.SetProductionCapacityCoefficient(5);
+                    _standardComplexity.SetWantsCapacityCoefficient(5);
 
-                    _complexityTest1.SecondsToPerformFullProduction = 1f;
-                    _complexityTest1.SecondsToFullyConsumeNeeds     = 1f;
+                    _standardComplexity.SetSecondsToPerformFullProduction(1f);
+                    _standardComplexity.SetSecondsToFullyConsumeNeeds(1f);
+
+                    _standardComplexity.SetCostOfAscent(new ResourceSummary(
+                        new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                    ));
                 }
-                return _complexityTest1;
+                return _standardComplexity;
             }
         }
-        private MockComplexityDefinition _complexityTest1 = null;
+        private MockComplexityDefinition _standardComplexity = null;
+
+        private MockResourceBlobFactory StandardBlobFactory {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        private MockMapNode StandardLocation {
+            get {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 
@@ -55,11 +74,10 @@ namespace Assets.Societies.Editor {
         [Test]
         public void OnPrivateDataInitialized_NewComplexityIsStartingComplexityDefinedInPrivateData() {
             //Setup
-            var newSocietyObject = new GameObject();
-            var newSociety = newSocietyObject.AddComponent<Society>();
-            var privateData = new MockSocietyPrivateData();
-            var startingComplexity = new MockComplexityDefinition();
-            privateData.StartingComplexity = startingComplexity;
+            var startingComplexity = BuildComplexityDefinition();
+            var complexityLadder = BuildComplexityLadder(startingComplexity);
+            var privateData = BuildPrivateData(complexityLadder, StandardBlobFactory, StandardLocation);
+            var newSociety = BuildSociety(privateData);
 
             //Execution
             newSociety.PrivateData = privateData;
@@ -69,158 +87,132 @@ namespace Assets.Societies.Editor {
         }
 
         [Test]
-        public void OnCurrentComplexityChanged_NeedsWantsAndProductionCorrectlyAffectCapacity() {
+        public void OnCurrentComplexityChanged_NeedsWantsAndProductionCorrectlyAffectCapacityOfLocationsBlobSite() {
             //Setup
-            var newSocietyObject = new GameObject();
-            var newSociety = newSocietyObject.AddComponent<Society>();
-            var privateData = new MockSocietyPrivateData();
+            var startingComplexity = BuildComplexityDefinition();
 
-            var newComplexity = new MockComplexityDefinition();
-            newComplexity.Needs      = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red,   10));
-            newComplexity.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  30));
-
-            newComplexity.Wants = new List<ResourceSummary>() {
+            startingComplexity.SetNeeds     (new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red,   10)));
+            startingComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  30)));
+            startingComplexity.SetWants(new List<ResourceSummary>() {
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 20))
-            }; 
+            });
 
-            newComplexity.NeedsCapacityCoefficient = 4;
-            newComplexity.WantsCapacityCoefficient = 5;
-            newComplexity.ProductionCapacityCoefficient = 6;
+            startingComplexity.SetNeedsCapacityCoefficient(4);
+            startingComplexity.SetWantsCapacityCoefficient(5);
+            startingComplexity.SetProductionCapacityCoefficient(6);
 
-            privateData.StartingComplexity = newComplexity;
+            var complexityLadder = BuildComplexityLadder(startingComplexity);
+            var privateData = BuildPrivateData(complexityLadder, StandardBlobFactory, StandardLocation);
+            var newSociety = BuildSociety(privateData); 
 
             //Execution
             newSociety.PrivateData = privateData;
 
             //Validation
-            Assert.AreEqual(40, newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Red),
+            Assert.AreEqual(40, newSociety.Location.BlobSite.GetSpaceLeftOfType(ResourceType.Red),
                 "Incorrect Red Capacity");
-            Assert.AreEqual(100, newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Green),
+            Assert.AreEqual(100, newSociety.Location.BlobSite.GetSpaceLeftOfType(ResourceType.Green),
                 "Incorrect Green Capacity");
-            Assert.AreEqual(180, newSociety.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Blue),
+            Assert.AreEqual(180, newSociety.Location.BlobSite.GetSpaceLeftOfType(ResourceType.Blue),
                 "Incorrect Blue Capacity");
         }
 
         [Test]
-        public void OnCurrentComplexityChanged_AscentCostsCorrectlyAffectCapacity() {
-            //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            var ascentComplexity = new MockComplexityDefinition();
-            currentComplexity.Name = "Current";
-            ascentComplexity.Name = "Ascent";
-
-            var ascentChain = new List<ComplexityDefinitionBase>() { currentComplexity, ascentComplexity };
-            var costsToReach = new Dictionary<ComplexityDefinitionBase, ResourceSummary>() {
-                { ascentComplexity, new ResourceSummary(
-                    new KeyValuePair<ResourceType, int>(ResourceType.Red, 5)
-                ) }
-            };
-
-            var complexityLadder = new MockComplexityLadder();
-            complexityLadder.AscentChain = ascentChain;
-            complexityLadder.CostsToReach = costsToReach;
-
-            //Execute
-            var societyToTest = BuildSociety(complexityLadder, currentComplexity);
-
-            //Validate
-            Assert.AreEqual(5, societyToTest.ReadOnlyBlobsWithin.GetSpaceLeftForBlobOfType(ResourceType.Red),
-                "Incorrect Red Capacity");
+        public void OnCurrentComplexityChanged_AscentCostsOfNextComplexityCorrectlyAffectCapacityOfLocationsBlobSite() {
+            throw new NotImplementedException();
         }
 
         [Test]
-        public void OnProductionPerformed_WhenEmptyOfResources_AndTimeTickedIsSufficientForFullProduction_ProductionFoundInBlobsWithin() {
+        public void OnProductionPerformed_WhenEmptyOfResources_AndTimeTickedIsSufficientForFullProduction_ProductionFoundInLocationsBlobSite() {
             //Setup
-            var societyToTest = BuildSociety(null, TestComplexity1);
+            var societyToTest = BuildSociety(StandardComplexity);
 
             //Execution
             societyToTest.TickProduction(societyToTest.CurrentComplexity.SecondsToPerformFullProduction);
 
             //Validation
-            Assert.That(
-                societyToTest.ReadOnlyBlobsWithin.ContainsResourceSummary(TestComplexity1.Production)
-            );
+            Assert.That( StandardComplexity.Production.IsContainedWithinBlobSite(societyToTest.Location.BlobSite) );
         }
 
         [Test]
         public void OnProductionPerformed_AndNotEnoughRoom_ProductionIsInsertedToCapacity_AndNoExceptionIsThrown() {
             //Setup
-            var complexityToUse = new MockComplexityDefinition();
-            complexityToUse.ProductionCapacityCoefficient = 1;
-            complexityToUse.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10));
-            complexityToUse.SecondsToPerformFullProduction = 1f;
+            var complexityToUse = BuildComplexityDefinition();
+            complexityToUse.SetProductionCapacityCoefficient(1);
+            complexityToUse.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            complexityToUse.SetSecondsToPerformFullProduction(1f);
 
-            var societyToTest = BuildSociety(null, complexityToUse);
+            var societyToTest = BuildSociety(complexityToUse);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
             Assert.DoesNotThrow(delegate() {
                 societyToTest.TickProduction(complexityToUse.SecondsToPerformFullProduction);
             });
 
             //Validation
             Assert.That(
-                societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red).Count() == 10
+                societyToTest.Location.BlobSite.GetContentsOfType(ResourceType.Red).Count() == 10
             );
         }
 
         [Test]
-        public void OnConsumptionPerformed_AndNeedsAreAvailable_NeedsRemovedFromBlobsWithin() {
+        public void OnConsumptionPerformed_AndNeedsAreAvailable_NeedsRemovedFromLocationsBlobSite() {
             //Setup
-            var complexityToUse = new MockComplexityDefinition();
-            complexityToUse.NeedsCapacityCoefficient = 5;
-            complexityToUse.Needs = new ResourceSummary(
+            var complexityToUse = BuildComplexityDefinition();
+            complexityToUse.SetNeedsCapacityCoefficient(5);
+            complexityToUse.SetNeeds(new ResourceSummary(
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 2),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  3)
-            );
-            complexityToUse.SecondsToFullyConsumeNeeds = 1f;
+            ));
+            complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
 
-            var societyToTest = BuildSociety(null, complexityToUse);
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            var societyToTest = BuildSociety(complexityToUse);
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
 
             //Execution
             societyToTest.TickConsumption(1f);
 
             //Validation
-            Assert.AreEqual(1, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red).Count(),
+            Assert.AreEqual(1, societyToTest.Location.BlobSite.GetContentsOfType(ResourceType.Red).Count(),
                 "Red blob count is incorrect");
-            Assert.AreEqual(2, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Green).Count(),
+            Assert.AreEqual(2, societyToTest.Location.BlobSite.GetContentsOfType(ResourceType.Green).Count(),
                 "Green blob count is incorrect");
-            Assert.AreEqual(3, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Blue).Count(),
+            Assert.AreEqual(3, societyToTest.Location.BlobSite.GetContentsOfType(ResourceType.Blue).Count(),
                 "Blue blob count is incorrect");
         }
 
         [Test]
         public void OnConsumptionPerformed_AndNeedsAreAvailable_NeedsBecomeSatisfied() {
             //Setup
-            var complexityToUse = new MockComplexityDefinition();
-            complexityToUse.NeedsCapacityCoefficient = 5;
-            complexityToUse.Needs = new ResourceSummary(
+            var complexityToUse = BuildComplexityDefinition();
+            complexityToUse.SetNeedsCapacityCoefficient(5);
+            complexityToUse.SetNeeds(new ResourceSummary(
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 2),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  3)
-            );
-            complexityToUse.SecondsToFullyConsumeNeeds = 1f;
+            ));
+            complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
 
-            var societyToTest = BuildSociety(null, complexityToUse);
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            var societyToTest = BuildSociety(complexityToUse);
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
 
             //Execution
             societyToTest.TickConsumption(1f);
@@ -232,15 +224,15 @@ namespace Assets.Societies.Editor {
         [Test]
         public void OnConsumptionPerformed_AndNeedsAreUnavailable_NeedsBecomeUnsatisfied() {
             //Setup
-            var complexityToUse = new MockComplexityDefinition();
-            complexityToUse.NeedsCapacityCoefficient = 5;
-            complexityToUse.Needs = new ResourceSummary(
+            var complexityToUse = BuildComplexityDefinition();
+            complexityToUse.SetNeedsCapacityCoefficient(5);
+            complexityToUse.SetNeeds(new ResourceSummary(
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
-            );
-            complexityToUse.SecondsToFullyConsumeNeeds = 1f;
-            complexityToUse.ComplexityDescentDuration = 10f;
+            ));
+            complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
+            complexityToUse.SetComplexityDescentDuration(10f);
 
-            var societyToTest = BuildSociety(null, complexityToUse);
+            var societyToTest = BuildSociety(complexityToUse);
 
             //Execution
             societyToTest.TickConsumption(2f);
@@ -252,15 +244,15 @@ namespace Assets.Societies.Editor {
         [Test]
         public void OnConsumptionPerformed_AndNeedsAreUnavailable_SocietyStartsDescentTimer_AndSetsItProperly() {
             //Setup
-            var complexityToUse = new MockComplexityDefinition();
-            complexityToUse.NeedsCapacityCoefficient = 5;
-            complexityToUse.Needs = new ResourceSummary(
+            var complexityToUse = BuildComplexityDefinition();
+            complexityToUse.SetNeedsCapacityCoefficient(5);
+            complexityToUse.SetNeeds(new ResourceSummary(
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
-            );
-            complexityToUse.SecondsToFullyConsumeNeeds = 1f;
-            complexityToUse.ComplexityDescentDuration = 10f;
+            ));
+            complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
+            complexityToUse.SetComplexityDescentDuration(10f);
 
-            var societyToTest = BuildSociety(null, complexityToUse);
+            var societyToTest = BuildSociety(complexityToUse);
 
             //Execution
             societyToTest.TickConsumption(2f);
@@ -273,19 +265,19 @@ namespace Assets.Societies.Editor {
         [Test]
         public void OnConsumptionPerformed_AndNeedsWereUnsatisfied_ButNowNeedsCanBeSatisfied_NeedsBecomeSatisfied() {
             //Setup
-            var complexityToUse = new MockComplexityDefinition();
-            complexityToUse.NeedsCapacityCoefficient = 5;
-            complexityToUse.Needs = new ResourceSummary(
+            var complexityToUse = BuildComplexityDefinition();
+            complexityToUse.SetNeedsCapacityCoefficient(5);
+            complexityToUse.SetNeeds(new ResourceSummary(
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
-            );
-            complexityToUse.SecondsToFullyConsumeNeeds = 1f;
-            complexityToUse.ComplexityDescentDuration = 10f;
+            ));
+            complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
+            complexityToUse.SetComplexityDescentDuration(10f);
 
-            var societyToTest = BuildSociety(null, complexityToUse);
+            var societyToTest = BuildSociety(complexityToUse);
 
             //Execution
             societyToTest.TickConsumption(2f);
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
             societyToTest.TickConsumption(1f);
 
             //Validation
@@ -299,19 +291,19 @@ namespace Assets.Societies.Editor {
         [Test]
         public void OnConsumptionPerformed_AndNeedsWereUnsatsified_ButNowNeedsCanBeSatisfied_ComplexityDescentTimerResets() {
             //Setup
-            var complexityToUse = new MockComplexityDefinition();
-            complexityToUse.NeedsCapacityCoefficient = 5;
-            complexityToUse.Needs = new ResourceSummary(
+            var complexityToUse = BuildComplexityDefinition();
+            complexityToUse.SetNeedsCapacityCoefficient(5);
+            complexityToUse.SetNeeds(new ResourceSummary(
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
-            );
-            complexityToUse.SecondsToFullyConsumeNeeds = 1f;
-            complexityToUse.ComplexityDescentDuration = 10f;
+            ));
+            complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
+            complexityToUse.SetComplexityDescentDuration(10f);
 
-            var societyToTest = BuildSociety(null, complexityToUse);
+            var societyToTest = BuildSociety(complexityToUse);
 
             //Execution
             societyToTest.TickConsumption(2f);
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
             societyToTest.TickConsumption(1f);
 
             //Validation
@@ -322,24 +314,23 @@ namespace Assets.Societies.Editor {
         [Test]
         public void OnConsumptionPerformed_AndAscentConditionsAreSatisfied_SocietyAscendsComplexityLadder() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            var ascentComplexity = new MockComplexityDefinition();
+            var currentComplexity = BuildComplexityDefinition();
+            var ascentComplexity = BuildComplexityDefinition();
 
-            currentComplexity.Needs = ResourceSummary.Empty;
-            currentComplexity.SecondsToFullyConsumeNeeds = 1f;
+            currentComplexity.SetNeeds(ResourceSummary.Empty);
+            currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
-            var activeLadder = new MockComplexityLadder();
-            activeLadder.AscentChain = new List<ComplexityDefinitionBase>() { currentComplexity, ascentComplexity };
-            activeLadder.CostsToReach = new Dictionary<ComplexityDefinitionBase, ResourceSummary>() {
-                { ascentComplexity, new ResourceSummary(
-                    new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
-                ) }
-            };
+            ascentComplexity.SetCostOfAscent(new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
+            ));
 
-            var societyToTest = BuildSociety(activeLadder, currentComplexity);
+            var activeLadder = BuildComplexityLadder(currentComplexity, ascentComplexity);
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
+
+            var societyToTest = BuildSociety(privateData);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
             societyToTest.TickConsumption(1f);
             
             //Validation
@@ -347,28 +338,28 @@ namespace Assets.Societies.Editor {
         }
 
         [Test]
-        public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_ExactlyOneWantSummaryIsRemovedFromBlobsWithin() {
+        public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_ExactlyOneWantSummaryIsRemovedFromLocationsblobSite() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            currentComplexity.Wants = new List<ResourceSummary>() {
+            var currentComplexity = BuildComplexityDefinition();
+            currentComplexity.SetWants(new List<ResourceSummary>() {
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red,   1)),
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)),
-            };
-            currentComplexity.WantsCapacityCoefficient = 5;
-            currentComplexity.SecondsToPerformFullProduction = 1f;
+            });
+            currentComplexity.SetWantsCapacityCoefficient(5);
+            currentComplexity.SetSecondsToPerformFullProduction(1f);
 
-            var societyToTest = BuildSociety(null, currentComplexity);
+            var societyToTest = BuildSociety(currentComplexity);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
             societyToTest.TickProduction(1f);
 
-            bool hasRed   = societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red  ).Count() > 0;
-            bool hasGreen = societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Green).Count() > 0;
-            bool hasBlue  = societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Blue ).Count() > 0;
+            bool hasRed   = societyToTest.Location.BlobSite.GetContentsOfType(ResourceType.Red  ).Count() > 0;
+            bool hasGreen = societyToTest.Location.BlobSite.GetContentsOfType(ResourceType.Green).Count() > 0;
+            bool hasBlue  = societyToTest.Location.BlobSite.GetContentsOfType(ResourceType.Blue ).Count() > 0;
 
             //Validation
             Assert.That(
@@ -379,93 +370,91 @@ namespace Assets.Societies.Editor {
         [Test]
         public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_ProductionIsIncreasedByOne() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            currentComplexity.Wants = new List<ResourceSummary>() {
+            var currentComplexity = BuildComplexityDefinition();
+            currentComplexity.SetWants(new List<ResourceSummary>() {
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)),
-            };
-            currentComplexity.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1));
+            });
+            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)));
 
-            currentComplexity.WantsCapacityCoefficient = 5;
-            currentComplexity.ProductionCapacityCoefficient = 5;
-            currentComplexity.SecondsToPerformFullProduction = 1f;
+            currentComplexity.SetWantsCapacityCoefficient(5);
+            currentComplexity.SetProductionCapacityCoefficient(5);
+            currentComplexity.SetSecondsToPerformFullProduction(1f);
 
-            var societyToTest = BuildSociety(null, currentComplexity);
+            var societyToTest = BuildSociety(currentComplexity);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
             societyToTest.TickProduction(1f);
 
             //Validation
-            Assert.That(societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Green).Count() == 2);
+            Assert.That(societyToTest.Location.BlobSite.GetCountOfContentsOfType(ResourceType.Green) == 2);
         }
 
         [Test]
         public void OnProductionPerformed_AndContainsOnlyEmptyWantSummaries_ProductionIsNotIncreased() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            currentComplexity.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1));
+            var currentComplexity = BuildComplexityDefinition();
+            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)));
 
-            currentComplexity.Wants = new List<ResourceSummary>() {
+            currentComplexity.SetWants(new List<ResourceSummary>() {
                 ResourceSummary.Empty,
                 ResourceSummary.Empty,
                 ResourceSummary.Empty
-            };
+            });
             
-            currentComplexity.ProductionCapacityCoefficient = 5;
-            currentComplexity.SecondsToPerformFullProduction = 1f;
+            currentComplexity.SetProductionCapacityCoefficient(5);
+            currentComplexity.SetSecondsToPerformFullProduction(1f);
 
-            var societyToTest = BuildSociety(null, currentComplexity);
+            var societyToTest = BuildSociety(currentComplexity);
 
             //Execution
             societyToTest.TickProduction(1f);
 
             //Validation
-            Assert.AreEqual(1, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Red).Count());
+            Assert.AreEqual(1, societyToTest.Location.BlobSite.GetCountOfContentsOfType(ResourceType.Red));
         }
 
         [Test]
         public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_AndOthersAreNot_WantsAreStillConsideredSatisfied() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            currentComplexity.Needs = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1));
-            currentComplexity.Wants = new List<ResourceSummary>() {
+            var currentComplexity = BuildComplexityDefinition();
+            currentComplexity.SetNeeds(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)));
+            currentComplexity.SetWants(new List<ResourceSummary>() {
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red,   1)),
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
-            };
-            currentComplexity.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1));
-            currentComplexity.WantsCapacityCoefficient = 5;
-            currentComplexity.ProductionCapacityCoefficient = 5;
-            currentComplexity.NeedsCapacityCoefficient = 5;
-            currentComplexity.SecondsToPerformFullProduction = 1f;
+            });
+            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)));
+            currentComplexity.SetWantsCapacityCoefficient(5);
+            currentComplexity.SetProductionCapacityCoefficient(5);
+            currentComplexity.SetNeedsCapacityCoefficient(5);
+            currentComplexity.SetSecondsToPerformFullProduction(1f);
 
-            var societyToTest = BuildSociety(null, currentComplexity);
+            var societyToTest = BuildSociety(currentComplexity);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
             societyToTest.TickProduction(1f);
 
             //Validation
-            Assert.AreEqual(2, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Blue).Count());
+            Assert.AreEqual(2, societyToTest.Location.BlobSite.GetCountOfContentsOfType(ResourceType.Blue));
         }
 
         [Test]
         public void OnComplexityDescentTimerElapsed_SocietyDescendsComplexityLadder() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            currentComplexity.ComplexityDescentDuration = 1f;
-            currentComplexity.Needs = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1));
-            currentComplexity.Name = "Current";
+            var currentComplexity = BuildComplexityDefinition();
+            currentComplexity.SetComplexityDescentDuration(1f);
+            currentComplexity.SetNeeds(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)));
+            currentComplexity.SetName("Current");
+            currentComplexity.SetCostOfAscent(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue)));
 
-            var descentComplexity = new MockComplexityDefinition();
-            descentComplexity.Name = "Descent";
+            var descentComplexity = BuildComplexityDefinition();
+            descentComplexity.SetName("Descent");
 
-            var activeLadder = new MockComplexityLadder();
-            activeLadder.AscentChain = new List<ComplexityDefinitionBase>() { descentComplexity, currentComplexity };
-            activeLadder.CostsToReach = new Dictionary<ComplexityDefinitionBase, ResourceSummary>() {
-                { currentComplexity, new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue)) }
-            };
+            var activeLadder = BuildComplexityLadder(descentComplexity, currentComplexity);
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
 
-            var societyToTest = BuildSociety(activeLadder, currentComplexity);
+            var societyToTest = BuildSociety(privateData);
 
             //Execution
             societyToTest.TickConsumption(2f);
@@ -477,107 +466,104 @@ namespace Assets.Societies.Editor {
         [Test]
         public void OnAscendComplexityLadder_BlobsWithinBecomesEmpty() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            var ascentComplexity = new MockComplexityDefinition();
+            var currentComplexity = BuildComplexityDefinition();
+            var ascentComplexity = BuildComplexityDefinition();
 
-            currentComplexity.Needs = ResourceSummary.Empty;
-            currentComplexity.Production = new ResourceSummary(
+            currentComplexity.SetNeeds(ResourceSummary.Empty);
+            currentComplexity.SetProduction(new ResourceSummary(
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
-            );
-            currentComplexity.SecondsToFullyConsumeNeeds = 1f;
+            ));
+            currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
-            var activeLadder = new MockComplexityLadder();
-            activeLadder.AscentChain = new List<ComplexityDefinitionBase>() { currentComplexity, ascentComplexity };
-            activeLadder.CostsToReach = new Dictionary<ComplexityDefinitionBase, ResourceSummary>() {
-                { ascentComplexity, ResourceSummary.Empty }
-            };
+            var activeLadder = BuildComplexityLadder(currentComplexity, ascentComplexity);
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
 
-            var societyToTest = BuildSociety(activeLadder, currentComplexity);
+            var societyToTest = BuildSociety(privateData);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
             societyToTest.TickConsumption(1f);
 
             //Validation
-            Assert.That(societyToTest.ReadOnlyBlobsWithin.Contents.Count() == 0);
+            Assert.That(societyToTest.Location.BlobSite.Contents.Count() == 0);
         }
 
         [Test]
         public void OnDescendComplexityLadder_BlobsWithinBecomesEmpty() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            currentComplexity.ComplexityDescentDuration = 1f;
-            currentComplexity.Needs = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1));
-            currentComplexity.Production = new ResourceSummary(
+            var currentComplexity = BuildComplexityDefinition();
+            currentComplexity.SetComplexityDescentDuration(1f);
+            currentComplexity.SetNeeds(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)));
+            currentComplexity.SetProduction(new ResourceSummary(
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
-            );
+            ));
 
-            var descentComplexity = new MockComplexityDefinition();
+            var descentComplexity = BuildComplexityDefinition();
 
-            var activeLadder = new MockComplexityLadder();
-            activeLadder.AscentChain = new List<ComplexityDefinitionBase>() { descentComplexity, currentComplexity };
+            var activeLadder = BuildComplexityLadder(descentComplexity, currentComplexity);
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
 
-            var societyToTest = BuildSociety(activeLadder, currentComplexity);
+            var societyToTest = BuildSociety(privateData);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
             societyToTest.TickConsumption(2f);
 
             //Validation
-            Assert.That(societyToTest.ReadOnlyBlobsWithin.Contents.Count() == 0);
+            Assert.That(societyToTest.Location.BlobSite.Contents.Count() == 0);
         }
 
         [Test]
         public void WhenNeededOrWantedBlobsPlacedInto_ThoseBlobsCannotBeExtracted_ButOthersStillCanBe() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            currentComplexity.Needs = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1));
-            currentComplexity.Wants = new List<ResourceSummary>() { 
+            var currentComplexity = BuildComplexityDefinition();
+            currentComplexity.SetNeeds(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)));
+            currentComplexity.SetWants(new List<ResourceSummary>() { 
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1))
-            };
-            currentComplexity.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1));
-            currentComplexity.NeedsCapacityCoefficient = 5;
-            currentComplexity.WantsCapacityCoefficient = 5;
+            });
+            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)));
+            currentComplexity.SetNeedsCapacityCoefficient(5);
+            currentComplexity.SetWantsCapacityCoefficient(5);
 
-            var societyToTest = BuildSociety(null, currentComplexity);
+            var societyToTest = BuildSociety(currentComplexity);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red  ));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Blue ));
 
             //Validation
-            Assert.That(!societyToTest.CanExtractBlobOfType(ResourceType.Red  ));
-            Assert.That(!societyToTest.CanExtractBlobOfType(ResourceType.Green));
-            Assert.That( societyToTest.CanExtractBlobOfType(ResourceType.Blue ));
+            Assert.That(!societyToTest.Location.BlobSite.CanExtractBlobOfType(ResourceType.Red  ));
+            Assert.That(!societyToTest.Location.BlobSite.CanExtractBlobOfType(ResourceType.Green));
+            Assert.That( societyToTest.Location.BlobSite.CanExtractBlobOfType(ResourceType.Blue ));
         }
 
         [Test]
         public void OnProductionTicked_WhenAllWantsOnlyPartiallyFulfillable_NoResourcesPartiallyFulfillingWantsConsumed() {
             //Setup
-            var currentComplexity = new MockComplexityDefinition();
-            currentComplexity.Wants = new List<ResourceSummary>() { 
+            var currentComplexity = BuildComplexityDefinition();
+            currentComplexity.SetWants(new List<ResourceSummary>() { 
                 new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 2))
-            };
-            currentComplexity.Production = new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1));
-            currentComplexity.NeedsCapacityCoefficient = 5;
-            currentComplexity.WantsCapacityCoefficient = 5;
+            });
+            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)));
+            currentComplexity.SetNeedsCapacityCoefficient(5);
+            currentComplexity.SetWantsCapacityCoefficient(5);
 
-            var societyToTest = BuildSociety(null, currentComplexity);
+            var societyToTest = BuildSociety(currentComplexity);
 
             //Execution
-            societyToTest.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Green));
             societyToTest.TickProduction(1f);
 
             //Validation
-            Assert.AreEqual(1f, societyToTest.ReadOnlyBlobsWithin.GetAllBlobsOfType(ResourceType.Green).Count(),
+            Assert.AreEqual(1f, societyToTest.Location.BlobSite.GetCountOfContentsOfType(ResourceType.Green),
                 "Partially fulfilled needs were consumed");
         }
 
@@ -592,26 +578,47 @@ namespace Assets.Societies.Editor {
             return newBlob;
         }
 
-        private Society BuildSociety(ComplexityLadderBase activeLadder, ComplexityDefinitionBase startingComplexity) {
-            var newSocietyObject = new GameObject();
-            var newSociety = newSocietyObject.AddComponent<Society>();
-            var privateData = new MockSocietyPrivateData();
+        private MockComplexityDefinition BuildComplexityDefinition() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockComplexityDefinition>();
+        }
 
-            if(activeLadder != null) {
-                privateData.ActiveComplexityLadder = activeLadder;
-            }
-            if(startingComplexity != null) {
-                privateData.StartingComplexity = startingComplexity;
-            }
+        private ComplexityLadderBase BuildComplexityLadder(params ComplexityDefinitionBase[] ascentChain) {
+            var ascentChainList = new List<ComplexityDefinitionBase>(ascentChain);
+            var hostingObject = new GameObject();
+            var newLadder = hostingObject.AddComponent<MockComplexityLadder>();
+            newLadder.AscentChain = ascentChainList;
+            return newLadder;
+        }
+
+        private MockSocietyPrivateData BuildPrivateData(ComplexityLadderBase complexityLadder, ResourceBlobFactoryBase blobFactory,
+            MapNodeBase location) {
+            var hostingObject = new GameObject();
+            var newPrivateData = hostingObject.AddComponent<MockSocietyPrivateData>();
+
+            newPrivateData.SetActiveComplexityLadder(complexityLadder);
+            newPrivateData.SetBlobFactory(blobFactory);
+            newPrivateData.SetLocation(location);
+
+            return newPrivateData;
+        }
+
+        private Society BuildSociety(SocietyPrivateDataBase privateData) {
+            var hostingObject = new GameObject();
+            var newSociety = hostingObject.AddComponent<Society>();
             newSociety.PrivateData = privateData;
             return newSociety;
+        }
+
+        private Society BuildSociety(ComplexityDefinitionBase startingDefinition) {
+            throw new NotImplementedException();
         }
 
         #endregion
 
         #endregion
 
-    }*/
+    }
 
 }
 

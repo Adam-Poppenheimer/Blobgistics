@@ -22,11 +22,11 @@ namespace Assets.Societies {
             throw new NotImplementedException();
         }
 
-        public override bool CanConstructSocietyAt(MapNode location) {
+        public override bool CanConstructSocietyAt(MapNodeBase location) {
             throw new NotImplementedException();
         }
 
-        public override SocietyBase ConstructSocietyAt(MapNode location) {
+        public override SocietyBase ConstructSocietyAt(MapNodeBase location) {
             throw new NotImplementedException();
         }
 

@@ -34,7 +34,7 @@ namespace Assets.Editing {
         }
         private static BlobTubeFactoryBase _tubeFactory;
 
-        public static MapGraph MapGraph {
+        public static MapGraphBase MapGraph {
             get {
                 if(_mapGraph == null) {
                     throw new InvalidOperationException("MapGraph is uninitialized");
@@ -50,7 +50,7 @@ namespace Assets.Editing {
                 }
             }
         }
-        private static MapGraph _mapGraph;
+        private static MapGraphBase _mapGraph;
 
         #endregion
 

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Assets.Blobs;
+using UnityEngine;
 
-using UnityCustomUtilities.Extensions;
+using Assets.Blobs;
 
 namespace Assets.Societies {
 
-    public abstract class ComplexityDefinitionBase {
+    public abstract class ComplexityDefinitionBase : MonoBehaviour {
 
         #region instance fields and properties
 

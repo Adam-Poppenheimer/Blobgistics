@@ -47,7 +47,7 @@ namespace Assets.Map.Editor {
             }
         }
 
-        public override uint TotalSpaceLeft {
+        public override int TotalSpaceLeft {
             get {
                 throw new NotImplementedException();
             }
@@ -66,25 +66,6 @@ namespace Assets.Map.Editor {
 
         private Dictionary<ResourceType, bool> TypePlacementIsPermitted =
             new Dictionary<ResourceType, bool>();
-
-        #endregion
-
-        #region constructors
-
-        public MockBlobSite() {
-        }
-
-        #endregion
-
-        #region events
-
-        #region from IBlobSite
-
-        public event EventHandler<EventArgs> AllBlobsCleared;
-        public event EventHandler<BlobEventArgs> BlobExtractedFrom;
-        public event EventHandler<BlobEventArgs> BlobPlacedInto;
-
-        #endregion
 
         #endregion
 
@@ -132,11 +113,11 @@ namespace Assets.Map.Editor {
             throw new NotImplementedException();
         }
 
-        public override uint GetCapacityForResourceType(ResourceType type) {
+        public override int GetCapacityForResourceType(ResourceType type) {
             throw new NotImplementedException();
         }
 
-        public override void SetCapacityForResourceType(ResourceType type, uint newCapacity) {
+        public override void SetCapacityForResourceType(ResourceType type, int newCapacity) {
             throw new NotImplementedException();
         }
 
@@ -156,11 +137,11 @@ namespace Assets.Map.Editor {
             throw new NotImplementedException();
         }
 
-        public override uint GetCountOfContentsOfType(ResourceType type) {
+        public override int GetCountOfContentsOfType(ResourceType type) {
             throw new NotImplementedException();
         }
 
-        public override uint GetSpaceLeftOfType(ResourceType type) {
+        public override int GetSpaceLeftOfType(ResourceType type) {
             throw new NotImplementedException();
         }
 
