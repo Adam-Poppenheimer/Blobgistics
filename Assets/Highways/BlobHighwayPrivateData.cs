@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Core;
-using Assets.BlobSites;
+using Assets.Map;
 
 namespace Assets.Highways {
 
@@ -15,17 +15,6 @@ namespace Assets.Highways {
         #region instance fields and properties
 
         #region from BlobHighwayPrivateDataBase
-
-        public override BlobTubeFactoryBase TubeFactory {
-            get {
-                if(tubeFactory == null) {
-                    throw new InvalidOperationException("TubeFactory is uninitialized");
-                } else {
-                    return tubeFactory;
-                }
-            }
-        }
-        [SerializeField] private BlobTubeFactoryBase tubeFactory;
 
         public override UIControl UIControl {
             get {
@@ -36,12 +25,47 @@ namespace Assets.Highways {
                 }
             }
         }
-
-        public int ID { get; internal set; }
-        public BlobSiteBase FirstEndpoint { get; internal set; }
-        public BlobSiteBase SecondEndpoint { get; internal set; }
-
         [SerializeField] private UIControl uiControl;
+
+        public override int ID {
+            get { return _id; }
+        }
+        public void SetID(int value) {
+            _id = value;
+        }
+        [SerializeField] private int _id;
+
+        public override MapNodeBase FirstEndpoint {
+            get { return _firstEndpoint; }
+        }
+        public void SetFirstEndpoint(MapNodeBase value) {
+            _firstEndpoint = value;
+        }
+        [SerializeField, HideInInspector] private MapNodeBase _firstEndpoint;
+
+        public override MapNodeBase SecondEndpoint {
+            get { return _secondEndpoint; }
+        }
+        public void SetSecondEndpoint(MapNodeBase value) {
+            _secondEndpoint = value;
+        }
+        [SerializeField, HideInInspector] private MapNodeBase _secondEndpoint;
+        
+        public override BlobTubeBase TubePullingFromFirstEndpoint {
+            get { return _tubePullingFromFirstEndpoint; }
+        }
+        public void SetTubePullingFromFirstEndpoint(BlobTubeBase value) {
+            _tubePullingFromFirstEndpoint = value;
+        }
+        [SerializeField, HideInInspector] private BlobTubeBase _tubePullingFromFirstEndpoint;
+
+        public override BlobTubeBase TubePullingFromSecondEndpoint {
+            get { return _tubePullingFromSecondEndpoint; }
+        }
+        public void SetTubePullingFromSecondEndpoint(BlobTubeBase value) {
+            _tubePullingFromSecondEndpoint = value;
+        }
+        [SerializeField, HideInInspector] private BlobTubeBase _tubePullingFromSecondEndpoint;
 
         #endregion
 
@@ -51,7 +75,6 @@ namespace Assets.Highways {
 
         public BlobHighwayPrivateData Clone(GameObject hostingObject) {
             var newData = hostingObject.AddComponent<BlobHighwayPrivateData>();
-            newData.tubeFactory = TubeFactory;
             newData.uiControl = UIControl;
             return newData;
         }

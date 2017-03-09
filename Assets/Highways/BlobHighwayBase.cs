@@ -28,17 +28,19 @@ namespace Assets.Highways {
 
         #region instance methods methods
 
-        public abstract bool GetPullingPermissionForEndpoint1(ResourceType type);
-        public abstract void SetPullingPermissionForEndpoint1(ResourceType type, bool isPermitted);
+        public abstract bool GetPullingPermissionForFirstEndpoint(ResourceType type);
+        public abstract void SetPullingPermissionForFirstEndpoint(ResourceType type, bool isPermitted);
 
-        public abstract bool GetPullingPermissionForEndpoint2(ResourceType type);
-        public abstract void SetPullingPermissionForEndpoint2(ResourceType type, bool isPermitted);
+        public abstract bool GetPullingPermissionForSecondEndpoint(ResourceType type);
+        public abstract void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted);
 
         public abstract bool CanPullFromFirstEndpoint();
         public abstract void PullFromFirstEndpoint();
 
         public abstract bool CanPullFromSecondEndpoint();
         public abstract void PullFromSecondEndpoint();
+
+        public abstract void Clear();
 
         public abstract void TickMovement(float secondsPassed);
 

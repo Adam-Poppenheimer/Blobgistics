@@ -14,9 +14,9 @@ namespace Assets.Highways {
 
         #region instance fields and properties
 
-        #region from IBlobTube
+        #region from BlobTubeBase
 
-        public override ReadOnlyCollection<ResourceBlob> BlobsWithin {
+        public override ReadOnlyCollection<ResourceBlob> Contents {
             get { return new List<ResourceBlob>(BlobQueue).AsReadOnly(); }
         }
         private Queue<ResourceBlob> BlobQueue = new Queue<ResourceBlob>();
@@ -30,6 +30,14 @@ namespace Assets.Highways {
             get { return targetLocation; }
         }
         [SerializeField] private Vector3 targetLocation;
+
+        public override int Capacity { get; set; }
+
+        public override int SpaceLeft {
+            get { return Capacity - BlobQueue.Count; }
+        }
+
+        public override float TransportSpeedPerSecond { get; set; }
 
         #endregion
 
@@ -60,7 +68,7 @@ namespace Assets.Highways {
 
         #region instance methods
 
-        #region from IBlobTube
+        #region from BlobTubeBase
 
         public override bool CanPullBlobFrom(ResourceBlob blob) {
             if(blob == null) {
@@ -85,7 +93,7 @@ namespace Assets.Highways {
             }
             bool blobTypeIsPermitted = false;
             PermissionsForBlobTypes.TryGetValue(blob.BlobType, out blobTypeIsPermitted);
-            return blobTypeIsPermitted && BlobQueue.Count < PrivateData.Capacity && !BlobQueue.Contains(blob);
+            return blobTypeIsPermitted && BlobQueue.Count < Capacity && !BlobQueue.Contains(blob);
         }
 
         public override void PushBlobInto(ResourceBlob blob) {
@@ -97,6 +105,28 @@ namespace Assets.Highways {
             }
         }
 
+        public override bool RemoveBlobFrom(ResourceBlob blob) {
+            if(blob == null) {
+                throw new ArgumentNullException("blob");
+            }
+            var listOfQueueContents = new List<ResourceBlob>(BlobQueue);
+            bool retval = listOfQueueContents.Remove(blob);
+            BlobQueue = new Queue<ResourceBlob>(listOfQueueContents);
+
+            if(retval) {
+                PrivateData.BlobFactory.DestroyBlob(blob);
+            }
+            return retval;
+        }
+
+        public override void Clear() {
+            var blobsToRemove = new List<ResourceBlob>(BlobQueue);
+            for(int i = blobsToRemove.Count - 1; i >= 0; --i) {
+                RemoveBlobFrom(blobsToRemove[i]);
+            }
+            BlobQueue.Clear();
+        }
+
         public override void SetEndpoints(Vector3 newSourceLocation, Vector3 newTargetLocation) {
             sourceLocation = newSourceLocation;
             targetLocation = newTargetLocation;
@@ -105,10 +135,16 @@ namespace Assets.Highways {
 
         public override void TickMovement(float secondsPassed) {
             foreach(var blobWithin in BlobQueue) {
-                var distanceToMove = Mathf.Min(secondsPassed * PrivateData.TransportSpeedPerSecond,
+                var distanceToMove = Mathf.Min(secondsPassed * TransportSpeedPerSecond,
                     Vector3.Distance(blobWithin.transform.position, TargetLocation));
                 blobWithin.transform.Translate(DirectionOfTubeMovement * distanceToMove);
             }
+        }
+
+        public override bool GetPermissionForResourceType(ResourceType type) {
+            bool retval;
+            PermissionsForBlobTypes.TryGetValue(type, out retval);
+            return retval;
         }
 
         public override void SetPermissionForResourceType(ResourceType type, bool isPermitted) {

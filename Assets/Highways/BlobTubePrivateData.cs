@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using Assets.Blobs;
 using UnityEngine;
 
 namespace Assets.Highways {
@@ -11,8 +11,10 @@ namespace Assets.Highways {
 
         #region instance fields and properties
 
-        public override float TransportSpeedPerSecond { get; set; }
-        public override int Capacity { get; set; }
+        public override ResourceBlobFactoryBase BlobFactory {
+            get { return _blobFactory; }
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         #endregion
 

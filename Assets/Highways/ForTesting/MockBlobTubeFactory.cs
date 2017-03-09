@@ -7,31 +7,13 @@ namespace Assets.Highways.ForTesting {
 
     public class MockBlobTubeFactory : BlobTubeFactoryBase {
 
-        #region instance fields and properties
-
-        private BlobTubePrivateDataBase PrivateData {
-            get {
-                if(_privateData == null) {
-                    var hostingObject = new GameObject();
-                    _privateData = hostingObject.AddComponent<MockBlobTubePrivateData>();
-                    _privateData.Capacity = 10;
-                    _privateData.TransportSpeedPerSecond = 1f;
-                }
-                return _privateData;
-            }
-        }
-        private BlobTubePrivateDataBase _privateData;
-
-        #endregion
-
         #region instance methods
 
-        #region from IBlobTubeFactory
+        #region from BlobTubeFactoryBase
 
         public override BlobTubeBase ConstructTube(Vector3 pullLocation, Vector3 pushLocation) {
             var hostingObject = new GameObject();
-            var newTube = hostingObject.AddComponent<BlobTube>();
-            newTube.PrivateData = PrivateData;
+            var newTube = hostingObject.AddComponent<MockBlobTube>();
             return newTube;
         }
 

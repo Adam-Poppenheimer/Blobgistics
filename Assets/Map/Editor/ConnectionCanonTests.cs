@@ -219,7 +219,7 @@ namespace Assets.Map.Editor {
             //Validation
             Assert.That(!sendingSite.ReadOnlyBlobsWithin.Contents.Contains(blobToExtract),
                 "SendingSite still contains blobToExtract");
-            Assert.That(constructedHighway.BlobsWithin.Contains(blobToExtract),
+            Assert.That(constructedHighway.Contents.Contains(blobToExtract),
                 "ConstructedHighway does not contain blobToExtract");
         }
 

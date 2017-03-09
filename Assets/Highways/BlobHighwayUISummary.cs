@@ -41,8 +41,8 @@ namespace Assets.Highways {
             Transform = highwayToSummarize.transform;
 
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                _resourcePermissionsForEndpoint1[resourceType] = highwayToSummarize.GetPermissionForEndpoint1(resourceType);
-                _resourcePermissionsForEndpoint2[resourceType] = highwayToSummarize.GetPermissionForEndpoint2(resourceType);
+                _resourcePermissionsForEndpoint1[resourceType] = highwayToSummarize.GetPullingPermissionForFirstEndpoint(resourceType);
+                _resourcePermissionsForEndpoint2[resourceType] = highwayToSummarize.GetPullingPermissionForSecondEndpoint(resourceType);
             }
         }
 

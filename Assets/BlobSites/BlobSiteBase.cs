@@ -8,7 +8,7 @@ using UnityEngine;
 
 using Assets.Blobs;
 
-using UnityCustomUtilities.Graph;
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobSites {
 
@@ -55,10 +55,10 @@ namespace Assets.BlobSites {
 
         public Vector3 GetConnectionPointInDirection(ManhattanDirection direction) {
             switch(direction) {
-                case ManhattanDirection.Up:    return NorthConnectionPoint;
-                case ManhattanDirection.Down:  return SouthConnectionPoint;
-                case ManhattanDirection.Left:  return WestConnectionPoint;
-                case ManhattanDirection.Right: return EastConnectionPoint;
+                case ManhattanDirection.North: return NorthConnectionPoint;
+                case ManhattanDirection.South: return SouthConnectionPoint;
+                case ManhattanDirection.East:  return EastConnectionPoint;
+                case ManhattanDirection.West:  return WestConnectionPoint;
                 default: return NorthConnectionPoint;
             }
         }

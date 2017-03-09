@@ -8,6 +8,10 @@ using UnityEngine;
 using NUnit.Framework;
 
 using Assets.Blobs;
+using Assets.BlobSites;
+using Assets.Highways.ForTesting;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.Highways.Editor {
 
@@ -20,111 +24,696 @@ namespace Assets.Highways.Editor {
         #region functionality
 
         [Test]
-        public void OnEndpointsSet_FirstAndSecondEndpointAreSetProperly() {
-            throw new NotImplementedException();
+        public void OnPrivateDataInitialized_FirstAndSecondEndpointAreSetProperly() {
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var privateData = BuildHighwayPrivateData();
+            privateData.SetFirstEndpoint(firstEndpoint);
+            privateData.SetSecondEndpoint(secondEndpoint);
+            privateData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
+            privateData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
+
+            //Execution
+            var highwayToTest = BuildHighway(privateData);
+
+            //Validation
+            Assert.AreEqual(firstEndpoint, highwayToTest.FirstEndpoint, "First endpoint is incorrect");
+            Assert.AreEqual(secondEndpoint, highwayToTest.SecondEndpoint, "Second endpoint is incorrect");
+        }
+
+        [Test]
+        public void OnPrivateDataInitialized_TubesWithinHaveCorrectEndpoints() {
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            firstEndpoint.transform.position = Vector3.zero;
+            secondEndpoint.transform.position = new Vector3(10, 0f, 0f);
+
+            //Execution
+            var highwayToTest = BuildHighway(highwayData);
+
+            //Validation
+            Assert.AreEqual(new Vector3(1f, 0f, 0f), tubePullingFromFirst.SourceLocation, "tubePullingFromFirst has incorrect SourceLocation");
+            Assert.AreEqual(new Vector3(9f, 0f, 0f), tubePullingFromFirst.TargetLocation, "tubePullingFromFirst has incorrect TargetLocation");
+
+            Assert.AreEqual(new Vector3(9f, 0f, 0f), tubePullingFromSecond.SourceLocation, "tubePullingFromSecond has incorrect SourceLocation");
+
+            Assert.AreEqual(new Vector3(1f, 0f, 0f), tubePullingFromSecond.TargetLocation, "tubePullingFromSecond has incorrect TargetLocation");
+        }
+
+        [Test]
+        public void OnHighwayInitialized_AllPermissionsDefaultToFalse() {
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var privateData = BuildHighwayPrivateData();
+            privateData.SetFirstEndpoint(firstEndpoint);
+            privateData.SetSecondEndpoint(secondEndpoint);
+            privateData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
+            privateData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
+
+            //Execution
+            var highwayToTest = BuildHighway(privateData);
+
+            //Validation
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                Assert.That(!highwayToTest.GetPullingPermissionForFirstEndpoint(resourceType),
+                    "FirstEndpoint is given permission to pull resource " + resourceType);
+
+                Assert.That(!highwayToTest.GetPullingPermissionForSecondEndpoint(resourceType),
+                    "SecondEndpoint is given permission to pull resource " + resourceType);
+            }
+        }
+
+        [Test]
+        public void OnHighwayInitialized_PriorityDefaultsToMaxValue() {
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var privateData = BuildHighwayPrivateData();
+            privateData.SetFirstEndpoint(firstEndpoint);
+            privateData.SetSecondEndpoint(secondEndpoint);
+            privateData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
+            privateData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
+
+            //Execution
+            var highwayToTest = BuildHighway(privateData);
+
+            //Validation
+            Assert.AreEqual(Int32.MaxValue, highwayToTest.Priority);
         }
 
         [Test]
         public void OnPermissionForResourceTypeSet_SamePermissionForResourceTypeIsGotten() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var privateData = BuildHighwayPrivateData();
+            privateData.SetFirstEndpoint(firstEndpoint);
+            privateData.SetSecondEndpoint(secondEndpoint);
+            privateData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
+            privateData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
+
+            var highwayToTest = BuildHighway(privateData);
+
+            //Execution
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Green, true);
+
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Red, false);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Green, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Blue, true);
+
+            //Validation
+            Assert.That(highwayToTest.GetPullingPermissionForFirstEndpoint(ResourceType.Red),   "For FirstEndpoint, Red is not permitted");
+            Assert.That(highwayToTest.GetPullingPermissionForFirstEndpoint(ResourceType.Green), "For FirstEndpoint, Green is not permitted");
+            Assert.That(!highwayToTest.GetPullingPermissionForFirstEndpoint(ResourceType.Blue), "For FirstEndpoint, Blue is falsely permitted");
+
+            Assert.That(!highwayToTest.GetPullingPermissionForSecondEndpoint(ResourceType.Red),  "For SecondEndpoint, Red is falsely permitted");
+            Assert.That(highwayToTest.GetPullingPermissionForSecondEndpoint(ResourceType.Green), "For SecondEndpoint, Green is not permitted");
+            Assert.That(highwayToTest.GetPullingPermissionForSecondEndpoint(ResourceType.Blue),  "For SecondEndpoint, Blue is not permitted");
         }
 
         [Test]
         public void OnPermissionSetForFirstEndpoint_TubePullingFromFirstEndpointAlsoHasNewPermission() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            //Execution
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Green, false);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Blue, true);
+
+            //Validation
+            Assert.That(tubePullingFromFirst.GetPermissionForResourceType(ResourceType.Red),    "Tube does not give Red permission");
+            Assert.That(!tubePullingFromFirst.GetPermissionForResourceType(ResourceType.Green), "Tube does falsely gives Green permission");
+            Assert.That(tubePullingFromFirst.GetPermissionForResourceType(ResourceType.Blue),   "Tube does not give Blue permission");
         }
 
         [Test]
         public void OnPermissionSetForSecondEndpoint_TubePullingFromSecondEndpointAlsoHasNewPermission() {
-            throw new NotImplementedException();
+            //Setup
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+            highwayData.SetFirstEndpoint(BuildMapNode());
+            highwayData.SetSecondEndpoint(BuildMapNode());
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            //Execution
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Green, false);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Blue, true);
+
+            //Validation
+            Assert.That(tubePullingFromSecond.GetPermissionForResourceType(ResourceType.Red),    "Tube does not give Red permission");
+            Assert.That(!tubePullingFromSecond.GetPermissionForResourceType(ResourceType.Green), "Tube does falsely gives Green permission");
+            Assert.That(tubePullingFromSecond.GetPermissionForResourceType(ResourceType.Blue),   "Tube does not give Blue permission");
         }
 
         [Test]
         public void FirstEndpointHasNoExtractableTypes_CanPullFromFirstEndpointReturnsFalse() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            Assert.AreEqual(0, firstEndpoint.BlobSite.GetExtractableTypes().Count(), "FirstEndpoint has extractable types");
+
+            //Execution
+            
+
+            //Validation
+            Assert.IsFalse(highwayToTest.CanPullFromFirstEndpoint(), "Can still pull from FirstEndpoint");
         }
 
         [Test]
         public void FirstEndpointHasExtractableTypes_AndSecondEndpointCanAcceptPlacementOfOneOfThem_AndHighwayHasPermissions_CanPullFromFirstEndpointReturnsTrue() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+            
+            //Execution
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Green, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Green));
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, false);
+
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Green, true);
+
+            //Validation
+            Assert.That(highwayToTest.CanPullFromFirstEndpoint());
         }
 
         [Test]
         public void FirstEndpointHasExtractableTypes_AndSecondEndpointCanAcceptPlacementOfOneOfThem_ButHighwayLacksPermissions_CanPullFromFirstEndpointReturnsFalse() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+            
+            //Execution
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Red, false);
+
+            //Validation
+            Assert.IsFalse(highwayToTest.CanPullFromFirstEndpoint());
         }
 
         [Test]
         public void FirstEndpointHasExtractableTypes_ButSecondEndpointCannotAcceptAnyOfThem_CanPullFromFirstEndpointReturnFalse() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+            
+            //Execution
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Green, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Green));
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, false);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, false);
+
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Green, true);
+
+            //Validation
+            Assert.IsFalse(highwayToTest.CanPullFromFirstEndpoint());
         }
 
         [Test]
         public void SecondEndpointHasNoExtractableTypes_CanPullFromSecondEndpointReturnsFalse() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            Assert.AreEqual(0, secondEndpoint.BlobSite.GetExtractableTypes().Count(), "SecondEndpoint has extractable types");
+
+            //Execution
+            
+
+            //Validation
+            Assert.IsFalse(highwayToTest.CanPullFromSecondEndpoint(), "Can still pull from SecondEndpoint");
         }
 
         [Test]
         public void SecondEndpointHasExtractableTypes_AndFirstEndpointCanAcceptPlacementOfOneOfThem_AndHighwayHasPermissions_CanPullFromSecondEndpointReturnsTrue() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+            
+            //Execution
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, false);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Green, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Green));
+
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Green, true);
+
+            //Validation
+            Assert.That(highwayToTest.CanPullFromSecondEndpoint());
         }
 
         [Test]
         public void SecondEndpointHasExtractableTypes_AndFirstEndpointCanAcceptPlacementOfOneOfThem_ButHighwayLacksPermissions_CanPullFromSecondEndpointReturnsFalse() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+            
+            //Execution
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Red, false);
+
+            //Validation
+            Assert.IsFalse(highwayToTest.CanPullFromSecondEndpoint());
         }
 
         [Test]
         public void SecondEndpointHasExtractableTypes_ButFirstEndpointCannotAcceptAnyOfThem_CanPullFromSecondEndpointReturnFalse() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+            
+            //Execution
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, false);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, false);
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Green, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Green));
+
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Green, true);
+
+            //Validation
+            Assert.IsFalse(highwayToTest.CanPullFromSecondEndpoint());
         }
         
         [Test]
         public void OnPullFromFirstEndpointCalled_AndPullFromFirstEndpointReturnsTrue_AResourceIsRemovedFromFirstEndpoint_ThatCanBePlacedIntoSecondEndpoint() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirstEndpoint = BuildBlobTube();
+            var tubePullingFromSecondEndpoint = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirstEndpoint);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecondEndpoint);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            var redBlob = BuildBlob(ResourceType.Red);
+            var greenBlob = BuildBlob(ResourceType.Green);
+
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(redBlob);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Green, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(greenBlob);
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, false);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Green, true);
+
+            //Execution
+            highwayToTest.PullFromFirstEndpoint();
+
+            //Validation
+            Assert.That(firstEndpoint.BlobSite.Contents.Contains(redBlob),    "Red blob has been removed from FirstEndpoint");
+            Assert.That(!firstEndpoint.BlobSite.Contents.Contains(greenBlob), "Green blob has not been removed from FirstEndpoint");
         }
 
         [Test]
         public void OnPullFromSecondEndpointCalled_AndCanPullFromSecondEndpointReturnsTrue_AResourceIsRemovedFromSecondEndpoint_ThatCanBePlacedIntoFirstEndpoint() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
+            highwayData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            var redBlob = BuildBlob(ResourceType.Red);
+            var greenBlob = BuildBlob(ResourceType.Green);
+
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, false);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(redBlob);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Green, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(greenBlob);
+
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Green, true);
+
+            //Execution
+            highwayToTest.PullFromSecondEndpoint();
+
+            //Validation
+            Assert.That(secondEndpoint.BlobSite.Contents.Contains(redBlob),    "Red blob has been removed from SecondEndpoint");
+            Assert.That(!secondEndpoint.BlobSite.Contents.Contains(greenBlob), "Green blob has not been removed from SecondEndpoint");
         }
 
         [Test]
         public void OnResourcePulledFromFirstEndpoint_ResourceIsPlacedIntoAppropriateTube() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            var redBlob = BuildBlob(ResourceType.Red);
+
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(redBlob);
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+
+            //Execution
+            highwayToTest.PullFromFirstEndpoint();
+
+            //Validation
+            Assert.Contains(redBlob, tubePullingFromFirst.Contents);
         }
 
         [Test]
         public void OnResourcePulledFromSecondEndpoint_ResourceIsPlacedIntoAppropriateTube() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            var redBlob = BuildBlob(ResourceType.Red);
+
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(redBlob);
+
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Red, true);
+
+            //Execution
+            highwayToTest.PullFromSecondEndpoint();
+
+            //Validation
+            Assert.Contains(redBlob, tubePullingFromSecond.Contents);
         }
 
         [Test]
         public void OnHighwayTicked_TubesWithinHighwayAlsoTicked() {
-            throw new NotImplementedException();
-        }
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
 
-        public void OnFirstEndpointLosesPermissionForAResourceHeadingTowardsIt_NoExceptionIsThrownWhenTheResourceReachesTheEndOfItsTube() {
-            throw new NotImplementedException();
-        }
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
 
-        public void OnSecondEndpointLosesPermissionForAResourceHeadingTowardsIt_NoExceptionIsThrownWhenTheResourceReachesTheEndOfItsTube() {
-            throw new NotImplementedException();
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            float tubePullingFromFirstTickedAmount = 0f;
+            float tubePullingFromSecondTickedAmount = 0f;
+            tubePullingFromFirst.TubeTicked += delegate(object sender, FloatEventArgs e) {
+                tubePullingFromFirstTickedAmount = e.Value;
+            };
+            tubePullingFromSecond.TubeTicked += delegate(object sender, FloatEventArgs e) {
+                tubePullingFromSecondTickedAmount = e.Value;
+            };
+
+            //Execution
+            highwayToTest.TickMovement(1f);
+
+            //Validation
+            Assert.AreEqual(1f, tubePullingFromFirstTickedAmount, "tubePullingFromFirst ticked the incorrect amount");
+            Assert.AreEqual(1f, tubePullingFromSecondTickedAmount, "tubePullingFromSecond ticked the incorrect amount");
         }
 
         [Test]
-        public void OnResourcePulledFromFirstEndpoint_AndSecondEndpointLosesPermissionForIt_ResourcePushedBackIntoTubeGoingTowardsFirstEndpoint_OrDestroyedIfNotPermittedTo() {
-            throw new NotImplementedException();
+        public void OnProfileChanged_BlobSpeedPerSecondChangesForBothTubes() {
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            //Execution
+            highwayToTest.Profile = new BlobHighwayProfile(5, 20);
+
+            //Validation
+            Assert.AreEqual(5, tubePullingFromFirst.TransportSpeedPerSecond, "tubePullingFromFirst has incorrect BlobSpeedPerSecond");
+            Assert.AreEqual(5, tubePullingFromSecond.TransportSpeedPerSecond, "tubePullingFromSecond has incorrect BlobSpeedPerSecond");
+
+            Assert.AreEqual(20, tubePullingFromFirst.Capacity, "tubePullingFromFirst has incorrect Capacity");
+            Assert.AreEqual(20, tubePullingFromSecond.Capacity, "tubePullingFromSecond has incorrect Capacity");
         }
 
         [Test]
-        public void OnResourcePulledFromSecondEndpoint_AndFirstEndpointLosesPermissionForIt_ResourcePushedBackIntoTubeGoingTowardsSecondEndpoint_OrDestroyedIfNotPermittedTo() {
-            throw new NotImplementedException();
-        }
+        public void OnClearCalled_AllTubesAreClearedAsWell() {
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
 
-        [Test]
-        public void OnProfileChanged_NewProfileDeterminesTheSpeedAtWhichBlobsMoveThroughTheTubes() {
-            throw new NotImplementedException();
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Green, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Green));
+
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Green, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Green, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Green));
+
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Green, true);
+
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Red, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Green, true);
+
+            highwayToTest.PullFromFirstEndpoint();
+            highwayToTest.PullFromFirstEndpoint();
+
+            highwayToTest.PullFromSecondEndpoint();
+            highwayToTest.PullFromSecondEndpoint();
+
+            //Execute
+            highwayToTest.Clear();
+
+            //Validation
+            Assert.AreEqual(0, tubePullingFromFirst.Contents.Count, "tubePullingFromFirst still has blobs within it");
+            Assert.AreEqual(0, tubePullingFromSecond.Contents.Count, "tubePullingFromSecond still has blobs within it");
         }
 
         #endregion
@@ -133,17 +722,48 @@ namespace Assets.Highways.Editor {
 
         [Test]
         public void IfCanPullFromFirstEndpointIsFalse_AndPullFromFirstEndpointIsCalled_ThrowsBlobHighwayException() {
-            throw new NotImplementedException();
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            //Execution and Validation
+            Assert.Throws<BlobHighwayException>(delegate() {
+                highwayToTest.PullFromFirstEndpoint();
+            });
         }
 
         [Test]
         public void IfCanPullFromSecondEndpointIsFalse_AndPullFromSecondEndpointIsCalled_ThrowsBlobHighwayException() {
-            throw new NotImplementedException();
-        }
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
 
-        [Test]
-        public void IfProfilePassedNullValue_ThrowsArgumentNullException() {
-            throw new NotImplementedException();
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            //Execution and Validation
+            Assert.Throws<BlobHighwayException>(delegate() {
+                highwayToTest.PullFromSecondEndpoint();
+            });
         }
 
         #endregion
@@ -152,9 +772,38 @@ namespace Assets.Highways.Editor {
 
         #region utility
 
-        private BlobHighway BuildHighway() {
+        private MockMapNode BuildMapNode() {
+            var hostingObject = new GameObject();
+
+            var newBlobSiteData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+            newBlobSiteData.SetNorthConnectionOffset(Vector3.up);
+            newBlobSiteData.SetSouthConnectionOffset(Vector3.down);
+            newBlobSiteData.SetEastConnectionOffset (Vector3.right);
+            newBlobSiteData.SetWestConnectionOffset (Vector3.left);
+
+            var newBlobSite = hostingObject.AddComponent<BlobSite>();
+            newBlobSite.PrivateData = newBlobSiteData;
+            newBlobSite.TotalCapacity = Int32.MaxValue;
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                newBlobSite.SetCapacityForResourceType(resourceType, Int32.MaxValue);
+            }
+
+            var newMapNode = hostingObject.AddComponent<MockMapNode>();
+            newMapNode.SetBlobSite(newBlobSite);
+
+            return newMapNode;
+        }
+
+        private MockBlobHighwayPrivateData BuildHighwayPrivateData() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockBlobHighwayPrivateData>();
+        }
+
+        private BlobHighway BuildHighway(BlobHighwayPrivateDataBase privateData) {
             var hostingGameObject = new GameObject();
             var newHighway = hostingGameObject.AddComponent<BlobHighway>();
+            newHighway.PrivateData = privateData;
+            newHighway.Profile = new BlobHighwayProfile(1f, 10);
             return newHighway;
         }
 
@@ -163,6 +812,11 @@ namespace Assets.Highways.Editor {
             var newBlob = hostingObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = type;
             return newBlob;
+        }
+
+        private MockBlobTube BuildBlobTube() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockBlobTube>();
         }
 
         #endregion

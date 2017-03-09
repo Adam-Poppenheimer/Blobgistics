@@ -61,9 +61,9 @@ namespace Assets.Highways {
             newHighway.Profile = StartingProfile;
 
             var newPrivateData = HighwayPrivateData.Clone(hostingObject);
-            newPrivateData.ID = AllConstructedHighways.Count;
-            newPrivateData.FirstEndpoint = firstEndpoint.BlobSite;
-            newPrivateData.SecondEndpoint = secondEndpoint.BlobSite;
+            newPrivateData.SetID(AllConstructedHighways.Count);
+            newPrivateData.SetFirstEndpoint(firstEndpoint);
+            newPrivateData.SetSecondEndpoint(secondEndpoint);
 
             newHighway.PrivateData = newPrivateData;
 

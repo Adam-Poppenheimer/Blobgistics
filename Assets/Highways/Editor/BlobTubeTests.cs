@@ -14,7 +14,9 @@ namespace Assets.Highways.Editor {
 
         #region instance methods
 
-        #region basic functionality testing
+        #region testing
+
+        #region functionality
 
         [Test]
         public void OnEndpointsSet_BlobTubeHasAppropriateSourceAndTarget() {
@@ -37,9 +39,9 @@ namespace Assets.Highways.Editor {
         public void OnBlobTubePermittedToReceiveATypeOfBlob_BlobTubeCanReceivePushedBlobOfThatType() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             var blobToAdd = BuildResourceBlob();
 
@@ -55,9 +57,9 @@ namespace Assets.Highways.Editor {
         public void OnBlobTubeForbiddenFromReceivingATypeOfBlob_BlobTubeCannotReceivePushedBlobOfThatType() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             var blobToAdd = BuildResourceBlob();
 
@@ -73,9 +75,9 @@ namespace Assets.Highways.Editor {
         public void OnBlobTubeNotPermittedToReceiveATypeOfBlob_DefaultBehaviourIsToForbidBlobOfThatType() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             var blobToAdd = BuildResourceBlob();
 
@@ -90,9 +92,9 @@ namespace Assets.Highways.Editor {
 	    public void OnAttemptingToPushPermittedBlobIntoTube_BlobTubeContainsPushedBlob(){
 		    //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             var blobToAdd = BuildResourceBlob();
 
@@ -101,16 +103,16 @@ namespace Assets.Highways.Editor {
             tubeToTest.PushBlobInto(blobToAdd);
 
             //Validation
-            Assert.That(tubeToTest.BlobsWithin.Contains(blobToAdd));
+            Assert.That(tubeToTest.Contents.Contains(blobToAdd));
 	    }
 
         [Test]
         public void OnManyBlobsPushedInto_BlobTubeHasAllBlobsAndMaintainsTheirOrderInternally() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -129,7 +131,7 @@ namespace Assets.Highways.Editor {
 
             //Validation
             for(int i = 0; i < blobsToAdd.Length; ++i) {
-                Assert.That(tubeToTest.BlobsWithin[i] == blobsToAdd[i],
+                Assert.That(tubeToTest.Contents[i] == blobsToAdd[i],
                     string.Format("ResourceBlob {0} was not in its expected place", i));
             }
         }
@@ -138,9 +140,9 @@ namespace Assets.Highways.Editor {
         public void OnBlobCapacityReached_CanPushBlobIntoReturnsFalse() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 5;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 5;
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
             ResourceBlob[] blobsToAdd = new ResourceBlob[] {
@@ -165,9 +167,9 @@ namespace Assets.Highways.Editor {
         public void OnBlobAlreadyInTube_CanPushBlobIntoReturnsFalse() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
             var blobToAdd = BuildResourceBlob(ResourceType.Red);
@@ -183,9 +185,9 @@ namespace Assets.Highways.Editor {
         public void OnOneResourceTypePermittedInTube_CanPushBlobReturnsFalseOnOtherResourceTypes() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -204,9 +206,9 @@ namespace Assets.Highways.Editor {
         public void OnBlobPushedIntoTube_BlobIsNowAtSourceLocationOfTube() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
             
             tubeToTest.SetEndpoints(new Vector3(-10f, 0f, 0f), new Vector3(10f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -224,10 +226,10 @@ namespace Assets.Highways.Editor {
         public void OnBlobTubeMovementTicked_AllBlobsInTubeAreMoved() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
-            privateData.TransportSpeedPerSecond = 1f;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(10f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -256,10 +258,10 @@ namespace Assets.Highways.Editor {
         public void OnBlobInTube_AndMovementSpeedNonzero_BlobWillEventuallyBecomePullable() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
-            privateData.TransportSpeedPerSecond = 0.1f;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 0.1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(10f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -285,10 +287,10 @@ namespace Assets.Highways.Editor {
         public void WhenBlobIsVeryCloseToEndOfTube_BlobCanBePulledFromTube() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
-            privateData.TransportSpeedPerSecond = 1f;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -308,10 +310,10 @@ namespace Assets.Highways.Editor {
         public void BlobIsInTubeButNotAtItsEnd_BlobCannotBePulledFromTube() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
-            privateData.TransportSpeedPerSecond = 1f;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -330,10 +332,10 @@ namespace Assets.Highways.Editor {
         public void BlobInTubeHasReachedEnd_FurtherMovementTicksDoNotChangeBlobsPositionOrPullability() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
-            privateData.TransportSpeedPerSecond = 1f;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -361,10 +363,10 @@ namespace Assets.Highways.Editor {
         public void OnBlobTubeMovementTicked_BlobsReachTheEndInTheOrderTheyWerePushed() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
-            privateData.TransportSpeedPerSecond = 1f;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(5f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -387,7 +389,7 @@ namespace Assets.Highways.Editor {
             for(int removalIndex = 0; removalIndex < 5; ++removalIndex) {
                 for(int blobIndex = 0; blobIndex < blobsToManipulate.Length; ++blobIndex) {
                     var blobBeingLookedAt = blobsToManipulate[blobIndex];
-                    if(!tubeToTest.BlobsWithin.Contains(blobBeingLookedAt)) {
+                    if(!tubeToTest.Contents.Contains(blobBeingLookedAt)) {
                         continue;
                     }
                     if(blobIndex <= removalIndex) {
@@ -405,10 +407,10 @@ namespace Assets.Highways.Editor {
         public void OnResourcePulledFrom_BlobTubeDoesNotContainPulledBlob() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
-            privateData.TransportSpeedPerSecond = 1f;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -418,7 +420,7 @@ namespace Assets.Highways.Editor {
             //Execute
             tubeToTest.PushBlobInto(blobToManipulate);
             tubeToTest.PullBlobFrom(blobToManipulate);
-            var blobIsInTube = tubeToTest.BlobsWithin.Contains(blobToManipulate);
+            var blobIsInTube = tubeToTest.Contents.Contains(blobToManipulate);
 
             //Validate
             Assert.That(!blobIsInTube);
@@ -428,10 +430,10 @@ namespace Assets.Highways.Editor {
         public void WhenMultipleBlobsPresent_OnlyEarliestBlobInsertedCanBePulled() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 10;
-            privateData.TransportSpeedPerSecond = 1f;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
@@ -464,22 +466,101 @@ namespace Assets.Highways.Editor {
                     string.Format("Blob {0} is at the front of the list and should've been pullable, but was not", outerBlobIndex)
                 );
                 tubeToTest.PullBlobFrom(blobToPull);
-
-                
             }
+        }
+
+        [Test]
+        public void OnRemoveBlobFromCalled_BlobNoLongerPresentInBlobsWithin_ButRemainingBlobsMaintainOrder() {
+            //Setup
+            var tubeToTest = BuildBlobTube(BuildPrivateData());
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
+
+            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Green, true);
+
+            ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
+                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Green),
+                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Red),
+            };
+
+            foreach(var blob in blobsToManipulate) {
+                tubeToTest.PushBlobInto(blob);
+            }
+
+            //Execution
+            tubeToTest.RemoveBlobFrom(blobsToManipulate[2]);
+
+            //Validate
+            Assert.AreEqual(blobsToManipulate[0], tubeToTest.Contents[0],    "First blob is not in its intended position");
+            Assert.AreEqual(blobsToManipulate[1], tubeToTest.Contents[1],    "Second blob is not in its intended position");
+
+            Assert.That(!tubeToTest.Contents.Contains(blobsToManipulate[2]), "Third blob is still contained in Contents");
+
+            Assert.AreEqual(blobsToManipulate[3], tubeToTest.Contents[2],    "Fourth blob is not in its intended position");
+            Assert.AreEqual(blobsToManipulate[4], tubeToTest.Contents[3],    "Fifth blob is not in its intended position");
+        }
+
+        [Test]
+        public void OnClearCalled_BlobsWithinBecomesEmpty() {
+            //Setup
+            var tubeToTest = BuildBlobTube(BuildPrivateData());
+            tubeToTest.Capacity = 10;
+            tubeToTest.TransportSpeedPerSecond = 1f;
+
+            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Green, true);
+
+            ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
+                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Green),
+                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Red),
+            };
+
+            foreach(var blob in blobsToManipulate) {
+                tubeToTest.PushBlobInto(blob);
+            }
+
+            //Execution
+            tubeToTest.Clear();
+
+            //Validation
+            Assert.AreEqual(0, tubeToTest.Contents.Count);
+        }
+
+        [Test]
+        public void OnSetPermissionForResourceTypeCalled_GetPermissionForResourceTypeReturnsCorrectValues() {
+            //Setup
+            var tubeToTest = BuildBlobTube(BuildPrivateData());
+
+            //Execution
+            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Green, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Blue, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Blue, false);
+
+            //Validation
+            Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Red),   "Red is not permitted");
+            Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Green), "Green is not permitted");
+            Assert.False(tubeToTest.GetPermissionForResourceType(ResourceType.Blue), "Blue is falsely permitted");
         }
 
         #endregion
 
-        #region error testing
+        #region error handling
 
         [Test]
         public void OnNullBlobPushed_ThrowsArgumentNullException() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
@@ -491,9 +572,9 @@ namespace Assets.Highways.Editor {
         public void OnNullBlobTestedForPushability_ThrowsArgumentNullException() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
@@ -505,9 +586,9 @@ namespace Assets.Highways.Editor {
         public void OnCanPushBlobIntoReturnsFalse_PushingBlobIntoThrowsBlobTubeException() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, false);
 
@@ -525,9 +606,9 @@ namespace Assets.Highways.Editor {
         public void OnCanPullBlobFromReturnsFalse_PullingBlobFromThrowsBlobTubeException() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
             tubeToTest.SetEndpoints(Vector3.zero, new Vector3(10f, 0f, 0f));
@@ -549,9 +630,9 @@ namespace Assets.Highways.Editor {
         public void OnBlobNotInTheTubeIsCheckedForPullability_ThrowsBlobTubeException() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             var blobToPull = BuildResourceBlob(ResourceType.Red);
 
@@ -565,9 +646,9 @@ namespace Assets.Highways.Editor {
         public void OnBlobNotInTheTubeIsPulled_ThrowBlobTubeException() {
             //Setup
             var privateData = BuildPrivateData();
-            privateData.Capacity = 1;
 
             var tubeToTest = BuildBlobTube(privateData);
+            tubeToTest.Capacity = 1;
 
             var blobToPull = BuildResourceBlob(ResourceType.Red);
 
@@ -577,13 +658,28 @@ namespace Assets.Highways.Editor {
             });
         }
 
+        [Test]
+        public void OnNullBlobIsRemoved_ThrowArgumentNullException() {
+            //Setup
+            var tubeToTest = BuildBlobTube(BuildPrivateData());
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                tubeToTest.RemoveBlobFrom(null);
+            });
+        }
+
+        #endregion
+
         #endregion
 
         #region utility methods
 
         private MockBlobTubePrivateData BuildPrivateData() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockBlobTubePrivateData>();
+            var newPrivateData = hostingObject.AddComponent<MockBlobTubePrivateData>();
+            newPrivateData.SetBlobFactory(hostingObject.AddComponent<MockResourceBlobFactory>());
+            return newPrivateData;
         }
 
         private BlobTube BuildBlobTube(MockBlobTubePrivateData privateData) {
