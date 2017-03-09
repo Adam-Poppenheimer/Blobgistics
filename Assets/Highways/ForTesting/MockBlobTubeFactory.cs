@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-namespace Assets.Highways.Editor {
+namespace Assets.Highways.ForTesting {
 
-    internal class MockBlobTubeFactory : BlobTubeFactoryBase {
+    public class MockBlobTubeFactory : BlobTubeFactoryBase {
 
         #region instance fields and properties
 

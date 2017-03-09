@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using Assets.Blobs;
 using Assets.Map;
 
@@ -15,12 +17,18 @@ namespace Assets.Societies.ForTesting {
         #region from ISocietyPrivateData
 
         public override ComplexityLadderBase ActiveComplexityLadder {
-            get { return _activeComplexityLadder; }
+            get {
+                if(_activeComplexityLadder == null) {
+                    var hostingObject = new GameObject();
+                    _activeComplexityLadder = hostingObject.AddComponent<MockComplexityLadder>();
+                }
+                return _activeComplexityLadder;
+            }
         }
         public void SetActiveComplexityLadder(ComplexityLadderBase value) {
             _activeComplexityLadder = value;
         }
-        private ComplexityLadderBase _activeComplexityLadder = new MockComplexityLadder();
+        private ComplexityLadderBase _activeComplexityLadder;
 
         public override ResourceBlobFactoryBase BlobFactory {
             get { return _blobFactory; }

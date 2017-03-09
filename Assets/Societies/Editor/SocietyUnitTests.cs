@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 using Assets.Blobs;
 using Assets.Map;
+using Assets.BlobSites;
 using Assets.Societies.ForTesting;
 
 using UnityCustomUtilities.Extensions;
@@ -55,13 +56,21 @@ namespace Assets.Societies.Editor {
 
         private MockResourceBlobFactory StandardBlobFactory {
             get {
-                throw new NotImplementedException();
+                if(_standardBlobFactory == null) {
+                    var hostingObject = new GameObject();
+                    _standardBlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
+                }
+                return _standardBlobFactory;
             }
         }
+        private MockResourceBlobFactory _standardBlobFactory = null;
 
         private MockMapNode StandardLocation {
             get {
-                throw new NotImplementedException();
+                var hostingObject = new GameObject();
+                var standardLocation = hostingObject.AddComponent<MockMapNode>();
+                standardLocation.SetBlobSite(BuildBlobSite());
+                return standardLocation;
             }
         }
 
@@ -75,7 +84,7 @@ namespace Assets.Societies.Editor {
         public void OnPrivateDataInitialized_NewComplexityIsStartingComplexityDefinedInPrivateData() {
             //Setup
             var startingComplexity = BuildComplexityDefinition();
-            var complexityLadder = BuildComplexityLadder(startingComplexity);
+            var complexityLadder = BuildComplexityLadder(0, startingComplexity);
             var privateData = BuildPrivateData(complexityLadder, StandardBlobFactory, StandardLocation);
             var newSociety = BuildSociety(privateData);
 
@@ -101,12 +110,11 @@ namespace Assets.Societies.Editor {
             startingComplexity.SetWantsCapacityCoefficient(5);
             startingComplexity.SetProductionCapacityCoefficient(6);
 
-            var complexityLadder = BuildComplexityLadder(startingComplexity);
+            var complexityLadder = BuildComplexityLadder(0, startingComplexity);
             var privateData = BuildPrivateData(complexityLadder, StandardBlobFactory, StandardLocation);
-            var newSociety = BuildSociety(privateData); 
 
             //Execution
-            newSociety.PrivateData = privateData;
+            var newSociety = BuildSociety(privateData);
 
             //Validation
             Assert.AreEqual(40, newSociety.Location.BlobSite.GetSpaceLeftOfType(ResourceType.Red),
@@ -119,7 +127,20 @@ namespace Assets.Societies.Editor {
 
         [Test]
         public void OnCurrentComplexityChanged_AscentCostsOfNextComplexityCorrectlyAffectCapacityOfLocationsBlobSite() {
-            throw new NotImplementedException();
+            //Setup
+            var currentComplexity = BuildComplexityDefinition();
+            var ascentComplexity = BuildComplexityDefinition();
+
+            ascentComplexity.SetCostOfAscent(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+
+            var currentLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
+            var privateData = BuildPrivateData(currentLadder, StandardBlobFactory, StandardLocation);
+
+            //Execution
+            var societyToTest = BuildSociety(privateData);
+
+            //Validation
+            Assert.AreEqual(10, societyToTest.Location.BlobSite.GetCapacityForResourceType(ResourceType.Red));
         }
 
         [Test]
@@ -324,7 +345,7 @@ namespace Assets.Societies.Editor {
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
             ));
 
-            var activeLadder = BuildComplexityLadder(currentComplexity, ascentComplexity);
+            var activeLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
 
             var societyToTest = BuildSociety(privateData);
@@ -451,7 +472,7 @@ namespace Assets.Societies.Editor {
             var descentComplexity = BuildComplexityDefinition();
             descentComplexity.SetName("Descent");
 
-            var activeLadder = BuildComplexityLadder(descentComplexity, currentComplexity);
+            var activeLadder = BuildComplexityLadder(1, descentComplexity, currentComplexity);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
 
             var societyToTest = BuildSociety(privateData);
@@ -477,7 +498,7 @@ namespace Assets.Societies.Editor {
             ));
             currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
-            var activeLadder = BuildComplexityLadder(currentComplexity, ascentComplexity);
+            var activeLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
 
             var societyToTest = BuildSociety(privateData);
@@ -506,7 +527,7 @@ namespace Assets.Societies.Editor {
 
             var descentComplexity = BuildComplexityDefinition();
 
-            var activeLadder = BuildComplexityLadder(descentComplexity, currentComplexity);
+            var activeLadder = BuildComplexityLadder(1, descentComplexity, currentComplexity);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
 
             var societyToTest = BuildSociety(privateData);
@@ -583,11 +604,12 @@ namespace Assets.Societies.Editor {
             return hostingObject.AddComponent<MockComplexityDefinition>();
         }
 
-        private ComplexityLadderBase BuildComplexityLadder(params ComplexityDefinitionBase[] ascentChain) {
+        private ComplexityLadderBase BuildComplexityLadder(int startingIndex = 0, params ComplexityDefinitionBase[] ascentChain) {
             var ascentChainList = new List<ComplexityDefinitionBase>(ascentChain);
             var hostingObject = new GameObject();
             var newLadder = hostingObject.AddComponent<MockComplexityLadder>();
             newLadder.AscentChain = ascentChainList;
+            newLadder.StartingIndex = startingIndex;
             return newLadder;
         }
 
@@ -611,7 +633,18 @@ namespace Assets.Societies.Editor {
         }
 
         private Society BuildSociety(ComplexityDefinitionBase startingDefinition) {
-            throw new NotImplementedException();
+            var activeLadder = BuildComplexityLadder(0, startingDefinition);
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, StandardLocation);
+            return BuildSociety(privateData);
+        }
+
+        private BlobSiteBase BuildBlobSite() {
+            var hostingObject = new GameObject();
+            var newBlobSite = hostingObject.AddComponent<BlobSite>();
+            var privateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+
+            newBlobSite.PrivateData = privateData;
+            return newBlobSite;
         }
 
         #endregion

@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using UnityEngine;
-using UnityEngine.EventSystems;
+using Assets.Map;
 
 using Assets.Blobs;
-using Assets.BlobSites;
 
 namespace Assets.Highways {
 
-    public class BlobHighway : BlobHighwayBase, IPointerClickHandler {
+    public class BlobHighway : BlobHighwayBase {
 
         #region instance fields and properties
 
-        #region from IBlobHighway
+        #region from BlobHighwayBase
 
         public override int ID {
             get {
@@ -23,77 +21,47 @@ namespace Assets.Highways {
             }
         }
 
-        public override BlobSiteBase FirstEndpoint {
+        public override int Priority {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override BlobHighwayProfile Profile {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override MapNodeBase FirstEndpoint {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public override BlobSiteBase SecondEndpoint {
+        public override MapNodeBase SecondEndpoint {
             get {
                 throw new NotImplementedException();
             }
         }
-
-        public override BlobHighwayProfile Profile { get; set; }
-
-        public override int Priority { get; set; }
 
         #endregion
-
-        public BlobHighwayPrivateData PrivateData {
-            get {
-                if(_privateData == null) {
-                    throw new InvalidOperationException("PrivateData is uninitialized");
-                } else {
-                    return _privateData;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _privateData = value;
-                }
-            }
-        }
-        private BlobHighwayPrivateData _privateData;
 
         #endregion
 
         #region instance methods
 
-        #region EventSystem pointer event implementations
-
-        public void OnPointerClick(PointerEventData eventData) {
-            PrivateData.UIControl.PushHighwayClickEvent(eventData, this);
-        }
-
-        #endregion
-
-        #region from IBlobHighway
+        #region from BlobHighwayBase
 
         public override bool CanPullFromFirstEndpoint() {
-            throw new NotImplementedException();
-        }
-
-        public override bool CanPullFromSecondEndpoint() {
-            throw new NotImplementedException();
-        }
-
-        public override bool GetPermissionForEndpoint1(ResourceType type) {
-            throw new NotImplementedException();
-        }
-
-        public override void SetPermissionForEndpoint1(ResourceType type, bool isPermitted) {
-            throw new NotImplementedException();
-        }
-
-        public override bool GetPermissionForEndpoint2(ResourceType type) {
-            throw new NotImplementedException();
-        }
-
-        public override void SetPermissionForEndpoint2(ResourceType type, bool isPermitted) {
             throw new NotImplementedException();
         }
 
@@ -101,7 +69,27 @@ namespace Assets.Highways {
             throw new NotImplementedException();
         }
 
+        public override bool CanPullFromSecondEndpoint() {
+            throw new NotImplementedException();
+        }
+
         public override void PullFromSecondEndpoint() {
+            throw new NotImplementedException();
+        }
+
+        public override bool GetPullingPermissionForEndpoint1(ResourceType type) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetPullingPermissionForEndpoint1(ResourceType type, bool isPermitted) {
+            throw new NotImplementedException();
+        }
+
+        public override bool GetPullingPermissionForEndpoint2(ResourceType type) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetPullingPermissionForEndpoint2(ResourceType type, bool isPermitted) {
             throw new NotImplementedException();
         }
 

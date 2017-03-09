@@ -11,9 +11,9 @@ using Assets.Map;
 using Assets.BlobSites;
 using System.Collections.ObjectModel;
 
-namespace Assets.Highways.Editor {
+namespace Assets.Highways.ForTesting {
 
-    internal class MockBlobSite : BlobSiteBase {
+    public class MockBlobSite : BlobSiteBase {
 
         #region instance fields and properties
 
@@ -108,7 +108,7 @@ namespace Assets.Highways.Editor {
             throw new NotImplementedException();
         }
 
-        public override void Clear() {
+        public override void ClearContents() {
             throw new NotImplementedException();
         }
 
@@ -120,11 +120,19 @@ namespace Assets.Highways.Editor {
             throw new NotImplementedException();
         }
 
-        public override bool GetPermissionForResourceType(ResourceType type) {
+        public override bool GetPlacementPermissionForResourceType(ResourceType type) {
             throw new NotImplementedException();
         }
 
-        public override void SetPermissionForResourceType(ResourceType type, bool isPermitted) {
+        public override void SetPlacementPermissionForResourceType(ResourceType type, bool isPermitted) {
+            throw new NotImplementedException();
+        }
+
+        public override bool GetExtractionPermissionForResourceType(ResourceType type) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetExtractionPermissionForResourceType(ResourceType type, bool isPermitted) {
             throw new NotImplementedException();
         }
 
@@ -132,7 +140,11 @@ namespace Assets.Highways.Editor {
             throw new NotImplementedException();
         }
 
-        public override void SetPermissionsAndCapacity(ResourceSummary summary) {
+        public override void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary) {
+            throw new NotImplementedException();
+        }
+
+        public override void ClearPermissionsAndCapacity() {
             throw new NotImplementedException();
         }
 

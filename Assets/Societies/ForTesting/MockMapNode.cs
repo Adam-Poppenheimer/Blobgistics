@@ -14,10 +14,12 @@ namespace Assets.Societies.ForTesting {
         #region from MapNodeBase
 
         public override BlobSiteBase BlobSite {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return _blobSite; }
         }
+        public void SetBlobSite(BlobSiteBase value) {
+            _blobSite = value;
+        }
+        private BlobSiteBase _blobSite;
 
         public override int ID {
             get {

@@ -79,17 +79,22 @@ namespace Assets.BlobSites {
         public abstract int GetCountOfContentsOfType(ResourceType type);
         public abstract int GetSpaceLeftOfType(ResourceType type);
 
-        public abstract bool GetPermissionForResourceType(ResourceType type);
-        public abstract void SetPermissionForResourceType(ResourceType type, bool isPermitted);
+        public abstract bool GetPlacementPermissionForResourceType(ResourceType type);
+        public abstract void SetPlacementPermissionForResourceType(ResourceType type, bool isPermitted);
+
+        public abstract bool GetExtractionPermissionForResourceType(ResourceType type);
+        public abstract void SetExtractionPermissionForResourceType(ResourceType type, bool isPermitted);
 
         public abstract int GetCapacityForResourceType(ResourceType type);
         public abstract void SetCapacityForResourceType(ResourceType type, int newCapacity);
 
         public abstract bool GetIsAtCapacityForResource(ResourceType type);
 
-        public abstract void SetPermissionsAndCapacity(ResourceSummary summary);
+        public abstract void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary);
 
-        public abstract void Clear();
+        public abstract void ClearPermissionsAndCapacity();
+
+        public abstract void ClearContents();
 
         #endregion
 

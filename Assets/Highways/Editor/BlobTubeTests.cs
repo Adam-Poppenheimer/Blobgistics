@@ -1,11 +1,12 @@
 ﻿using System;
 
 using UnityEngine;
-using UnityEditor;
 
 using NUnit.Framework;
 
 using Assets.Blobs;
+
+using Assets.Highways.ForTesting;
 
 namespace Assets.Highways.Editor {
 
@@ -18,9 +19,7 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnEndpointsSet_BlobTubeHasAppropriateSourceAndTarget() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
-            var hostingGameObject = new GameObject();
-            var tubeToTest = hostingGameObject.AddComponent<BlobTube>();
+            var tubeToTest = BuildBlobTube(BuildPrivateData());
             var source = new Vector3(-10f, 0, 0);
             var target = new Vector3(10f, 0, 0);
 
@@ -37,12 +36,10 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobTubePermittedToReceiveATypeOfBlob_BlobTubeCanReceivePushedBlobOfThatType() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
 
             var blobToAdd = BuildResourceBlob();
 
@@ -57,12 +54,10 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobTubeForbiddenFromReceivingATypeOfBlob_BlobTubeCannotReceivePushedBlobOfThatType() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
 
             var blobToAdd = BuildResourceBlob();
 
@@ -77,12 +72,10 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobTubeNotPermittedToReceiveATypeOfBlob_DefaultBehaviourIsToForbidBlobOfThatType() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
 
             var blobToAdd = BuildResourceBlob();
 
@@ -96,12 +89,10 @@ namespace Assets.Highways.Editor {
         [Test]
 	    public void OnAttemptingToPushPermittedBlobIntoTube_BlobTubeContainsPushedBlob(){
 		    //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
 
             var blobToAdd = BuildResourceBlob();
 
@@ -116,12 +107,11 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnManyBlobsPushedInto_BlobTubeHasAllBlobsAndMaintainsTheirOrderInternally() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
             ResourceBlob[] blobsToAdd = new ResourceBlob[] {
@@ -147,12 +137,10 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobCapacityReached_CanPushBlobIntoReturnsFalse() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 5;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
             ResourceBlob[] blobsToAdd = new ResourceBlob[] {
@@ -176,12 +164,11 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobAlreadyInTube_CanPushBlobIntoReturnsFalse() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
             var blobToAdd = BuildResourceBlob(ResourceType.Red);
 
@@ -195,12 +182,11 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnOneResourceTypePermittedInTube_CanPushBlobReturnsFalseOnOtherResourceTypes() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
             var greenBlob = BuildResourceBlob(ResourceType.Green);
@@ -217,12 +203,11 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobPushedIntoTube_BlobIsNowAtSourceLocationOfTube() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(-10f, 0f, 0f), new Vector3(10f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -238,13 +223,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobTubeMovementTicked_AllBlobsInTubeAreMoved() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
             privateData.TransportSpeedPerSecond = 1f;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(10f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -271,13 +255,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobInTube_AndMovementSpeedNonzero_BlobWillEventuallyBecomePullable() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
             privateData.TransportSpeedPerSecond = 0.1f;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(10f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -301,13 +284,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void WhenBlobIsVeryCloseToEndOfTube_BlobCanBePulledFromTube() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
             privateData.TransportSpeedPerSecond = 1f;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -325,13 +307,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void BlobIsInTubeButNotAtItsEnd_BlobCannotBePulledFromTube() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
             privateData.TransportSpeedPerSecond = 1f;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -348,13 +329,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void BlobInTubeHasReachedEnd_FurtherMovementTicksDoNotChangeBlobsPositionOrPullability() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
             privateData.TransportSpeedPerSecond = 1f;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -380,13 +360,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobTubeMovementTicked_BlobsReachTheEndInTheOrderTheyWerePushed() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
             privateData.TransportSpeedPerSecond = 1f;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(5f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -425,13 +404,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnResourcePulledFrom_BlobTubeDoesNotContainPulledBlob() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
             privateData.TransportSpeedPerSecond = 1f;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -449,13 +427,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void WhenMultipleBlobsPresent_OnlyEarliestBlobInsertedCanBePulled() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 10;
             privateData.TransportSpeedPerSecond = 1f;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+            
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
 
@@ -499,12 +476,10 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnNullBlobPushed_ThrowsArgumentNullException() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
 
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
@@ -515,12 +490,10 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnNullBlobTestedForPushability_ThrowsArgumentNullException() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
 
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
@@ -531,12 +504,11 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnCanPushBlobIntoReturnsFalse_PushingBlobIntoThrowsBlobTubeException() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, false);
 
             var blobToPush = BuildResourceBlob(ResourceType.Red);
@@ -552,12 +524,11 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnCanPullBlobFromReturnsFalse_PullingBlobFromThrowsBlobTubeException() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
+
             tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
             tubeToTest.SetEndpoints(Vector3.zero, new Vector3(10f, 0f, 0f));
 
@@ -577,12 +548,10 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobNotInTheTubeIsCheckedForPullability_ThrowsBlobTubeException() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
 
             var blobToPull = BuildResourceBlob(ResourceType.Red);
 
@@ -595,12 +564,10 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnBlobNotInTheTubeIsPulled_ThrowBlobTubeException() {
             //Setup
-            var privateData = new MockBlobTubePrivateData();
+            var privateData = BuildPrivateData();
             privateData.Capacity = 1;
 
-            var tubeGameObject = new GameObject();
-            var tubeToTest = tubeGameObject.AddComponent<BlobTube>();
-            tubeToTest.PrivateData = privateData;
+            var tubeToTest = BuildBlobTube(privateData);
 
             var blobToPull = BuildResourceBlob(ResourceType.Red);
 
@@ -613,6 +580,17 @@ namespace Assets.Highways.Editor {
         #endregion
 
         #region utility methods
+
+        private MockBlobTubePrivateData BuildPrivateData() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockBlobTubePrivateData>();
+        }
+
+        private BlobTube BuildBlobTube(MockBlobTubePrivateData privateData) {
+            var newBlobTube = privateData.gameObject.AddComponent<BlobTube>();
+            newBlobTube.PrivateData = privateData;
+            return newBlobTube;
+        }
 
         private ResourceBlob BuildResourceBlob(ResourceType typeOfBlob = ResourceType.Red) {
             var hostingGameObject = new GameObject();

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using Assets.Blobs;
 
 namespace Assets.Societies.ForTesting {
@@ -11,17 +13,14 @@ namespace Assets.Societies.ForTesting {
 
         #region instance fields and properties
 
+        public int StartingIndex { get; set; }
+
         public List<ComplexityDefinitionBase> AscentChain {
             get { return _ascentChain; }
             set { _ascentChain = value; }
         }
+
         private List<ComplexityDefinitionBase> _ascentChain = new List<ComplexityDefinitionBase>() { null };
-
-        #endregion
-
-        #region constructors
-
-        public MockComplexityLadder() { }
 
         #endregion
 
@@ -35,7 +34,7 @@ namespace Assets.Societies.ForTesting {
             }
             var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
             if(indexOfCurrent == -1 || indexOfCurrent == AscentChain.Count - 1) {
-                return currentComplexity;
+                return null;
             }else {
                 return AscentChain[indexOfCurrent + 1];
             }
@@ -54,7 +53,7 @@ namespace Assets.Societies.ForTesting {
         }
 
         public override ComplexityDefinitionBase GetStartingComplexity() {
-            throw new NotImplementedException();
+            return AscentChain[StartingIndex];
         }
 
         #endregion

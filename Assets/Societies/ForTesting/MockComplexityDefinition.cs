@@ -75,7 +75,7 @@ namespace Assets.Societies.ForTesting {
         public void SetWantsCapacityCoefficient(uint value) {
             _wantsCapacityCoefficient = value;
         }
-        private uint _wantsCapacityCoefficient;
+        private uint _wantsCapacityCoefficient = 1;
 
         public override float SecondsToPerformFullProduction {
             get { return _secondsToPerformFullProduction; }
@@ -99,7 +99,7 @@ namespace Assets.Societies.ForTesting {
         public void SetCostOfAscent(ResourceSummary value) {
             _costOfAscent = value;
         }
-        private ResourceSummary _costOfAscent;
+        private ResourceSummary _costOfAscent = ResourceSummary.Empty;
 
         #endregion
 

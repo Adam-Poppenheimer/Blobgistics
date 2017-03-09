@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Blobs;
-using Assets.BlobSites;
+using Assets.Map;
 
 namespace Assets.Societies {
 
@@ -18,32 +18,36 @@ namespace Assets.Societies {
 
         public override ComplexityLadderBase ActiveComplexityLadder {
             get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override ResourceBlobFactoryBase BlobFactory {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override ComplexityDefinitionBase StartingComplexity {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override BlobSiteBase Location {
-            get {
-                if(_blobSite == null) {
-                    throw new InvalidOperationException("BlobSite is uninitialized");
+                if(_activeComplexityLadder == null) {
+                    throw new InvalidOperationException("ActiveComplexityLadder is uninitialized");
                 } else {
-                    return _blobSite;
+                    return _activeComplexityLadder;
                 }
             }
         }
-        [SerializeField] private BlobSiteBase _blobSite;
+        [SerializeField] private ComplexityLadderBase _activeComplexityLadder;
+
+        public override ResourceBlobFactoryBase BlobFactory {
+            get {
+                if(_blobFactory == null) {
+                    throw new InvalidOperationException("BlobFactory is uninitialized");
+                } else {
+                    return _blobFactory;
+                }
+            }
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
+
+        public override MapNodeBase Location {
+            get {
+                if(_location == null) {
+                    throw new InvalidOperationException("Location is uninitialized");
+                } else {
+                    return _location;
+                }
+            }
+        }
+        [SerializeField] private MapNodeBase _location;
 
         #endregion
 

@@ -5,9 +5,9 @@ using System.Text;
 
 using Assets.Highways;
 
-namespace Assets.Highways.Editor {
+namespace Assets.Highways.ForTesting {
 
-    class MockBlobTubePrivateData : BlobTubePrivateData {
+    public class MockBlobTubePrivateData : BlobTubePrivateData {
 
         #region instance fields and properties
 

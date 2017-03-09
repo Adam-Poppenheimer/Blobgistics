@@ -5,7 +5,7 @@ using System.Text;
 
 using UnityEngine;
 
-using Assets.BlobSites;
+using Assets.Map;
 
 using Assets.Blobs;
 
@@ -17,8 +17,8 @@ namespace Assets.Highways {
 
         public abstract int ID { get; }
 
-        public abstract BlobSiteBase FirstEndpoint { get; } 
-        public abstract BlobSiteBase SecondEndpoint { get; }
+        public abstract MapNodeBase FirstEndpoint  { get; } 
+        public abstract MapNodeBase SecondEndpoint { get; }
 
         public abstract BlobHighwayProfile Profile { get; set; }
 
@@ -28,11 +28,11 @@ namespace Assets.Highways {
 
         #region instance methods methods
 
-        public abstract bool GetPermissionForEndpoint1(ResourceType type);
-        public abstract void SetPermissionForEndpoint1(ResourceType type, bool isPermitted);
+        public abstract bool GetPullingPermissionForEndpoint1(ResourceType type);
+        public abstract void SetPullingPermissionForEndpoint1(ResourceType type, bool isPermitted);
 
-        public abstract bool GetPermissionForEndpoint2(ResourceType type);
-        public abstract void SetPermissionForEndpoint2(ResourceType type, bool isPermitted);
+        public abstract bool GetPullingPermissionForEndpoint2(ResourceType type);
+        public abstract void SetPullingPermissionForEndpoint2(ResourceType type, bool isPermitted);
 
         public abstract bool CanPullFromFirstEndpoint();
         public abstract void PullFromFirstEndpoint();

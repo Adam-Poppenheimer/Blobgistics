@@ -67,7 +67,10 @@ namespace Assets.BlobSites {
         }
         private BlobSitePrivateDataBase _privateData;
         
-        private Dictionary<ResourceType, bool> PermissionsByResourceType = 
+        private Dictionary<ResourceType, bool> PlacementPermissionsByResourceType = 
+            new Dictionary<ResourceType, bool>();
+
+        private Dictionary<ResourceType, bool> ExtractionPermissionsByResourceType = 
             new Dictionary<ResourceType, bool>();
 
         private Dictionary<ResourceType, int> CapacitiesByResourceType =
@@ -80,22 +83,36 @@ namespace Assets.BlobSites {
         #region from BlobSiteBase
 
         public override bool CanExtractAnyBlob() {
-            return contents.Count > 0;
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                if(CanExtractBlobOfType(resourceType)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public override ResourceBlob ExtractAnyBlob() {
-            if(CanExtractAnyBlob()) {
-                var blobToExtract = contents.Last();
-                contents.Remove(blobToExtract);
-                RaiseBlobExtractedFrom(blobToExtract);
-                return blobToExtract;
-            }else {
-                throw new BlobSiteException("Cannot extract any blob from this BlobSite");
+            
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                if(GetExtractionPermissionForResourceType(resourceType)) {
+
+                    var blobToExtract = contents.FindLast(delegate(ResourceBlob blob) {
+                        return blob.BlobType == resourceType;
+                    });
+                    if(blobToExtract != null) {
+                        contents.Remove(blobToExtract);
+                        RaiseBlobExtractedFrom(blobToExtract);
+                        return blobToExtract;
+                    }
+
+                }
             }
+            throw new BlobSiteException("Cannot extract any blob from this BlobSite");
+            
         }
 
         public override bool CanExtractBlobOfType(ResourceType type) {
-            return contents.Find(delegate(ResourceBlob blob) {
+            return GetExtractionPermissionForResourceType(type) && contents.Find(delegate(ResourceBlob blob) {
                 return blob.BlobType == type;
             }) != null;
         }
@@ -122,7 +139,7 @@ namespace Assets.BlobSites {
 
         public override bool CanPlaceBlobOfTypeInto(ResourceType type) {
             bool isPermitted;
-            PermissionsByResourceType.TryGetValue(type, out isPermitted);
+            PlacementPermissionsByResourceType.TryGetValue(type, out isPermitted);
             bool hasSpecificSpaceLeft = GetSpaceLeftOfType(type) > 0;
             bool hasGeneralSpaceLeft = TotalSpaceLeft > 0;
 
@@ -144,7 +161,9 @@ namespace Assets.BlobSites {
         public override IEnumerable<ResourceType> GetExtractableTypes() {
             HashSet<ResourceType> retval = new HashSet<ResourceType>();
             foreach(var blob in contents) {
-                retval.Add(blob.BlobType);
+                if(GetExtractionPermissionForResourceType(blob.BlobType)) {
+                    retval.Add(blob.BlobType);
+                }
             }
             return retval;
         }
@@ -159,29 +178,45 @@ namespace Assets.BlobSites {
             CapacitiesByResourceType[type] = newCapacity;
         }
 
-        public override bool GetPermissionForResourceType(ResourceType type) {
+        public override bool GetPlacementPermissionForResourceType(ResourceType type) {
             bool retval;
-            PermissionsByResourceType.TryGetValue(type, out retval);
+            PlacementPermissionsByResourceType.TryGetValue(type, out retval);
             return retval;
         }
 
-        public override void SetPermissionForResourceType(ResourceType type, bool isPermitted) {
-            PermissionsByResourceType[type] = isPermitted;
+        public override void SetPlacementPermissionForResourceType(ResourceType type, bool isPermitted) {
+            PlacementPermissionsByResourceType[type] = isPermitted;
         }
 
-        public override void SetPermissionsAndCapacity(ResourceSummary summary) {
-            if(summary == null) {
+        public override bool GetExtractionPermissionForResourceType(ResourceType type) {
+            bool retval;
+            ExtractionPermissionsByResourceType.TryGetValue(type, out retval);
+            return retval;
+        }
+
+        public override void SetExtractionPermissionForResourceType(ResourceType type, bool isPermitted) {
+            ExtractionPermissionsByResourceType[type] = isPermitted;
+        }
+
+        public override void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary) {
+            if(placementSummary == null) {
                 throw new ArgumentNullException("summary");
             }
             int newTotalCapacity = 0;
-            PermissionsByResourceType.Clear();
+            PlacementPermissionsByResourceType.Clear();
             CapacitiesByResourceType.Clear();
-            foreach(var resourceType in summary) {
-                PermissionsByResourceType[resourceType] = true;
-                CapacitiesByResourceType[resourceType] = summary[resourceType];
-                newTotalCapacity += summary[resourceType];
+            foreach(var resourceType in placementSummary) {
+                PlacementPermissionsByResourceType[resourceType] = true;
+                CapacitiesByResourceType[resourceType] = placementSummary[resourceType];
+                newTotalCapacity += placementSummary[resourceType];
             }
             TotalCapacity = newTotalCapacity;
+        }
+
+        public override void ClearPermissionsAndCapacity() {
+            PlacementPermissionsByResourceType.Clear();
+            ExtractionPermissionsByResourceType.Clear();
+            CapacitiesByResourceType.Clear();
         }
 
         public override IEnumerable<ResourceBlob> GetContentsOfType(ResourceType type) {
@@ -204,7 +239,7 @@ namespace Assets.BlobSites {
             return GetSpaceLeftOfType(type) <= 0;
         }
 
-        public override void Clear() {
+        public override void ClearContents() {
             contents.Clear();
             RaiseAllBlobsCleared();
         }
