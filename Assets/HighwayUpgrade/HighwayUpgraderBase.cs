@@ -5,11 +5,32 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
+using Assets.Highways;
+
+using Assets.BlobSites;
+
 namespace Assets.HighwayUpgrade {
 
     public abstract class HighwayUpgraderBase : MonoBehaviour {
 
+        #region instance fields and properties
 
+        public abstract BlobSiteBase UnderlyingSite { get; }
+
+        public abstract BlobHighwayBase TargetedHighway { get; }
+
+        public abstract BlobHighwayProfile ProfileToInsert { get; }
+
+        public abstract ResourceSummary Cost { get; }
+
+        #endregion
+
+        #region instance methods
+
+        public abstract ResourceSummary GetResourcesNeededToUpgrade();
+
+        #endregion
 
     }
 
