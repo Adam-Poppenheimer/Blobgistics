@@ -655,7 +655,7 @@ namespace Assets.Highways.Editor {
             var highwayToTest = BuildHighway(highwayData);
 
             //Execution
-            highwayToTest.Profile = new BlobHighwayProfile(5, 20);
+            highwayToTest.Profile = new BlobHighwayProfile(5, 20, ResourceSummary.Empty);
 
             //Validation
             Assert.AreEqual(5, tubePullingFromFirst.TransportSpeedPerSecond, "tubePullingFromFirst has incorrect BlobSpeedPerSecond");
@@ -803,7 +803,7 @@ namespace Assets.Highways.Editor {
             var hostingGameObject = new GameObject();
             var newHighway = hostingGameObject.AddComponent<BlobHighway>();
             newHighway.PrivateData = privateData;
-            newHighway.Profile = new BlobHighwayProfile(1f, 10);
+            newHighway.Profile = new BlobHighwayProfile(1f, 10, ResourceSummary.Empty);
             return newHighway;
         }
 

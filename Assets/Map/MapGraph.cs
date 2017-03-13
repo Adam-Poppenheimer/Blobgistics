@@ -52,13 +52,20 @@ namespace Assets.Map {
         #region instance methods
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
-            var nodeObject = Instantiate(NodePrefab, this.transform, false) as GameObject;
-            var newNode = nodeObject.GetComponent<MapNode>();
+            MapNode newNode = null;
+            if(NodePrefab != null) {
+                var nodeObject = Instantiate(NodePrefab, this.transform, false) as GameObject;
+                newNode = nodeObject.GetComponent<MapNode>();
+                if(newNode == null) {
+                    throw new MapNodeException("The MapNode prefab lacked a MapNode component");
+                }
+            }
 
             newNode.transform.SetParent(this.transform, false);
             newNode.transform.localPosition = localPosition;
             newNode.SetManagingGraph(this);
-            newNode.SetBlobSite(BlobSiteFactory.ConstructBlobSite(nodeObject));
+            newNode.SetBlobSite(BlobSiteFactory.ConstructBlobSite(newNode.gameObject));
+            newNode.SetID(NodeSet.Count);
 
             NodeSet.Add(newNode);
             return newNode;
@@ -133,7 +140,7 @@ namespace Assets.Map {
         }
 
         public override MapNodeBase GetNodeOfID(int id) {
-            throw new NotImplementedException();
+            return NodeSet.Find(node => node.ID == id);
         }
 
         public  override bool HasEdge(MapNodeBase first, MapNodeBase second) {

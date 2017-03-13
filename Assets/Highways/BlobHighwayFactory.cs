@@ -14,11 +14,49 @@ namespace Assets.Highways {
 
         #region instance fields and properties
 
-        [SerializeField] private MapGraph MapGraph;
-        [SerializeField] private BlobHighwayProfile StartingProfile;
-        [SerializeField] private BlobHighwayPrivateData HighwayPrivateData;
+        public MapGraphBase MapGraph {
+            get {
+                if(_mapGraph == null) {
+                    throw new InvalidOperationException("MapGraph is uninitialized");
+                } else {
+                    return _mapGraph;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _mapGraph = value;
+                }
+            }
+        }
+        [SerializeField] private MapGraphBase _mapGraph;
 
-        private HashSet<BlobHighway> AllConstructedHighways = new HashSet<BlobHighway>();
+        public BlobHighwayProfile StartingProfile {
+            get { return _startingProfile; }
+            set { _startingProfile = value; }
+        }
+        [SerializeField] private BlobHighwayProfile _startingProfile;
+
+        public BlobHighwayPrivateData HighwayPrivateData {
+            get {
+                if(_highwayPrivateData == null) {
+                    throw new InvalidOperationException("HighwayPrivateData is uninitialized");
+                } else {
+                    return _highwayPrivateData;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _highwayPrivateData = value;
+                }
+            }
+        }
+        [SerializeField] private BlobHighwayPrivateData _highwayPrivateData;
+
+        [SerializeField] private List<BlobHighway> AllConstructedHighways = new List<BlobHighway>();
 
         #endregion
 
@@ -26,7 +64,7 @@ namespace Assets.Highways {
 
         #region from BlobHighwayFactoryBase
 
-        public override bool HasHighwayBetween(MapNode firstEndpoint, MapNode secondEndpoint) {
+        public override bool HasHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             return AllConstructedHighways.Where(delegate(BlobHighway highway) {
                 return (
                     (highway.FirstEndpoint == firstEndpoint.BlobSite  && highway.SecondEndpoint == secondEndpoint.BlobSite) ||
@@ -35,7 +73,7 @@ namespace Assets.Highways {
             }).Count() > 0;
         }
 
-        public override BlobHighwayBase GetHighwayBetween(MapNode firstEndpoint, MapNode secondEndpoint) {
+        public override BlobHighwayBase GetHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             var highwayQuery = AllConstructedHighways.Where(delegate(BlobHighway highway) {
                 return (
                     (highway.FirstEndpoint == firstEndpoint.BlobSite  && highway.SecondEndpoint == secondEndpoint.BlobSite) ||
@@ -49,11 +87,11 @@ namespace Assets.Highways {
             }
         }
 
-        public override bool CanConstructHighwayBetween(MapNode firstEndpoint, MapNode secondEndpoint) {
+        public override bool CanConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             return !HasHighwayBetween(firstEndpoint, secondEndpoint) && MapGraph.HasEdge(firstEndpoint, secondEndpoint);
         }
 
-        public override BlobHighwayBase ConstructHighwayBetween(MapNode firstEndpoint, MapNode secondEndpoint) {
+        public override BlobHighwayBase ConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             var hostingObject = new GameObject();
             hostingObject.transform.SetParent(MapGraph.transform);
             var newHighway = hostingObject.AddComponent<BlobHighway>();

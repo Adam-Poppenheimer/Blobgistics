@@ -14,7 +14,8 @@ namespace Assets.HighwayUpgrade {
 
         #region instance methods
 
-        public abstract HighwayUpgraderBase BuildHighwayUpgrader(BlobHighwayBase targetedHighway, BlobSiteBase underlyingSite);
+        public abstract HighwayUpgraderBase BuildHighwayUpgrader(BlobHighwayBase targetedHighway, BlobSiteBase underlyingSite,
+            BlobHighwayProfile profileToInsert);
 
         public abstract void DestroyHighwayUpgrader(HighwayUpgraderBase highwayUpgrader);
 

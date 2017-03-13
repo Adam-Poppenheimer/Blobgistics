@@ -1,0 +1,993 @@
+﻿using System;
+using System.Linq;
+
+using UnityEngine;
+using UnityEditor;
+
+using NUnit.Framework;
+
+using Assets.Map;
+using Assets.Blobs;
+using Assets.BlobSites;
+using Assets.ConstructionZones;
+using Assets.Highways;
+using Assets.HighwayUpgrade;
+using Assets.Depots;
+using Assets.Societies;
+
+using Assets.Core.ForTesting;
+
+using UnityCustomUtilities.Extensions;
+
+namespace Assets.Core.Editor {
+
+    public class SimulationControlTests {
+
+        #region instance methods
+
+        #region tests
+
+        #region functionality
+
+        [Test]
+        public void OnCanConnectNodesWithHighwayIsCalled_ReturnValueProperlyRepresentsInternalState() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayfactory = BuildHighwayFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.MapGraph = mapGraph;
+            controlToTest.HighwayFactory = highwayfactory;
+
+            //Execution
+
+            //Validation
+
+            //Returns true when there exists an edge between the two nodes, and that edge is empty
+            Assert.That(controlToTest.CanConnectNodesWithHighway(middleNode.ID, rightNode.ID),
+                "Does not permit valid placement location between middleNode and rightNode");
+            Assert.That(controlToTest.CanConnectNodesWithHighway(middleNode.ID, leftNode.ID),
+                "Does not permit valid placement location between middleNode and leftNode");
+            Assert.That(controlToTest.CanConnectNodesWithHighway(middleNode.ID, upNode.ID),
+                "Does not permit valid placement location between middleNode and upNode");
+
+            //Returns false when there exists no edge between the two nodes
+            Assert.IsFalse(controlToTest.CanConnectNodesWithHighway(rightNode.ID, leftNode.ID),
+                "Falsely permits invalid placement location between rightNode and leftNode");
+            Assert.IsFalse(controlToTest.CanConnectNodesWithHighway(rightNode.ID, upNode.ID),
+                "Falsely permits invalid placement location between rightNode and upNode");
+            Assert.IsFalse(controlToTest.CanConnectNodesWithHighway(leftNode.ID,  upNode.ID),
+                "Falsely permits invalid placement location between leftNode and upNode");
+
+            //Returns false when the nodes are the same
+            Assert.IsFalse(controlToTest.CanConnectNodesWithHighway(rightNode.ID, rightNode.ID),
+                "Falsely permits invalid placement location between rightNode and rightNode");
+            Assert.IsFalse(controlToTest.CanConnectNodesWithHighway(leftNode.ID,  leftNode.ID),
+                "Falsely permits invalid placement location between leftNode and leftNode");
+            Assert.IsFalse(controlToTest.CanConnectNodesWithHighway(upNode.ID,    upNode.ID),
+                "Falsely permits invalid placement location between upNode and upNode");
+        }       
+
+        [Test]
+        public void OnConnectNodeWithHighwayIsCalled_HighwayIsConstructedBetweenTheProperNodes() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayfactory = BuildHighwayFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.MapGraph = mapGraph;
+            controlToTest.HighwayFactory = highwayfactory;
+
+            //Execution
+            controlToTest.ConnectNodesWithHighway(middleNode.ID, rightNode.ID);
+            controlToTest.ConnectNodesWithHighway(middleNode.ID, leftNode.ID );
+            controlToTest.ConnectNodesWithHighway(middleNode.ID, upNode.ID   );
+
+            //Validation
+            Assert.That(highwayfactory.HasHighwayBetween(middleNode, rightNode),
+                "Expected highway between middleNode and rightNode, but none was created");
+            Assert.That(highwayfactory.HasHighwayBetween(middleNode, leftNode),
+                "Expected highway between middleNode and leftNode, but none was created");
+            Assert.That(highwayfactory.HasHighwayBetween(middleNode, upNode),
+                "Expected highway between middleNode and upNode, but none was created");
+        }
+
+        [Test]
+        public void OnSetHighwayPermissionForResourceIsCalled_SpecifiedHighwayReceivesTheSpecifiedChanges() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayfactory = BuildHighwayFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+
+            var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
+            var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.MapGraph = mapGraph;
+            controlToTest.HighwayFactory = highwayfactory;
+
+            //Execution
+
+            //Highway 1
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Red, true);
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Green, true);
+
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Red, false);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Red, true);
+
+            //Highway 2
+
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.Red, true);
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.Blue, true);
+
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.Red, false);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.Blue, true);
+
+            //Validation
+
+            //Highway 1
+
+            Assert.That(
+                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Red),
+                string.Format(
+                    "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
+                    "1", "First", ResourceType.Red
+                )
+            );
+            Assert.That(
+                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Green),
+                string.Format(
+                    "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
+                    "1", "First", ResourceType.Green
+                )
+            );
+            Assert.IsFalse(
+                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Blue),
+                string.Format(
+                    "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
+                    "1", "First", ResourceType.Blue
+                )
+            );
+
+            Assert.IsFalse(
+                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Red),
+                string.Format(
+                    "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
+                    "1", "Second", ResourceType.Red
+                )
+            );
+            Assert.That(
+                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Green),
+                string.Format(
+                    "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
+                    "1", "Second", ResourceType.Green
+                )
+            );
+            Assert.IsFalse(
+                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Blue),
+                string.Format(
+                    "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
+                    "1", "Second", ResourceType.Blue
+                )
+            );
+
+            //Highway 2
+
+            Assert.That(
+                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Red), 
+                string.Format(
+                    "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
+                    "2", "First", ResourceType.Red
+                )
+            );
+            Assert.IsFalse(
+                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Green), 
+                string.Format(
+                    "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
+                    "2", "First", ResourceType.Green
+                )
+            );
+            Assert.That(
+                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Blue), 
+                string.Format(
+                    "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
+                    "2", "First", ResourceType.Blue
+                )
+            );
+
+            Assert.IsFalse(
+                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Red),
+                string.Format(
+                    "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
+                    "2", "Second", ResourceType.Red
+                )
+            );
+            Assert.IsFalse(
+                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Green), 
+                string.Format(
+                    "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
+                    "2", "Second", ResourceType.Green
+                )
+            );
+            Assert.That(
+                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Blue),
+                string.Format(
+                    "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
+                    "2", "Second", ResourceType.Blue
+                )
+            );
+        }
+
+        [Test]
+        public void OnSetHighwayPriorityIsCalled_SpecifiedHighwayReceivesTheSpecifiedPriority() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayfactory = BuildHighwayFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
+            var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
+            var highway3 = highwayfactory.ConstructHighwayBetween(middleNode, upNode);
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.MapGraph = mapGraph;
+            controlToTest.HighwayFactory = highwayfactory;
+
+            //Execution
+            controlToTest.SetHighwayPriority(highway1.ID, 11);
+            controlToTest.SetHighwayPriority(highway2.ID, 22);
+            controlToTest.SetHighwayPriority(highway3.ID, 33);
+
+            //Validation
+            Assert.AreEqual(11, highway1.Priority, "Highway1 has an incorrect priority");
+            Assert.AreEqual(22, highway2.Priority, "Highway2 has an incorrect priority");
+            Assert.AreEqual(33, highway3.Priority, "Highway3 has an incorrect priority");
+        }
+
+        [Test]
+        public void OnDestroyHighwayIsCalled_SpecifiedHighwayObjectIsRemovedFromHierarchyAndAllRecords() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayFactory = BuildHighwayFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            var highway1 = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+            var highway2 = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
+            var highway3 = highwayFactory.ConstructHighwayBetween(middleNode, upNode);
+
+            highway1.name = "SimulationControlUnitTestsHighway1";
+            highway2.name = "SimulationControlUnitTestsHighway2";
+            highway3.name = "SimulationControlUnitTestsHighway3";
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.MapGraph = mapGraph;
+            controlToTest.HighwayFactory = highwayFactory;
+
+            //Execution
+            controlToTest.DestroyHighway(highway1.ID);
+            controlToTest.DestroyHighway(highway2.ID);
+            controlToTest.DestroyHighway(highway3.ID);
+
+            //Validation
+            Assert.IsFalse(highwayFactory.HasHighwayBetween(middleNode, rightNode),
+                "highwayFactory still registers the existence of highway1");
+            Assert.IsFalse(highwayFactory.HasHighwayBetween(middleNode, leftNode),
+                "highwayFactory still registers the existence of highway2");
+            Assert.IsFalse(highwayFactory.HasHighwayBetween(middleNode, upNode),
+                "highwayFactory still registers the existence of highway3");
+
+            Assert.IsNull   (GameObject.Find("SimulationControlUnitTestsHighway1"), "The GameObject highway1 was attached to still exists");
+            Assert.IsNull   (GameObject.Find("SimulationControlUnitTestsHighway2"), "The GameObject highway2 was attached to still exists");
+            Assert.IsNotNull(GameObject.Find("SimulationControlUnitTestsHighway3"), "The GameObject highway3 was attached to still exists");
+        }
+
+        [Test]
+        public void OnCanCreateResourceDepotConstructionSiteOnNodeIsCalled_ReturnValueProperlyRepresentsInternalState() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var depotFactory = BuildDepotFactory();
+            var societyFactory = BuildSocietyFactory();
+            var constructionZoneFactory = BuildConstructionZoneFactory();
+
+            var freeNode         = mapGraph.BuildNode(Vector3.zero);
+            var depotNode        = mapGraph.BuildNode(Vector3.right);
+            var societyNode      = mapGraph.BuildNode(Vector3.left);
+            var constructionNode = mapGraph.BuildNode(Vector3.up);
+
+            depotFactory.ConstructDepot(depotNode);
+            societyFactory.ConstructSocietyAt(societyNode);
+            constructionZoneFactory.BuildConstructionZone(constructionNode, constructionZoneFactory.ResourceDepotProject);
+
+            var controlToTest = BuildSimulationControl();
+
+            //Validation
+
+            //Returns true when the MapNode is empty
+            Assert.That(controlToTest.CanCreateResourceDepotConstructionSiteOnNode(freeNode.ID),
+                "Was not permitted to construct on freeNode");
+
+            //Return false when there is a society on the MapNode
+            Assert.IsFalse(controlToTest.CanCreateResourceDepotConstructionSiteOnNode(depotNode.ID),
+                "Falsely permitted to construct on depotNode");
+
+            //Returns false when there is another depot on the MapNode
+            Assert.IsFalse(controlToTest.CanCreateResourceDepotConstructionSiteOnNode(societyNode.ID),
+                "Falsely permitted to construct on societyNode");
+
+            //Returns false when there is a ConstructionSite on the MapNode
+            Assert.IsFalse(controlToTest.CanCreateResourceDepotConstructionSiteOnNode(constructionNode.ID),
+                "Falsely permitted to construct on constructionNode");
+        }
+
+        [Test]
+        public void OnCreateResourceDepotConstructionSiteOnNodeIsCalled_ProperConstructionSiteIsCreatedOnTheProperNode() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var resourceDepotFactory = BuildDepotFactory();
+            var constructionZoneFactory = BuildConstructionZoneFactory();
+
+            var nodeToPlaceUpon = mapGraph.BuildNode(Vector3.zero);
+
+            var controlToTest = BuildSimulationControl();
+
+            //Execution
+            controlToTest.CreateResourceDepotConstructionSiteOnNode(nodeToPlaceUpon.ID);
+
+            //Validation
+            
+            Assert.NotNull(constructionZoneFactory.HasConstructionZoneAtLocation(nodeToPlaceUpon),
+                "constructionZoneFactory does not register a ConstructionZone at the specified location");
+
+            var zoneAtLocation = constructionZoneFactory.GetConstructionZoneAtLocation(nodeToPlaceUpon);
+            Assert.AreEqual(constructionZoneFactory.ResourceDepotProject, zoneAtLocation.CurrentProject,
+                "The construction zone at the specified location has the wrong CurrentProject");
+        }
+
+        [Test]
+        public void OnDestroyConstructionZoneIsCalled_SpecifiedConstructionZoneObjectIsRemovedFromHierarchyAndAllRecords() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var resourceDepotFactory = BuildDepotFactory();
+            var constructionZoneFactory = BuildConstructionZoneFactory();
+
+            var nodeToPlaceUpon = mapGraph.BuildNode(Vector3.zero);
+
+            var controlToTest = BuildSimulationControl();
+
+            controlToTest.CreateResourceDepotConstructionSiteOnNode(nodeToPlaceUpon.ID);
+
+            var zoneAtLocation = constructionZoneFactory.GetConstructionZoneAtLocation(nodeToPlaceUpon);
+            zoneAtLocation.name = "SimulationControl Integration Tests' ConstructionZone";
+
+            //Execution
+            controlToTest.DestroyConstructionZone(zoneAtLocation.ID);
+
+            //Validation
+            Assert.IsFalse(constructionZoneFactory.HasConstructionZoneAtLocation(nodeToPlaceUpon),
+                "ConstructionZoneFactory still registers the removed ConstructionZone");
+
+            Assert.IsNull(GameObject.Find("SimulationControl Integration Tests' ConstructionZone"), 
+                "The removed ConstructionZone is still within the GameObject hierarchy");
+        }
+
+        [Test]
+        public void OnCanDestroySocietyIsCalled_ReturnValueProperlyRepresentsInternalState() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var societyFactory = BuildSocietyFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+
+            var controlToTest = BuildSimulationControl();
+
+            var simpleSociety = societyFactory.ConstructSocietyAt(middleNode);
+            var complexifiedSociety = societyFactory.ConstructSocietyAt(rightNode);
+
+            CauseSocietyToAscend(complexifiedSociety);
+
+            //Execution
+
+            //Validation
+            Assert.IsTrue(controlToTest.CanDestroySociety(simpleSociety.ID),
+                "Is not permitted to destroy the simple society");
+
+            Assert.IsFalse(controlToTest.CanDestroySociety(complexifiedSociety.ID), 
+                "Is falsely permitted to destroy the complexified society");
+        }
+
+        [Test]
+        public void OnDestroySocietyIsCalled_SpecifiedSocietyObjectIsRemovedFromHierarchyAndAllRecords() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var societyFactory = BuildSocietyFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+
+            var controlToTest = BuildSimulationControl();
+
+            var societyToRemove = societyFactory.ConstructSocietyAt(middleNode);
+            societyToRemove.name = "SimulationControl Integration Tests' Society";
+
+            //Execution
+            controlToTest.DestroySociety(societyToRemove.ID);
+
+            //Validation
+            Assert.IsFalse(societyFactory.HasSocietyAtLocation(middleNode),
+                "SocietyFactory still registers the removed middleNode");
+            Assert.IsNull(GameObject.Find("SimulationControl Integration Tests' Society"),
+                "Destroyed Society's GameObject still exists in the GameObject hierarchy");
+        }
+
+        [Test]
+        public void OnCanCreateHighwayUpgraderOnHighwayIsCalled_ReturnValueRepresentsInternalState() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayFactory = BuildHighwayFactory();
+            var upgraderFactory = BuildHighwayUpgraderFactory();
+
+            var betterHighwayProfile = new BlobHighwayProfile(10, 100, ResourceSummary.Empty);
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            var highway1 = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+            var highway2 = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
+            var highway3 = highwayFactory.ConstructHighwayBetween(middleNode, upNode);
+
+            highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
+            highwayFactory.ConstructHighwayBetween(middleNode, upNode);
+
+            upgraderFactory.BuildHighwayUpgrader(highway3, mapGraph.GetEdge(middleNode, upNode).BlobSite, betterHighwayProfile);
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.UpgradedHighwayProfile = betterHighwayProfile;
+
+            //Execution
+
+            //Validation
+            Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(highway1.ID), 
+                "Falsely permits a highwayUpgrader on highway 1");
+            Assert.IsTrue(controlToTest.CanCreateHighwayUpgraderOnHighway(highway2.ID), 
+                "Does not permit a highwayUpgrader on highway 2");
+            Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(highway3.ID), 
+                "Falsely permits a highwayUpgrader on highway 3");
+        }
+
+        [Test]
+        public void OnCreateHighwayUpgraderOnHighwayIsCalled_ProperHighwayUpgraderIsCreatedWithTheProperState() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayFactory = BuildHighwayFactory();
+            var upgraderFactory = BuildHighwayUpgraderFactory();
+
+            var betterHighwayProfile = new BlobHighwayProfile(10, 100, ResourceSummary.Empty);
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+
+            var highwayToUpgrade = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+
+            highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.UpgradedHighwayProfile = betterHighwayProfile;
+
+            //Execution
+            controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
+
+            //Validation
+            Assert.That(upgraderFactory.HasUpgraderOnHighway(highwayToUpgrade), 
+                "UpgraderFactory fails to register a HighwayUpgrader on highwayToUpgrade");
+
+            var upgraderOnHighway = upgraderFactory.GetUpgraderOnHighway(highwayToUpgrade);
+            Assert.AreEqual(betterHighwayProfile, upgraderOnHighway.ProfileToInsert,
+                "UpgraderOnHighway has an incorrect ProfileToInsert");
+        }
+
+        [Test]
+        public void OnDestroyHighwayUpgraderIsCalled_SpecifiedHighwayUpgraderObjectIsRemovedFromHierarchyAndAllRecords() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayFactory = BuildHighwayFactory();
+            var upgraderFactory = BuildHighwayUpgraderFactory();
+
+            var betterHighwayProfile = new BlobHighwayProfile(10, 100, ResourceSummary.Empty);
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+
+            var highwayToUpgrade = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+
+            highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.UpgradedHighwayProfile = betterHighwayProfile;
+
+            controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
+            var upgraderToDestroy = upgraderFactory.GetUpgraderOnHighway(highwayToUpgrade);
+            upgraderToDestroy.name = "SimulationControl Integration Tests' HighwayUpgrader";
+
+            //Execution
+            controlToTest.DestroyHighwayUpgrader(upgraderToDestroy.ID);
+
+            //Validation
+            Assert.IsFalse(upgraderFactory.HasUpgraderOnHighway(highwayToUpgrade),
+                "UpgraderFactory still registers the removed HighwayUpgrader");
+            Assert.IsNull(GameObject.Find("SimulationControl Integration Tests' HighwayUpgrader"),
+                "Destroyed HighwayUpgrader's GameObject still exists in the GameObject hierarchy");
+        }
+
+        [Test]
+        public void OnTickSimulationIsCalled_AllSimulationTickingIsPerformed() {
+            //Setup
+            var societyFactory = BuildMockSocietyFactory();
+            var highwayFactory = BuildMockHighwayFactory();
+
+            float amountTickedOnSociety = 0f;
+            societyFactory.FactoryTicked += delegate(object sender, FloatEventArgs e) {
+                amountTickedOnSociety = e.Value;
+            };
+
+            float amountTickedOnHighway = 0f;
+            highwayFactory.FactoryTicked += delegate(object sender, FloatEventArgs e) {
+                amountTickedOnHighway = e.Value;
+            };
+
+            var controlToTest = BuildSimulationControl();
+            controlToTest.SocietyFactory = societyFactory;
+            controlToTest.HighwayFactory = highwayFactory;
+
+            //Execution
+            controlToTest.TickSimulation(1f);
+
+            //Validation
+            Assert.AreEqual(1f, amountTickedOnSociety, "Incorrect amount ticked on Society");
+            Assert.AreEqual(1f, amountTickedOnHighway, "Incorrect amount ticked on Society");
+        }
+
+        #endregion
+
+        #region error handling 
+
+        [Test]
+        public void OnCanConnectNodesWithHighwayIsCalledOnInvalidIDs_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayFactory = BuildHighwayFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode = mapGraph.BuildNode(Vector3.left);
+
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.ConnectNodesWithHighway(-1000, 42);
+            });
+
+            //Validation
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last());
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnConnectNodeWithHighwayIsCalled_WhileCanConnectNodesWithHighwayIsFalse_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayFactory = BuildHighwayFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode = mapGraph.BuildNode(Vector3.left);
+
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.ConnectNodesWithHighway(middleNode.ID, leftNode.ID);
+            });
+
+            //Validation
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last());
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnConnectNodesWithHighwayIsCalledOnInvalidIDs_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+            var highwayFactory = BuildHighwayFactory();
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode = mapGraph.BuildNode(Vector3.left);
+
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.ConnectNodesWithHighway(-1000, 42);
+            });
+
+            //Validation
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last());
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnSetHighwayPermissionForResourceIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(42, ResourceType.Red, true);
+                controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(42, ResourceType.Red, true);
+            });
+
+            //Validation
+            Assert.AreEqual(2, insertionHandler.StoredMessages.Count, "There were not two messages received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The first message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[1], "The second message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnSetHighwayPriorityIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.SetHighwayPriority(42, 0);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnDestroyHighwayIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyHighway(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnCanCreateResourceDepotConstructionSiteOnNodeIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CanCreateResourceDepotConstructionSiteOnNode(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnCreateResourceDepotConstructionSiteOnNodeIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CreateResourceDepotConstructionSiteOnNode(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnDestroyConstructionZoneIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyConstructionZone(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnCanDestroySocietyIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CanDestroySociety(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnDestroySocietyIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroySociety(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnCanCreateHighwayUpgraderOnHighwayIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CanCreateHighwayUpgraderOnHighway(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnCreateHighwayUpgraderOnHighwayIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CreateHighwayUpgraderOnHighway(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnDestroyHighwayUpgraderIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyHighwayUpgrader(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region utilities
+
+        private MapGraph BuildMapGraph() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MapGraph>();
+        }
+
+        private BlobHighwayFactory BuildHighwayFactory() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<BlobHighwayFactory>();
+        }
+
+        private SimulationControl BuildSimulationControl() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<SimulationControl>();
+        }
+
+        private BlobHighway BuildHighway() {
+            var hostingObject = new GameObject();
+            var newHighway = hostingObject.AddComponent<BlobHighway>();
+            var privateData = hostingObject.AddComponent<BlobHighwayPrivateData>();
+            privateData.
+            newHighway.
+        }
+
+        private ConstructionZoneFactory BuildConstructionZoneFactory() {
+            throw new NotImplementedException();
+        }
+
+        private SocietyFactory BuildSocietyFactory() {
+            throw new NotImplementedException();
+        }
+
+        private ResourceDepotFactory BuildDepotFactory() {
+            throw new NotImplementedException();
+        }
+
+        private HighwayUpgraderFactory BuildHighwayUpgraderFactory() {
+            throw new NotImplementedException();
+        }
+
+        private void CauseSocietyToAscend(SocietyBase society) {
+            throw new NotImplementedException();
+        }
+
+        private MockSocietyFactory BuildMockSocietyFactory() {
+            throw new NotImplementedException();
+        }
+
+        private MockHighwayFactory BuildMockHighwayFactory() {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #endregion
+
+    }
+
+}
+
+

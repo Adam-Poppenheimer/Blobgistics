@@ -15,11 +15,11 @@ namespace Assets.Highways {
 
         public abstract BlobHighwayBase GetHighwayOfID(int highwayID);
         
-        public abstract bool            HasHighwayBetween(MapNode firstEndpoint, MapNode secondEndpoint);
-        public abstract BlobHighwayBase GetHighwayBetween(MapNode firstEndpoint, MapNode secondEndpoint);
+        public abstract bool            HasHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
+        public abstract BlobHighwayBase GetHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
 
-        public abstract bool            CanConstructHighwayBetween(MapNode firstEndpoint, MapNode secondEndpoint);
-        public abstract BlobHighwayBase ConstructHighwayBetween   (MapNode firstEndpoint, MapNode secondEndpoint);
+        public abstract bool            CanConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
+        public abstract BlobHighwayBase ConstructHighwayBetween   (MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
         
 
         public abstract void RemoveHighway(BlobHighwayBase highway);
