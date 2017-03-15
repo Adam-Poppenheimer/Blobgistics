@@ -24,7 +24,7 @@ namespace Assets.Depots {
         public void SetLocation(MapNodeBase value) {
             _location = value;
         }
-        [SerializeField] private MapNodeBase _location;
+        [SerializeField, HideInInspector] private MapNodeBase _location;
 
         public override ResourceDepotProfile Profile {
             get { return _profile; }

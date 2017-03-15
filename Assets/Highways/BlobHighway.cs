@@ -36,7 +36,7 @@ namespace Assets.Highways {
                 UpdateTubesFromProfile();
             }
         }
-        [SerializeField] private BlobHighwayProfile _profile;
+        [SerializeField, HideInInspector] private BlobHighwayProfile _profile;
 
         public override MapNodeBase FirstEndpoint {
             get { return PrivateData.FirstEndpoint; }
@@ -65,7 +65,7 @@ namespace Assets.Highways {
                 }
             }
         }
-        [SerializeField] private BlobHighwayPrivateDataBase _privateData;
+        [SerializeField, HideInInspector] private BlobHighwayPrivateDataBase _privateData;
 
         #endregion
 

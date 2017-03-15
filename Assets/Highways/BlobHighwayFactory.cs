@@ -63,7 +63,7 @@ namespace Assets.Highways {
         }
         [SerializeField] private BlobHighwayProfile _startingProfile;
 
-        [SerializeField] private List<BlobHighway> AllConstructedHighways = new List<BlobHighway>();
+        [SerializeField, HideInInspector] private List<BlobHighway> AllConstructedHighways = new List<BlobHighway>();
 
         #endregion
 
@@ -164,7 +164,7 @@ namespace Assets.Highways {
             }).FirstOrDefault();
             if(highwayToRemove != null) {
                 AllConstructedHighways.Remove(highwayToRemove);
-                DestroyImmediate(highwayToRemove);
+                DestroyImmediate(highwayToRemove.gameObject);
             }
         }
 

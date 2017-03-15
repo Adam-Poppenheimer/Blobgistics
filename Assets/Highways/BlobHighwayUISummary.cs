@@ -15,34 +15,33 @@ namespace Assets.Highways {
 
         #region instance fields and properties
 
-        public int ID { get; private set; }
+        public int ID { get; set; }
 
-        public int Priority { get; private set; }
+        public int Priority { get; set; }
 
-        public Transform Transform { get; private set; }
+        public Transform Transform { get; set; }
 
-        public IReadOnlyDictionary<ResourceType, bool> ResourcePermissionsForEndpoint1 {
-            get { return new ReadOnlyDictionary<ResourceType, bool>(_resourcePermissionsForEndpoint1); }
-        }
-        private Dictionary<ResourceType, bool> _resourcePermissionsForEndpoint1 = new Dictionary<ResourceType, bool>();
+        public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint1 { get; set; }
 
-        public IReadOnlyDictionary<ResourceType, bool> ResourcePermissionsForEndpoint2 {
-            get { return new ReadOnlyDictionary<ResourceType, bool>(_resourcePermissionsForEndpoint2); }
-        }
-        private Dictionary<ResourceType, bool> _resourcePermissionsForEndpoint2 = new Dictionary<ResourceType, bool>();
+        public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint2 { get; set; }
 
         #endregion
 
         #region constructors
+
+        public BlobHighwayUISummary() {}
 
         public BlobHighwayUISummary(BlobHighwayBase highwayToSummarize) {
             ID = highwayToSummarize.ID;
             Priority = highwayToSummarize.Priority;
             Transform = highwayToSummarize.transform;
 
+            ResourcePermissionsForEndpoint1 = new Dictionary<ResourceType, bool>();
+            ResourcePermissionsForEndpoint2 = new Dictionary<ResourceType, bool>();
+
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                _resourcePermissionsForEndpoint1[resourceType] = highwayToSummarize.GetPullingPermissionForFirstEndpoint(resourceType);
-                _resourcePermissionsForEndpoint2[resourceType] = highwayToSummarize.GetPullingPermissionForSecondEndpoint(resourceType);
+                ResourcePermissionsForEndpoint1[resourceType] = highwayToSummarize.GetPullingPermissionForFirstEndpoint(resourceType);
+                ResourcePermissionsForEndpoint2[resourceType] = highwayToSummarize.GetPullingPermissionForSecondEndpoint(resourceType);
             }
         }
 

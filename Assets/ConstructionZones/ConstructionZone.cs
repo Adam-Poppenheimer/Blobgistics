@@ -47,7 +47,7 @@ namespace Assets.ConstructionZones {
             }
         }
 
-        private ConstructionProjectBase _currentProject;
+        [SerializeField] private ConstructionProjectBase _currentProject;
 
         public override MapNodeBase Location {
             get { return _location; }
@@ -55,11 +55,27 @@ namespace Assets.ConstructionZones {
         public void SetLocation(MapNodeBase value) {
             _location = value;
         }
-        [SerializeField] private MapNodeBase _location;
+        [SerializeField, HideInInspector] private MapNodeBase _location;
 
         #endregion
 
-        public ConstructionZoneFactoryBase ParentFactory { get; set; }
+        public ConstructionZoneFactoryBase ParentFactory {
+            get {
+                if(_parentFactory == null) {
+                    throw new InvalidOperationException("ParentFactory is uninitialized");
+                } else {
+                    return _parentFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _parentFactory = value;
+                }
+            }
+        }
+        [SerializeField, HideInInspector] private ConstructionZoneFactoryBase _parentFactory;
 
         #endregion
 

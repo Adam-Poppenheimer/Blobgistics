@@ -42,11 +42,11 @@ namespace Assets.Societies {
                 }
             }
         }
-        private ResourceBlobFactoryBase _blobFactory;
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         [SerializeField] private GameObject SocietyPrefab;
 
-        [SerializeField] private List<SocietyBase> InstantiatedSocieties = new List<SocietyBase>();
+        [SerializeField, HideInInspector] private List<SocietyBase> InstantiatedSocieties = new List<SocietyBase>();
 
         #endregion
 

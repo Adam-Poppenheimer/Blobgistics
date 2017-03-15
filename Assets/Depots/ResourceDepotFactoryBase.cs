@@ -13,7 +13,10 @@ namespace Assets.Depots {
 
         #region instance methods
 
-        public abstract ResourceDepotBase ConstructDepot(MapNodeBase map);
+        public abstract bool HasDepotAtLocation(MapNodeBase location);
+        public abstract ResourceDepotBase GetDepotAtLocation(MapNodeBase location);
+
+        public abstract ResourceDepotBase ConstructDepot(MapNodeBase location);
         public abstract void DestroyDepot(ResourceDepotBase depot);
 
         #endregion

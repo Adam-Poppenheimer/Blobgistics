@@ -38,6 +38,42 @@ namespace Assets.Highways {
 
         #endregion
 
+        #region static methods
+
+        public static bool operator ==(BlobHighwayProfile profile1, BlobHighwayProfile profile2) {
+            return (
+                profile1.BlobSpeedPerSecond == profile2.BlobSpeedPerSecond &&
+                profile1.Capacity == profile2.Capacity &&
+                profile1.Cost.Equals(profile2.Cost)
+            );
+        }
+
+        public static bool operator !=(BlobHighwayProfile profile1, BlobHighwayProfile profile2) {
+            return (
+                profile1.BlobSpeedPerSecond != profile2.BlobSpeedPerSecond ||
+                profile1.Capacity != profile2.Capacity ||
+                !profile1.Cost.Equals(profile2.Cost)
+            );
+        }
+
+        #endregion
+
+        #region instance methods
+
+        #region from Object
+
+        public override bool Equals(object obj) {
+            return obj is BlobHighwayProfile && this == (BlobHighwayProfile)obj;
+        }
+
+        public override int GetHashCode() {
+            return _blobSpeedPerSecond.GetHashCode() ^ _capacity.GetHashCode() ^ Cost.GetHashCode();
+        }
+
+        #endregion
+
+        #endregion
+
     }
 
 }

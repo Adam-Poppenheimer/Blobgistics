@@ -25,6 +25,7 @@ namespace Assets.ConstructionZones {
         public abstract ConstructionZoneBase GetConstructionZoneAtLocation(MapNodeBase location);
 
         public abstract ConstructionZoneBase BuildConstructionZone(MapNodeBase location, ConstructionProjectBase project);
+
         public abstract void DestroyConstructionZone(ConstructionZoneBase constructionZone);
 
         #endregion

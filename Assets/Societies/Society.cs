@@ -29,7 +29,7 @@ namespace Assets.Societies {
                 return PrivateData.ActiveComplexityLadder;
             }
         }
-        [SerializeField] private ComplexityLadderBase _activeComplexityLadder;
+        [SerializeField, HideInInspector] private ComplexityLadderBase _activeComplexityLadder;
 
         public override ComplexityDefinitionBase CurrentComplexity {
             get { return currentComplexity; }
@@ -39,12 +39,12 @@ namespace Assets.Societies {
         public override bool NeedsAreSatisfied {
             get { return needsAreSatisfied; }
         }
-        [SerializeField] private bool needsAreSatisfied = true;
+        [SerializeField, HideInInspector] private bool needsAreSatisfied = true;
 
         public override float SecondsOfUnsatisfiedNeeds {
             get { return secondsOfUnsatisfiedNeeds; }
         }
-        [SerializeField] private float secondsOfUnsatisfiedNeeds;
+        [SerializeField, HideInInspector] private float secondsOfUnsatisfiedNeeds;
 
         public override float SecondsUntilComplexityDescent {
             get {
@@ -81,10 +81,10 @@ namespace Assets.Societies {
                 }
             }
         }
-        private SocietyPrivateDataBase _privateData;
+        [SerializeField, HideInInspector] private SocietyPrivateDataBase _privateData;
 
-        private float CurrentProductionTimer  = 0f;
-        private float CurrentNeedConsumptionTimer = 0f;
+        [SerializeField, HideInInspector] private float CurrentProductionTimer  = 0f;
+        [SerializeField, HideInInspector] private float CurrentNeedConsumptionTimer = 0f;
 
         private BlobSitePermissionProfile ConsumptionProfile = new BlobSitePermissionProfile();
         private BlobSitePermissionProfile ProductionProfile = new BlobSitePermissionProfile();

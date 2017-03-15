@@ -14,7 +14,7 @@ namespace Assets.HighwayUpgrade {
 
         #region instance fields and properties
 
-        [SerializeField] private List<HighwayUpgraderBase> InstantiatedUpgraders =
+        [SerializeField, HideInInspector] private List<HighwayUpgraderBase> InstantiatedUpgraders =
             new List<HighwayUpgraderBase>();
 
         #endregion

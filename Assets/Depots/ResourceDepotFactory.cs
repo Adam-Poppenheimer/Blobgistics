@@ -15,28 +15,46 @@ namespace Assets.Depots {
 
         [SerializeField] private GameObject ResourceDepotPrefab;
 
+        [SerializeField, HideInInspector] private List<ResourceDepotBase> InstantiatedDepots = new List<ResourceDepotBase>();
+
         #endregion
 
         #region instance methods
 
         #region from ResourceDepotFactoryBase
 
+        public override ResourceDepotBase GetDepotAtLocation(MapNodeBase location) {
+            return InstantiatedDepots.Find(depot => depot.Location == location);
+        }
+
+        public override bool HasDepotAtLocation(MapNodeBase location) {
+            return InstantiatedDepots.Exists(depot => depot.Location == location);
+        }
+
         public override ResourceDepotBase ConstructDepot(MapNodeBase location) {
-            ResourceDepot newResourceDepot = null;
+            if(location == null) {
+                throw new ArgumentNullException("location");
+            }else if(HasDepotAtLocation(location)) {
+                throw new ResourceDepotException("Cannot construct a resource depot at the specified location: one already exists");
+            }
+            ResourceDepot newDepot = null;
             if(ResourceDepotPrefab != null) {
                 var newGameObject = Instantiate<GameObject>(ResourceDepotPrefab);
-                newResourceDepot = newGameObject.GetComponent<ResourceDepot>();
-                if(newResourceDepot == null) {
+                newDepot = newGameObject.GetComponent<ResourceDepot>();
+                if(newDepot == null) {
                     throw new ResourceDepotException("ResourceDepotPrefab does not contain a ResourceDepot component on it");
                 }
             }else {
                 var hostingObject = new GameObject();
-                newResourceDepot = hostingObject.AddComponent<ResourceDepot>();
+                newDepot = hostingObject.AddComponent<ResourceDepot>();
             }
+
             location.BlobSite.ClearContents();
-            newResourceDepot.SetLocation(location);
-            newResourceDepot.Profile = ResourceDepotProfile.Empty;
-            return newResourceDepot;
+            newDepot.SetLocation(location);
+            newDepot.Profile = ResourceDepotProfile.Empty;
+
+            InstantiatedDepots.Add(newDepot);
+            return newDepot;
         }
 
         public override void DestroyDepot(ResourceDepotBase depot) {

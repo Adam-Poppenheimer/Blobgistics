@@ -1,0 +1,79 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using UnityEngine;
+using UnityEngine.UI;
+
+using Assets.Blobs;
+using Assets.Highways;
+using Assets.Core;
+
+namespace Assets.UI.Highways {
+
+    public class BlobHighwaySummaryDisplay : BlobHighwaySummaryDisplayBase {
+
+        #region instance fields and properties
+
+        [SerializeField] private InputField PriorityInput;
+
+        [SerializeField] private Toggle FirstEndpointRedPermissionToggle;
+        [SerializeField] private Toggle SecondEndpointRedPermissionToggle;
+
+        [SerializeField] private Toggle FirstEndpointGreenPermissionToggle;
+        [SerializeField] private Toggle SecondEndpointGreenPermissionToggle;
+
+        [SerializeField] private Toggle FirstEndpointBluePermissionToggle;
+        [SerializeField] private Toggle SecondEndpointBluePermissionToggle;
+
+        public override BlobHighwayUISummary CurrentSummary { get; set; }
+
+        #endregion
+
+        #region instance methods
+
+        #region Unity event methods
+
+        private void Awake() {
+            PriorityInput.onEndEdit.AddListener(delegate(string textInInput) {
+                int newPriority;
+                Int32.TryParse(textInInput, out newPriority);
+                if(newPriority != CurrentSummary.Priority) {
+                    RaisePriorityChanged(newPriority);
+                }
+            });
+        }
+
+        #endregion
+
+        public override void UpdateDisplay() {
+            PriorityInput.text = CurrentSummary.Priority.ToString();
+
+            FirstEndpointRedPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Red];
+            SecondEndpointRedPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Red];
+
+            FirstEndpointGreenPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Green];
+            SecondEndpointGreenPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Green];
+
+            FirstEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue];
+            SecondEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Blue];
+        }
+
+        public override void ClearDisplay() {
+            PriorityInput.text = "";
+
+            FirstEndpointRedPermissionToggle.isOn = false;
+            SecondEndpointRedPermissionToggle.isOn = false;
+
+            FirstEndpointGreenPermissionToggle.isOn = false;
+            SecondEndpointGreenPermissionToggle.isOn = false;
+
+            FirstEndpointBluePermissionToggle.isOn = false;
+            SecondEndpointBluePermissionToggle.isOn = false;
+        }
+
+        #endregion
+
+    }
+}

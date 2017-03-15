@@ -131,7 +131,7 @@ namespace Assets.Core.Editor {
             controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Green, true);
 
             controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Red, false);
-            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Red, true);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Green, true);
 
             //Highway 2
 
@@ -306,9 +306,9 @@ namespace Assets.Core.Editor {
             Assert.IsFalse(highwayFactory.HasHighwayBetween(middleNode, upNode),
                 "highwayFactory still registers the existence of highway3");
 
-            Assert.IsNull   (GameObject.Find("SimulationControlUnitTestsHighway1"), "The GameObject highway1 was attached to still exists");
-            Assert.IsNull   (GameObject.Find("SimulationControlUnitTestsHighway2"), "The GameObject highway2 was attached to still exists");
-            Assert.IsNotNull(GameObject.Find("SimulationControlUnitTestsHighway3"), "The GameObject highway3 was attached to still exists");
+            Assert.IsNull(GameObject.Find("SimulationControlUnitTestsHighway1"), "The GameObject highway1 was attached to still exists");
+            Assert.IsNull(GameObject.Find("SimulationControlUnitTestsHighway2"), "The GameObject highway2 was attached to still exists");
+            Assert.IsNull(GameObject.Find("SimulationControlUnitTestsHighway3"), "The GameObject highway3 was attached to still exists");
         }
 
         [Test]
@@ -469,8 +469,7 @@ namespace Assets.Core.Editor {
             var highway2 = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
             var highway3 = highwayFactory.ConstructHighwayBetween(middleNode, upNode);
 
-            highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
-            highwayFactory.ConstructHighwayBetween(middleNode, upNode);
+            highway1.Profile = controlToTest.UpgradedHighwayProfile;
 
             upgraderFactory.BuildHighwayUpgrader(highway3, mapGraph.GetEdge(middleNode, upNode).BlobSite, controlToTest.UpgradedHighwayProfile);
 
@@ -501,8 +500,6 @@ namespace Assets.Core.Editor {
 
             var highwayToUpgrade = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
 
-            highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
-
             //Execution
             controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
 
@@ -530,8 +527,6 @@ namespace Assets.Core.Editor {
             mapGraph.AddUndirectedEdge(middleNode, rightNode);
 
             var highwayToUpgrade = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
-
-            highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
 
             controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
             var upgraderToDestroy = upgraderFactory.GetUpgraderTargetingHighway(highwayToUpgrade);
@@ -595,11 +590,13 @@ namespace Assets.Core.Editor {
 
             //Execution
             Assert.DoesNotThrow(delegate() {
-                controlToTest.ConnectNodesWithHighway(-1000, 42);
+                controlToTest.CanConnectNodesWithHighway(-1000, 42);
             });
 
             //Validation
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last());
+
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not just one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last().LogType, "The message received was not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -625,7 +622,8 @@ namespace Assets.Core.Editor {
             });
 
             //Validation
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last());
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not just one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last().LogType, "The message received was not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -651,7 +649,8 @@ namespace Assets.Core.Editor {
             });
 
             //Validation
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last());
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not just a single message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last().LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -674,8 +673,8 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(2, insertionHandler.StoredMessages.Count, "There were not two messages received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The first message logged is not an error message");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[1], "The second message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The first message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[1].LogType, "The second message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -697,7 +696,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -719,7 +718,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -741,7 +740,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -763,7 +762,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -785,7 +784,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -807,7 +806,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -829,7 +828,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -851,7 +850,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -873,7 +872,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -895,7 +894,7 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0], "The message logged is not an error message");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
 
             //Cleanup
             Debug.logger.logHandler = defaultLogHandler;
@@ -983,15 +982,58 @@ namespace Assets.Core.Editor {
         }
 
         private void CauseSocietyToAscend(SocietyBase society) {
-            throw new NotImplementedException();
+            var currentComplexity = society.CurrentComplexity;
+
+            foreach(var needType in currentComplexity.Needs) {
+                for(int i = 0; i < currentComplexity.Needs[needType]; ++i) {
+                    society.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(needType));
+                }
+            }
+
+            foreach(var ascentType in currentComplexity.CostOfAscent) {
+                for(int i = 0; i < currentComplexity.CostOfAscent[ascentType]; ++i) {
+                    if(society.Location.BlobSite.CanPlaceBlobOfTypeInto(ascentType)) {
+                        society.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ascentType));
+                    }
+                }
+            }
+            society.TickConsumption(currentComplexity.SecondsToFullyConsumeNeeds);
         }
 
         private ResourceBlobFactoryBase BuildResourceBlobFactory() {
-            throw new NotImplementedException();
+            var hostingObject = new GameObject();
+            var newFactory = hostingObject.AddComponent<ResourceBlobFactory>();
+            return newFactory;
         }
 
         private ComplexityLadderBase BuildComplexityLadder() {
-            throw new NotImplementedException();
+            var hostingObject = new GameObject();
+
+            var newLadder = hostingObject.AddComponent<ComplexityLadder>();
+            var complexity1 = hostingObject.AddComponent<ComplexityDefinition>();
+            var complexity2 = hostingObject.AddComponent<ComplexityDefinition>();
+
+            complexity1.SetName("Complexity1");
+            complexity1.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 2)));
+            complexity1.SetWants(new List<ResourceSummary>() {
+                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
+                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1))
+            });
+            complexity1.SetCostOfAscent(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+
+            complexity1.SetName("Complexity2");
+            complexity1.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 2)));
+            complexity1.SetWants(new List<ResourceSummary>() {
+                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1))
+            });
+            complexity1.SetCostOfAscent(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+
+            newLadder.ComplexityHierarchy = new List<ComplexityDefinitionBase>() {
+                complexity1, 
+                complexity2
+            };
+
+            return newLadder;
         }
 
         private MockSocietyFactory BuildMockSocietyFactory() {
@@ -1002,6 +1044,11 @@ namespace Assets.Core.Editor {
         private MockHighwayFactory BuildMockHighwayFactory() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockHighwayFactory>();
+        }
+
+        private ResourceBlob BuildResourceBlob(ResourceType type) {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<ResourceBlob>();
         }
 
         #endregion

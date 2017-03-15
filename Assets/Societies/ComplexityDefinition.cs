@@ -18,58 +18,91 @@ namespace Assets.Societies {
         public override string Name {
             get { return _name; }
         }
-        [SerializeField] private string _name;
+        public void SetName(string value) {
+            _name = value;
+        }
+        [SerializeField] private string _name = "Default Complexity";
 
         public override ResourceSummary Production {
             get { return _production; }
         }
-        [SerializeField] private ResourceSummary _production;
+        public void SetProduction(ResourceSummary value) {
+            _production = value;
+        }
+        [SerializeField] private ResourceSummary _production = ResourceSummary.Empty;
 
         public override ResourceSummary Needs {
             get { return _needs; }
         }
-        [SerializeField] private ResourceSummary _needs;
+        public void SetNeeds(ResourceSummary value) {
+            _needs = value;
+        }
+        [SerializeField] private ResourceSummary _needs = ResourceSummary.Empty;
 
         public override IEnumerable<ResourceSummary> Wants {
             get { return _wants; }
         }
-        [SerializeField] private List<ResourceSummary> _wants;
+        public void SetWants(List<ResourceSummary> value) {
+            _wants = value;
+        }
+        [SerializeField] private List<ResourceSummary> _wants= new List<ResourceSummary>();
 
         public override ResourceSummary CostOfAscent {
             get { return _costOfAscent; }
         }
-        [SerializeField] private ResourceSummary _costOfAscent;
+        public void SetCostOfAscent(ResourceSummary value) {
+            _costOfAscent = value;
+        }
+        [SerializeField] private ResourceSummary _costOfAscent = ResourceSummary.Empty;
 
         public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }
         }
-        [SerializeField] private uint _productionCapacityCoefficient;
+        public void SetProductionCapacityCoefficient(uint value) {
+            _productionCapacityCoefficient = value;
+        }
+        [SerializeField] private uint _productionCapacityCoefficient = 1;
 
         public override uint NeedsCapacityCoefficient {
             get { return _needsCapacityCoefficient; }
         }
-        [SerializeField] private uint _needsCapacityCoefficient;
+        public void SetNeedsCapacityCoefficient(uint value) {
+            _needsCapacityCoefficient = value;
+        }
+        [SerializeField] private uint _needsCapacityCoefficient = 1;
 
         public override uint WantsCapacityCoefficient {
             get { return _wantsCapacityCoefficient; }
         }
-        [SerializeField] private uint _wantsCapacityCoefficient;
+        public void SetWantsCapacityCoefficient(uint value) {
+            _wantsCapacityCoefficient = value;
+        }
+        [SerializeField] private uint _wantsCapacityCoefficient = 1;
 
         public override float SecondsToPerformFullProduction {
             get { return _secondsToPerformFullProduction; }
         }
-        [SerializeField] private float _secondsToPerformFullProduction;
+        public void SetSecondsToPerformFullProduction(float value) {
+            _secondsToPerformFullProduction = value;
+        }
+        [SerializeField] private float _secondsToPerformFullProduction = 1f;
 
         public override float SecondsToFullyConsumeNeeds {
             get { return _secondsToFullyConsumeNeeds; }
         }
-        [SerializeField] private float _secondsToFullyConsumeNeeds;
+        public void SetSecondsToFullyConsumeNeeds(float value) {
+            _secondsToFullyConsumeNeeds = value;
+        }
+        [SerializeField] private float _secondsToFullyConsumeNeeds = 1f;
 
 
         public override float ComplexityDescentDuration {
             get { return _complexityDescentDuration; }
         }
-        [SerializeField] private float _complexityDescentDuration;
+        public void SetComplexityDescentDuration(float value) {
+            _complexityDescentDuration = value;
+        }
+        [SerializeField] private float _complexityDescentDuration = 10f;
 
         #endregion
 

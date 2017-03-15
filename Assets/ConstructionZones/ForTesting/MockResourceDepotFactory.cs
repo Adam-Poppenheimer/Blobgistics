@@ -31,6 +31,14 @@ namespace Assets.ConstructionZones.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override ResourceDepotBase GetDepotAtLocation(MapNodeBase location) {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasDepotAtLocation(MapNodeBase location) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
