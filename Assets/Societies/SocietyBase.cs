@@ -16,6 +16,8 @@ namespace Assets.Societies {
 
         #region instance fields and properties
 
+        public abstract int ID { get; }
+
         public abstract ComplexityDefinitionBase CurrentComplexity  { get; }
         public abstract ComplexityLadderBase ActiveComplexityLadder { get; }
 

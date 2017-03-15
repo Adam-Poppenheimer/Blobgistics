@@ -17,23 +17,12 @@ namespace Assets.Highways {
         #region from BlobHighwayPrivateDataBase
 
         public override UIControl UIControl {
-            get {
-                if(uiControl == null) {
-                    throw new InvalidOperationException("TopLevelUIFSM is uninitialized");
-                } else {
-                    return uiControl;
-                }
-            }
+            get { return _uiControl; }
         }
-        [SerializeField] private UIControl uiControl;
-
-        public override int ID {
-            get { return _id; }
+        public void SetUIControl(UIControl value) {
+            _uiControl = value;
         }
-        public void SetID(int value) {
-            _id = value;
-        }
-        [SerializeField] private int _id;
+        [SerializeField] private UIControl _uiControl;
 
         public override MapNodeBase FirstEndpoint {
             get { return _firstEndpoint; }
@@ -68,16 +57,6 @@ namespace Assets.Highways {
         [SerializeField, HideInInspector] private BlobTubeBase _tubePullingFromSecondEndpoint;
 
         #endregion
-
-        #endregion
-
-        #region instance methods
-
-        public BlobHighwayPrivateData Clone(GameObject hostingObject) {
-            var newData = hostingObject.AddComponent<BlobHighwayPrivateData>();
-            newData.uiControl = UIControl;
-            return newData;
-        }
 
         #endregion
 

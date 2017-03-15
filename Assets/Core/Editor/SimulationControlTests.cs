@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -32,8 +33,9 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnCanConnectNodesWithHighwayIsCalled_ReturnValueProperlyRepresentsInternalState() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayfactory = BuildHighwayFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
@@ -43,10 +45,6 @@ namespace Assets.Core.Editor {
             mapGraph.AddUndirectedEdge(middleNode, rightNode);
             mapGraph.AddUndirectedEdge(middleNode, leftNode);
             mapGraph.AddUndirectedEdge(middleNode, upNode);
-
-            var controlToTest = BuildSimulationControl();
-            controlToTest.MapGraph = mapGraph;
-            controlToTest.HighwayFactory = highwayfactory;
 
             //Execution
 
@@ -80,8 +78,10 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnConnectNodeWithHighwayIsCalled_HighwayIsConstructedBetweenTheProperNodes() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayfactory = BuildHighwayFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var highwayfactory = controlToTest.HighwayFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
@@ -91,10 +91,6 @@ namespace Assets.Core.Editor {
             mapGraph.AddUndirectedEdge(middleNode, rightNode);
             mapGraph.AddUndirectedEdge(middleNode, leftNode);
             mapGraph.AddUndirectedEdge(middleNode, upNode);
-
-            var controlToTest = BuildSimulationControl();
-            controlToTest.MapGraph = mapGraph;
-            controlToTest.HighwayFactory = highwayfactory;
 
             //Execution
             controlToTest.ConnectNodesWithHighway(middleNode.ID, rightNode.ID);
@@ -113,8 +109,10 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnSetHighwayPermissionForResourceIsCalled_SpecifiedHighwayReceivesTheSpecifiedChanges() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayfactory = BuildHighwayFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var highwayfactory = controlToTest.HighwayFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
@@ -125,10 +123,6 @@ namespace Assets.Core.Editor {
 
             var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
-
-            var controlToTest = BuildSimulationControl();
-            controlToTest.MapGraph = mapGraph;
-            controlToTest.HighwayFactory = highwayfactory;
 
             //Execution
 
@@ -245,8 +239,10 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnSetHighwayPriorityIsCalled_SpecifiedHighwayReceivesTheSpecifiedPriority() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayfactory = BuildHighwayFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var highwayfactory = controlToTest.HighwayFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
@@ -260,10 +256,6 @@ namespace Assets.Core.Editor {
             var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
             var highway3 = highwayfactory.ConstructHighwayBetween(middleNode, upNode);
-
-            var controlToTest = BuildSimulationControl();
-            controlToTest.MapGraph = mapGraph;
-            controlToTest.HighwayFactory = highwayfactory;
 
             //Execution
             controlToTest.SetHighwayPriority(highway1.ID, 11);
@@ -279,8 +271,10 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnDestroyHighwayIsCalled_SpecifiedHighwayObjectIsRemovedFromHierarchyAndAllRecords() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayFactory = BuildHighwayFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var highwayFactory = controlToTest.HighwayFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
@@ -298,10 +292,6 @@ namespace Assets.Core.Editor {
             highway1.name = "SimulationControlUnitTestsHighway1";
             highway2.name = "SimulationControlUnitTestsHighway2";
             highway3.name = "SimulationControlUnitTestsHighway3";
-
-            var controlToTest = BuildSimulationControl();
-            controlToTest.MapGraph = mapGraph;
-            controlToTest.HighwayFactory = highwayFactory;
 
             //Execution
             controlToTest.DestroyHighway(highway1.ID);
@@ -324,10 +314,12 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnCanCreateResourceDepotConstructionSiteOnNodeIsCalled_ReturnValueProperlyRepresentsInternalState() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var depotFactory = BuildDepotFactory();
-            var societyFactory = BuildSocietyFactory();
-            var constructionZoneFactory = BuildConstructionZoneFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var depotFactory = controlToTest.ResourceDepotFactory;
+            var societyFactory = controlToTest.SocietyFactory;
+            var constructionZoneFactory = controlToTest.ConstructionZoneFactory;
 
             var freeNode         = mapGraph.BuildNode(Vector3.zero);
             var depotNode        = mapGraph.BuildNode(Vector3.right);
@@ -335,10 +327,8 @@ namespace Assets.Core.Editor {
             var constructionNode = mapGraph.BuildNode(Vector3.up);
 
             depotFactory.ConstructDepot(depotNode);
-            societyFactory.ConstructSocietyAt(societyNode);
+            societyFactory.ConstructSocietyAt(societyNode, societyFactory.StandardComplexityLadder);
             constructionZoneFactory.BuildConstructionZone(constructionNode, constructionZoneFactory.ResourceDepotProject);
-
-            var controlToTest = BuildSimulationControl();
 
             //Validation
 
@@ -362,13 +352,12 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnCreateResourceDepotConstructionSiteOnNodeIsCalled_ProperConstructionSiteIsCreatedOnTheProperNode() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var resourceDepotFactory = BuildDepotFactory();
-            var constructionZoneFactory = BuildConstructionZoneFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var constructionZoneFactory = controlToTest.ConstructionZoneFactory;
 
             var nodeToPlaceUpon = mapGraph.BuildNode(Vector3.zero);
-
-            var controlToTest = BuildSimulationControl();
 
             //Execution
             controlToTest.CreateResourceDepotConstructionSiteOnNode(nodeToPlaceUpon.ID);
@@ -386,13 +375,12 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnDestroyConstructionZoneIsCalled_SpecifiedConstructionZoneObjectIsRemovedFromHierarchyAndAllRecords() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var resourceDepotFactory = BuildDepotFactory();
-            var constructionZoneFactory = BuildConstructionZoneFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var constructionZoneFactory = controlToTest.ConstructionZoneFactory;
 
             var nodeToPlaceUpon = mapGraph.BuildNode(Vector3.zero);
-
-            var controlToTest = BuildSimulationControl();
 
             controlToTest.CreateResourceDepotConstructionSiteOnNode(nodeToPlaceUpon.ID);
 
@@ -413,16 +401,16 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnCanDestroySocietyIsCalled_ReturnValueProperlyRepresentsInternalState() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var societyFactory = BuildSocietyFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var societyFactory = controlToTest.SocietyFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
 
-            var controlToTest = BuildSimulationControl();
-
-            var simpleSociety = societyFactory.ConstructSocietyAt(middleNode);
-            var complexifiedSociety = societyFactory.ConstructSocietyAt(rightNode);
+            var simpleSociety = societyFactory.ConstructSocietyAt(middleNode, societyFactory.StandardComplexityLadder);
+            var complexifiedSociety = societyFactory.ConstructSocietyAt(rightNode, societyFactory.StandardComplexityLadder);
 
             CauseSocietyToAscend(complexifiedSociety);
 
@@ -439,14 +427,14 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnDestroySocietyIsCalled_SpecifiedSocietyObjectIsRemovedFromHierarchyAndAllRecords() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var societyFactory = BuildSocietyFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var societyFactory = controlToTest.SocietyFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
 
-            var controlToTest = BuildSimulationControl();
-
-            var societyToRemove = societyFactory.ConstructSocietyAt(middleNode);
+            var societyToRemove = societyFactory.ConstructSocietyAt(middleNode, societyFactory.StandardComplexityLadder);
             societyToRemove.name = "SimulationControl Integration Tests' Society";
 
             //Execution
@@ -462,11 +450,11 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnCanCreateHighwayUpgraderOnHighwayIsCalled_ReturnValueRepresentsInternalState() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayFactory = BuildHighwayFactory();
-            var upgraderFactory = BuildHighwayUpgraderFactory();
+            var controlToTest = BuildSimulationControl();
 
-            var betterHighwayProfile = new BlobHighwayProfile(10, 100, ResourceSummary.Empty);
+            var mapGraph = controlToTest.MapGraph;
+            var highwayFactory = controlToTest.HighwayFactory;
+            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
@@ -484,10 +472,7 @@ namespace Assets.Core.Editor {
             highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
             highwayFactory.ConstructHighwayBetween(middleNode, upNode);
 
-            upgraderFactory.BuildHighwayUpgrader(highway3, mapGraph.GetEdge(middleNode, upNode).BlobSite, betterHighwayProfile);
-
-            var controlToTest = BuildSimulationControl();
-            controlToTest.UpgradedHighwayProfile = betterHighwayProfile;
+            upgraderFactory.BuildHighwayUpgrader(highway3, mapGraph.GetEdge(middleNode, upNode).BlobSite, controlToTest.UpgradedHighwayProfile);
 
             //Execution
 
@@ -503,11 +488,11 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnCreateHighwayUpgraderOnHighwayIsCalled_ProperHighwayUpgraderIsCreatedWithTheProperState() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayFactory = BuildHighwayFactory();
-            var upgraderFactory = BuildHighwayUpgraderFactory();
+            var controlToTest = BuildSimulationControl();
 
-            var betterHighwayProfile = new BlobHighwayProfile(10, 100, ResourceSummary.Empty);
+            var mapGraph = controlToTest.MapGraph;
+            var highwayFactory = controlToTest.HighwayFactory;
+            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
@@ -518,29 +503,26 @@ namespace Assets.Core.Editor {
 
             highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
 
-            var controlToTest = BuildSimulationControl();
-            controlToTest.UpgradedHighwayProfile = betterHighwayProfile;
-
             //Execution
             controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
 
             //Validation
-            Assert.That(upgraderFactory.HasUpgraderOnHighway(highwayToUpgrade), 
+            Assert.That(upgraderFactory.HasUpgraderTargetingHighway(highwayToUpgrade), 
                 "UpgraderFactory fails to register a HighwayUpgrader on highwayToUpgrade");
 
-            var upgraderOnHighway = upgraderFactory.GetUpgraderOnHighway(highwayToUpgrade);
-            Assert.AreEqual(betterHighwayProfile, upgraderOnHighway.ProfileToInsert,
+            var upgraderOnHighway = upgraderFactory.GetUpgraderTargetingHighway(highwayToUpgrade);
+            Assert.AreEqual(controlToTest.UpgradedHighwayProfile, upgraderOnHighway.ProfileToInsert,
                 "UpgraderOnHighway has an incorrect ProfileToInsert");
         }
 
         [Test]
         public void OnDestroyHighwayUpgraderIsCalled_SpecifiedHighwayUpgraderObjectIsRemovedFromHierarchyAndAllRecords() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayFactory = BuildHighwayFactory();
-            var upgraderFactory = BuildHighwayUpgraderFactory();
+            var controlToTest = BuildSimulationControl();
 
-            var betterHighwayProfile = new BlobHighwayProfile(10, 100, ResourceSummary.Empty);
+            var mapGraph = controlToTest.MapGraph;
+            var highwayFactory = controlToTest.HighwayFactory;
+            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
@@ -551,18 +533,15 @@ namespace Assets.Core.Editor {
 
             highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
 
-            var controlToTest = BuildSimulationControl();
-            controlToTest.UpgradedHighwayProfile = betterHighwayProfile;
-
             controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
-            var upgraderToDestroy = upgraderFactory.GetUpgraderOnHighway(highwayToUpgrade);
+            var upgraderToDestroy = upgraderFactory.GetUpgraderTargetingHighway(highwayToUpgrade);
             upgraderToDestroy.name = "SimulationControl Integration Tests' HighwayUpgrader";
 
             //Execution
             controlToTest.DestroyHighwayUpgrader(upgraderToDestroy.ID);
 
             //Validation
-            Assert.IsFalse(upgraderFactory.HasUpgraderOnHighway(highwayToUpgrade),
+            Assert.IsFalse(upgraderFactory.HasUpgraderTargetingHighway(highwayToUpgrade),
                 "UpgraderFactory still registers the removed HighwayUpgrader");
             Assert.IsNull(GameObject.Find("SimulationControl Integration Tests' HighwayUpgrader"),
                 "Destroyed HighwayUpgrader's GameObject still exists in the GameObject hierarchy");
@@ -603,13 +582,12 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnCanConnectNodesWithHighwayIsCalledOnInvalidIDs_DisplaysError_ButDoesNotThrow() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayFactory = BuildHighwayFactory();
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var leftNode = mapGraph.BuildNode(Vector3.left);
-
             var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+
+            mapGraph.BuildNode(Vector3.zero);
+            mapGraph.BuildNode(Vector3.left);
 
             var defaultLogHandler = Debug.logger.logHandler;
             var insertionHandler = new ListInsertionLogHandler();
@@ -630,13 +608,12 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnConnectNodeWithHighwayIsCalled_WhileCanConnectNodesWithHighwayIsFalse_DisplaysError_ButDoesNotThrow() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayFactory = BuildHighwayFactory();
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var leftNode = mapGraph.BuildNode(Vector3.left);
-
-            var controlToTest = BuildSimulationControl();
 
             var defaultLogHandler = Debug.logger.logHandler;
             var insertionHandler = new ListInsertionLogHandler();
@@ -657,13 +634,12 @@ namespace Assets.Core.Editor {
         [Test]
         public void OnConnectNodesWithHighwayIsCalledOnInvalidIDs_DisplaysError_ButDoesNotThrow() {
             //Setup
-            var mapGraph = BuildMapGraph();
-            var highwayFactory = BuildHighwayFactory();
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var leftNode = mapGraph.BuildNode(Vector3.left);
-
             var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+
+            mapGraph.BuildNode(Vector3.zero);
+            mapGraph.BuildNode(Vector3.left);            
 
             var defaultLogHandler = Debug.logger.logHandler;
             var insertionHandler = new ListInsertionLogHandler();
@@ -933,53 +909,99 @@ namespace Assets.Core.Editor {
 
         private MapGraph BuildMapGraph() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MapGraph>();
+
+            var newMapGraph = hostingObject.AddComponent<MapGraph>();
+            var newBlobSiteFactory = hostingObject.AddComponent<BlobSiteFactory>();
+            var newBlobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
+
+            newBlobSiteFactory.BlobSitePrivateData = newBlobSitePrivateData;
+
+            newMapGraph.BlobSiteFactory = newBlobSiteFactory;
+
+            return newMapGraph;
         }
 
-        private BlobHighwayFactory BuildHighwayFactory() {
+        private BlobHighwayFactory BuildHighwayFactory(MapGraphBase mapGraph, ResourceBlobFactoryBase blobFactory) {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<BlobHighwayFactory>();
+            var newFactory = hostingObject.AddComponent<BlobHighwayFactory>();
+            var newBlobTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
+            var newHighwayProfile = new BlobHighwayProfile(1f, 10, new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+
+            newBlobTubeFactory.BlobFactory = blobFactory;
+
+            newFactory.MapGraph = mapGraph;
+            newFactory.BlobTubeFactory = newBlobTubeFactory;
+            newFactory.StartingProfile = newHighwayProfile;
+
+            return newFactory;
+        }
+
+        private ConstructionZoneFactory BuildConstructionZoneFactory(ResourceDepotFactoryBase depotFactory) {
+            var hostingObject = new GameObject();
+            var newFactory = hostingObject.AddComponent<ConstructionZoneFactory>();
+            newFactory.ResourceDepotFactory = depotFactory;
+            return newFactory;
+        }
+
+        private SocietyFactory BuildSocietyFactory(ResourceBlobFactoryBase blobFactory) {
+            var hostingObject = new GameObject();
+            var newFactory = hostingObject.AddComponent<SocietyFactory>();
+            
+            newFactory.BlobFactory = blobFactory;
+            newFactory.SetStandardComplexityLadder(BuildComplexityLadder());
+
+            return newFactory;
+        }
+
+        private ResourceDepotFactory BuildDepotFactory() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<ResourceDepotFactory>();
+        }
+
+        private HighwayUpgraderFactory BuildHighwayUpgraderFactory() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<HighwayUpgraderFactory>();
         }
 
         private SimulationControl BuildSimulationControl() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<SimulationControl>();
-        }
+            var newControl = hostingObject.AddComponent<SimulationControl>();
+            var newBlobFactory = BuildResourceBlobFactory();
+            var newDepotFactory = BuildDepotFactory();
 
-        private BlobHighway BuildHighway() {
-            var hostingObject = new GameObject();
-            var newHighway = hostingObject.AddComponent<BlobHighway>();
-            var privateData = hostingObject.AddComponent<BlobHighwayPrivateData>();
-            privateData.
-            newHighway.
-        }
+            newControl.MapGraph = BuildMapGraph();
+            newControl.HighwayFactory = BuildHighwayFactory(newControl.MapGraph, newBlobFactory);
+            newControl.SocietyFactory = BuildSocietyFactory(newBlobFactory);
+            newControl.ConstructionZoneFactory = BuildConstructionZoneFactory(newDepotFactory);
+            newControl.HighwayUpgraderFactory = BuildHighwayUpgraderFactory();
+            newControl.ResourceDepotFactory = newDepotFactory;
+            newControl.UpgradedHighwayProfile = new BlobHighwayProfile(2, 20, new ResourceSummary(
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 5)
+            ));
 
-        private ConstructionZoneFactory BuildConstructionZoneFactory() {
-            throw new NotImplementedException();
-        }
-
-        private SocietyFactory BuildSocietyFactory() {
-            throw new NotImplementedException();
-        }
-
-        private ResourceDepotFactory BuildDepotFactory() {
-            throw new NotImplementedException();
-        }
-
-        private HighwayUpgraderFactory BuildHighwayUpgraderFactory() {
-            throw new NotImplementedException();
+            return newControl;
         }
 
         private void CauseSocietyToAscend(SocietyBase society) {
             throw new NotImplementedException();
         }
 
-        private MockSocietyFactory BuildMockSocietyFactory() {
+        private ResourceBlobFactoryBase BuildResourceBlobFactory() {
             throw new NotImplementedException();
         }
 
-        private MockHighwayFactory BuildMockHighwayFactory() {
+        private ComplexityLadderBase BuildComplexityLadder() {
             throw new NotImplementedException();
+        }
+
+        private MockSocietyFactory BuildMockSocietyFactory() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockSocietyFactory>();
+        }
+
+        private MockHighwayFactory BuildMockHighwayFactory() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockHighwayFactory>();
         }
 
         #endregion

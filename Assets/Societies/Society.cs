@@ -20,6 +20,10 @@ namespace Assets.Societies {
 
         #region from SocietyBase
 
+        public override int ID {
+            get { return GetInstanceID(); }
+        }
+
         public override ComplexityLadderBase ActiveComplexityLadder {
             get {
                 return PrivateData.ActiveComplexityLadder;

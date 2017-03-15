@@ -16,22 +16,34 @@ namespace Assets.BlobSites {
         public override Vector3 NorthConnectionOffset {
             get { return _northConnectionOffset; }
         }
-        [SerializeField] private Vector3 _northConnectionOffset;
+        public void SetNorthConnectionOffset(Vector3 value) {
+            _northConnectionOffset = value;
+        }
+        [SerializeField] private Vector3 _northConnectionOffset = Vector3.zero;
 
         public override Vector3 SouthConnectionOffset {
             get { return _southConnectionOffset; }
         }
-        [SerializeField] private Vector3 _southConnectionOffset;
+        public void SetSouthConnectionOffset(Vector3 value) {
+            _southConnectionOffset = value;
+        }
+        [SerializeField] private Vector3 _southConnectionOffset = Vector3.zero;
 
         public override Vector3 EastConnectionOffset {
             get { return _eastConnectionOffset; }
         }
-        [SerializeField] private Vector3 _eastConnectionOffset;
+        public void SetEastConnectionOffset(Vector3 value) {
+            _eastConnectionOffset = value;
+        }
+        [SerializeField] private Vector3 _eastConnectionOffset = Vector3.zero;
 
         public override Vector3 WestConnectionOffset {
             get { return _westConnectionOffset; }
         }
-        [SerializeField] private Vector3 _westConnectionOffset;
+        public void SetWestConnectionOffset(Vector3 value) {
+            _westConnectionOffset = value;
+        }
+        [SerializeField] private Vector3 _westConnectionOffset = Vector3.zero;
 
         #endregion
 

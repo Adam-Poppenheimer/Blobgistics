@@ -31,7 +31,24 @@ namespace Assets.Map {
         #endregion
 
         [SerializeField] private GameObject NodePrefab;
-        [SerializeField] private BlobSiteFactoryBase BlobSiteFactory;
+
+        public BlobSiteFactoryBase BlobSiteFactory {
+            get {
+                if(_blobSiteFactory == null) {
+                    throw new InvalidOperationException("BlobSiteFactory is uninitialized");
+                } else {
+                    return _blobSiteFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _blobSiteFactory = value;
+                }
+            }
+        }
+        [SerializeField] private BlobSiteFactoryBase _blobSiteFactory;
 
         private DictionaryOfLists<MapNodeBase, MapNodeBase> NeighborsOfNode {
             get {
@@ -59,13 +76,15 @@ namespace Assets.Map {
                 if(newNode == null) {
                     throw new MapNodeException("The MapNode prefab lacked a MapNode component");
                 }
+            }else {
+                var hostingObject = new GameObject();
+                newNode = hostingObject.AddComponent<MapNode>();
             }
 
             newNode.transform.SetParent(this.transform, false);
             newNode.transform.localPosition = localPosition;
             newNode.SetManagingGraph(this);
             newNode.SetBlobSite(BlobSiteFactory.ConstructBlobSite(newNode.gameObject));
-            newNode.SetID(NodeSet.Count);
 
             NodeSet.Add(newNode);
             return newNode;
@@ -84,7 +103,6 @@ namespace Assets.Map {
             hostingObject.transform.position = (first.transform.position + second.transform.position) / 2;
 
             var newEdge = hostingObject.AddComponent<MapEdge>();
-            newEdge.SetID(EdgeSet.Count);
             newEdge.SetFirstNode(first);
             newEdge.SetSecondNode(second);
             newEdge.SetBlobSite(BlobSiteFactory.ConstructBlobSite(hostingObject));

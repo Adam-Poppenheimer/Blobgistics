@@ -12,12 +12,49 @@ namespace Assets.HighwayUpgrade {
 
     public class HighwayUpgraderFactory : HighwayUpgraderFactoryBase {
 
+        #region instance fields and properties
+
+        [SerializeField] private List<HighwayUpgraderBase> InstantiatedUpgraders =
+            new List<HighwayUpgraderBase>();
+
+        #endregion
+
         #region instance methods
 
         #region from HighwayUpgraderFactoryBase
 
+        public override HighwayUpgraderBase GetHighwayUpgraderOfID(int id) {
+            return InstantiatedUpgraders.Find(upgrader => upgrader.ID == id);
+        }
+
+        public override bool HasUpgraderTargetingHighway(BlobHighwayBase highway) {
+            if(highway == null) {
+                throw new ArgumentNullException("highway");
+            }
+            return InstantiatedUpgraders.Exists(upgrader => upgrader.TargetedHighway == highway);
+        }
+
+        public override HighwayUpgraderBase GetUpgraderTargetingHighway(BlobHighwayBase highway) {
+            if(highway == null) {
+                throw new ArgumentNullException("highway");
+            }
+            var upgraderOn = InstantiatedUpgraders.Find(upgrader => upgrader.TargetedHighway == highway);
+            if(upgraderOn != null) {
+                return upgraderOn;
+            }else {
+                throw new HighwayUpgraderException("There exists no HighwayUpgrader with the specified TargetedHighway");
+            }
+        }
+
         public override HighwayUpgraderBase BuildHighwayUpgrader(BlobHighwayBase targetedHighway, BlobSiteBase underlyingSite,
             BlobHighwayProfile profileToInsert) {
+            if(targetedHighway == null) {
+                throw new ArgumentNullException("targetedHighway");
+            }else if(underlyingSite == null) {
+                throw new ArgumentNullException("underlyingSite");
+            }else if(HasUpgraderTargetingHighway(targetedHighway)) {
+                throw new HighwayUpgraderException("There already exists an upgrader targeting the specified highway");
+            }
             var hostingObject = new GameObject();
 
             var privateData = hostingObject.AddComponent<HighwayUpgraderPrivateData>();
@@ -29,10 +66,16 @@ namespace Assets.HighwayUpgrade {
             var newUpgrader = hostingObject.AddComponent<HighwayUpgrader>();
             newUpgrader.PrivateData = privateData;
 
+            InstantiatedUpgraders.Add(newUpgrader);
+
             return newUpgrader;
         }
 
         public override void DestroyHighwayUpgrader(HighwayUpgraderBase highwayUpgrader) {
+            if(highwayUpgrader == null) {
+                throw new ArgumentNullException("highwayUpgrader");
+            }
+            InstantiatedUpgraders.Remove(highwayUpgrader);
             DestroyImmediate(highwayUpgrader.gameObject);
         }
 

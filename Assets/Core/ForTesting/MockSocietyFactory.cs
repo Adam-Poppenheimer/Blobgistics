@@ -12,6 +12,20 @@ namespace Assets.Core.ForTesting {
 
     public class MockSocietyFactory : SocietyFactoryBase {
 
+        #region instance fields and properties
+
+        #region from SocietyFactoryBase
+
+        public override ComplexityLadderBase StandardComplexityLadder {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        #endregion
+
         #region events
 
         public event EventHandler<FloatEventArgs> FactoryTicked;
@@ -22,11 +36,19 @@ namespace Assets.Core.ForTesting {
 
         #region from SocietyFactoryBase
 
+        public override SocietyBase GetSocietyAtLocation(MapNodeBase location) {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasSocietyAtLocation(MapNodeBase location) {
+            throw new NotImplementedException();
+        }
+
         public override bool CanConstructSocietyAt(MapNodeBase location) {
             throw new NotImplementedException();
         }
 
-        public override SocietyBase ConstructSocietyAt(MapNodeBase location) {
+        public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder) {
             throw new NotImplementedException();
         }
 

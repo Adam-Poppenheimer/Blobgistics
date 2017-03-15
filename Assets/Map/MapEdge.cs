@@ -15,12 +15,8 @@ namespace Assets.Map {
         #region instance fields and properties
 
         public override int ID {
-            get { return _id; }
+            get { return GetInstanceID(); }
         }
-        public void SetID(int value) {
-            _id = value;
-        }
-        [SerializeField] private int _id;
 
         public override MapNodeBase FirstNode {
             get { return _firstNode; }

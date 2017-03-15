@@ -16,6 +16,10 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionZoneBase
 
+        public override int ID {
+            get { return GetInstanceID(); }
+        }
+
         public override ConstructionProjectBase CurrentProject {
             get { return _currentProject; }
 

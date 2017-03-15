@@ -20,7 +20,7 @@ namespace Assets.Highways {
         #region from BlobHighwayBase
 
         public override int ID {
-            get { return PrivateData.ID; }
+            get { return GetInstanceID(); }
         }
 
         public override int Priority {

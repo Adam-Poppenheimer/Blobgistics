@@ -29,7 +29,7 @@ namespace Assets.ConstructionZones.Editor {
             var mapNode = BuildMapNode();
 
             //Execution
-            var zoneToTest = factoryToUse.BuildConstructionZone(mapNode, factoryToUse.ResourceDepotProject);
+            factoryToUse.BuildConstructionZone(mapNode, factoryToUse.ResourceDepotProject);
 
             //Validation
             var projectCost = factoryToUse.ResourceDepotProject.Cost;
@@ -59,10 +59,131 @@ namespace Assets.ConstructionZones.Editor {
             };
 
             //Execution
-            var zoneToTest = factoryToUse.BuildConstructionZone(mapNode, factoryToUse.ResourceDepotProject);
+            factoryToUse.BuildConstructionZone(mapNode, factoryToUse.ResourceDepotProject);
 
             //Validation
             Assert.That(hasBeenCleared);
+        }
+
+        [Test]
+        public void Factory_OnManyConstructionZonesCreatedAndDestroyed_NoTwoActiveZonesEverHaveTheSameID() {
+            //Setup
+            var factoryToUse = BuildConstructionZoneFactory();
+
+            var mapNodeList = new List<MapNodeBase>();
+            for(int nodeCreateIndex = 0; nodeCreateIndex < 100; ++nodeCreateIndex) {
+                mapNodeList.Add(BuildMapNode());
+            }
+
+            var zoneList = new List<ConstructionZoneBase>();
+
+            //Execution and Validation
+            int i = 0;
+            for(; i < 50; ++i) {
+                zoneList.Add(factoryToUse.BuildConstructionZone(mapNodeList[i], factoryToUse.ResourceDepotProject));
+                foreach(var outerZone in zoneList) {
+                    foreach(var innerZone in zoneList) {
+                        if(outerZone != innerZone) {
+                            Assert.AreNotEqual(outerZone.ID, innerZone.ID, "Duplicate IDs on first creation cycle on index " + i);
+                        }
+                    }
+                }
+            }
+            for(i = 34; i >= 10; --i) {
+                var zoneToDestroy = zoneList[i];
+                zoneList.Remove(zoneToDestroy);
+                factoryToUse.DestroyConstructionZone(zoneToDestroy);
+            }
+            for(i = 10; i < 35; ++i) {
+                zoneList.Add(factoryToUse.BuildConstructionZone(mapNodeList[i], factoryToUse.ResourceDepotProject));
+                foreach(var outerZone in zoneList) {
+                    foreach(var innerZone in zoneList) {
+                        if(outerZone != innerZone) {
+                            Assert.AreNotEqual(outerZone.ID, innerZone.ID, "Duplicate IDs on second creation cycle on index " + i);
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void Factory_OnHasConstructionZoneAtLocationCalled_ReturnsTrueIfThereExistsAConstructionZoneWithThatLocation() {
+            //Setup
+            var factoryToTest = BuildConstructionZoneFactory();
+            var mapNodes = new List<MapNodeBase>() {
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+            };
+
+            factoryToTest.BuildConstructionZone(mapNodes[0], factoryToTest.ResourceDepotProject);
+            factoryToTest.BuildConstructionZone(mapNodes[1], factoryToTest.ResourceDepotProject);
+            factoryToTest.BuildConstructionZone(mapNodes[4], factoryToTest.ResourceDepotProject);
+
+            //Execution
+
+            //Validation
+            Assert.IsTrue(factoryToTest.HasConstructionZoneAtLocation(mapNodes[0]), "Does not register constructionZone at location 0");
+            Assert.IsTrue(factoryToTest.HasConstructionZoneAtLocation(mapNodes[1]), "Does not register constructionZone at location 1");
+            Assert.IsFalse(factoryToTest.HasConstructionZoneAtLocation(mapNodes[2]), "Falsely registers constructionZone at location 2");
+            Assert.IsFalse(factoryToTest.HasConstructionZoneAtLocation(mapNodes[3]), "Falsely registers constructionZone at location 3");
+            Assert.IsTrue(factoryToTest.HasConstructionZoneAtLocation(mapNodes[4]), "Does not register constructionZone at location 4");
+        }
+
+        [Test]
+        public void Factory_OnGetConstructionZoneAtLocationCalled_ConstructionZoneReturnedHasCorrectLocation() {
+            //Setup
+            var factoryToTest = BuildConstructionZoneFactory();
+            var mapNodes = new List<MapNodeBase>() {
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+            };
+
+            var zoneOnNode0 = factoryToTest.BuildConstructionZone(mapNodes[0], factoryToTest.ResourceDepotProject);
+            var zoneOnNode1 = factoryToTest.BuildConstructionZone(mapNodes[1], factoryToTest.ResourceDepotProject);
+            var zoneOnNode2 = factoryToTest.BuildConstructionZone(mapNodes[2], factoryToTest.ResourceDepotProject);
+
+            //Execution
+
+            //Validation
+            Assert.AreEqual(zoneOnNode0, factoryToTest.GetConstructionZoneAtLocation(mapNodes[0]), "Incorrect zone retrieved from node 0");
+            Assert.AreEqual(zoneOnNode1, factoryToTest.GetConstructionZoneAtLocation(mapNodes[1]), "Incorrect zone retrieved from node 1");
+            Assert.AreEqual(zoneOnNode2, factoryToTest.GetConstructionZoneAtLocation(mapNodes[2]), "Incorrect zone retrieved from node 2");
+        }
+
+        [Test]
+        public void Factory_OnGetConstructionZoneOfIDCalled_ConstructionZoneReturnedHasThatID_OrNullIfNoSuchZoneExists() {
+            //Setup
+            var factoryToTest = BuildConstructionZoneFactory();
+            var mapNodes = new List<MapNodeBase>() {
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+            };
+
+            var zones = new List<ConstructionZoneBase>() {
+                factoryToTest.BuildConstructionZone(mapNodes[0], factoryToTest.ResourceDepotProject),
+                factoryToTest.BuildConstructionZone(mapNodes[1], factoryToTest.ResourceDepotProject),
+                factoryToTest.BuildConstructionZone(mapNodes[2], factoryToTest.ResourceDepotProject),
+                factoryToTest.BuildConstructionZone(mapNodes[3], factoryToTest.ResourceDepotProject),
+                factoryToTest.BuildConstructionZone(mapNodes[4], factoryToTest.ResourceDepotProject),
+            };
+
+            //Execution
+
+
+            //Validation
+            Assert.AreEqual(zones[0], factoryToTest.GetConstructionZoneOfID(zones[0].ID), "Did not return Zone[0] when passed its ID");
+            Assert.AreEqual(zones[1], factoryToTest.GetConstructionZoneOfID(zones[1].ID), "Did not return Zone[1] when passed its ID");
+            Assert.AreEqual(zones[2], factoryToTest.GetConstructionZoneOfID(zones[2].ID), "Did not return Zone[2] when passed its ID");
+            Assert.AreEqual(zones[3], factoryToTest.GetConstructionZoneOfID(zones[3].ID), "Did not return Zone[3] when passed its ID");
+            Assert.AreEqual(zones[4], factoryToTest.GetConstructionZoneOfID(zones[4].ID), "Did not return Zone[4] when passed its ID");
+            Assert.IsNull(factoryToTest.GetConstructionZoneOfID(Int32.MaxValue), "ID of Int32.MaxValue did not return null");
         }
 
         [Test]
@@ -145,10 +266,7 @@ namespace Assets.ConstructionZones.Editor {
                 locationPlacedIntoBuildAction = location;
             });
 
-            var zoneToTest = factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
-
-            var depotCost = factoryToUse.ResourceDepotProject.Cost;
-            var blobSite = newLocation.BlobSite;
+            factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
 
             //Execution
             for(int i = 0; i < 10; ++i) {
@@ -173,10 +291,7 @@ namespace Assets.ConstructionZones.Editor {
             var projectToComplete = new MockConstructionProject();
             projectToComplete.SetCost(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
 
-            var zoneToTest = factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
-
-            var depotCost = factoryToUse.ResourceDepotProject.Cost;
-            var blobSite = newLocation.BlobSite;
+            factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
 
             //Execution
             for(int i = 0; i < 10; ++i) {
@@ -196,9 +311,8 @@ namespace Assets.ConstructionZones.Editor {
             var projectToComplete = new MockConstructionProject();
             projectToComplete.SetCost(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
 
-            var zoneToTest = factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
+            factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
 
-            var depotCost = factoryToUse.ResourceDepotProject.Cost;
             var blobSite = newLocation.BlobSite;
 
             //Execution
@@ -267,6 +381,54 @@ namespace Assets.ConstructionZones.Editor {
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
                 zoneToTest.CurrentProject = null;
+            });
+        }
+
+        [Test]
+        public void Factory_OnGetConstructionZoneAtLocationCalled_WhenHasConstructionZoneAtLocationIsFalse_ThrowsConstructionZoneException() {
+            //Setup
+            var newLocation = BuildMapNode();
+            var factoryToTest = BuildConstructionZoneFactory();
+
+            //Execution and Validation
+            Assert.Throws<ConstructionZoneException>(delegate() {
+                factoryToTest.GetConstructionZoneAtLocation(newLocation);
+            });
+        }
+
+        [Test]
+        public void Factory_OnHasConstructionZoneAtLocationPassedNullLocation_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildConstructionZoneFactory();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.HasConstructionZoneAtLocation(null);
+            });
+        }
+
+        [Test]
+        public void Factory_OnGetConstructionZoneAtLocationPassedNullLocation_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildConstructionZoneFactory();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.GetConstructionZoneAtLocation(null);
+            });
+        }
+
+        [Test]
+        public void Factory_OnHasMapNodeAtLocationIsTrue_AndBuildConstructionZoneCalledAtLocation_ThrowsConstrutionZoneException() {
+            //Setup
+            var factoryToTest = BuildConstructionZoneFactory();
+            var location = BuildMapNode();
+
+            factoryToTest.BuildConstructionZone(location, factoryToTest.ResourceDepotProject);
+
+            //Execution and Validation
+            Assert.Throws<ConstructionZoneException>(delegate() {
+                factoryToTest.BuildConstructionZone(location, factoryToTest.ResourceDepotProject);
             });
         }
 

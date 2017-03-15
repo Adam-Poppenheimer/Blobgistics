@@ -14,6 +14,10 @@ namespace Assets.HighwayUpgrade {
 
         #region from HighwayUpgraderBase
 
+        public override int ID {
+            get { return GetInstanceID(); }
+        }
+
         public override BlobHighwayProfile ProfileToInsert {
             get { return PrivateData.ProfileToInsert; }
         }

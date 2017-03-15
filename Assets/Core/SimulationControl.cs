@@ -8,6 +8,11 @@ using UnityEngine;
 using Assets.Map;
 using Assets.Highways;
 using Assets.Blobs;
+using Assets.Societies;
+using Assets.Depots;
+using Assets.ConstructionZones;
+using Assets.HighwayUpgrade;
+
 
 namespace Assets.Core {
 
@@ -50,6 +55,84 @@ namespace Assets.Core {
             }
         }
         private BlobHighwayFactoryBase _highwayFactory;
+
+        public SocietyFactoryBase SocietyFactory {
+            get {
+                if(_societyFactory == null) {
+                    throw new InvalidOperationException("SocietyFactory is uninitialized");
+                } else {
+                    return _societyFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _societyFactory = value;
+                }
+            }
+        }
+        private SocietyFactoryBase _societyFactory;
+
+        public ConstructionZoneFactoryBase ConstructionZoneFactory {
+            get {
+                if(_constructionZoneFactory == null) {
+                    throw new InvalidOperationException("ConstructionZoneFactory is uninitialized");
+                } else {
+                    return _constructionZoneFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _constructionZoneFactory = value;
+                }
+            }
+        }
+        private ConstructionZoneFactoryBase _constructionZoneFactory;
+
+        public HighwayUpgraderFactoryBase HighwayUpgraderFactory {
+            get {
+                if(_highwayUpgraderFactory == null) {
+                    throw new InvalidOperationException("HighwayUpgraderFactory is uninitialized");
+                } else {
+                    return _highwayUpgraderFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _highwayUpgraderFactory = value;
+                }
+            }
+        }
+        private HighwayUpgraderFactoryBase _highwayUpgraderFactory;
+
+        public ResourceDepotFactoryBase ResourceDepotFactory {
+            get {
+                if(_resourceDepotFactory == null) {
+                    throw new InvalidOperationException("ResourceDepotFactory is uninitialized");
+                } else {
+                    return _resourceDepotFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _resourceDepotFactory = value;
+                }
+            }
+        }
+        private ResourceDepotFactoryBase _resourceDepotFactory;
+
+        public BlobHighwayProfile UpgradedHighwayProfile{
+            get { return _upgradedHighwayProfile; }
+            set { _upgradedHighwayProfile = value; }
+        }
+        [SerializeField] private BlobHighwayProfile _upgradedHighwayProfile;
 
         #endregion
 

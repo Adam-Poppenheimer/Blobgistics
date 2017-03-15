@@ -15,8 +15,11 @@ namespace Assets.HighwayUpgrade {
         #region instance fields and properties
 
         public abstract BlobSiteBase UnderlyingSite { get; }
+
         public abstract BlobHighwayBase TargetedHighway { get; }
+
         public abstract BlobHighwayProfile ProfileToInsert { get; }
+
         public abstract HighwayUpgraderFactoryBase SourceFactory { get; }
 
         #endregion

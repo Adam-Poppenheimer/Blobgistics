@@ -16,6 +16,8 @@ namespace Assets.HighwayUpgrade {
 
         #region instance fields and properties
 
+        public abstract int ID { get; }
+
         public abstract BlobSiteBase UnderlyingSite { get; }
 
         public abstract BlobHighwayBase TargetedHighway { get; }

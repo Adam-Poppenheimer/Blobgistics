@@ -19,6 +19,19 @@ namespace Assets.Highways.Editor {
         #region functionality
 
         [Test]
+        public void Factory_OnConstructTube_ConstructedTubeHasCorrectEndpoints() {
+            //Setup
+            var factoryToTest = BuildTubeFactory();
+
+            //Execution
+            var constructedTube = factoryToTest.ConstructTube(Vector3.left, Vector3.right);
+
+            //Validation
+            Assert.AreEqual(Vector3.left, constructedTube.SourceLocation, "ConstructedTube has incorrect SourceLocation");
+            Assert.AreEqual(Vector3.right, constructedTube.TargetLocation, "ConstructedTube has incorrect TargetLocation");
+        }
+
+        [Test]
         public void OnEndpointsSet_BlobTubeHasAppropriateSourceAndTarget() {
             //Setup
             var tubeToTest = BuildBlobTube(BuildPrivateData());
@@ -555,6 +568,17 @@ namespace Assets.Highways.Editor {
         #region error handling
 
         [Test]
+        public void Factory_OnDestroyTubePassedNullArgument_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildTubeFactory();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.DestroyTube(null);
+            });
+        }
+
+        [Test]
         public void OnNullBlobPushed_ThrowsArgumentNullException() {
             //Setup
             var privateData = BuildPrivateData();
@@ -693,6 +717,13 @@ namespace Assets.Highways.Editor {
             var newBlob = hostingGameObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = typeOfBlob;
             return newBlob;
+        }
+
+        private BlobTubeFactory BuildTubeFactory() {
+            var hostingObject = new GameObject();
+            var newFactory = hostingObject.AddComponent<BlobTubeFactory>();
+            newFactory.BlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
+            return newFactory;
         }
 
         #endregion

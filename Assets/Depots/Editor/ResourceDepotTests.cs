@@ -70,7 +70,7 @@ namespace Assets.Depots.Editor {
             };
 
             //Execution
-            var depotToTest = factoryToUse.ConstructDepot(location);
+            factoryToUse.ConstructDepot(location);
 
             //Validation
             Assert.That(clearedOfAllBlobs);

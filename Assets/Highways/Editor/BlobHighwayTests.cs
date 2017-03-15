@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 using Assets.Blobs;
 using Assets.BlobSites;
+using Assets.Map;
 using Assets.Highways.ForTesting;
 
 using UnityCustomUtilities.Extensions;
@@ -62,7 +63,7 @@ namespace Assets.Highways.Editor {
             secondEndpoint.transform.position = new Vector3(10, 0f, 0f);
 
             //Execution
-            var highwayToTest = BuildHighway(highwayData);
+            BuildHighway(highwayData);
 
             //Validation
             Assert.AreEqual(new Vector3(1f, 0f, 0f), tubePullingFromFirst.SourceLocation, "tubePullingFromFirst has incorrect SourceLocation");
@@ -115,6 +116,186 @@ namespace Assets.Highways.Editor {
 
             //Validation
             Assert.AreEqual(Int32.MaxValue, highwayToTest.Priority);
+        }
+
+        [Test]
+        public void Factory_OnManyHighwaysCreatedAndDestroyed_NoTwoActiveFactoriesEverHaveTheSameID() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph;
+
+            var nodeList = new List<KeyValuePair<MapNodeBase, MapNodeBase>>();
+            for(int nodeIndex = 0; nodeIndex < 60; ++nodeIndex) {
+                var firstNode = mapGraph.BuildNode(Vector3.zero);
+                var secondNode = mapGraph.BuildNode(Vector3.left);
+                mapGraph.AddUndirectedEdge(firstNode, secondNode);
+                nodeList.Add(new KeyValuePair<MapNodeBase, MapNodeBase>(firstNode, secondNode));
+            }
+
+            var highwayList = new List<BlobHighwayBase>();
+
+            //Execution and Validation
+            int i = 0;
+            for(; i < 50; ++i) {
+                highwayList.Add(factoryToTest.ConstructHighwayBetween(nodeList[i].Key, nodeList[i].Value));
+                foreach(var outerHighway in highwayList) {
+                    foreach(var innerHighway in highwayList) {
+                        if(innerHighway != outerHighway) {
+                            Assert.AreNotEqual(innerHighway.ID, outerHighway.ID, "Duplicate IDs on first creation cycle on index " + i);
+                        }
+                    }
+                }
+            }
+            for(i = 34; i >= 10; --i) {
+                var highwayToDestroy = highwayList[i];
+                highwayList.Remove(highwayToDestroy);
+                factoryToTest.DestroyHighway(highwayToDestroy);
+            }
+            for(i = 10; i < 35; ++i) {
+                highwayList.Add(factoryToTest.ConstructHighwayBetween(nodeList[i].Key, nodeList[i].Value));
+                foreach(var outerHighway in highwayList) {
+                    foreach(var innerHighway in highwayList) {
+                        if(innerHighway != outerHighway) {
+                            Assert.AreNotEqual(innerHighway.ID, outerHighway.ID, "Duplicate IDs on second creation cycle on index " + i);
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void Factory_OnGetHighwayOfIDCalled_HighwayOfThatIDIsReturned_OrNullIfNoneExists() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            var highways = new List<BlobHighwayBase>() {
+                factoryToTest.ConstructHighwayBetween(middleNode, leftNode),
+                factoryToTest.ConstructHighwayBetween(middleNode, rightNode),
+                factoryToTest.ConstructHighwayBetween(middleNode, upNode),
+            };
+
+            //Execution
+
+
+            //Validation
+            Assert.AreEqual(highways[0], factoryToTest.GetHighwayOfID(highways[0].ID), "Did not return highways[0] when passed its ID");
+            Assert.AreEqual(highways[1], factoryToTest.GetHighwayOfID(highways[1].ID), "Did not return highways[1] when passed its ID");
+            Assert.AreEqual(highways[2], factoryToTest.GetHighwayOfID(highways[2].ID), "Did not return highways[2] when passed its ID");
+            Assert.IsNull(factoryToTest.GetHighwayOfID(Int32.MaxValue), "An expected invalid ID did not return a null value");
+        }
+
+        [Test]
+        public void Factory_OnHasHighwayBetweenCalled_ReturnsTrueIfAndOnlyIfSomeHighwayConnectsThoseMapNodes() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
+            factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
+
+            //Execution
+
+
+            //Validation
+            Assert.IsTrue(factoryToTest.HasHighwayBetween(middleNode, leftNode),  "Does not register highway between middleNode and leftNode");
+            Assert.IsTrue(factoryToTest.HasHighwayBetween(middleNode, rightNode), "Does not register highway between middleNode and rightNode");
+            Assert.IsFalse(factoryToTest.HasHighwayBetween(middleNode, upNode), "Falsely registers highway between middleNode and upNode");
+        }
+
+        [Test]
+        public void Factory_OnGetHighwayBetweenCalled_ReturnedHighwayHasSameEndpointsAsArgumentsPassed() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            var highwayToLeft = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
+            var highwayToRight = factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
+            var highwayToUp = factoryToTest.ConstructHighwayBetween(middleNode, upNode);
+
+            //Execution
+
+
+            //Validation
+            Assert.AreEqual(highwayToLeft, factoryToTest.GetHighwayBetween(middleNode, leftNode),   "Factory retrieves the wrong highway between middleNode and leftNode");
+            Assert.AreEqual(highwayToRight, factoryToTest.GetHighwayBetween(middleNode, rightNode), "Factory retrieves the wrong highway between middleNode and rightNode");
+            Assert.AreEqual(highwayToUp, factoryToTest.GetHighwayBetween(middleNode, upNode),       "Factory retrieves the wrong highway between middleNode and upNode");
+        }
+
+        [Test]
+        public void Factory_OnCanConstructHighwayBetweenCalled_ReturnsFalseIfHasHighwayBetweenIsTrue() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
+
+            //Execution
+
+
+            //Validation
+            Assert.IsFalse(factoryToTest.CanConstructHighwayBetween(middleNode, leftNode), "Factory falsely permits construction between middleNode and leftNode");
+        }
+
+        [Test]
+        public void Factory_OnConstructHighwayBetweenCalled_NewHighwayHasCorrectEndpoints() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, upNode);
+
+            //Execution
+            var highwayToLeft = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
+
+            //Validation
+            Assert.That(
+                (highwayToLeft.FirstEndpoint == middleNode && highwayToLeft.SecondEndpoint == leftNode  ) ||
+                (highwayToLeft.FirstEndpoint == leftNode   && highwayToLeft.SecondEndpoint == middleNode)
+            );
         }
 
         [Test]
@@ -766,6 +947,114 @@ namespace Assets.Highways.Editor {
             });
         }
 
+        [Test]
+        public void Factory_IfHasHighwayBetweenCalledWithNullArguments_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.HasHighwayBetween(null, secondEndpoint);
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.HasHighwayBetween(firstEndpoint, null);
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.HasHighwayBetween(null, null);
+            });
+        }
+
+        [Test]
+        public void Factory_IfGetHighwayBetweenCalledWithNullArguments_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.GetHighwayBetween(null, secondEndpoint);
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.GetHighwayBetween(firstEndpoint, null);
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.GetHighwayBetween(null, null);
+            });
+        }
+
+        [Test]
+        public void Factory_IfGetHighwayBetweenCalled_AndHasHighwayBetweenReturnsFalse_ThrowsBlobHighwayException() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            //Execution and Validation
+            Assert.Throws<BlobHighwayException>(delegate() {
+                factoryToTest.GetHighwayBetween(firstEndpoint, secondEndpoint);
+            });
+        }
+
+        [Test]
+        public void Factory_IfConstructHighwayBetweenCalled_AndCanConstructHighwayBetweenReturnsFalse_ThrowsBlobHighwayException() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph;
+
+            var firstEndpoint = mapGraph.BuildNode(Vector3.zero);
+            var secondEndpoint = mapGraph.BuildNode(Vector3.left);
+
+            mapGraph.AddUndirectedEdge(firstEndpoint, secondEndpoint);
+
+            factoryToTest.ConstructHighwayBetween(firstEndpoint, secondEndpoint);
+
+            //Execution and Validation
+            Assert.Throws<BlobHighwayException>(delegate() {
+                factoryToTest.ConstructHighwayBetween(firstEndpoint, secondEndpoint);
+            });
+        }
+
+        [Test]
+        public void Factory_IfCanConstructHighwayBetweenCalledWithNullArguments_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.CanConstructHighwayBetween(null, secondEndpoint);
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.CanConstructHighwayBetween(firstEndpoint, null);
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.CanConstructHighwayBetween(null, null);
+            });
+        }
+
+        [Test]
+        public void Factory_IfConstructHighwayBetweenCalledWithNullArguments_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.ConstructHighwayBetween(null, secondEndpoint);
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.ConstructHighwayBetween(firstEndpoint, null);
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.ConstructHighwayBetween(null, null);
+            });
+        }
+
         #endregion
 
         #endregion
@@ -817,6 +1106,26 @@ namespace Assets.Highways.Editor {
         private MockBlobTube BuildBlobTube() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockBlobTube>();
+        }
+
+        private BlobHighwayFactory BuildHighwayFactory() {
+            var hostingObject = new GameObject();
+
+            var newBlobSiteFactory = hostingObject.AddComponent<BlobSiteFactory>();
+            newBlobSiteFactory.BlobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
+
+            var newMapGraph = hostingObject.AddComponent<MapGraph>();
+            newMapGraph.BlobSiteFactory = newBlobSiteFactory;
+
+            var newTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
+            newTubeFactory.BlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
+
+            var newHighwayFactory = hostingObject.AddComponent<BlobHighwayFactory>();
+            newHighwayFactory.MapGraph = newMapGraph;
+            newHighwayFactory.BlobTubeFactory = newTubeFactory;
+            newHighwayFactory.StartingProfile = new BlobHighwayProfile(1, 10, ResourceSummary.Empty);
+
+            return newHighwayFactory;
         }
 
         #endregion

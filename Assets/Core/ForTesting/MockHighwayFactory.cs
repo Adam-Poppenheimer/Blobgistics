@@ -41,7 +41,7 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void RemoveHighway(BlobHighwayBase highway) {
+        public override void DestroyHighway(BlobHighwayBase highway) {
             throw new NotImplementedException();
         }
 

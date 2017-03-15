@@ -31,11 +31,30 @@ namespace Assets.ConstructionZones {
 
         [SerializeField] private GameObject ConstructionZonePrefab;
 
-        [SerializeField] private ResourceDepotFactoryBase ResourceDepotFactory;
+        public ResourceDepotFactoryBase ResourceDepotFactory {
+            get {
+                if(_resourceDepotFactory == null) {
+                    throw new InvalidOperationException("ResourceDepotFactory is uninitialized");
+                } else {
+                    return _resourceDepotFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _resourceDepotFactory = value;
+                }
+            }
+        }
+        [SerializeField] private ResourceDepotFactoryBase _resourceDepotFactory;
 
         [SerializeField] private ResourceSummary ResourceDepotCost = new ResourceSummary(
             new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
         );
+
+        private List<ConstructionZoneBase> InstantiatedConstructionZones = 
+            new List<ConstructionZoneBase>();
 
         #endregion
 
@@ -43,11 +62,36 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionZoneFactoryBase
 
+        public override ConstructionZoneBase GetConstructionZoneOfID(int id) {
+            return InstantiatedConstructionZones.Find(zone => zone.ID == id);
+        }
+
+        public override bool HasConstructionZoneAtLocation(MapNodeBase location) {
+            if(location == null) {
+                throw new ArgumentNullException("location");
+            }
+            return InstantiatedConstructionZones.Exists(zone => zone.Location == location);
+        }
+
+        public override ConstructionZoneBase GetConstructionZoneAtLocation(MapNodeBase location) {
+            if(location == null) {
+                throw new ArgumentNullException("location");
+            }
+            var desiredZone = InstantiatedConstructionZones.Find(zone => zone.Location == location);
+            if(desiredZone != null) {
+                return desiredZone;
+            }else {
+                throw new ConstructionZoneException("There exists no ConstructionZone at that location");
+            }
+        }
+
         public override ConstructionZoneBase BuildConstructionZone(MapNodeBase location, ConstructionProjectBase project) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }else if(project == null) {
                 throw new ArgumentNullException("project");
+            }else if(HasConstructionZoneAtLocation(location)) {
+                throw new ConstructionZoneException("There already exists a ConstructionZone at that location");
             }
 
             ConstructionZone newConstructionZone = null;
@@ -64,6 +108,8 @@ namespace Assets.ConstructionZones {
             newConstructionZone.SetLocation(location);
             newConstructionZone.CurrentProject = project;
             newConstructionZone.ParentFactory = this;
+
+            InstantiatedConstructionZones.Add(newConstructionZone);
             return newConstructionZone;
         }
 
@@ -71,6 +117,7 @@ namespace Assets.ConstructionZones {
             if(constructionZone == null) {
                 throw new ArgumentNullException("constructionZone");
             }else {
+                InstantiatedConstructionZones.Remove(constructionZone);
                 DestroyImmediate(constructionZone.gameObject);
             }
         }

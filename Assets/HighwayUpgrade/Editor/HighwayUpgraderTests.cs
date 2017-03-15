@@ -105,10 +105,140 @@ namespace Assets.HighwayUpgrade.Editor {
             var testProfile = new BlobHighwayProfile(24f, 100, PlaceholderCost);
 
             //Execution
-            var upgraderToTest = factoryToTest.BuildHighwayUpgrader(highway, site, testProfile);
+            factoryToTest.BuildHighwayUpgrader(highway, site, testProfile);
 
             //Validation
             Assert.That(hasBeenCleared);
+        }
+
+        [Test]
+        public void Factory_OnManyUpgradersCreatedAndDestroyed_NoTwoActiveUpgradersEverHaveTheSameID() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+            var blobSite = BuildBlobSite();
+            var profile = new BlobHighwayProfile(0f, 0, ResourceSummary.Empty);
+
+            var highwayList = new List<BlobHighwayBase>();
+            for(int highwayCreateIndex = 0; highwayCreateIndex < 100; ++highwayCreateIndex) {
+                highwayList.Add(BuildBlobHighway());
+            }
+
+            var upgraderList = new List<HighwayUpgraderBase>();
+
+            //Execution and Validation
+            int i = 0;
+            for(; i < 50; ++i) {
+                upgraderList.Add(factoryToTest.BuildHighwayUpgrader(highwayList[i], blobSite, profile));
+                foreach(var outerUpgrader in upgraderList) {
+                    foreach(var innerUpgrader in upgraderList) {
+                        if(outerUpgrader != innerUpgrader) {
+                            Assert.AreNotEqual(outerUpgrader.ID, innerUpgrader.ID, "Duplicate IDs on first creation cycle on index " + i);
+                        }
+                    }
+                }
+            }
+            for(i = 34; i >= 10; --i) {
+                var upgraderToDestroy = upgraderList[i];
+                upgraderList.Remove(upgraderToDestroy);
+                factoryToTest.DestroyHighwayUpgrader(upgraderToDestroy);
+            }
+            for(i = 10; i < 35; ++i) {
+                upgraderList.Add(factoryToTest.BuildHighwayUpgrader(highwayList[i], blobSite, profile));
+                foreach(var outerUpgrader in upgraderList) {
+                    foreach(var innerUpgrader in upgraderList) {
+                        if(outerUpgrader != innerUpgrader) {
+                            Assert.AreNotEqual(outerUpgrader.ID, innerUpgrader.ID, "Duplicate IDs on second creation cycle on index " + i);
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void Factory_OnGetFactoryUpgraderOfIDCalled_UpgraderReturnedHasTheCorrectID_OrNullIfNoneExists() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+            var blobSite = BuildBlobSite();
+            var blobHighways = new List<BlobHighwayBase>() {
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+            };
+
+            var upgraders = new List<HighwayUpgraderBase>() {
+                factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty)),
+                factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty)),
+                factoryToTest.BuildHighwayUpgrader(blobHighways[2], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty)),
+            };
+
+            //Execution
+
+
+            //Validation
+            Assert.AreEqual(upgraders[0], factoryToTest.GetHighwayUpgraderOfID(upgraders[0].ID), "Did not return upgraders[0] when passed its ID");
+            Assert.AreEqual(upgraders[1], factoryToTest.GetHighwayUpgraderOfID(upgraders[1].ID), "Did not return upgraders[1] when passed its ID");
+            Assert.AreEqual(upgraders[2], factoryToTest.GetHighwayUpgraderOfID(upgraders[2].ID), "Did not return upgraders[2] when passed its ID");
+            Assert.IsNull(factoryToTest.GetHighwayUpgraderOfID(Int32.MaxValue), "An expected invalid ID did not return a null value");
+        }
+
+        [Test]
+        public void Factory_OnHasFactoryUpgraderTargetingHighwayCalled_ReturnsTrueOnlyIfSomeUpgraderTargetsThatHighway() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+            var blobSite = BuildBlobSite();
+            var blobHighways = new List<BlobHighwayBase>() {
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+            };
+
+            factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[4], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+
+            //Execution
+
+
+            //Validation
+            Assert.IsTrue(factoryToTest.HasUpgraderTargetingHighway(blobHighways[0]), "Did not register the existence of an upgrader on blobsHighways[0]");
+            Assert.IsTrue(factoryToTest.HasUpgraderTargetingHighway(blobHighways[1]), "Did not register the existence of an upgrader on blobsHighways[1]");
+            Assert.IsFalse(factoryToTest.HasUpgraderTargetingHighway(blobHighways[2]), "Falsely registered the existence of an upgrader on blobsHighways[2]");
+            Assert.IsFalse(factoryToTest.HasUpgraderTargetingHighway(blobHighways[3]), "Falsely registered the existence of an upgrader on blobsHighways[3]");
+            Assert.IsTrue(factoryToTest.HasUpgraderTargetingHighway(blobHighways[4]), "Did not register the existence of an upgrader on blobsHighways[4]");
+        }
+
+        [Test]
+        public void Factory_OnGetFactoryUpgraderOnHighwayCalled_TheReturnedUpgraderTargetsTheSameHighway() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+            var blobSite = BuildBlobSite();
+            var blobHighways = new List<BlobHighwayBase>() {
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+                BuildBlobHighway(),
+            };
+
+            factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[2], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[3], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[4], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+
+            //Execution
+
+
+            //Validation
+            Assert.AreEqual(blobHighways[0], factoryToTest.GetUpgraderTargetingHighway(blobHighways[0]).TargetedHighway, "Incorrect TargetedHighway for blobHighways[0]");
+            Assert.AreEqual(blobHighways[1], factoryToTest.GetUpgraderTargetingHighway(blobHighways[1]).TargetedHighway, "Incorrect TargetedHighway for blobHighways[1]");
+            Assert.AreEqual(blobHighways[2], factoryToTest.GetUpgraderTargetingHighway(blobHighways[2]).TargetedHighway, "Incorrect TargetedHighway for blobHighways[2]");
+            Assert.AreEqual(blobHighways[3], factoryToTest.GetUpgraderTargetingHighway(blobHighways[3]).TargetedHighway, "Incorrect TargetedHighway for blobHighways[3]");
+            Assert.AreEqual(blobHighways[4], factoryToTest.GetUpgraderTargetingHighway(blobHighways[4]).TargetedHighway, "Incorrect TargetedHighway for blobHighways[4]");
         }
 
         [Test]
@@ -157,7 +287,7 @@ namespace Assets.HighwayUpgrade.Editor {
             privateData.SetProfileToInsert(newProfile);
 
 
-            var upgraderToTest = BuildHighwayUpgrader(privateData);
+            BuildHighwayUpgrader(privateData);
 
             //Execution
             for(int i = 0; i < 10; ++i) {
@@ -185,7 +315,7 @@ namespace Assets.HighwayUpgrade.Editor {
             privateData.SetProfileToInsert(newProfile);
 
 
-            var upgraderToTest = BuildHighwayUpgrader(privateData);
+            BuildHighwayUpgrader(privateData);
 
             //Execution
             for(int i = 0; i < 10; ++i) {
@@ -221,7 +351,7 @@ namespace Assets.HighwayUpgrade.Editor {
             privateData.SetProfileToInsert(newProfile);
 
 
-            var upgraderToTest = BuildHighwayUpgrader(privateData);
+            BuildHighwayUpgrader(privateData);
 
             bool hasBeenCleared = false;
             blobSite.AllBlobsCleared += delegate(object sender, EventArgs e) {
@@ -235,6 +365,87 @@ namespace Assets.HighwayUpgrade.Editor {
 
             //Validation
             Assert.That(hasBeenCleared);
+        }
+
+        #endregion
+
+        #region error handling
+
+        [Test]
+        public void Factory_HasUpgraderTargetingHighwayPassedNullHighway_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.HasUpgraderTargetingHighway(null);
+            });
+        }
+
+        [Test]
+        public void Factory_GetUpgraderTargetingHighwayPassedNullHighway_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.GetUpgraderTargetingHighway(null);
+            });
+        }
+
+        [Test]
+        public void Factory_GetUpgraderTargetingHighwayCalledOnHighwayLackingUpgrader_ThrowsHighwayUpgraderException() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+            var highwayWithoutUpgrader = BuildBlobHighway();
+
+            //Execution and Validation
+            Assert.Throws<HighwayUpgraderException>(delegate() {
+                factoryToTest.GetUpgraderTargetingHighway(highwayWithoutUpgrader);
+            });
+        }
+
+        [Test]
+        public void Factory_BuildHighwayUpgraderPassedNullValues_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+            var highway = BuildBlobHighway();
+            var blobSite = BuildBlobSite();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.BuildHighwayUpgrader(null, blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            });
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.BuildHighwayUpgrader(highway, null, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            });
+        }
+
+        [Test]
+        public void Factory_DestroyHighwayUpgraderPassedNullValue_ThrowsArgumentNullException() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+
+            //Execution and Validation
+            Assert.Throws<ArgumentNullException>(delegate() {
+                factoryToTest.DestroyHighwayUpgrader(null);
+            });
+        }
+
+        [Test]
+        public void Factory_OnHasUpgraderOnHighwayReturnsTrue_BuildHighwayUpgraderWithSameTargetedHighwayThrowsHighwayUpgraderException() {
+            //Setup
+            var factoryToTest = BuildUpgraderFactory();
+            var highway = BuildBlobHighway();
+            var blobSite1 = BuildBlobSite();
+            var blobSite2 = BuildBlobSite();
+
+            factoryToTest.BuildHighwayUpgrader(highway, blobSite1, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+
+            //Execution and Validation
+            Assert.Throws<HighwayUpgraderException>(delegate() {
+                factoryToTest.BuildHighwayUpgrader(highway, blobSite2, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            });
         }
 
         #endregion

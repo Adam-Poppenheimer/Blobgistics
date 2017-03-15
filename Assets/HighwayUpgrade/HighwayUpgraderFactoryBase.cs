@@ -14,6 +14,11 @@ namespace Assets.HighwayUpgrade {
 
         #region instance methods
 
+        public abstract HighwayUpgraderBase GetHighwayUpgraderOfID(int id);
+
+        public abstract bool HasUpgraderTargetingHighway(BlobHighwayBase highway);
+        public abstract HighwayUpgraderBase GetUpgraderTargetingHighway(BlobHighwayBase highway);
+
         public abstract HighwayUpgraderBase BuildHighwayUpgrader(BlobHighwayBase targetedHighway, BlobSiteBase underlyingSite,
             BlobHighwayProfile profileToInsert);
 

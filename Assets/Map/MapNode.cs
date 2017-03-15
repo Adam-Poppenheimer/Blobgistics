@@ -16,12 +16,8 @@ namespace Assets.Map {
         #region instance fields and properties
 
         public override int ID {
-            get { return _id; }
+            get { return GetInstanceID(); }
         }
-        public void SetID(int value) {
-            _id = value;
-        }
-        [SerializeField, HideInInspector] private int _id;
 
         public override MapGraphBase ManagingGraph {
             get { return _managingGraph; }

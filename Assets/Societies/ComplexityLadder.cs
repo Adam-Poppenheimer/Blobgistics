@@ -11,7 +11,23 @@ namespace Assets.Societies {
 
         #region instance fields and properties
 
-        [SerializeField] private List<ComplexityDefinitionBase> ComplexityHierarchy;
+        public List<ComplexityDefinitionBase> ComplexityHierarchy {
+            get {
+                if(_complexityHierarchy == null) {
+                    throw new InvalidOperationException("ComplexityHierarchy is uninitialized");
+                } else {
+                    return _complexityHierarchy;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _complexityHierarchy = value;
+                }
+            }
+        }
+        [SerializeField] private List<ComplexityDefinitionBase> _complexityHierarchy = new List<ComplexityDefinitionBase>();
 
         #endregion
 

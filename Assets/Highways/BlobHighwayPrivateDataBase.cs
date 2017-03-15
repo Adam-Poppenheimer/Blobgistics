@@ -13,8 +13,6 @@ namespace Assets.Highways {
 
         #region instance fields and properties
 
-        public abstract int ID { get; }
-
         public abstract UIControl UIControl { get; }
 
         public abstract BlobTubeBase TubePullingFromFirstEndpoint { get; }

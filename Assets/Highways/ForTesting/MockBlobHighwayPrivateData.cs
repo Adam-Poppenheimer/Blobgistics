@@ -14,12 +14,6 @@ namespace Assets.Highways.ForTesting {
 
         #region from BlobHighwayPrivateDataBase
 
-        public override int ID {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public override UIControl UIControl {
             get {
                 throw new NotImplementedException();

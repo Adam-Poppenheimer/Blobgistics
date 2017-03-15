@@ -2,8 +2,12 @@
 using System.Runtime.Serialization;
 
 namespace Assets.Societies {
+
     [Serializable]
-    internal class SocietyException : Exception {
+    public class SocietyException : Exception {
+
+        #region constructors
+
         public SocietyException() {
         }
 
@@ -15,5 +19,9 @@ namespace Assets.Societies {
 
         protected SocietyException(SerializationInfo info, StreamingContext context) : base(info, context) {
         }
+
+        #endregion
+
     }
+
 }

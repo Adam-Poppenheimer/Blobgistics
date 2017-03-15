@@ -25,6 +25,13 @@ namespace Assets.Societies {
                 }
             }
         }
+        public void SetActiveComplexityLadder(ComplexityLadderBase value) {
+            if(value == null) {
+                throw new ArgumentNullException("value");
+            }else {
+                _activeComplexityLadder = value;
+            }
+        }
         [SerializeField] private ComplexityLadderBase _activeComplexityLadder;
 
         public override ResourceBlobFactoryBase BlobFactory {
@@ -36,6 +43,13 @@ namespace Assets.Societies {
                 }
             }
         }
+        public void SetBlobFactory(ResourceBlobFactoryBase value) {
+            if(value == null) {
+                throw new ArgumentNullException("value");
+            }else {
+                _blobFactory = value;
+            }
+        }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         public override MapNodeBase Location {
@@ -45,6 +59,13 @@ namespace Assets.Societies {
                 } else {
                     return _location;
                 }
+            }
+        }
+        public void SetLocation(MapNodeBase value) {
+            if(value == null) {
+                throw new ArgumentNullException("value");
+            }else {
+                _location = value;
             }
         }
         [SerializeField] private MapNodeBase _location;

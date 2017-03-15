@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Assets.Map;
 using Assets.BlobSites;
+using Assets.Core;
 
 namespace Assets.Highways {
 
@@ -32,29 +33,35 @@ namespace Assets.Highways {
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
-        public BlobHighwayProfile StartingProfile {
-            get { return _startingProfile; }
-            set { _startingProfile = value; }
-        }
-        [SerializeField] private BlobHighwayProfile _startingProfile;
-
-        public BlobHighwayPrivateData HighwayPrivateData {
+        public BlobTubeFactoryBase BlobTubeFactory {
             get {
-                if(_highwayPrivateData == null) {
-                    throw new InvalidOperationException("HighwayPrivateData is uninitialized");
+                if(_blobTubeFactory == null) {
+                    throw new InvalidOperationException("BlobTubeFactory is uninitialized");
                 } else {
-                    return _highwayPrivateData;
+                    return _blobTubeFactory;
                 }
             }
             set {
                 if(value == null) {
                     throw new ArgumentNullException("value");
                 } else {
-                    _highwayPrivateData = value;
+                    _blobTubeFactory = value;
                 }
             }
         }
-        [SerializeField] private BlobHighwayPrivateData _highwayPrivateData;
+        [SerializeField] private BlobTubeFactoryBase _blobTubeFactory;
+
+        public UIControl UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControl _uiControl;
+
+        public BlobHighwayProfile StartingProfile {
+            get { return _startingProfile; }
+            set { _startingProfile = value; }
+        }
+        [SerializeField] private BlobHighwayProfile _startingProfile;
 
         [SerializeField] private List<BlobHighway> AllConstructedHighways = new List<BlobHighway>();
 
@@ -65,19 +72,33 @@ namespace Assets.Highways {
         #region from BlobHighwayFactoryBase
 
         public override bool HasHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            if(firstEndpoint == null) {
+                throw new ArgumentNullException("firstEndpoint");
+            }else if(secondEndpoint == null){
+                throw new ArgumentNullException("secondEndpoint");
+            }
+
             return AllConstructedHighways.Where(delegate(BlobHighway highway) {
                 return (
-                    (highway.FirstEndpoint == firstEndpoint.BlobSite  && highway.SecondEndpoint == secondEndpoint.BlobSite) ||
-                    (highway.FirstEndpoint == secondEndpoint.BlobSite && highway.SecondEndpoint == firstEndpoint.BlobSite )
+                    (highway.FirstEndpoint == firstEndpoint  && highway.SecondEndpoint == secondEndpoint) ||
+                    (highway.FirstEndpoint == secondEndpoint && highway.SecondEndpoint == firstEndpoint )
                 );
             }).Count() > 0;
         }
 
         public override BlobHighwayBase GetHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            if(firstEndpoint == null) {
+                throw new ArgumentNullException("firstEndpoint");
+            }else if(secondEndpoint == null){
+                throw new ArgumentNullException("secondEndpoint");
+            }else if(!HasHighwayBetween(firstEndpoint, secondEndpoint)) {
+                throw new BlobHighwayException("There exists no highway between these two points");
+            }
+
             var highwayQuery = AllConstructedHighways.Where(delegate(BlobHighway highway) {
                 return (
-                    (highway.FirstEndpoint == firstEndpoint.BlobSite  && highway.SecondEndpoint == secondEndpoint.BlobSite) ||
-                    (highway.FirstEndpoint == secondEndpoint.BlobSite && highway.SecondEndpoint == firstEndpoint.BlobSite )
+                    (highway.FirstEndpoint == firstEndpoint  && highway.SecondEndpoint == secondEndpoint) ||
+                    (highway.FirstEndpoint == secondEndpoint && highway.SecondEndpoint == firstEndpoint )
                 );
             });
             if(highwayQuery.Count() > 0) {
@@ -88,22 +109,41 @@ namespace Assets.Highways {
         }
 
         public override bool CanConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            if(firstEndpoint == null) {
+                throw new ArgumentNullException("firstEndpoint");
+            }else if(secondEndpoint == null){
+                throw new ArgumentNullException("secondEndpoint");
+            }
+
             return !HasHighwayBetween(firstEndpoint, secondEndpoint) && MapGraph.HasEdge(firstEndpoint, secondEndpoint);
         }
 
         public override BlobHighwayBase ConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            if(firstEndpoint == null) {
+                throw new ArgumentNullException("firstEndpoint");
+            }else if(secondEndpoint == null){
+                throw new ArgumentNullException("secondEndpoint");
+            }else if(!CanConstructHighwayBetween(firstEndpoint, secondEndpoint)) {
+                throw new BlobHighwayException("Cannot construct a highway between these two endpoints");
+            }
+
             var hostingObject = new GameObject();
             hostingObject.transform.SetParent(MapGraph.transform);
             var newHighway = hostingObject.AddComponent<BlobHighway>();
 
-            newHighway.Profile = StartingProfile;
-
-            var newPrivateData = HighwayPrivateData.Clone(hostingObject);
-            newPrivateData.SetID(AllConstructedHighways.Count);
+            var newPrivateData = hostingObject.AddComponent<BlobHighwayPrivateData>();
             newPrivateData.SetFirstEndpoint(firstEndpoint);
             newPrivateData.SetSecondEndpoint(secondEndpoint);
+            newPrivateData.SetUIControl(UIControl);
+
+            newPrivateData.SetTubePullingFromFirstEndpoint(BlobTubeFactory.ConstructTube(
+                firstEndpoint.transform.position, secondEndpoint.transform.position));
+
+            newPrivateData.SetTubePullingFromSecondEndpoint(BlobTubeFactory.ConstructTube(
+                secondEndpoint.transform.position, firstEndpoint.transform.position));
 
             newHighway.PrivateData = newPrivateData;
+            newHighway.Profile = StartingProfile;
 
             AllConstructedHighways.Add(newHighway);
 
@@ -111,23 +151,20 @@ namespace Assets.Highways {
         }
 
         public override BlobHighwayBase GetHighwayOfID(int id) {
-            var highwayQuery = AllConstructedHighways.Where(delegate(BlobHighway highway) {
-                return highway.ID == id;
-            });
-            if(highwayQuery.Count() > 0) {
-                return highwayQuery.First();
-            }else {
-                return null;
-            }
+            return AllConstructedHighways.Find(highway => highway.ID == id);
         }
 
-        public override void RemoveHighway(BlobHighwayBase highway) {
+        public override void DestroyHighway(BlobHighwayBase highway) {
+            if(highway == null) {
+                throw new ArgumentNullException("highway");
+            }
+
             var highwayToRemove = AllConstructedHighways.Where(delegate(BlobHighway highwayToCheck) {
                 return highway == highwayToCheck;
             }).FirstOrDefault();
             if(highwayToRemove != null) {
                 AllConstructedHighways.Remove(highwayToRemove);
-                Destroy(highwayToRemove);
+                DestroyImmediate(highwayToRemove);
             }
         }
 

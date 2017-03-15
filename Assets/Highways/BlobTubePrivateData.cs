@@ -14,6 +14,9 @@ namespace Assets.Highways {
         public override ResourceBlobFactoryBase BlobFactory {
             get { return _blobFactory; }
         }
+        public void SetBlobFactory(ResourceBlobFactoryBase value) {
+            _blobFactory = value;
+        }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         #endregion

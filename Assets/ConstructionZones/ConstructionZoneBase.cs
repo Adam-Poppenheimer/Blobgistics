@@ -14,6 +14,8 @@ namespace Assets.ConstructionZones {
 
         #region instance fields and properties
 
+        public abstract int ID { get; }
+
         public abstract MapNodeBase Location { get; }
 
         public abstract ConstructionProjectBase CurrentProject { get; set; }

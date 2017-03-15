@@ -19,6 +19,11 @@ namespace Assets.ConstructionZones {
 
         #region instance methods
 
+        public abstract ConstructionZoneBase GetConstructionZoneOfID(int id);
+
+        public abstract bool HasConstructionZoneAtLocation(MapNodeBase location);
+        public abstract ConstructionZoneBase GetConstructionZoneAtLocation(MapNodeBase location);
+
         public abstract ConstructionZoneBase BuildConstructionZone(MapNodeBase location, ConstructionProjectBase project);
         public abstract void DestroyConstructionZone(ConstructionZoneBase constructionZone);
 
