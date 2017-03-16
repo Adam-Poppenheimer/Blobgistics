@@ -4,6 +4,7 @@ using UnityEngine;
 
 using Assets.Blobs;
 using Assets.Map;
+using Assets.Core;
 
 namespace Assets.Societies {
 
@@ -16,6 +17,8 @@ namespace Assets.Societies {
         public abstract ResourceBlobFactoryBase BlobFactory { get; }
 
         public abstract MapNodeBase Location { get; }
+
+        public abstract UIControlBase UIControl { get; }
 
         #endregion
 

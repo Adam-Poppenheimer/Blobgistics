@@ -43,6 +43,25 @@ namespace Assets.UI.Highways {
                     RaisePriorityChanged(newPriority);
                 }
             });
+            FirstEndpointRedPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                RaiseFirstEndpointPermissionChanged(ResourceType.Red, newPermission);
+            });
+            FirstEndpointGreenPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                RaiseFirstEndpointPermissionChanged(ResourceType.Green, newPermission);
+            });
+            FirstEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                RaiseFirstEndpointPermissionChanged(ResourceType.Blue, newPermission);
+            });
+
+            SecondEndpointRedPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                RaiseSecondEndpointPermissionChanged(ResourceType.Red, newPermission);
+            });
+            SecondEndpointGreenPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                RaiseSecondEndpointPermissionChanged(ResourceType.Green, newPermission);
+            });
+            SecondEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                RaiseSecondEndpointPermissionChanged(ResourceType.Blue, newPermission);
+            });
         }
 
         #endregion

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 using Assets.BlobSites;
+using Assets.Core;
 
 namespace Assets.Map {
 
@@ -13,6 +15,8 @@ namespace Assets.Map {
     public class MapEdge : MapEdgeBase {
 
         #region instance fields and properties
+
+        #region from MapEdgeBase
 
         public override int ID {
             get { return GetInstanceID(); }
@@ -41,6 +45,8 @@ namespace Assets.Map {
             _blobSite = value;
         }
         [SerializeField] private BlobSiteBase _blobSite;
+
+        #endregion
 
         #endregion
 

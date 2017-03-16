@@ -16,13 +16,13 @@ namespace Assets.Highways {
 
         #region from BlobHighwayPrivateDataBase
 
-        public override UIControl UIControl {
+        public override UIControlBase UIControl {
             get { return _uiControl; }
         }
-        public void SetUIControl(UIControl value) {
+        public void SetUIControl(UIControlBase value) {
             _uiControl = value;
         }
-        [SerializeField] private UIControl _uiControl;
+        [SerializeField] private UIControlBase _uiControl;
 
         public override MapNodeBase FirstEndpoint {
             get { return _firstEndpoint; }

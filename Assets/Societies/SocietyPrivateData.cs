@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Assets.Blobs;
 using Assets.Map;
+using Assets.Core;
 
 namespace Assets.Societies {
 
@@ -69,6 +70,14 @@ namespace Assets.Societies {
             }
         }
         [SerializeField] private MapNodeBase _location;
+
+        public override UIControlBase UIControl {
+            get { return _uiControl; }
+        }
+        private void SetUIControl(UIControlBase value) {
+            _uiControl = value;
+        }
+        [SerializeField] private UIControlBase _uiControl;
 
         #endregion
 

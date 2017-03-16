@@ -5,15 +5,20 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
+using Assets.Core;
 using Assets.BlobSites;
 
 namespace Assets.Map {
 
     [ExecuteInEditMode]
-    public class MapNode : MapNodeBase {
+    public class MapNode : MapNodeBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
+        IPointerEnterHandler, IPointerExitHandler {
 
         #region instance fields and properties
+
+        #region from MapNodeBase
 
         public override int ID {
             get { return GetInstanceID(); }
@@ -37,6 +42,14 @@ namespace Assets.Map {
 
         #endregion
 
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
+
+        #endregion
+
         #region instance methods
 
         #region Unity event methods
@@ -45,6 +58,34 @@ namespace Assets.Map {
             if(ManagingGraph != null) {
                 ManagingGraph.RemoveNode(this);
             }
+        }
+
+        #endregion
+
+        #region EventSystem interface implementations
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            UIControl.PushBeginDragEvent(new MapNodeUISummary(this), eventData);
+        }
+
+        public void OnDrag(PointerEventData eventData) {
+            UIControl.PushDragEvent(new MapNodeUISummary(this), eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            UIControl.PushEndDragEvent(new MapNodeUISummary(this), eventData);
+        }
+
+        public void OnPointerClick(PointerEventData eventData) {
+            UIControl.PushPointerClickEvent(new MapNodeUISummary(this), eventData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData) {
+            UIControl.PushPointerEnterEvent(new MapNodeUISummary(this), eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            UIControl.PushPointerExitEvent(new MapNodeUISummary(this), eventData);
         }
 
         #endregion

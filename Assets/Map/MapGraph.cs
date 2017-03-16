@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityCustomUtilities.Extensions;
 
 using Assets.BlobSites;
+using Assets.Core;
 
 namespace Assets.Map {
 
@@ -30,8 +31,6 @@ namespace Assets.Map {
 
         #endregion
 
-        [SerializeField] private GameObject NodePrefab;
-
         public BlobSiteFactoryBase BlobSiteFactory {
             get {
                 if(_blobSiteFactory == null) {
@@ -49,6 +48,14 @@ namespace Assets.Map {
             }
         }
         [SerializeField] private BlobSiteFactoryBase _blobSiteFactory;
+
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
+
+        [SerializeField] private GameObject NodePrefab;
 
         private DictionaryOfLists<MapNodeBase, MapNodeBase> NeighborsOfNode {
             get {
@@ -85,6 +92,7 @@ namespace Assets.Map {
             newNode.transform.localPosition = localPosition;
             newNode.SetManagingGraph(this);
             newNode.SetBlobSite(BlobSiteFactory.ConstructBlobSite(newNode.gameObject));
+            newNode.UIControl = UIControl;
 
             NodeSet.Add(newNode);
             return newNode;

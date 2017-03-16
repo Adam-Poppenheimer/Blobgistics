@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Assets.Blobs;
 using Assets.Map;
+using Assets.Core;
 
 namespace Assets.Societies.ForTesting {
 
@@ -45,6 +46,12 @@ namespace Assets.Societies.ForTesting {
             _location = value;
         }
         private MapNodeBase _location;
+
+        public override UIControlBase UIControl {
+            get {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 

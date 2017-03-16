@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 using Assets.Blobs;
 using Assets.Map;
@@ -14,7 +15,8 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Societies {
 
-    public class Society : SocietyBase {
+    public class Society : SocietyBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
+        IPointerEnterHandler, IPointerExitHandler {
 
         #region instance fields and properties
 
@@ -93,6 +95,34 @@ namespace Assets.Societies {
         #endregion
 
         #region instance methods
+
+        #region EventSystem interface implementations
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushBeginDragEvent(new SocietyUISummary(this), eventData);
+        }
+
+        public void OnDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushDragEvent(new SocietyUISummary(this), eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushEndDragEvent(new SocietyUISummary(this), eventData);
+        }
+
+        public void OnPointerClick(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerClickEvent(new SocietyUISummary(this), eventData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerEnterEvent(new SocietyUISummary(this), eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerExitEvent(new SocietyUISummary(this), eventData);
+        }
+
+        #endregion
 
         #region from SocietyBase
 

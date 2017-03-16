@@ -2,29 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Assets.Blobs;
 using Assets.Core;
+using Assets.Map;
 
 namespace Assets.UI.Highways.ForTesting {
-    public class MockSimulationControl : SimulationControlBase {
 
-        public int LastIDRequested = 0;
-        
-        public int PriorityChangeRequestsPassed = 0;
-        public int LastPriorityRequested = 0;
-
-        public int FirstEndpointPermissionRequestsPassed = 0;
-        public int SecondEndpointPermissionRequestsPassed = 0;
-
-        public bool LastFirstEndpointPermissionRequested = false;
-        public bool LastSecondEndpointPermissionRequested = false;
-
-        public ResourceType LastFirstEndpointResourceTypeChangeRequested = ResourceType.Blue;
-        public ResourceType LastSecondEndpointResourceTypeChangeRequested = ResourceType.Blue;
+    public class HighwayConstructionMockSimulationControl : SimulationControlBase {
 
         #region instance fields and properties
 
+        public int ChecksMade { get; set; }
+        public bool EnableHighwayBuilding { get; set; }
+        public int HighwaysAttempted { get; set; }
 
+        public List<int> FirstEndpointsChecked = new List<int>();
+        public List<int> SecondEndpointsChecked = new List<int>();
 
         #endregion
 
@@ -33,7 +27,14 @@ namespace Assets.UI.Highways.ForTesting {
         #region from SimulationControlBase
 
         public override bool CanConnectNodesWithHighway(int node1ID, int node2ID) {
-            throw new NotImplementedException();
+            ++ChecksMade;
+            FirstEndpointsChecked.Add(node1ID);
+            SecondEndpointsChecked.Add(node2ID);
+            return EnableHighwayBuilding;
+        }
+
+        public override void ConnectNodesWithHighway(int node1ID, int node2ID) {
+            ++HighwaysAttempted;
         }
 
         public override bool CanCreateHighwayUpgraderOnHighway(int highwayID) {
@@ -45,10 +46,6 @@ namespace Assets.UI.Highways.ForTesting {
         }
 
         public override bool CanDestroySociety(int societyID) {
-            throw new NotImplementedException();
-        }
-
-        public override void ConnectNodesWithHighway(int node1ID, int node2ID) {
             throw new NotImplementedException();
         }
 
@@ -77,23 +74,15 @@ namespace Assets.UI.Highways.ForTesting {
         }
 
         public override void SetHighwayPriority(int highwayID, int newPriority) {
-            ++PriorityChangeRequestsPassed;
-            LastIDRequested = highwayID;
-            LastPriorityRequested = newPriority;
+            throw new NotImplementedException();
         }
 
         public override void SetHighwayPullingPermissionOnFirstEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
-            ++FirstEndpointPermissionRequestsPassed;
-            LastIDRequested = highwayID;
-            LastFirstEndpointResourceTypeChangeRequested = resourceType;
-            LastFirstEndpointPermissionRequested = isPermitted;
+            throw new NotImplementedException();
         }
 
         public override void SetHighwayPullingPermissionOnSecondEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
-            ++SecondEndpointPermissionRequestsPassed;
-            LastIDRequested = highwayID;
-            LastSecondEndpointResourceTypeChangeRequested = resourceType;
-            LastSecondEndpointPermissionRequested = isPermitted;
+            throw new NotImplementedException();
         }
 
         public override void TickSimulation(float secondsPassed) {
@@ -105,4 +94,5 @@ namespace Assets.UI.Highways.ForTesting {
         #endregion
         
     }
+
 }

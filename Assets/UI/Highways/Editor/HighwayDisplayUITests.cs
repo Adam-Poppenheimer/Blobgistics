@@ -15,7 +15,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Highways.Editor {
 
-    public class HighwayUITests {
+    public class HighwayDisplayUITests {
 
         #region instance methods
 
@@ -167,9 +167,9 @@ namespace Assets.UI.Highways.Editor {
             return hostingObject.AddComponent<MockBlobHighwaySummaryDisplay>();
         }
 
-        private MockSimulationControl BuildMockSimulationControl() {
+        private HighwayDisplayMockSimulationControl BuildMockSimulationControl() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockSimulationControl>();
+            return hostingObject.AddComponent<HighwayDisplayMockSimulationControl>();
         }
 
         private UIControl BuildUIControl() {

@@ -43,6 +43,7 @@ namespace Assets.Highways {
                 ResourcePermissionsForEndpoint1[resourceType] = highwayToSummarize.GetPullingPermissionForFirstEndpoint(resourceType);
                 ResourcePermissionsForEndpoint2[resourceType] = highwayToSummarize.GetPullingPermissionForSecondEndpoint(resourceType);
             }
+
         }
 
         #endregion

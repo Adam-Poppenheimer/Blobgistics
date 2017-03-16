@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 using Assets.Map;
 using Assets.Blobs;
@@ -13,7 +14,8 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Highways {
 
-    public class BlobHighway : BlobHighwayBase {
+    public class BlobHighway : BlobHighwayBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
+        IPointerEnterHandler, IPointerExitHandler {
 
         #region instance fields and properties
 
@@ -70,6 +72,34 @@ namespace Assets.Highways {
         #endregion
 
         #region instance methods
+
+        #region EventSystem interface implementations
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushBeginDragEvent(new BlobHighwayUISummary(this), eventData);
+        }
+
+        public void OnDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushDragEvent(new BlobHighwayUISummary(this), eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushEndDragEvent(new BlobHighwayUISummary(this), eventData);
+        }
+
+        public void OnPointerClick(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerClickEvent(new BlobHighwayUISummary(this), eventData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerEnterEvent(new BlobHighwayUISummary(this), eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerExitEvent(new BlobHighwayUISummary(this), eventData);
+        }
+
+        #endregion
 
         #region from BlobHighwayBase
 

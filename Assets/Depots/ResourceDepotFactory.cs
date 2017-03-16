@@ -6,12 +6,19 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Map;
+using Assets.Core;
 
 namespace Assets.Depots {
 
     public class ResourceDepotFactory : ResourceDepotFactoryBase {
 
         #region instance fields and properties
+
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
 
         [SerializeField] private GameObject ResourceDepotPrefab;
 
@@ -52,6 +59,7 @@ namespace Assets.Depots {
             location.BlobSite.ClearContents();
             newDepot.SetLocation(location);
             newDepot.Profile = ResourceDepotProfile.Empty;
+            newDepot.UIControl = UIControl;
 
             InstantiatedDepots.Add(newDepot);
             return newDepot;

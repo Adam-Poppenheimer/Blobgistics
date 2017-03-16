@@ -4,19 +4,26 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 using Assets.Blobs;
 using Assets.Map;
+using Assets.Core;
 
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Depots {
 
-    public class ResourceDepot : ResourceDepotBase {
+    public class ResourceDepot : ResourceDepotBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
+        IPointerEnterHandler, IPointerExitHandler {
 
         #region instance fields and properties
 
         #region from ResourceDepotBase
+
+        public override int ID {
+            get { return GetInstanceID(); }
+        }
 
         public override MapNodeBase Location {
             get { return _location; }
@@ -49,9 +56,43 @@ namespace Assets.Depots {
 
         #endregion
 
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
+
         #endregion
 
         #region instance methods
+
+        #region EventSystem interface implementations
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            UIControl.PushBeginDragEvent(new ResourceDepotUISummary(this), eventData);
+        }
+
+        public void OnDrag(PointerEventData eventData) {
+            UIControl.PushDragEvent(new ResourceDepotUISummary(this), eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            UIControl.PushEndDragEvent(new ResourceDepotUISummary(this), eventData);
+        }
+
+        public void OnPointerClick(PointerEventData eventData) {
+            UIControl.PushPointerClickEvent(new ResourceDepotUISummary(this), eventData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData) {
+            UIControl.PushPointerEnterEvent(new ResourceDepotUISummary(this), eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            UIControl.PushPointerExitEvent(new ResourceDepotUISummary(this), eventData);
+        }
+
+        #endregion
 
         #region from ResourceDepotBase
 
