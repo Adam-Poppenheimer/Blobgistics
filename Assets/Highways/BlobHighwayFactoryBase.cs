@@ -20,7 +20,6 @@ namespace Assets.Highways {
 
         public abstract bool            CanConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
         public abstract BlobHighwayBase ConstructHighwayBetween   (MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
-        
 
         public abstract void DestroyHighway(BlobHighwayBase highway);
 

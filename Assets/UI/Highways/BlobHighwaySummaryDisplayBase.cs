@@ -18,6 +18,8 @@ namespace Assets.UI.Highways {
 
         public abstract BlobHighwayUISummary CurrentSummary { get; set; }
 
+        public abstract bool CanBeUpgraded { get; set; }
+
         #endregion
 
         #region events
@@ -25,6 +27,7 @@ namespace Assets.UI.Highways {
         public event EventHandler<IntEventArgs> PriorityChanged;
         public event EventHandler<ResourcePermissionEventArgs> FirstEndpointResourcePermissionChanged;
         public event EventHandler<ResourcePermissionEventArgs> SecondEndpointResourcePermissionChanged;
+        public event EventHandler<EventArgs> HighwayUpgradeRequested;
 
         protected void RaisePriorityChanged(int newPriority) {
             if(PriorityChanged != null) {
@@ -41,6 +44,12 @@ namespace Assets.UI.Highways {
         protected void RaiseSecondEndpointPermissionChanged(ResourceType typeChanged, bool isNowPermitted) {
             if(SecondEndpointResourcePermissionChanged != null) {
                 SecondEndpointResourcePermissionChanged(this, new ResourcePermissionEventArgs(typeChanged, isNowPermitted));
+            }
+        }
+
+        protected void RaiseHighwayUpgradeRequested() {
+            if(HighwayUpgradeRequested != null) {
+                HighwayUpgradeRequested(this, EventArgs.Empty);
             }
         }
 

@@ -7,8 +7,9 @@ using UnityEngine;
 
 using Assets.BlobSites;
 using Assets.Highways;
+using Assets.Core;
 
-namespace Assets.HighwayUpgrade {
+namespace Assets.HighwayUpgraders {
 
     public abstract class HighwayUpgraderPrivateDataBase : MonoBehaviour {
 
@@ -21,6 +22,8 @@ namespace Assets.HighwayUpgrade {
         public abstract BlobHighwayProfile ProfileToInsert { get; }
 
         public abstract HighwayUpgraderFactoryBase SourceFactory { get; }
+
+        public abstract UIControlBase UIControl { get; }
 
         #endregion
 

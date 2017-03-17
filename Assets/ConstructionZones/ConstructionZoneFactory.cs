@@ -8,6 +8,7 @@ using UnityEngine;
 using Assets.Blobs;
 using Assets.Map;
 using Assets.Depots;
+using Assets.Core;
 
 namespace Assets.ConstructionZones {
 
@@ -48,6 +49,12 @@ namespace Assets.ConstructionZones {
             }
         }
         [SerializeField] private ResourceDepotFactoryBase _resourceDepotFactory;
+
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
 
         [SerializeField] private ResourceSummary ResourceDepotCost = new ResourceSummary(
             new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
@@ -95,6 +102,7 @@ namespace Assets.ConstructionZones {
             }
 
             ConstructionZone newConstructionZone = null;
+
             if(ConstructionZonePrefab != null) {
                 var newPrefabInstance = Instantiate<GameObject>(ConstructionZonePrefab);
                 newConstructionZone = newPrefabInstance.GetComponent<ConstructionZone>();
@@ -105,9 +113,11 @@ namespace Assets.ConstructionZones {
                 var hostingObject = new GameObject();
                 newConstructionZone = hostingObject.AddComponent<ConstructionZone>();
             }
+
             newConstructionZone.SetLocation(location);
             newConstructionZone.CurrentProject = project;
             newConstructionZone.ParentFactory = this;
+            newConstructionZone.UIControl = UIControl;
 
             InstantiatedConstructionZones.Add(newConstructionZone);
             return newConstructionZone;

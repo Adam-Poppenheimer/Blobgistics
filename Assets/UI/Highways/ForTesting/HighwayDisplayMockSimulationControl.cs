@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Assets.Blobs;
 using Assets.Core;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Highways.ForTesting {
     public class HighwayDisplayMockSimulationControl : SimulationControlBase {
@@ -22,9 +25,17 @@ namespace Assets.UI.Highways.ForTesting {
         public ResourceType LastFirstEndpointResourceTypeChangeRequested = ResourceType.Blue;
         public ResourceType LastSecondEndpointResourceTypeChangeRequested = ResourceType.Blue;
 
+        public bool AcceptsUpgradeRequests = false;
+
         #region instance fields and properties
 
 
+
+        #endregion
+
+        #region events
+
+        public event EventHandler<IntEventArgs> HighwayUpgradeRequested;
 
         #endregion
 
@@ -37,7 +48,7 @@ namespace Assets.UI.Highways.ForTesting {
         }
 
         public override bool CanCreateHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
+            return AcceptsUpgradeRequests;
         }
 
         public override bool CanCreateResourceDepotConstructionSiteOnNode(int nodeID) {
@@ -53,7 +64,9 @@ namespace Assets.UI.Highways.ForTesting {
         }
 
         public override void CreateHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
+            if(HighwayUpgradeRequested != null) {
+                HighwayUpgradeRequested(this, new IntEventArgs(highwayID));
+            }
         }
 
         public override void CreateResourceDepotConstructionSiteOnNode(int nodeID) {

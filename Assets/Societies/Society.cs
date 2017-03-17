@@ -15,6 +15,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Societies {
 
+    [ExecuteInEditMode]
     public class Society : SocietyBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler {
 
@@ -65,22 +66,12 @@ namespace Assets.Societies {
         #endregion
 
         public SocietyPrivateDataBase PrivateData {
-            get {
-                if(_privateData == null) {
-                    throw new InvalidOperationException("PrivateData is uninitialized");
-                } else {
-                    return _privateData;
-                }
-            }
+            get { return _privateData; }
             set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _privateData = value;
-                    currentComplexity = _privateData.ActiveComplexityLadder.GetStartingComplexity();
-                    RefreshBlobSitePermissionsAndCapacities();
-                    DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
-                }
+                _privateData = value;
+                currentComplexity = _privateData.ActiveComplexityLadder.GetStartingComplexity();
+                RefreshBlobSitePermissionsAndCapacities();
+                DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
             }
         }
         [SerializeField, HideInInspector] private SocietyPrivateDataBase _privateData;
@@ -95,6 +86,27 @@ namespace Assets.Societies {
         #endregion
 
         #region instance methods
+
+        #region Unity event methods
+
+        private void Awake() {
+            if(PrivateData != null && PrivateData.ParentFactory != null) {
+                var parentFactory = PrivateData.ParentFactory;
+                if(parentFactory.HasSocietyAtLocation(Location) &&
+                    parentFactory.GetSocietyAtLocation(Location) != this) {
+                    Debug.LogErrorFormat("Duplicate Society detected on MapNode. Removing...");
+                    parentFactory.DestroySociety(this);
+                }
+            }
+        }
+
+        private void OnDestroy() {
+            if(PrivateData != null && PrivateData.ParentFactory != null) {
+                PrivateData.ParentFactory.UnsubscribeSocietyBeingDestroyed(this);
+            }
+        }
+
+        #endregion
 
         #region EventSystem interface implementations
 

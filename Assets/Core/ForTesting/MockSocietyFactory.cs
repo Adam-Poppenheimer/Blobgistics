@@ -56,6 +56,10 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void UnsubscribeSocietyBeingDestroyed(SocietyBase societyBeingDestroyed) {
+            throw new NotImplementedException();
+        }
+
         public override SocietyBase GetSocietyOfID(int id) {
             throw new NotImplementedException();
         }

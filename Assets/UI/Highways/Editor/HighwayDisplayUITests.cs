@@ -25,9 +25,11 @@ namespace Assets.UI.Highways.Editor {
         public void OnPointerClickEventWithHighwaySummaryPushedIntoUIControl_SummaryDisplayIsCleared_GivenTheProperSummary_AndUpdated() {
             //Setup
             var summaryDisplay = BuildMockHighwaySummaryDisplay();
+            var simulationControl = BuildMockSimulationControl();
             
             var uiControl = BuildUIControl();
             uiControl.HighwaySummaryDisplay = summaryDisplay;
+            uiControl.SimulationControl = simulationControl;
 
             var eventSystem = BuildEventSystem();
             var eventData = new PointerEventData(eventSystem);
@@ -43,6 +45,33 @@ namespace Assets.UI.Highways.Editor {
             Assert.AreEqual(summaryToPush, summaryDisplay.CurrentSummary, "The wrong summary is in the display");
             Assert.That(summaryDisplay.WasCleared, "The display was not cleared");
             Assert.That(summaryDisplay.WasUpdated, "The display was not updated");
+        }
+
+        [Test]
+        public void OnPointerClickEventWithHighwaySummaryPushedIntoUIControl_SummaryDisplayCanBeginUpgradeIsSetToTheProperValue() {
+            //Setup
+            var summaryDisplay = BuildMockHighwaySummaryDisplay();
+            var simulationControl = BuildMockSimulationControl();
+            
+            var uiControl = BuildUIControl();
+            uiControl.HighwaySummaryDisplay = summaryDisplay;
+            uiControl.SimulationControl = simulationControl;
+
+            var eventSystem = BuildEventSystem();
+            var eventData = new PointerEventData(eventSystem);
+
+            var summaryToPush = new BlobHighwayUISummary();
+            summaryToPush.ID = 1;
+            summaryToPush.Priority = 15;
+
+            //Execution and Validation
+            simulationControl.AcceptsUpgradeRequests = true;
+            uiControl.PushPointerClickEvent(summaryToPush, eventData);
+            Assert.That(summaryDisplay.CanBeUpgraded, "First check failed to permit upgrades");
+
+            simulationControl.AcceptsUpgradeRequests = false;
+            uiControl.PushPointerClickEvent(summaryToPush, eventData);
+            Assert.IsFalse(summaryDisplay.CanBeUpgraded, "Second check falsely permits upgrades");
         }
 
         [Test]
@@ -156,6 +185,35 @@ namespace Assets.UI.Highways.Editor {
                 Assert.IsFalse(simulationControl.LastSecondEndpointPermissionRequested,
                     "The SimulationControl was passed the incorrect isPermitted");
             }
+        }
+
+        [Test]
+        public void OnSummaryDisplayRaisesUpgradeRequestedEvent_HighwayUpgraderConstructionRequestSentToSimulationControl() {
+            //Setup
+            var summaryWithin = new BlobHighwayUISummary();
+            summaryWithin.ID = 14;
+            summaryWithin.Priority = 15;
+
+            var summaryDisplay = BuildMockHighwaySummaryDisplay();
+            summaryDisplay.CurrentSummary = summaryWithin;
+
+            var simulationControl = BuildMockSimulationControl();
+            simulationControl.AcceptsUpgradeRequests = true;
+
+            int highwayIDRequestedForUpgrade = -1;
+            simulationControl.HighwayUpgradeRequested += delegate(object sender, IntEventArgs e){
+                highwayIDRequestedForUpgrade = e.Value;
+            };
+
+            var uiControl = BuildUIControl();
+            uiControl.HighwaySummaryDisplay = summaryDisplay;
+            uiControl.SimulationControl = simulationControl;
+
+            //Execution
+            summaryDisplay.RaiseUpgradeRequest();
+
+            //Validation
+            Assert.AreEqual(summaryWithin.ID, highwayIDRequestedForUpgrade, "SimulationControl was not sent the correct highway ID");
         }
 
         #endregion

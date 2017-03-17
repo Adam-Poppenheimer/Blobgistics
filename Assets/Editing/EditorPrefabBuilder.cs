@@ -8,6 +8,7 @@ using UnityEngine;
 
 using Assets.Highways;
 using Assets.Map;
+using Assets.Societies;
 
 namespace Assets.Editing {
 
@@ -52,9 +53,48 @@ namespace Assets.Editing {
         }
         private static MapGraphBase _mapGraph;
 
+        public static SocietyFactoryBase SocietyFactory {
+            get {
+                if(_societyFactory == null) {
+                    throw new InvalidOperationException("SocietyFactory is uninitialized");
+                } else {
+                    return _societyFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _societyFactory = value;
+                }
+            }
+        }
+        private static SocietyFactoryBase _societyFactory;
+
         #endregion
 
         #region static methods
+
+        [MenuItem("Strategy Blobs/Construct Society At Location")]
+        private static void ConstructSocietyAtLocation() {
+            var locationToConstruct = Selection.activeTransform.GetComponent<MapNodeBase>();
+            if(SocietyFactory.CanConstructSocietyAt(locationToConstruct)) {
+                var newSociety = SocietyFactory.ConstructSocietyAt(locationToConstruct, SocietyFactory.StandardComplexityLadder);
+            }else {
+                Debug.LogErrorFormat("Attempted to build a Society on Location {0}, but its construction was not permitted",
+                    locationToConstruct.name);
+            }
+        }
+
+        [MenuItem("Strategy Blobs/Construct Society At Location", true)]
+        private static bool ValidateConstructSocietyAtLocation() {
+            if(Selection.activeTransform != null) {
+                var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
+                return locationToBuild != null && SocietyFactory.CanConstructSocietyAt(locationToBuild);
+            }else {
+                return false;
+            }
+        }
 
         [MenuItem("GameObject/Strategy Blobs/Map Node", false, 10)]
         private static void CreateMapNode(MenuCommand command) {

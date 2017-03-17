@@ -29,6 +29,8 @@ namespace Assets.Societies {
 
         public abstract void DestroySociety(SocietyBase society);
 
+        public abstract void UnsubscribeSocietyBeingDestroyed(SocietyBase societyBeingDestroyed);
+
         public abstract void TickSocieties(float secondsPassed);
 
         #endregion

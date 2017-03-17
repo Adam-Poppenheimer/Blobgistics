@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEditor;
 using UnityEngine;
 
 using Assets.Map;
 using Assets.Blobs;
+using Assets.Core;
 
 namespace Assets.Societies {
 
+    [ExecuteInEditMode]
     public class SocietyFactory : SocietyFactoryBase {
 
         #region instance fields and properties
@@ -27,22 +30,16 @@ namespace Assets.Societies {
         #endregion
 
         public ResourceBlobFactoryBase BlobFactory {
-            get {
-                if(_blobFactory == null) {
-                    throw new InvalidOperationException("BlobFactory is uninitialized");
-                } else {
-                    return _blobFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _blobFactory = value;
-                }
-            }
+            get { return _blobFactory; }
+            set { _blobFactory = value; }
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
+
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
 
         [SerializeField] private GameObject SocietyPrefab;
 
@@ -106,21 +103,31 @@ namespace Assets.Societies {
             }
 
             var newPrivateData = newSociety.gameObject.AddComponent<SocietyPrivateData>();
+
             newPrivateData.SetActiveComplexityLadder(ladder);
             newPrivateData.SetBlobFactory(BlobFactory);
             newPrivateData.SetLocation(location);
+            newPrivateData.SetUIControl(UIControl);
+            newPrivateData.SetParentFactory(this);
+
             newSociety.PrivateData = newPrivateData;
+            newSociety.transform.SetParent(location.transform, false);
+            newSociety.transform.localPosition = Vector3.zero;
 
             InstantiatedSocieties.Add(newSociety);
             return newSociety;
         }
 
         public override void DestroySociety(SocietyBase society) {
-            if(society == null) {
-                throw new ArgumentNullException("society");
-            }
-            InstantiatedSocieties.Remove(society);
+            UnsubscribeSocietyBeingDestroyed(society);
             DestroyImmediate(society.gameObject);
+        }
+
+        public override void UnsubscribeSocietyBeingDestroyed(SocietyBase societyBeingDestroyed) {
+            if(societyBeingDestroyed == null) {
+                throw new ArgumentNullException("societyBeingDestroyed");
+            }
+            InstantiatedSocieties.Remove(societyBeingDestroyed);
         }
 
         public override void TickSocieties(float secondsPassed) {

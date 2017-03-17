@@ -53,6 +53,12 @@ namespace Assets.Societies.ForTesting {
             }
         }
 
+        public override SocietyFactoryBase ParentFactory {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

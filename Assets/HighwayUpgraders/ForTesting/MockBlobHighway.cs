@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Assets.Blobs;
 using Assets.Highways;
 using Assets.Map;
 
-namespace Assets.HighwayUpgrade.ForTesting {
+namespace Assets.HighwayUpgraders.ForTesting {
 
     public class MockBlobHighway : BlobHighwayBase {
 
@@ -39,6 +40,18 @@ namespace Assets.HighwayUpgrade.ForTesting {
         public override BlobHighwayProfile Profile { get; set; }
 
         public override MapNodeBase SecondEndpoint {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromFirstEndpoint {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromSecondEndpoint {
             get {
                 throw new NotImplementedException();
             }

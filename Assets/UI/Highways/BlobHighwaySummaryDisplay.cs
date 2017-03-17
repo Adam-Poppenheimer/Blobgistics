@@ -16,6 +16,14 @@ namespace Assets.UI.Highways {
 
         #region instance fields and properties
 
+        #region from BlobHighwaySummaryDisplayBase
+
+        public override BlobHighwayUISummary CurrentSummary { get; set; }
+
+        public override bool CanBeUpgraded { get; set; }
+
+        #endregion
+
         [SerializeField] private InputField PriorityInput;
 
         [SerializeField] private Toggle FirstEndpointRedPermissionToggle;
@@ -26,8 +34,6 @@ namespace Assets.UI.Highways {
 
         [SerializeField] private Toggle FirstEndpointBluePermissionToggle;
         [SerializeField] private Toggle SecondEndpointBluePermissionToggle;
-
-        public override BlobHighwayUISummary CurrentSummary { get; set; }
 
         #endregion
 
@@ -95,4 +101,5 @@ namespace Assets.UI.Highways {
         #endregion
 
     }
+
 }

@@ -8,7 +8,7 @@ using UnityEngine;
 using Assets.Highways;
 using Assets.BlobSites;
 
-namespace Assets.HighwayUpgrade {
+namespace Assets.HighwayUpgraders {
 
     public abstract class HighwayUpgraderFactoryBase : MonoBehaviour {
 

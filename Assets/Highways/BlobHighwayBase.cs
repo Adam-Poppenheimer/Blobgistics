@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -19,6 +20,9 @@ namespace Assets.Highways {
 
         public abstract MapNodeBase FirstEndpoint  { get; } 
         public abstract MapNodeBase SecondEndpoint { get; }
+
+        public abstract ReadOnlyCollection<ResourceBlob> ContentsPulledFromFirstEndpoint { get; }
+        public abstract ReadOnlyCollection<ResourceBlob> ContentsPulledFromSecondEndpoint { get; }
 
         public abstract BlobHighwayProfile Profile { get; set; }
 

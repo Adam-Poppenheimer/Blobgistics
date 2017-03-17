@@ -15,6 +15,7 @@ namespace Assets.UI.Highways.ForTesting {
         #region from BlobHighwaySummaryDisplayBase
 
         public override BlobHighwayUISummary CurrentSummary { get; set; }
+        public override bool CanBeUpgraded { get; set; }
 
         #endregion
 
@@ -47,6 +48,10 @@ namespace Assets.UI.Highways.ForTesting {
 
         public void ChangeSecondEndpointPermission(ResourceType type, bool isNowPermitted) {
             RaiseSecondEndpointPermissionChanged(type, isNowPermitted);
+        }
+
+        public void RaiseUpgradeRequest() {
+            RaiseHighwayUpgradeRequested();
         }
 
         #endregion

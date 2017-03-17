@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Assets.HighwayUpgrade {
+namespace Assets.HighwayUpgraders {
 
     [Serializable]
     public class HighwayUpgraderException : Exception {

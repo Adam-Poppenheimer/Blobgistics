@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using UnityEngine.EventSystems;
+
 using Assets.Blobs;
 using Assets.BlobSites;
 using Assets.Highways;
 
-namespace Assets.HighwayUpgrade {
+namespace Assets.HighwayUpgraders {
 
-    public class HighwayUpgrader : HighwayUpgraderBase {
+    public class HighwayUpgrader : HighwayUpgraderBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
+        IPointerEnterHandler, IPointerExitHandler {
 
         #region instance fields and properties
 
@@ -56,6 +60,34 @@ namespace Assets.HighwayUpgrade {
         #endregion
 
         #region instance methods
+
+        #region EventSystem interface implementations
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushBeginDragEvent(new HighwayUpgraderUISummary(this), eventData);
+        }
+
+        public void OnDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushDragEvent(new HighwayUpgraderUISummary(this), eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            PrivateData.UIControl.PushEndDragEvent(new HighwayUpgraderUISummary(this), eventData);
+        }
+
+        public void OnPointerClick(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerClickEvent(new HighwayUpgraderUISummary(this), eventData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerEnterEvent(new HighwayUpgraderUISummary(this), eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            PrivateData.UIControl.PushPointerExitEvent(new HighwayUpgraderUISummary(this), eventData);
+        }
+
+        #endregion
 
         #region from HighwayUpgraderBase
 

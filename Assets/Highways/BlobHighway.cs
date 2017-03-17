@@ -11,6 +11,7 @@ using Assets.Blobs;
 using Assets.BlobSites;
 
 using UnityCustomUtilities.Extensions;
+using System.Collections.ObjectModel;
 
 namespace Assets.Highways {
 
@@ -46,6 +47,14 @@ namespace Assets.Highways {
 
         public override MapNodeBase SecondEndpoint {
             get { return PrivateData.SecondEndpoint; }
+        }
+
+        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromFirstEndpoint {
+            get { return PrivateData.TubePullingFromFirstEndpoint.Contents; }
+        }
+
+        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromSecondEndpoint {
+            get { return PrivateData.TubePullingFromSecondEndpoint.Contents; }
         }
 
         #endregion

@@ -7,8 +7,9 @@ using UnityEngine;
 
 using Assets.BlobSites;
 using Assets.Highways;
+using Assets.Core;
 
-namespace Assets.HighwayUpgrade {
+namespace Assets.HighwayUpgraders {
 
     public class HighwayUpgraderPrivateData : HighwayUpgraderPrivateDataBase {
 
@@ -47,6 +48,14 @@ namespace Assets.HighwayUpgrade {
             _sourceFactory = value;
         }
         [SerializeField] private HighwayUpgraderFactoryBase _sourceFactory;
+
+        public override UIControlBase UIControl {
+            get { return _uiControl; }
+        }
+        public void SetUIControl(UIControlBase value) {
+            _uiControl = value;
+        }
+        [SerializeField] private UIControlBase _uiControl;
 
         #endregion
 

@@ -9,11 +9,11 @@ using NUnit.Framework;
 using Assets.Blobs;
 using Assets.BlobSites;
 using Assets.Highways;
-using Assets.HighwayUpgrade.ForTesting;
+using Assets.HighwayUpgraders.ForTesting;
 
 using UnityCustomUtilities.Extensions;
 
-namespace Assets.HighwayUpgrade.Editor {
+namespace Assets.HighwayUpgraders.Editor {
 
     public class HighwayUpgraderTests {
 

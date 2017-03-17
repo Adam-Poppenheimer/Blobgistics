@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityCustomUtilities.UI;
 using UnityCustomUtilities.Misc;
 
-using Assets.Highways;
+using Assets.Societies;
 using Assets.Editing;
 using Assets.Map;
 
@@ -19,7 +19,8 @@ namespace Assets {
 
         #region instance fields and properties
 
-        [SerializeField] private MapGraphBase  MapGraph;
+        [SerializeField] private MapGraphBase MapGraph;
+        [SerializeField] private SocietyFactoryBase SocietyFactory;
 
         #endregion
 
@@ -37,6 +38,7 @@ namespace Assets {
 
         private void PushData() {
             EditorPrefabBuilder.MapGraph = MapGraph;
+            EditorPrefabBuilder.SocietyFactory = SocietyFactory;
         }
 
         #endregion

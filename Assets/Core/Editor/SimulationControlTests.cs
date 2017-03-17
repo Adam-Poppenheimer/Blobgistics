@@ -12,7 +12,7 @@ using Assets.Blobs;
 using Assets.BlobSites;
 using Assets.ConstructionZones;
 using Assets.Highways;
-using Assets.HighwayUpgrade;
+using Assets.HighwayUpgraders;
 using Assets.Depots;
 using Assets.Societies;
 

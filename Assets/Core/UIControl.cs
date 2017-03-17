@@ -8,9 +8,11 @@ using UnityEngine.EventSystems;
 
 using Assets.Map;
 using Assets.Highways;
-using Assets.ConstructionZones;
 using Assets.UI.Highways;
+using Assets.ConstructionZones;
 using Assets.UI.ConstructionZones;
+using Assets.HighwayUpgraders;
+using Assets.UI.HighwayUpgraders;
 
 using UnityCustomUtilities.Extensions;
 
@@ -19,34 +21,6 @@ namespace Assets.Core {
     public class UIControl : UIControlBase {
 
         #region instance fields and properties
-
-        public BlobHighwaySummaryDisplayBase HighwaySummaryDisplay {
-            get {
-                if(_highwayDisplay == null) {
-                    throw new InvalidOperationException("HighwayDisplay is uninitialized");
-                } else {
-                    return _highwayDisplay;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    if(_highwayDisplay != null) {
-                        _highwayDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
-                        _highwayDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-                        _highwayDisplay.PriorityChanged -= HighwaySummaryDisplay_PriorityChanged;
-                    }
-                    _highwayDisplay = value;
-                    if(_highwayDisplay != null) {
-                        _highwayDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
-                        _highwayDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-                        _highwayDisplay.PriorityChanged += HighwaySummaryDisplay_PriorityChanged;
-                    }
-                }
-            }
-        }
-        [SerializeField] private BlobHighwaySummaryDisplayBase _highwayDisplay;
 
         public SimulationControlBase SimulationControl {
             get {
@@ -84,31 +58,36 @@ namespace Assets.Core {
         }
         [SerializeField] private BlobHighwayGhostBase _highwayGhost;
 
-        public ConstructionPanelBase ConstructionPanel {
+        public BlobHighwaySummaryDisplayBase HighwaySummaryDisplay {
             get {
-                if(_constructionPanel == null) {
-                    throw new InvalidOperationException("ConstructionPanel is uninitialized");
+                if(_highwayDisplay == null) {
+                    throw new InvalidOperationException("HighwayDisplay is uninitialized");
                 } else {
-                    return _constructionPanel;
+                    return _highwayDisplay;
                 }
             }
             set {
                 if(value == null) {
                     throw new ArgumentNullException("value");
                 } else {
-                    if(_constructionPanel != null) {
-                        _constructionPanel.CloseRequested -= ConstructionPanel_CloseRequested;
-                        _constructionPanel.DepotConstructionRequested -= ConstructionPanel_DepotConstructionRequested;
+                    if(_highwayDisplay != null) {
+                        _highwayDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
+                        _highwayDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
+                        _highwayDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
+                        _highwayDisplay.HighwayUpgradeRequested                 -= HighwayDisplay_HighwayUpgradeRequested;
+                        
                     }
-                    _constructionPanel = value;
-                    if(_constructionPanel != null) {
-                        _constructionPanel.CloseRequested += ConstructionPanel_CloseRequested;
-                        _constructionPanel.DepotConstructionRequested += ConstructionPanel_DepotConstructionRequested;
+                    _highwayDisplay = value;
+                    if(_highwayDisplay != null) {
+                        _highwayDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
+                        _highwayDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
+                        _highwayDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
+                        _highwayDisplay.HighwayUpgradeRequested                 += HighwayDisplay_HighwayUpgradeRequested;
                     }
                 }
             }
         }
-        [SerializeField] private ConstructionPanelBase _constructionPanel;
+        [SerializeField] private BlobHighwaySummaryDisplayBase _highwayDisplay;
 
         public ConstructionZoneSummaryDisplayBase ConstructionZoneSummaryDisplay {
             get {
@@ -123,18 +102,70 @@ namespace Assets.Core {
                     throw new ArgumentNullException("value");
                 } else {
                     if(_constructionZoneSummaryDisplay != null) {
-                        _constructionZoneSummaryDisplay.ConstructionZoneDestructionRequested -= _constructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
-                        _constructionZoneSummaryDisplay.CloseRequested                       -= _constructionZoneSummaryDisplay_CloseRequested;
+                        _constructionZoneSummaryDisplay.ConstructionZoneDestructionRequested -= ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
+                        _constructionZoneSummaryDisplay.CloseRequested                       -= ConstructionZoneSummaryDisplay_CloseRequested;
                     }
                     _constructionZoneSummaryDisplay = value;
                     if(_constructionZoneSummaryDisplay != null) {
-                        _constructionZoneSummaryDisplay.ConstructionZoneDestructionRequested += _constructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
-                        _constructionZoneSummaryDisplay.CloseRequested                       += _constructionZoneSummaryDisplay_CloseRequested;
+                        _constructionZoneSummaryDisplay.ConstructionZoneDestructionRequested += ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
+                        _constructionZoneSummaryDisplay.CloseRequested                       += ConstructionZoneSummaryDisplay_CloseRequested;
                     }
                 }
             }
         }
-        private ConstructionZoneSummaryDisplayBase _constructionZoneSummaryDisplay;
+        [SerializeField] private ConstructionZoneSummaryDisplayBase _constructionZoneSummaryDisplay;
+
+        public HighwayUpgraderSummaryDisplayBase HighwayUpgraderSummaryDisplay {
+            get {
+                if(_highwayUpgraderSummaryDisplay == null) {
+                    throw new InvalidOperationException("HighwayUpgraderSummaryDisplay is uninitialized");
+                } else {
+                    return _highwayUpgraderSummaryDisplay;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    if(_highwayUpgraderSummaryDisplay != null) {
+                        _highwayUpgraderSummaryDisplay.UpgraderDestructionRequested -= HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
+                        _highwayUpgraderSummaryDisplay.DisplayCloseRequested        -= HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
+                    }
+                    _highwayUpgraderSummaryDisplay = value;
+                    if(_highwayUpgraderSummaryDisplay != null) {
+                        _highwayUpgraderSummaryDisplay.UpgraderDestructionRequested += HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
+                        _highwayUpgraderSummaryDisplay.DisplayCloseRequested        += HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
+                    }
+                }
+            }
+        }
+        [SerializeField] private HighwayUpgraderSummaryDisplayBase _highwayUpgraderSummaryDisplay;
+
+        public ConstructionPanelBase ConstructionPanel {
+            get {
+                if(_constructionPanel == null) {
+                    throw new InvalidOperationException("ConstructionPanel is uninitialized");
+                } else {
+                    return _constructionPanel;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    if(_constructionPanel != null) {
+                        _constructionPanel.CloseRequested             -= ConstructionPanel_CloseRequested;
+                        _constructionPanel.DepotConstructionRequested -= ConstructionPanel_DepotConstructionRequested;
+                    }
+                    _constructionPanel = value;
+                    if(_constructionPanel != null) {
+                        _constructionPanel.CloseRequested             += ConstructionPanel_CloseRequested;
+                        _constructionPanel.DepotConstructionRequested += ConstructionPanel_DepotConstructionRequested;
+                    }
+                }
+            }
+        }
+        [SerializeField] private ConstructionPanelBase _constructionPanel;
 
         #endregion
 
@@ -143,19 +174,31 @@ namespace Assets.Core {
         #region Unity event methods
 
         private void Awake() {
-            HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
-            HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-            HighwaySummaryDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
+            if(HighwaySummaryDisplay != null) {
+                HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
+                HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
+                HighwaySummaryDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
 
-            HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
-            HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-            HighwaySummaryDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
+                HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
+                HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
+                HighwaySummaryDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
+            }
 
-            ConstructionPanel.CloseRequested             -= ConstructionPanel_CloseRequested;
-            ConstructionPanel.DepotConstructionRequested -= ConstructionPanel_DepotConstructionRequested;
+            if(ConstructionPanel != null) {
+                ConstructionPanel.CloseRequested             -= ConstructionPanel_CloseRequested;
+                ConstructionPanel.DepotConstructionRequested -= ConstructionPanel_DepotConstructionRequested;
 
-            ConstructionPanel.CloseRequested             += ConstructionPanel_CloseRequested;
-            ConstructionPanel.DepotConstructionRequested += ConstructionPanel_DepotConstructionRequested;
+                ConstructionPanel.CloseRequested             += ConstructionPanel_CloseRequested;
+                ConstructionPanel.DepotConstructionRequested += ConstructionPanel_DepotConstructionRequested;
+            }
+
+            if(HighwayUpgraderSummaryDisplay != null) {
+                HighwayUpgraderSummaryDisplay.UpgraderDestructionRequested -= HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
+                HighwayUpgraderSummaryDisplay.DisplayCloseRequested        -= HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
+
+                HighwayUpgraderSummaryDisplay.UpgraderDestructionRequested += HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
+                HighwayUpgraderSummaryDisplay.DisplayCloseRequested        += HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
+            }
         }
 
         #endregion
@@ -196,6 +239,8 @@ namespace Assets.Core {
                 if(HighwaySummaryDisplay != null) {
                     HighwaySummaryDisplay.ClearDisplay();
                     HighwaySummaryDisplay.CurrentSummary = source as BlobHighwayUISummary;
+                    HighwaySummaryDisplay.CanBeUpgraded = 
+                        SimulationControl.CanCreateHighwayUpgraderOnHighway(HighwaySummaryDisplay.CurrentSummary.ID);
                     HighwaySummaryDisplay.UpdateDisplay();
                 }
             }else if(source is MapNodeUISummary) {
@@ -209,6 +254,11 @@ namespace Assets.Core {
                 ConstructionZoneSummaryDisplay.Clear();
                 ConstructionZoneSummaryDisplay.SummaryToDisplay = summary;
                 ConstructionZoneSummaryDisplay.Activate();
+            }else if(source is HighwayUpgraderUISummary) {
+                var summary = source as HighwayUpgraderUISummary;
+                HighwayUpgraderSummaryDisplay.Clear();
+                HighwayUpgraderSummaryDisplay.SummaryToDisplay = summary;
+                HighwayUpgraderSummaryDisplay.Activate();
             }
         }
 
@@ -260,13 +310,28 @@ namespace Assets.Core {
             ConstructionPanel.Deactivate();
         }
 
-        private void _constructionZoneSummaryDisplay_CloseRequested(object sender, EventArgs e) {
+        private void ConstructionZoneSummaryDisplay_CloseRequested(object sender, EventArgs e) {
             ConstructionZoneSummaryDisplay.Clear();
             ConstructionZoneSummaryDisplay.Deactivate();
         }
 
-        private void _constructionZoneSummaryDisplay_ConstructionZoneDestructionRequested(object sender, EventArgs e) {
+        private void ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested(object sender, EventArgs e) {
             SimulationControl.DestroyConstructionZone(ConstructionZoneSummaryDisplay.SummaryToDisplay.ID);
+        }
+
+        private void HighwayDisplay_HighwayUpgradeRequested(object sender, EventArgs e) {
+            if(SimulationControl.CanCreateHighwayUpgraderOnHighway(HighwaySummaryDisplay.CurrentSummary.ID)) {
+                SimulationControl.CreateHighwayUpgraderOnHighway(HighwaySummaryDisplay.CurrentSummary.ID);
+            }
+        }
+
+        private void HighwayUpgraderSummaryDisplay_DisplayCloseRequested(object sender, EventArgs e) {
+            HighwayUpgraderSummaryDisplay.Clear();
+            HighwayUpgraderSummaryDisplay.Deactivate();
+        }
+
+        private void HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested(object sender, EventArgs e) {
+            SimulationControl.DestroyHighwayUpgrader(HighwayUpgraderSummaryDisplay.SummaryToDisplay.ID);
         }
 
         #endregion

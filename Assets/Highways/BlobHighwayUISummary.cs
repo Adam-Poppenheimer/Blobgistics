@@ -25,6 +25,8 @@ namespace Assets.Highways {
 
         public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint2 { get; set; }
 
+        public BlobHighwayProfile Profile { get; set; }
+
         #endregion
 
         #region constructors
@@ -44,6 +46,7 @@ namespace Assets.Highways {
                 ResourcePermissionsForEndpoint2[resourceType] = highwayToSummarize.GetPullingPermissionForSecondEndpoint(resourceType);
             }
 
+            Profile = highwayToSummarize.Profile;
         }
 
         #endregion

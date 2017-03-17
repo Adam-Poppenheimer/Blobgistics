@@ -11,7 +11,7 @@ using Assets.Blobs;
 using Assets.Societies;
 using Assets.Depots;
 using Assets.ConstructionZones;
-using Assets.HighwayUpgrade;
+using Assets.HighwayUpgraders;
 
 
 namespace Assets.Core {
@@ -147,6 +147,14 @@ namespace Assets.Core {
         #endregion
 
         #region instance methods
+
+        #region Unity event methods
+
+        private void Update() {
+            TickSimulation(Time.deltaTime);
+        }
+
+        #endregion
 
         #region from SimulationControlBase
 

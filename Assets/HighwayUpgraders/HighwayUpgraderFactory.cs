@@ -7,12 +7,19 @@ using UnityEngine;
 
 using Assets.BlobSites;
 using Assets.Highways;
+using Assets.Core;
 
-namespace Assets.HighwayUpgrade {
+namespace Assets.HighwayUpgraders {
 
     public class HighwayUpgraderFactory : HighwayUpgraderFactoryBase {
 
         #region instance fields and properties
+
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
 
         [SerializeField, HideInInspector] private List<HighwayUpgraderBase> InstantiatedUpgraders =
             new List<HighwayUpgraderBase>();
@@ -62,6 +69,7 @@ namespace Assets.HighwayUpgrade {
             privateData.SetUnderlyingSite(underlyingSite);
             privateData.SetProfileToInsert(profileToInsert);
             privateData.SetSourceFactory(this);
+            privateData.SetUIControl(UIControl);
 
             var newUpgrader = hostingObject.AddComponent<HighwayUpgrader>();
             newUpgrader.PrivateData = privateData;

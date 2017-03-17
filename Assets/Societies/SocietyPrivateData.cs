@@ -74,10 +74,18 @@ namespace Assets.Societies {
         public override UIControlBase UIControl {
             get { return _uiControl; }
         }
-        private void SetUIControl(UIControlBase value) {
+        public void SetUIControl(UIControlBase value) {
             _uiControl = value;
         }
         [SerializeField] private UIControlBase _uiControl;
+
+        public override SocietyFactoryBase ParentFactory {
+            get { return _parentFactory; }
+        }
+        public void SetParentFactory(SocietyFactoryBase value) {
+            _parentFactory = value;
+        }
+        [SerializeField] private SocietyFactoryBase _parentFactory;
 
         #endregion
 

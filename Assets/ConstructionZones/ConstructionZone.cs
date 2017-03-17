@@ -4,13 +4,16 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 using Assets.Blobs;
 using Assets.Map;
+using Assets.Core;
 
 namespace Assets.ConstructionZones {
 
-    public class ConstructionZone : ConstructionZoneBase {
+    public class ConstructionZone : ConstructionZoneBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
+        IPointerEnterHandler, IPointerExitHandler {
 
         #region instance fields and properties
 
@@ -77,9 +80,43 @@ namespace Assets.ConstructionZones {
         }
         [SerializeField, HideInInspector] private ConstructionZoneFactoryBase _parentFactory;
 
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField, HideInInspector] private UIControlBase _uiControl;
+
         #endregion
 
         #region instance methods
+
+        #region EventSystem interface implementations
+
+        public void OnBeginDrag(PointerEventData eventData) {
+            UIControl.PushBeginDragEvent(new ConstructionZoneUISummary(this), eventData);
+        }
+
+        public void OnDrag(PointerEventData eventData) {
+            UIControl.PushDragEvent(new ConstructionZoneUISummary(this), eventData);
+        }
+
+        public void OnEndDrag(PointerEventData eventData) {
+            UIControl.PushEndDragEvent(new ConstructionZoneUISummary(this), eventData);
+        }
+
+        public void OnPointerClick(PointerEventData eventData) {
+            UIControl.PushPointerClickEvent(new ConstructionZoneUISummary(this), eventData);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData) {
+            UIControl.PushPointerEnterEvent(new ConstructionZoneUISummary(this), eventData);
+        }
+
+        public void OnPointerExit(PointerEventData eventData) {
+            UIControl.PushPointerExitEvent(new ConstructionZoneUISummary(this), eventData);
+        }
+
+        #endregion
 
         #region from ConstructionZoneBase
 

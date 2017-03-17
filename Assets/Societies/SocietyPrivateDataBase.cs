@@ -20,6 +20,8 @@ namespace Assets.Societies {
 
         public abstract UIControlBase UIControl { get; }
 
+        public abstract SocietyFactoryBase ParentFactory { get; }
+
         #endregion
 
     }
