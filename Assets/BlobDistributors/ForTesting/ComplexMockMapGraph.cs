@@ -18,10 +18,9 @@ namespace Assets.BlobDistributors.ForTesting {
         #region from MapGraphBase
 
         public override ReadOnlyCollection<MapEdgeBase> Edges {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return edges.AsReadOnly(); }
         }
+        private List<MapEdgeBase> edges = new List<MapEdgeBase>();
 
         public override ReadOnlyCollection<MapNodeBase> Nodes {
             get { return nodes.AsReadOnly(); }
@@ -52,7 +51,11 @@ namespace Assets.BlobDistributors.ForTesting {
         #region from MapGraphBase
 
         public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
-            
+            var hostingObject = new GameObject();
+            var newEdge = hostingObject.AddComponent<MapEdge>();
+            newEdge.SetFirstNode(first);
+            newEdge.SetSecondNode(second);
+            edges.Add(newEdge);
         }
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
@@ -76,7 +79,17 @@ namespace Assets.BlobDistributors.ForTesting {
         }
 
         public override IEnumerable<MapNodeBase> GetNeighborsOfNode(MapNodeBase node) {
-            throw new NotImplementedException();
+            var retval = new List<MapNodeBase>();
+
+            foreach(var edgeConnected in edges.Where(edge => edge.FirstNode == node || edge.SecondNode == node)) {
+                if(edgeConnected.FirstNode == node) {
+                    retval.Add(edgeConnected.SecondNode);
+                }else {
+                    retval.Add(edgeConnected.FirstNode);
+                }
+            }
+
+            return retval;
         }
 
         public override MapNodeBase GetNodeOfID(int id) {

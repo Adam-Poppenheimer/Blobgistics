@@ -21,6 +21,18 @@ namespace Assets.Map {
 
         #endregion
 
+        #region instance methods
+
+        #region from Object
+
+        public override string ToString() {
+            return "MapNodeBase " + ID;
+        }
+
+        #endregion
+
+        #endregion
+
     }
 
 }

@@ -53,7 +53,7 @@ namespace Assets.BlobDistributors.ForTesting {
         }
 
         public override bool HasHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
-            throw new NotImplementedException();
+            return GetHighwayBetween(firstEndpoint, secondEndpoint) != null;
         }
 
         public override void TickHighways(float secondsPassed) {

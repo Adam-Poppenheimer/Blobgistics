@@ -53,6 +53,14 @@ namespace Assets.BlobSites {
 
         #region instance methods
 
+        #region from Object
+
+        public override string ToString() {
+            return "BlobSiteBase " + GetInstanceID();
+        }
+
+        #endregion
+
         public Vector3 GetConnectionPointInDirection(ManhattanDirection direction) {
             switch(direction) {
                 case ManhattanDirection.North: return NorthConnectionPoint;

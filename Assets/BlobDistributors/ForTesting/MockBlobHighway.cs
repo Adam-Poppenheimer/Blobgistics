@@ -55,14 +55,22 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #region instance methods
 
+        #region from Object
+
+        public override string ToString() {
+            return string.Format("BlobHighway [{0} <--> {1}]", FirstEndpoint, SecondEndpoint);
+        }
+
+        #endregion
+
         #region from BlobHighwayBase
 
         public override bool CanPullFromFirstEndpoint() {
-            return contentsPulledFromFirstEndpoint.Count < Profile.Capacity;
+            return FirstEndpoint.BlobSite.CanExtractAnyBlob() && contentsPulledFromFirstEndpoint.Count < Profile.Capacity;
         }
 
         public override bool CanPullFromSecondEndpoint() {
-            return contentsPulledFromSecondEndpoint.Count < Profile.Capacity;
+            return SecondEndpoint.BlobSite.CanExtractAnyBlob() && contentsPulledFromSecondEndpoint.Count < Profile.Capacity;
         }
 
         public override void Clear() {

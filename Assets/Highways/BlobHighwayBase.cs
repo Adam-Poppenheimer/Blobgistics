@@ -30,7 +30,15 @@ namespace Assets.Highways {
 
         #endregion
 
-        #region instance methods methods
+        #region instance methods
+
+        #region from Object
+
+        public override string ToString() {
+            return string.Format("Highway {0} [{1} <--> {2}]", ID, FirstEndpoint, SecondEndpoint);
+        }
+
+        #endregion
 
         public abstract bool GetPullingPermissionForFirstEndpoint(ResourceType type);
         public abstract void SetPullingPermissionForFirstEndpoint(ResourceType type, bool isPermitted);

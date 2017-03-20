@@ -215,6 +215,8 @@ namespace Assets.BlobDistributors.Editor {
             int rightCountAfter3Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
 
             highwayUp = highwayFactory.ConstructHighwayBetween(centerNode, upNode);
+            highwayUp.Profile = new BlobHighwayProfile(1f, 5, ResourceSummary.Empty);
+            highwayUp.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
             highwayUp.Priority = 1;
             distributorToTest.Tick(3f);
 
@@ -281,7 +283,8 @@ namespace Assets.BlobDistributors.Editor {
         #region utilities
 
         private ComplexMockMapGraph BuildMapGraph() {
-            throw new NotImplementedException();
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<ComplexMockMapGraph>();
         }
 
         private BlobDistributor BuildBlobDistributor() {
@@ -312,21 +315,26 @@ namespace Assets.BlobDistributors.Editor {
             leftNode   = mapGraph.BuildNode(Vector3.left);
             rightNode  = mapGraph.BuildNode(Vector3.right);
             upNode     = mapGraph.BuildNode(Vector3.up);
-
+            
+            centerNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
             centerNode.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
             centerNode.BlobSite.SetCapacityForResourceType(ResourceType.Red, 30);
+            centerNode.BlobSite.TotalCapacity = 100;
             for(int i = 0; i < 30; ++i) {
                 centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
             }
 
             leftNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
             leftNode.BlobSite.SetCapacityForResourceType(ResourceType.Red, 30);
+            leftNode.BlobSite.TotalCapacity = 100;
 
             rightNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
             rightNode.BlobSite.SetCapacityForResourceType(ResourceType.Red, 30);
+            rightNode.BlobSite.TotalCapacity = 100;
 
             upNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
             upNode.BlobSite.SetCapacityForResourceType(ResourceType.Red, 30);
+            upNode.BlobSite.TotalCapacity = 100;
 
             mapGraph.AddUndirectedEdge(centerNode, leftNode);
             mapGraph.AddUndirectedEdge(centerNode, rightNode);
@@ -344,13 +352,13 @@ namespace Assets.BlobDistributors.Editor {
             var highwayProfile = new BlobHighwayProfile(1f, 5, ResourceSummary.Empty);
 
             highwayLeft.Profile = highwayProfile;
-            highwayLeft.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayLeft.SetPullingPermissionForFirstEndpoint (ResourceType.Red, true);
 
             highwayRight.Profile = highwayProfile;
-            highwayRight.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayRight.SetPullingPermissionForFirstEndpoint (ResourceType.Red, true);
 
             highwayUp.Profile = highwayProfile;
-            highwayUp.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayUp.SetPullingPermissionForFirstEndpoint (ResourceType.Red, true);
         }
 
         #endregion

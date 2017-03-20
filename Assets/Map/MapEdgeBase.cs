@@ -22,6 +22,18 @@ namespace Assets.Map {
 
         #endregion
 
+        #region instance methods
+
+        #region from Object
+
+        public override string ToString() {
+            return string.Format("Edge [{0} <--> {1}]", FirstNode, SecondNode);
+        }
+
+        #endregion
+
+        #endregion
+
     }
 
 }
