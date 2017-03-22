@@ -38,10 +38,12 @@ namespace Assets.ConstructionZones {
 
                     int runningCapacityTotal = 0;
                     foreach(var resourceType in _currentProject.Cost) {
-                        blobSite.SetPlacementPermissionForResourceType(resourceType, true);
-                        blobSite.SetExtractionPermissionForResourceType(resourceType, false);
-                        blobSite.SetCapacityForResourceType(resourceType, _currentProject.Cost[resourceType]);
-                        runningCapacityTotal += _currentProject.Cost[resourceType];
+                        if(_currentProject.Cost[resourceType] > 0) {
+                            blobSite.SetPlacementPermissionForResourceType(resourceType, true);
+                            blobSite.SetExtractionPermissionForResourceType(resourceType, false);
+                            blobSite.SetCapacityForResourceType(resourceType, _currentProject.Cost[resourceType]);
+                            runningCapacityTotal += _currentProject.Cost[resourceType];
+                        }
                     }
                     blobSite.TotalCapacity = runningCapacityTotal;
 
@@ -128,7 +130,7 @@ namespace Assets.ConstructionZones {
                 countDict[resourceType] = CurrentProject.Cost[resourceType] - blobSite.GetCountOfContentsOfType(resourceType);
             }
 
-            return new ResourceSummary(countDict);
+            return ResourceSummary.BuildResourceSummary(gameObject, countDict);
         }
 
         #endregion

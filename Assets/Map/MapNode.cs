@@ -54,6 +54,12 @@ namespace Assets.Map {
 
         #region Unity event methods
 
+        private void Awake() {
+            if(ManagingGraph != null && ManagingGraph.GetNodeOfID(ID) == null) {
+                ManagingGraph.SubscribeNode(this);
+            }
+        }
+
         private void OnDestroy() {
             if(ManagingGraph != null) {
                 ManagingGraph.RemoveNode(this);

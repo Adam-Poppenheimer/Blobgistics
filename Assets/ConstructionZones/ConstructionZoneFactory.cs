@@ -56,9 +56,15 @@ namespace Assets.ConstructionZones {
         }
         [SerializeField] private UIControlBase _uiControl;
 
-        [SerializeField] private ResourceSummary ResourceDepotCost = new ResourceSummary(
-            new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
-        );
+        private ResourceSummary ResourceDepotCost {
+            get {
+                if(_resourceDepotCost == null) {
+                    _resourceDepotCost = ResourceSummary.BuildResourceSummary(gameObject);
+                }
+                return _resourceDepotCost;
+            }
+        }
+        [SerializeField] private ResourceSummary _resourceDepotCost;
 
         private List<ConstructionZoneBase> InstantiatedConstructionZones = 
             new List<ConstructionZoneBase>();

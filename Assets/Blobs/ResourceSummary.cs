@@ -4,66 +4,87 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using Assets.BlobSites;
 
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Blobs {
 
-    public class ResourceSummary : IEnumerable<ResourceType> {
-
-        #region static fields and properties
-
-        public static ResourceSummary Empty {
-            get {
-                if(_empty == null) {
-                    _empty = new ResourceSummary();
-                }
-                return _empty;
-            }
-        }
-        private static ResourceSummary _empty;
-
-        #endregion
+    [Serializable]
+    public class ResourceSummary : MonoBehaviour, IEnumerable<ResourceType> {
 
         #region instance fields and properties
 
         public int this[ResourceType type] {
             get {
-                int retval;
-                ResourceCountByType.TryGetValue(type, out retval);
-                return retval;
+                return CountList[(int)type];
+            }
+            private set {
+                CountList[(int)type] = value;
             }
         }
 
-        private readonly IReadOnlyDictionary<ResourceType, int> ResourceCountByType;
+        [SerializeField] private List<int> CountList = new List<int>();
 
         #endregion
 
-        #region constructors
+        #region static methods
 
-        public ResourceSummary(Dictionary<ResourceType, int> resourceCountByType) {
-            ResourceCountByType = new ReadOnlyDictionary<ResourceType, int>(
-                new Dictionary<ResourceType, int>(resourceCountByType)
-            );
+        public static ResourceSummary BuildResourceSummary(GameObject objectToAddTo) {
+            var newSummary = objectToAddTo.AddComponent<ResourceSummary>();
+            if(newSummary.CountList.Count != EnumUtil.GetValues<ResourceType>().Count()) {
+                newSummary.CountList.Clear();
+                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                    newSummary.CountList.Add(0);
+                }
+            }
+            return newSummary;
         }
 
-        public ResourceSummary(params KeyValuePair<ResourceType, int>[] resourcePairs) {
-            var newDict = new Dictionary<ResourceType, int>();
-            foreach(var pair in resourcePairs) {
-                newDict.Add(pair.Key, pair.Value);
+        public static ResourceSummary BuildResourceSummary(GameObject objectToAddTo, Dictionary<ResourceType, int> resourceCountByType){
+            var newSummary = BuildResourceSummary(objectToAddTo);
+            foreach(var pair in resourceCountByType) {
+                newSummary[pair.Key] = pair.Value;
             }
-            ResourceCountByType = new ReadOnlyDictionary<ResourceType, int>(newDict);
+            return newSummary;
+        }
+
+        public static ResourceSummary BuildResourceSummary(GameObject objectToAddTo, params KeyValuePair<ResourceType, int>[] resourcePairs) {
+            var newSummary = BuildResourceSummary(objectToAddTo);
+            foreach(var pair in resourcePairs) {
+                newSummary[pair.Key] = pair.Value;
+            }
+            return newSummary;
         }
 
         #endregion
 
         #region instance methods
 
+        #region Unity event methods
+
+        private void OnValidate() {
+            int resourceTypeCount = EnumUtil.GetValues<ResourceType>().Count();
+            for(int i = CountList.Count; i < resourceTypeCount; ++i) {
+                CountList.Add(0);
+            }
+        }
+
+        private void Reset() {
+            int resourceTypeCount = EnumUtil.GetValues<ResourceType>().Count();
+            for(int i = CountList.Count; i < resourceTypeCount; ++i) {
+                CountList.Add(0);
+            }
+        }
+
+        #endregion
+
         #region from IEnumerable<ResourceType>
 
         public IEnumerator<ResourceType> GetEnumerator() {
-            return ResourceCountByType.Keys.GetEnumerator();
+            return EnumUtil.GetValues<ResourceType>().GetEnumerator();
         }
 
         #endregion
@@ -71,26 +92,18 @@ namespace Assets.Blobs {
         #region from IEnumerable
 
         IEnumerator IEnumerable.GetEnumerator() {
-            return ResourceCountByType.Keys.GetEnumerator();
+            return CountList.GetEnumerator();
         }
 
         #endregion
 
         public int GetTotalResourceCount() {
-            return ((IDictionary<ResourceType, int>)ResourceCountByType).Values.Sum();
-        }
-
-        public int GetCountOfResourceType(ResourceType type) {
-            int retval;
-            ResourceCountByType.TryGetValue(type, out retval);
-            return retval;
+            return CountList.Sum();
         }
 
         public bool IsContainedWithinBlobSite(BlobSiteBase site) {
-            foreach(var resourceType in ResourceCountByType.Keys) {
-                int countOfResource;
-                ResourceCountByType.TryGetValue(resourceType, out countOfResource);
-                if(site.GetContentsOfType(resourceType).Count() < countOfResource) {
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                if(site.GetContentsOfType(resourceType).Count() < this[resourceType]) {
                     return false;
                 }
             }

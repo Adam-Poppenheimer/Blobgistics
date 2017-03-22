@@ -215,7 +215,7 @@ namespace Assets.BlobDistributors.Editor {
             int rightCountAfter3Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
 
             highwayUp = highwayFactory.ConstructHighwayBetween(centerNode, upNode);
-            highwayUp.Profile = new BlobHighwayProfile(1f, 5, ResourceSummary.Empty);
+            highwayUp.Profile = new BlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(highwayUp.gameObject));
             highwayUp.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
             highwayUp.Priority = 1;
             distributorToTest.Tick(3f);
@@ -349,7 +349,7 @@ namespace Assets.BlobDistributors.Editor {
             highwayRight = highwayFactory.ConstructHighwayBetween(centerNode, rightNode);
             highwayUp    = highwayFactory.ConstructHighwayBetween(centerNode, upNode);
 
-            var highwayProfile = new BlobHighwayProfile(1f, 5, ResourceSummary.Empty);
+            var highwayProfile = new BlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(new GameObject()));
 
             highwayLeft.Profile = highwayProfile;
             highwayLeft.SetPullingPermissionForFirstEndpoint (ResourceType.Red, true);

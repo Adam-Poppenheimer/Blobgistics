@@ -59,13 +59,7 @@ namespace Assets.Core {
         [SerializeField] private BlobHighwayGhostBase _highwayGhost;
 
         public BlobHighwaySummaryDisplayBase HighwaySummaryDisplay {
-            get {
-                if(_highwayDisplay == null) {
-                    throw new InvalidOperationException("HighwayDisplay is uninitialized");
-                } else {
-                    return _highwayDisplay;
-                }
-            }
+            get { return _highwayDisplay; }
             set {
                 if(value == null) {
                     throw new ArgumentNullException("value");

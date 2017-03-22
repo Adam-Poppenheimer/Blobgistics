@@ -33,7 +33,7 @@ namespace Assets.Highways {
                 }
             }
         }
-        private ResourceBlobFactoryBase _blobFactory;
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         [SerializeField] private GameObject TubePrefab;
 

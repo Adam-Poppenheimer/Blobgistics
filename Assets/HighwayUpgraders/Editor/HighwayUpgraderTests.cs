@@ -21,7 +21,10 @@ namespace Assets.HighwayUpgraders.Editor {
 
         private ResourceSummary PlaceholderCost {
             get {
-                return new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue));
+                return ResourceSummary.BuildResourceSummary(
+                    new GameObject(),
+                    new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue)
+                );
             }
         }
 
@@ -60,7 +63,8 @@ namespace Assets.HighwayUpgraders.Editor {
 
             var factoryToTest = BuildUpgraderFactory();
 
-            var testProfile = new BlobHighwayProfile(24f, 100, new ResourceSummary(
+            var testProfile = new BlobHighwayProfile(24f, 100, ResourceSummary.BuildResourceSummary(
+                factoryToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 15),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 12)
             ));
@@ -71,7 +75,7 @@ namespace Assets.HighwayUpgraders.Editor {
             //Validation
             int intendedTotalCapacity = 0;
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                int costCountOfType = upgraderToTest.ProfileToInsert.Cost.GetCountOfResourceType(resourceType);
+                int costCountOfType = upgraderToTest.ProfileToInsert.Cost[resourceType];
                 if(costCountOfType > 0) {
                     intendedTotalCapacity += costCountOfType;
                     Assert.That(site.GetPlacementPermissionForResourceType(resourceType),
@@ -116,7 +120,7 @@ namespace Assets.HighwayUpgraders.Editor {
             //Setup
             var factoryToTest = BuildUpgraderFactory();
             var blobSite = BuildBlobSite();
-            var profile = new BlobHighwayProfile(0f, 0, ResourceSummary.Empty);
+            var profile = new BlobHighwayProfile(0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject));
 
             var highwayList = new List<BlobHighwayBase>();
             for(int highwayCreateIndex = 0; highwayCreateIndex < 100; ++highwayCreateIndex) {
@@ -168,9 +172,12 @@ namespace Assets.HighwayUpgraders.Editor {
             };
 
             var upgraders = new List<HighwayUpgraderBase>() {
-                factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty)),
-                factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty)),
-                factoryToTest.BuildHighwayUpgrader(blobHighways[2], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty)),
+                factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(
+                    0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject))),
+                factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(
+                    0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject))),
+                factoryToTest.BuildHighwayUpgrader(blobHighways[2], blobSite, new BlobHighwayProfile(
+                    0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject))),
             };
 
             //Execution
@@ -196,9 +203,12 @@ namespace Assets.HighwayUpgraders.Editor {
                 BuildBlobHighway(),
             };
 
-            factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
-            factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
-            factoryToTest.BuildHighwayUpgrader(blobHighways[4], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[4], blobSite, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
 
             //Execution
 
@@ -224,11 +234,16 @@ namespace Assets.HighwayUpgraders.Editor {
                 BuildBlobHighway(),
             };
 
-            factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
-            factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
-            factoryToTest.BuildHighwayUpgrader(blobHighways[2], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
-            factoryToTest.BuildHighwayUpgrader(blobHighways[3], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
-            factoryToTest.BuildHighwayUpgrader(blobHighways[4], blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[0], blobSite, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[1], blobSite, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[2], blobSite, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[3], blobSite, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
+            factoryToTest.BuildHighwayUpgrader(blobHighways[4], blobSite, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
 
             //Execution
 
@@ -246,7 +261,8 @@ namespace Assets.HighwayUpgraders.Editor {
             //Setup
             var blobSite = BuildBlobSite();
             var blobHighway = BuildBlobHighway();
-            var cost = new ResourceSummary(
+            var cost = ResourceSummary.BuildResourceSummary(
+                new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 10)
             );
@@ -276,7 +292,8 @@ namespace Assets.HighwayUpgraders.Editor {
             //Setup
             var blobSite = BuildBlobSite();
             var blobHighway = BuildBlobHighway();
-            var cost = new ResourceSummary(
+            var cost = ResourceSummary.BuildResourceSummary(
+                new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
             );
             var newProfile = new BlobHighwayProfile(1f, 20, cost);
@@ -304,7 +321,8 @@ namespace Assets.HighwayUpgraders.Editor {
             var blobSite = BuildBlobSite();
 
             var blobHighway = BuildBlobHighway();
-            var cost = new ResourceSummary(
+            var cost = ResourceSummary.BuildResourceSummary(
+                new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
             );
             var newProfile = new BlobHighwayProfile(1f, 20, cost);
@@ -340,7 +358,8 @@ namespace Assets.HighwayUpgraders.Editor {
             var blobSite = BuildBlobSite();
 
             var blobHighway = BuildBlobHighway();
-            var cost = new ResourceSummary(
+            var cost = ResourceSummary.BuildResourceSummary(
+                new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
             );
             var newProfile = new BlobHighwayProfile(1f, 20, cost);
@@ -414,10 +433,12 @@ namespace Assets.HighwayUpgraders.Editor {
 
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.BuildHighwayUpgrader(null, blobSite, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+                factoryToTest.BuildHighwayUpgrader(null, blobSite, new BlobHighwayProfile(
+                    0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
             });
             Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.BuildHighwayUpgrader(highway, null, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+                factoryToTest.BuildHighwayUpgrader(highway, null, new BlobHighwayProfile(
+                    0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
             });
         }
 
@@ -440,11 +461,13 @@ namespace Assets.HighwayUpgraders.Editor {
             var blobSite1 = BuildBlobSite();
             var blobSite2 = BuildBlobSite();
 
-            factoryToTest.BuildHighwayUpgrader(highway, blobSite1, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+            factoryToTest.BuildHighwayUpgrader(highway, blobSite1, new BlobHighwayProfile(
+                0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
 
             //Execution and Validation
             Assert.Throws<HighwayUpgraderException>(delegate() {
-                factoryToTest.BuildHighwayUpgrader(highway, blobSite2, new BlobHighwayProfile(0f, 0, ResourceSummary.Empty));
+                factoryToTest.BuildHighwayUpgrader(highway, blobSite2, new BlobHighwayProfile(
+                    0f, 0, ResourceSummary.BuildResourceSummary(factoryToTest.gameObject)));
             });
         }
 

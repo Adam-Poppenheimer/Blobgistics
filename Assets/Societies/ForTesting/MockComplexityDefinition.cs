@@ -30,20 +30,30 @@ namespace Assets.Societies.ForTesting {
         private string _name = "DEFAULT";
 
         public override ResourceSummary Needs {
-            get { return _needs; }
+            get {
+                if(_needs == null) {
+                    _needs = ResourceSummary.BuildResourceSummary(gameObject);
+                }
+                return _needs;
+            }
         }
         public void SetNeeds(ResourceSummary value) {
             _needs = value;
         }
-        private ResourceSummary _needs = ResourceSummary.Empty;
+        private ResourceSummary _needs = null;
 
         public override ResourceSummary Production {
-            get { return _production; }
+            get {
+                if(_production == null) {
+                    _production = ResourceSummary.BuildResourceSummary(gameObject);
+                }
+                return _production;
+            }
         }
         public void SetProduction(ResourceSummary value) {
             _production = value;
         }
-        private ResourceSummary _production = ResourceSummary.Empty;
+        private ResourceSummary _production = null;
 
         public override IEnumerable<ResourceSummary> Wants {
             get { return _wants; }
@@ -94,12 +104,17 @@ namespace Assets.Societies.ForTesting {
         private float _secondsToFullyConsumeNeeds = 1f;
 
         public override ResourceSummary CostOfAscent {
-            get { return _costOfAscent; }
+            get {
+                if(_costOfAscent == null) {
+                    _costOfAscent = ResourceSummary.BuildResourceSummary(gameObject);
+                }
+                return _costOfAscent;
+            }
         }
         public void SetCostOfAscent(ResourceSummary value) {
             _costOfAscent = value;
         }
-        private ResourceSummary _costOfAscent = ResourceSummary.Empty;
+        private ResourceSummary _costOfAscent = null;
 
         #endregion
 

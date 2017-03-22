@@ -100,6 +100,13 @@ namespace Assets.Societies {
             }
         }
 
+        private void Start() {
+            if(CurrentComplexity != null && Location != null) {
+                RefreshBlobSitePermissionsAndCapacities();
+                DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
+            }
+        }
+
         private void OnDestroy() {
             if(PrivateData != null && PrivateData.ParentFactory != null) {
                 PrivateData.ParentFactory.UnsubscribeSocietyBeingDestroyed(this);
@@ -209,6 +216,9 @@ namespace Assets.Societies {
         private void PerformProductionCycle() {
             var hasSatisfiedSomeWants = PerformWantsConsumptionCycle();
             foreach(var resourceType in CurrentComplexity.Production) {
+                if(CurrentComplexity.Production[resourceType] == 0) {
+                    continue;
+                }
                 int blobsOfTypeToProduce = CurrentComplexity.Production[resourceType];
                 if(hasSatisfiedSomeWants) {
                     ++blobsOfTypeToProduce;
@@ -284,42 +294,49 @@ namespace Assets.Societies {
 
             //Production
             foreach(var resourceType in CurrentComplexity.Production) {
-                int valueInDict;
-                capacityDict.TryGetValue(resourceType, out valueInDict);
-                valueInDict += (int)(CurrentComplexity.Production[resourceType] * CurrentComplexity.ProductionCapacityCoefficient);
-                capacityDict[resourceType] = valueInDict;
-
-                ProductionProfile.SetPlacementPermission(resourceType, true);
-                DefaultProfile.SetPlacementPermission(resourceType, true);
-                DefaultProfile.SetExtractionPermission(resourceType, true);
-            }
-
-            //Ascent Cost
-            var ascentComplexity = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
-            if(ascentComplexity != null) {
-                var ascentCost = ascentComplexity.CostOfAscent ?? ResourceSummary.Empty;
-                foreach(var resourceType in ascentCost) {
+                if(CurrentComplexity.Production[resourceType] > 0) {
                     int valueInDict;
                     capacityDict.TryGetValue(resourceType, out valueInDict);
-                    valueInDict += ascentCost[resourceType];
+                    valueInDict += (int)(CurrentComplexity.Production[resourceType] * CurrentComplexity.ProductionCapacityCoefficient);
                     capacityDict[resourceType] = valueInDict;
 
+                    ProductionProfile.SetPlacementPermission(resourceType, true);
                     DefaultProfile.SetPlacementPermission(resourceType, true);
                     DefaultProfile.SetExtractionPermission(resourceType, true);
                 }
             }
 
+            //Ascent Cost
+            var ascentComplexity = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
+            if(ascentComplexity != null) {
+                var ascentCost = ascentComplexity.CostOfAscent;
+                foreach(var resourceType in ascentCost) {
+                    if(ascentCost[resourceType] > 0) {
+                        int valueInDict;
+                        capacityDict.TryGetValue(resourceType, out valueInDict);
+                        valueInDict += ascentCost[resourceType];
+                        capacityDict[resourceType] = valueInDict;
+
+                        DefaultProfile.SetPlacementPermission(resourceType, true);
+                        DefaultProfile.SetExtractionPermission(resourceType, true);
+                    }
+                    
+                }
+            }
+
             //Needs
             foreach(var resourceType in CurrentComplexity.Needs) {
-                int valueInDict;
-                capacityDict.TryGetValue(resourceType, out valueInDict);
-                valueInDict += (int)(CurrentComplexity.Needs[resourceType] * CurrentComplexity.NeedsCapacityCoefficient);
-                capacityDict[resourceType] = valueInDict;
+                if(CurrentComplexity.Needs[resourceType] > 0) {
+                    int valueInDict;
+                    capacityDict.TryGetValue(resourceType, out valueInDict);
+                    valueInDict += (int)(CurrentComplexity.Needs[resourceType] * CurrentComplexity.NeedsCapacityCoefficient);
+                    capacityDict[resourceType] = valueInDict;
 
-                ConsumptionProfile.SetPlacementPermission(resourceType, true);
-                ConsumptionProfile.SetExtractionPermission(resourceType, true);
-                DefaultProfile.SetPlacementPermission(resourceType, true);
-                DefaultProfile.SetExtractionPermission(resourceType, false);
+                    ConsumptionProfile.SetPlacementPermission(resourceType, true);
+                    ConsumptionProfile.SetExtractionPermission(resourceType, true);
+                    DefaultProfile.SetPlacementPermission(resourceType, true);
+                    DefaultProfile.SetExtractionPermission(resourceType, false);
+                }
             }
 
             //Wants
@@ -332,12 +349,14 @@ namespace Assets.Societies {
                         currentBiggestForResourceType,
                         (int)(wantSummary[resourceType] * CurrentComplexity.WantsCapacityCoefficient)
                     );
-                    
-                    DefaultProfile.SetPlacementPermission(resourceType, true);
-                    DefaultProfile.SetExtractionPermission(resourceType, false);
 
-                    ProductionProfile.SetPlacementPermission(resourceType, true);
-                    ProductionProfile.SetExtractionPermission(resourceType, true);
+                    if(wantSummary[resourceType] > 0) {
+                        DefaultProfile.SetPlacementPermission(resourceType, true);
+                        DefaultProfile.SetExtractionPermission(resourceType, false);
+
+                        ProductionProfile.SetPlacementPermission(resourceType, true);
+                        ProductionProfile.SetExtractionPermission(resourceType, true);
+                    }
                 }
             }
 

@@ -63,6 +63,8 @@ namespace Assets.Highways {
         }
         [SerializeField] private BlobHighwayProfile _startingProfile;
 
+        [SerializeField] private GameObject HighwayPrefab;
+
         [SerializeField, HideInInspector] private List<BlobHighway> AllConstructedHighways = new List<BlobHighway>();
 
         #endregion
@@ -127,9 +129,21 @@ namespace Assets.Highways {
                 throw new BlobHighwayException("Cannot construct a highway between these two endpoints");
             }
 
-            var hostingObject = new GameObject();
+            BlobHighway newHighway;
+            GameObject hostingObject;
+            if(HighwayPrefab != null) {
+                hostingObject = Instantiate<GameObject>(HighwayPrefab);
+                newHighway = hostingObject.GetComponent<BlobHighway>();
+                if(newHighway == null) {
+                    throw new BlobHighwayException("BlobHighwayFactory's HighwayPrefab lacks a BlobHighway component");
+                }
+            }else {
+                hostingObject = new GameObject();
+                newHighway = hostingObject.AddComponent<BlobHighway>();
+            }
+            
+            hostingObject.name = string.Format("Highway [{0} <--> {1}]", firstEndpoint.ID, secondEndpoint.ID);
             hostingObject.transform.SetParent(MapGraph.transform);
-            var newHighway = hostingObject.AddComponent<BlobHighway>();
 
             var newPrivateData = hostingObject.AddComponent<BlobHighwayPrivateData>();
             newPrivateData.SetFirstEndpoint(firstEndpoint);

@@ -52,6 +52,10 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void SubscribeNode(MapNodeBase node) {
+            throw new NotImplementedException();
+        }
+
         public override MapEdgeBase GetEdge(MapNodeBase first, MapNodeBase second) {
             throw new NotImplementedException();
         }

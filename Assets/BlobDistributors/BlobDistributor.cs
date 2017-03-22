@@ -20,7 +20,11 @@ namespace Assets.BlobDistributors {
 
         #region from BlobDistributorBase
 
-        public override float SecondsToPerformDistributionTick { get; set; }
+        public override float SecondsToPerformDistributionTick {
+            get { return _secondsToPerformDistributionTick; }
+            set { _secondsToPerformDistributionTick = value; }
+        }
+        [SerializeField] private float _secondsToPerformDistributionTick = 1f;
 
         #endregion
 

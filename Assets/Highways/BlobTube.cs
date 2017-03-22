@@ -31,13 +31,13 @@ namespace Assets.Highways {
         }
         [SerializeField] private Vector3 targetLocation;
 
-        public override int Capacity { get; set; }
+        [SerializeField] public override int Capacity { get; set; }
 
         public override int SpaceLeft {
             get { return Capacity - BlobQueue.Count; }
         }
 
-        public override float TransportSpeedPerSecond { get; set; }
+        [SerializeField] public override float TransportSpeedPerSecond { get; set; }
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace Assets.Highways {
                 }
             }
         }
-        private BlobTubePrivateDataBase _privateData;
+        [SerializeField] private BlobTubePrivateDataBase _privateData;
 
         private Dictionary<ResourceType, bool> PermissionsForBlobTypes = 
             new Dictionary<ResourceType, bool>();
@@ -130,6 +130,7 @@ namespace Assets.Highways {
         public override void SetEndpoints(Vector3 newSourceLocation, Vector3 newTargetLocation) {
             sourceLocation = newSourceLocation;
             targetLocation = newTargetLocation;
+
             DirectionOfTubeMovement = (TargetLocation - SourceLocation).normalized;
         }
 

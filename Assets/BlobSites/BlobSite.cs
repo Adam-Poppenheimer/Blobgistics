@@ -65,7 +65,7 @@ namespace Assets.BlobSites {
                 }
             }
         }
-        private BlobSitePrivateDataBase _privateData;
+        [SerializeField] private BlobSitePrivateDataBase _privateData;
         
         private Dictionary<ResourceType, bool> PlacementPermissionsByResourceType = 
             new Dictionary<ResourceType, bool>();
@@ -101,6 +101,7 @@ namespace Assets.BlobSites {
                     });
                     if(blobToExtract != null) {
                         contents.Remove(blobToExtract);
+                        blobToExtract.transform.SetParent(null, true);
                         RaiseBlobExtractedFrom(blobToExtract);
                         return blobToExtract;
                     }
@@ -123,6 +124,7 @@ namespace Assets.BlobSites {
                     return blob.BlobType == type;
                 });
                 contents.Remove(blobToExtract);
+                blobToExtract.transform.SetParent(null, true);
                 RaiseBlobExtractedFrom(blobToExtract);
                 return blobToExtract;
             }else {
@@ -152,6 +154,8 @@ namespace Assets.BlobSites {
             }
             if(CanPlaceBlobInto(blob)) {
                 contents.Add(blob);
+                blob.transform.SetParent(transform, false);
+                blob.transform.localPosition = new Vector3(0, 0, ResourceBlob.DesiredZPositionOfAllBlobs);
                 RaiseBlobPlacedInto(blob);
             }else {
                 throw new BlobSiteException("Cannot place this blob into this BlobSite");
@@ -206,9 +210,11 @@ namespace Assets.BlobSites {
             PlacementPermissionsByResourceType.Clear();
             CapacitiesByResourceType.Clear();
             foreach(var resourceType in placementSummary) {
-                PlacementPermissionsByResourceType[resourceType] = true;
-                CapacitiesByResourceType[resourceType] = placementSummary[resourceType];
-                newTotalCapacity += placementSummary[resourceType];
+                if(placementSummary[resourceType] > 0) {
+                    PlacementPermissionsByResourceType[resourceType] = true;
+                    CapacitiesByResourceType[resourceType] = placementSummary[resourceType];
+                    newTotalCapacity += placementSummary[resourceType];
+                }
             }
             TotalCapacity = newTotalCapacity;
         }

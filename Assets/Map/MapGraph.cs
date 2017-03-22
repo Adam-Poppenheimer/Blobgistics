@@ -94,8 +94,15 @@ namespace Assets.Map {
             newNode.SetBlobSite(BlobSiteFactory.ConstructBlobSite(newNode.gameObject));
             newNode.UIControl = UIControl;
 
-            NodeSet.Add(newNode);
+            SubscribeNode(newNode);
             return newNode;
+        }
+
+        public override void SubscribeNode(MapNodeBase node) {
+            if(!NodeSet.Contains(node)) {
+                NodeSet.Add(node);
+                node.name = string.Format("Node [{0}]", node.ID);
+            }
         }
 
         public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
@@ -114,7 +121,7 @@ namespace Assets.Map {
             newEdge.SetFirstNode(first);
             newEdge.SetSecondNode(second);
             newEdge.SetBlobSite(BlobSiteFactory.ConstructBlobSite(hostingObject));
-            newEdge.gameObject.name = "Edge" + newEdge.ID;
+            newEdge.gameObject.name = string.Format("Edge [{0}]", newEdge.ID);
 
             EdgeSet.Add(newEdge);
             NeighborsOfNode.AddElementToList(first, second);
@@ -153,7 +160,7 @@ namespace Assets.Map {
                 throw new ArgumentNullException("node");
             }
             bool existedInGraph = NodeSet.Remove(nodeToRemove);
-            if(existedInGraph) {
+            if(existedInGraph && EdgeSet != null) {
                 var edgesToRemove = new List<MapEdgeBase>(EdgeSet.Where(delegate(MapEdgeBase edge){
                     return edge.FirstNode == nodeToRemove || edge.SecondNode == nodeToRemove;
                 }));

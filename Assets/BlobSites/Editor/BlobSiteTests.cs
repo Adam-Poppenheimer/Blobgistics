@@ -160,7 +160,8 @@ namespace Assets.BlobSites.Editor {
         public void OnSetPermissionAndCapacityCalled_PermissionsAndCapacitiesAreCorrectlyAssigned() {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
-            var placementPermissionSummary = new ResourceSummary(
+            var placementPermissionSummary = ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 2),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 4),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 0)
@@ -176,7 +177,7 @@ namespace Assets.BlobSites.Editor {
             Assert.That(siteToTest.GetPlacementPermissionForResourceType (ResourceType.Green), "Placement of Green is not permitted" );
             Assert.AreEqual(4, siteToTest.GetCapacityForResourceType(ResourceType.Green), "Green has the wrong capacity");
 
-            Assert.That(siteToTest.GetPlacementPermissionForResourceType (ResourceType.Blue), "Placement of Blue is falsely permitted");
+            Assert.IsFalse(siteToTest.GetPlacementPermissionForResourceType (ResourceType.Blue), "Placement of Blue is falsely permitted");
             Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(ResourceType.Blue), "Blue has the wrong capacity");
 
             Assert.AreEqual(6, siteToTest.TotalCapacity, "TotalCapacity is incorrect");
@@ -432,7 +433,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
@@ -740,7 +742,8 @@ namespace Assets.BlobSites.Editor {
             var greenBlob = BuildBlob(ResourceType.Green);
             var blueBlob  = BuildBlob(ResourceType.Blue);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
@@ -770,7 +773,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
@@ -801,7 +805,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 5),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 5),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 5)
@@ -829,7 +834,8 @@ namespace Assets.BlobSites.Editor {
             var greenBlob = BuildBlob(ResourceType.Green);
             var blueBlob  = BuildBlob(ResourceType.Blue);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
@@ -884,7 +890,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
@@ -904,7 +911,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
@@ -933,7 +941,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
@@ -962,7 +971,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
@@ -993,7 +1003,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
@@ -1024,7 +1035,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
@@ -1056,7 +1068,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 10)
@@ -1090,7 +1103,8 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(new ResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)

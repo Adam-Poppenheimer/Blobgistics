@@ -20,6 +20,7 @@ namespace Assets.Map {
         #region instance methods
 
         public abstract MapNodeBase BuildNode(Vector3 localPosition);
+        public abstract void SubscribeNode(MapNodeBase node);
 
         public abstract void AddUndirectedEdge(MapNodeBase first, MapNodeBase second);
         public abstract bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second);

@@ -12,6 +12,7 @@ using Assets.Societies;
 using Assets.Depots;
 using Assets.ConstructionZones;
 using Assets.HighwayUpgraders;
+using Assets.BlobDistributors;
 
 
 namespace Assets.Core {
@@ -143,6 +144,12 @@ namespace Assets.Core {
             set { _upgradedHighwayProfile = value; }
         }
         [SerializeField] private BlobHighwayProfile _upgradedHighwayProfile;
+
+        public BlobDistributorBase BlobDistributor{
+            get { return _blobDistributor; }
+            set { _blobDistributor = value; }
+        }
+        [SerializeField] private BlobDistributorBase _blobDistributor;
 
         #endregion
 
@@ -314,8 +321,9 @@ namespace Assets.Core {
         }
 
         public override void TickSimulation(float secondsPassed) {
-            SocietyFactory.TickSocieties(secondsPassed);
-            HighwayFactory.TickHighways(secondsPassed);
+            if(SocietyFactory  != null) SocietyFactory.TickSocieties(secondsPassed);
+            if(HighwayFactory  != null) HighwayFactory.TickHighways(secondsPassed);
+            if(BlobDistributor != null) BlobDistributor.Tick(secondsPassed);
         }
 
         #endregion

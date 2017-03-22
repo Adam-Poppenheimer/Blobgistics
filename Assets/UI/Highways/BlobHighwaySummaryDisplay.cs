@@ -10,6 +10,8 @@ using Assets.Blobs;
 using Assets.Highways;
 using Assets.Core;
 
+using UnityCustomUtilities.UI;
+
 namespace Assets.UI.Highways {
 
     public class BlobHighwaySummaryDisplay : BlobHighwaySummaryDisplayBase {
@@ -83,6 +85,11 @@ namespace Assets.UI.Highways {
 
             FirstEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue];
             SecondEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Blue];
+
+            var clickingContext = GetComponent<ClickingContextMenu>();
+            if(clickingContext != null) {
+                clickingContext.Show();
+            }
         }
 
         public override void ClearDisplay() {

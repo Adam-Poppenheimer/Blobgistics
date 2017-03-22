@@ -29,7 +29,7 @@ namespace Assets.Map {
         #region Unity event methods
 
         private void OnSceneGUI() {
-            DrawAllEdges(TargetedGraph.Nodes);
+            DrawAllEdges();
 
             var currentEvent = Event.current;
 
@@ -103,7 +103,10 @@ namespace Assets.Map {
             return candidateNode;
         }
 
-        private void DrawAllEdges(IEnumerable<MapNodeBase> allNodes) {
+        private void DrawAllEdges() {
+            if(TargetedGraph == null) {
+                return;
+            }
             foreach(var edge in TargetedGraph.Edges) {
                 Handles.color = Color.white;
                 Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);

@@ -547,6 +547,7 @@ namespace Assets.Core.Editor {
             //Setup
             var societyFactory = BuildMockSocietyFactory();
             var highwayFactory = BuildMockHighwayFactory();
+            var blobDistributor = BuildMockBlobDistributor();
 
             float amountTickedOnSociety = 0f;
             societyFactory.FactoryTicked += delegate(object sender, FloatEventArgs e) {
@@ -558,16 +559,23 @@ namespace Assets.Core.Editor {
                 amountTickedOnHighway = e.Value;
             };
 
+            float amountTickedOnDistributor = 0f;
+            blobDistributor.Ticked += delegate(object sender, FloatEventArgs e) {
+                amountTickedOnDistributor = e.Value;
+            };
+
             var controlToTest = BuildSimulationControl();
             controlToTest.SocietyFactory = societyFactory;
             controlToTest.HighwayFactory = highwayFactory;
+            controlToTest.BlobDistributor = blobDistributor;
 
             //Execution
-            controlToTest.TickSimulation(1f);
+            controlToTest.TickSimulation(5f);
 
             //Validation
-            Assert.AreEqual(1f, amountTickedOnSociety, "Incorrect amount ticked on Society");
-            Assert.AreEqual(1f, amountTickedOnHighway, "Incorrect amount ticked on Society");
+            Assert.AreEqual(5f, amountTickedOnSociety, "Incorrect amount ticked on Society");
+            Assert.AreEqual(5f, amountTickedOnHighway, "Incorrect amount ticked on Highway");
+            Assert.AreEqual(5f, amountTickedOnDistributor, "Incorrect amount ticked on Distributor");
         }
 
         #endregion
@@ -924,7 +932,12 @@ namespace Assets.Core.Editor {
             var hostingObject = new GameObject();
             var newFactory = hostingObject.AddComponent<BlobHighwayFactory>();
             var newBlobTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
-            var newHighwayProfile = new BlobHighwayProfile(1f, 10, new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            var newHighwayProfile = new BlobHighwayProfile(1f, 10,
+                ResourceSummary.BuildResourceSummary(
+                    newFactory.gameObject,
+                    new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                )
+            );
 
             newBlobTubeFactory.BlobFactory = blobFactory;
 
@@ -974,7 +987,8 @@ namespace Assets.Core.Editor {
             newControl.ConstructionZoneFactory = BuildConstructionZoneFactory(newDepotFactory);
             newControl.HighwayUpgraderFactory = BuildHighwayUpgraderFactory();
             newControl.ResourceDepotFactory = newDepotFactory;
-            newControl.UpgradedHighwayProfile = new BlobHighwayProfile(2, 20, new ResourceSummary(
+            newControl.UpgradedHighwayProfile = new BlobHighwayProfile(2, 20, ResourceSummary.BuildResourceSummary(
+                newControl.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 5)
             ));
 
@@ -1014,19 +1028,32 @@ namespace Assets.Core.Editor {
             var complexity2 = hostingObject.AddComponent<ComplexityDefinition>();
 
             complexity1.SetName("Complexity1");
-            complexity1.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 2)));
-            complexity1.SetWants(new List<ResourceSummary>() {
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1))
-            });
-            complexity1.SetCostOfAscent(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            complexity1.SetProduction(ResourceSummary.BuildResourceSummary(
+                complexity1.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 2)
+            ));
 
-            complexity1.SetName("Complexity2");
-            complexity1.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 2)));
             complexity1.SetWants(new List<ResourceSummary>() {
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1))
+                ResourceSummary.BuildResourceSummary(complexity1.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
+                ResourceSummary.BuildResourceSummary(complexity1.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1))
             });
-            complexity1.SetCostOfAscent(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            complexity1.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
+                complexity1.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+            ));
+
+            complexity2.SetName("Complexity2");
+            complexity2.SetProduction(ResourceSummary.BuildResourceSummary(
+                complexity2.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 2)
+            ));
+            complexity2.SetWants(new List<ResourceSummary>() {
+                ResourceSummary.BuildResourceSummary(complexity2.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1))
+            });
+            complexity2.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
+                complexity2.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+            ));
 
             newLadder.ComplexityHierarchy = new List<ComplexityDefinitionBase>() {
                 complexity1, 
@@ -1049,6 +1076,11 @@ namespace Assets.Core.Editor {
         private ResourceBlob BuildResourceBlob(ResourceType type) {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<ResourceBlob>();
+        }
+
+        private MockBlobDistributor BuildMockBlobDistributor() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockBlobDistributor>();
         }
 
         #endregion

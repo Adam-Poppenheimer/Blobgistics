@@ -22,12 +22,17 @@ namespace Assets.ConstructionZones.ForTesting {
         private Action<MapNodeBase> _buildAction = null;
 
         public override ResourceSummary Cost {
-            get { return _cost; }
+            get {
+                if(_cost == null) {
+                    _cost = ResourceSummary.BuildResourceSummary(new UnityEngine.GameObject());
+                }
+                return _cost;
+            }
         }
         public void SetCost(ResourceSummary value) {
             _cost = value;
         }
-        private ResourceSummary _cost = ResourceSummary.Empty;
+        private ResourceSummary _cost = null;
 
         #endregion
 

@@ -27,14 +27,17 @@ namespace Assets.Societies.Editor {
                     _standardComplexity = hostingObject.AddComponent<MockComplexityDefinition>();
                     _standardComplexity.SetComplexityDescentDuration(10f);
                     _standardComplexity.SetName("StandardComplexity");
-                    _standardComplexity.SetNeeds(new ResourceSummary(
+                    _standardComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(
+                        hostingObject.gameObject,
                         new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
                     ));
-                    _standardComplexity.SetProduction(new ResourceSummary(
+                    _standardComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                        hostingObject.gameObject,
                         new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)
                     ));
                     _standardComplexity.SetWants(new List<ResourceSummary>() {
-                        new ResourceSummary(
+                        ResourceSummary.BuildResourceSummary(
+                            hostingObject.gameObject,
                             new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
                         )
                     });
@@ -45,7 +48,8 @@ namespace Assets.Societies.Editor {
                     _standardComplexity.SetSecondsToPerformFullProduction(1f);
                     _standardComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
-                    _standardComplexity.SetCostOfAscent(new ResourceSummary(
+                    _standardComplexity.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
+                        hostingObject.gameObject,
                         new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
                     ));
                 }
@@ -240,10 +244,19 @@ namespace Assets.Societies.Editor {
             //Setup
             var startingComplexity = BuildComplexityDefinition();
 
-            startingComplexity.SetNeeds     (new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red,   10)));
-            startingComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  30)));
+            startingComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(
+                startingComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red,   10)
+            ));
+            startingComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                startingComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue,  30)
+            ));
             startingComplexity.SetWants(new List<ResourceSummary>() {
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 20))
+                ResourceSummary.BuildResourceSummary(
+                    startingComplexity.gameObject,
+                    new KeyValuePair<ResourceType, int>(ResourceType.Green, 20)
+                )
             });
 
             startingComplexity.SetNeedsCapacityCoefficient(4);
@@ -271,7 +284,10 @@ namespace Assets.Societies.Editor {
             var currentComplexity = BuildComplexityDefinition();
             var ascentComplexity = BuildComplexityDefinition();
 
-            ascentComplexity.SetCostOfAscent(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            ascentComplexity.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
+                ascentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+            ));
 
             var currentLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
             var privateData = BuildPrivateData(currentLadder, StandardBlobFactory, BuildMapNode());
@@ -300,7 +316,10 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetProductionCapacityCoefficient(1);
-            complexityToUse.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            complexityToUse.SetProduction(ResourceSummary.BuildResourceSummary(
+                complexityToUse.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+            ));
             complexityToUse.SetSecondsToPerformFullProduction(1f);
 
             var societyToTest = BuildSociety(complexityToUse);
@@ -322,7 +341,8 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(new ResourceSummary(
+            complexityToUse.SetNeeds(ResourceSummary.BuildResourceSummary(
+                complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 2),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  3)
@@ -360,7 +380,8 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(new ResourceSummary(
+            complexityToUse.SetNeeds(ResourceSummary.BuildResourceSummary(
+                complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 2),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  3)
@@ -387,7 +408,8 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(new ResourceSummary(
+            complexityToUse.SetNeeds(ResourceSummary.BuildResourceSummary(
+                complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
             ));
             complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
@@ -407,7 +429,8 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(new ResourceSummary(
+            complexityToUse.SetNeeds(ResourceSummary.BuildResourceSummary(
+                complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
             ));
             complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
@@ -428,7 +451,8 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(new ResourceSummary(
+            complexityToUse.SetNeeds(ResourceSummary.BuildResourceSummary(
+                complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
             ));
             complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
@@ -454,7 +478,8 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(new ResourceSummary(
+            complexityToUse.SetNeeds(ResourceSummary.BuildResourceSummary(
+                complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
             ));
             complexityToUse.SetSecondsToFullyConsumeNeeds(1f);
@@ -478,10 +503,11 @@ namespace Assets.Societies.Editor {
             var currentComplexity = BuildComplexityDefinition();
             var ascentComplexity = BuildComplexityDefinition();
 
-            currentComplexity.SetNeeds(ResourceSummary.Empty);
+            currentComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(currentComplexity.gameObject));
             currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
-            ascentComplexity.SetCostOfAscent(new ResourceSummary(
+            ascentComplexity.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
+                ascentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
             ));
 
@@ -503,9 +529,9 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetWants(new List<ResourceSummary>() {
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red,   1)),
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)),
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Red,   1)),
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)),
             });
             currentComplexity.SetWantsCapacityCoefficient(5);
             currentComplexity.SetSecondsToPerformFullProduction(1f);
@@ -523,9 +549,16 @@ namespace Assets.Societies.Editor {
             bool hasBlue  = societyToTest.Location.BlobSite.GetContentsOfType(ResourceType.Blue ).Count() > 0;
 
             //Validation
-            Assert.That(
-                (!hasRed && hasGreen && hasBlue) || (hasRed && !hasGreen && hasBlue) || (hasRed && hasGreen && !hasBlue)
-            );
+            if(!hasRed && hasGreen && hasBlue) {
+                Assert.Pass("BlobSite lacks red, but still has green and blue");
+            }else if((hasRed && !hasGreen && hasBlue)) {
+                Assert.Pass("BlobSite lacks green, but still had red and blue");
+            }else if((hasRed && hasGreen && !hasBlue)) {
+                Assert.Pass("BlobSite lacks blue, but still had red and green");
+            }else {
+                Assert.Fail("BlobSite recorded hasRed = {0}, hasGreen = {1}, and hasBlue = {2}, " +
+                    "which is not a valid configuration", hasRed, hasGreen, hasBlue);
+            }
         }
 
         [Test]
@@ -533,9 +566,12 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetWants(new List<ResourceSummary>() {
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)),
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)),
             });
-            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)));
+            currentComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)
+            ));
 
             currentComplexity.SetWantsCapacityCoefficient(5);
             currentComplexity.SetProductionCapacityCoefficient(5);
@@ -555,12 +591,15 @@ namespace Assets.Societies.Editor {
         public void OnProductionPerformed_AndContainsOnlyEmptyWantSummaries_ProductionIsNotIncreased() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)));
+            currentComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
+            ));
 
             currentComplexity.SetWants(new List<ResourceSummary>() {
-                ResourceSummary.Empty,
-                ResourceSummary.Empty,
-                ResourceSummary.Empty
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject),
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject),
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject)
             });
             
             currentComplexity.SetProductionCapacityCoefficient(5);
@@ -579,12 +618,18 @@ namespace Assets.Societies.Editor {
         public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_AndOthersAreNot_WantsAreStillConsideredSatisfied() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetNeeds(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)));
+            currentComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
+            ));
             currentComplexity.SetWants(new List<ResourceSummary>() {
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red,   1)),
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Red,   1)),
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
             });
-            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)));
+            currentComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
+            ));
             currentComplexity.SetWantsCapacityCoefficient(5);
             currentComplexity.SetProductionCapacityCoefficient(5);
             currentComplexity.SetNeedsCapacityCoefficient(5);
@@ -605,9 +650,15 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetComplexityDescentDuration(1f);
-            currentComplexity.SetNeeds(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)));
+            currentComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
+            ));
             currentComplexity.SetName("Current");
-            currentComplexity.SetCostOfAscent(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue)));
+            currentComplexity.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue)
+            ));
 
             var descentComplexity = BuildComplexityDefinition();
             descentComplexity.SetName("Descent");
@@ -630,8 +681,9 @@ namespace Assets.Societies.Editor {
             var currentComplexity = BuildComplexityDefinition();
             var ascentComplexity = BuildComplexityDefinition();
 
-            currentComplexity.SetNeeds(ResourceSummary.Empty);
-            currentComplexity.SetProduction(new ResourceSummary(
+            currentComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(currentComplexity.gameObject));
+            currentComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
@@ -658,8 +710,12 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetComplexityDescentDuration(1f);
-            currentComplexity.SetNeeds(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)));
-            currentComplexity.SetProduction(new ResourceSummary(
+            currentComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
+            ));
+            currentComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Green, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue,  1)
@@ -685,11 +741,17 @@ namespace Assets.Societies.Editor {
         public void WhenNeededOrWantedBlobsPlacedInto_ThoseBlobsCannotBeExtracted_ButOthersStillCanBe() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetNeeds(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)));
+            currentComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 1)
+            ));
             currentComplexity.SetWants(new List<ResourceSummary>() { 
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 1))
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Green, 1))
             });
-            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)));
+            currentComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
+            ));
             currentComplexity.SetNeedsCapacityCoefficient(5);
             currentComplexity.SetWantsCapacityCoefficient(5);
 
@@ -711,9 +773,12 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetWants(new List<ResourceSummary>() { 
-                new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Green, 2))
+                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Green, 2))
             });
-            currentComplexity.SetProduction(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)));
+            currentComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1)
+            ));
             currentComplexity.SetNeedsCapacityCoefficient(5);
             currentComplexity.SetWantsCapacityCoefficient(5);
 

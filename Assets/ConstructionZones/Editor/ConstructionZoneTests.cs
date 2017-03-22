@@ -34,11 +34,13 @@ namespace Assets.ConstructionZones.Editor {
             //Validation
             var projectCost = factoryToUse.ResourceDepotProject.Cost;
             foreach(var resourceType in projectCost) {
-                Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(resourceType),
-                    "BlobSite does not have placement permission for resourceType " + resourceType);
+                if(projectCost[resourceType] > 0) {
+                    Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(resourceType),
+                        "BlobSite does not have placement permission for resourceType " + resourceType);
 
-                Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(resourceType),
-                    "BlobSite falsely has extraction permission for resourceType " + resourceType);
+                    Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(resourceType),
+                        "BlobSite falsely has extraction permission for resourceType " + resourceType);
+                }
 
                 Assert.AreEqual(projectCost[resourceType], mapNode.BlobSite.GetCapacityForResourceType(resourceType),
                     "BlobSite has the incorrect capacity for resourceType "+ resourceType);
@@ -195,7 +197,8 @@ namespace Assets.ConstructionZones.Editor {
             var zoneToTest = factoryToUse.BuildConstructionZone(mapNode, factoryToUse.ResourceDepotProject);
 
             var alternateProject = new MockConstructionProject();
-            alternateProject.SetCost(new ResourceSummary(
+            alternateProject.SetCost(ResourceSummary.BuildResourceSummary(
+                factoryToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Red, 40),
                 new KeyValuePair<ResourceType, int>(ResourceType.Blue, 80)
             ));
@@ -258,8 +261,12 @@ namespace Assets.ConstructionZones.Editor {
             //Setup
             var newLocation = BuildMapNode();
             var factoryToUse = BuildConstructionZoneFactory();
+
             var projectToComplete = new MockConstructionProject();
-            projectToComplete.SetCost(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
+                factoryToUse.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+            ));
 
             MapNodeBase locationPlacedIntoBuildAction = null;
             projectToComplete.SetBuildAction(delegate(MapNodeBase location) {
@@ -289,7 +296,10 @@ namespace Assets.ConstructionZones.Editor {
 
             var factoryToUse = BuildConstructionZoneFactory();
             var projectToComplete = new MockConstructionProject();
-            projectToComplete.SetCost(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
+                factoryToUse.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+            ));
 
             factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
 
@@ -309,7 +319,10 @@ namespace Assets.ConstructionZones.Editor {
 
             var factoryToUse = BuildConstructionZoneFactory();
             var projectToComplete = new MockConstructionProject();
-            projectToComplete.SetCost(new ResourceSummary(new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)));
+            projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
+                factoryToUse.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+            ));
 
             factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
 

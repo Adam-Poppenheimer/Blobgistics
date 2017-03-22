@@ -50,7 +50,7 @@ namespace Assets.HighwayUpgraders {
                 } else {
                     _privateData = value;
                     _privateData.UnderlyingSite.BlobPlacedInto += UnderlyingSite_BlobPlacedInto;
-                    UpdateUnderlyingSite();
+                    RefreshUnderlyingSite();
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace Assets.HighwayUpgraders {
             foreach(var resourceType in ProfileToInsert.Cost) {
                 countDict[resourceType] = ProfileToInsert.Cost[resourceType] - UnderlyingSite.GetCountOfContentsOfType(resourceType);
             }
-            return new ResourceSummary(countDict);
+            return ResourceSummary.BuildResourceSummary(gameObject, countDict);
         }
 
         #endregion
@@ -111,7 +111,7 @@ namespace Assets.HighwayUpgraders {
             }
         }
 
-        private void UpdateUnderlyingSite() {
+        private void RefreshUnderlyingSite() {
             UnderlyingSite.ClearContents();
             UnderlyingSite.ClearPermissionsAndCapacity();
             UnderlyingSite.SetPlacementPermissionsAndCapacity(ProfileToInsert.Cost);

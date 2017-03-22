@@ -41,6 +41,8 @@ namespace Assets.BlobSites {
             SouthConnectionPoint = siteToSummarize.SouthConnectionPoint;
             EastConnectionPoint = siteToSummarize.EastConnectionPoint;
             WestConnectionPoint = siteToSummarize.WestConnectionPoint;
+
+            Transform = siteToSummarize.transform;
         }
 
         #endregion

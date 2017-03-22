@@ -18,6 +18,13 @@ namespace Assets.Highways {
     public class BlobHighway : BlobHighwayBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler {
 
+        #region static fields and properties
+
+        private static float HighwayCollisionWidth = 0.6f;
+        private static float TubeCenterOffset = 0.2f;
+
+        #endregion
+
         #region instance fields and properties
 
         #region from BlobHighwayBase
@@ -209,11 +216,19 @@ namespace Assets.Highways {
         }
 
         private void UpdateTubeEndpoints() {
+            PrivateData.TubePullingFromFirstEndpoint.transform.SetParent(transform, false);
+            PrivateData.TubePullingFromSecondEndpoint.transform.SetParent(transform, false);
+
             var directionFromFirstToSecond = FirstEndpoint.transform.GetDominantManhattanDirectionTo(SecondEndpoint.transform);
             var directionFromSecondToFirst = SecondEndpoint.transform.GetDominantManhattanDirectionTo(FirstEndpoint.transform);
 
+            PrivateData.TubePullingFromFirstEndpoint.transform.Translate(Vector3.up * TubeCenterOffset);
+            PrivateData.TubePullingFromSecondEndpoint.transform.Translate(Vector3.down * TubeCenterOffset);
+
             var firstConnectionPoint = FirstEndpoint.BlobSite.GetConnectionPointInDirection(directionFromFirstToSecond);
             var secondConnectionPoint = SecondEndpoint.BlobSite.GetConnectionPointInDirection(directionFromSecondToFirst);
+
+            HighwayOrientationUtil.AlignTransformWithEndpoints(transform, firstConnectionPoint, secondConnectionPoint, true);
 
             PrivateData.TubePullingFromFirstEndpoint.SetEndpoints(firstConnectionPoint, secondConnectionPoint);
             PrivateData.TubePullingFromSecondEndpoint.SetEndpoints(secondConnectionPoint, firstConnectionPoint);

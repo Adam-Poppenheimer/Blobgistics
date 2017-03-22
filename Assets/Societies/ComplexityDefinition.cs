@@ -24,20 +24,30 @@ namespace Assets.Societies {
         [SerializeField] private string _name = "Default Complexity";
 
         public override ResourceSummary Production {
-            get { return _production; }
+            get {
+                if(_production == null) {
+                    _production = ResourceSummary.BuildResourceSummary(gameObject);
+                }
+                return _production;
+            }
         }
         public void SetProduction(ResourceSummary value) {
             _production = value;
         }
-        [SerializeField] private ResourceSummary _production = ResourceSummary.Empty;
+        [SerializeField] private ResourceSummary _production;
 
         public override ResourceSummary Needs {
-            get { return _needs; }
+            get {
+                if(_needs == null) {
+                    _needs = ResourceSummary.BuildResourceSummary(gameObject);
+                }
+                return _needs;
+            }
         }
         public void SetNeeds(ResourceSummary value) {
             _needs = value;
         }
-        [SerializeField] private ResourceSummary _needs = ResourceSummary.Empty;
+        [SerializeField] private ResourceSummary _needs;
 
         public override IEnumerable<ResourceSummary> Wants {
             get { return _wants; }
@@ -48,12 +58,17 @@ namespace Assets.Societies {
         [SerializeField] private List<ResourceSummary> _wants= new List<ResourceSummary>();
 
         public override ResourceSummary CostOfAscent {
-            get { return _costOfAscent; }
+            get {
+                if(_costOfAscent == null) {
+                    _costOfAscent = ResourceSummary.BuildResourceSummary(gameObject);
+                }
+                return _costOfAscent;
+            }
         }
         public void SetCostOfAscent(ResourceSummary value) {
             _costOfAscent = value;
         }
-        [SerializeField] private ResourceSummary _costOfAscent = ResourceSummary.Empty;
+        [SerializeField] private ResourceSummary _costOfAscent;
 
         public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }

@@ -94,14 +94,15 @@ namespace Assets.UI.Highways {
                 var directionToEndpoint2 = FirstEndpoint.BlobSite.Transform.position.GetDominantManhattanDirectionTo(lastEventData.position);
                 
                 endpoint1 = FirstEndpoint.BlobSite.GetConnectionPointInDirection(directionToEndpoint2);
-                endpoint2 = lastEventData.position;
+                endpoint2 = Camera.main.ScreenToWorldPoint(lastEventData.position);
             }
 
-            transform.position = (endpoint1 + endpoint2) / 2;
+            transform.position = (endpoint1 + endpoint2) / 2f;
             transform.localScale = new Vector3(Vector3.Distance(endpoint1, endpoint2), 1f, 1f);
+            transform.rotation = Quaternion.identity;
 
             var zRotation = Mathf.Atan( (endpoint2.y - endpoint1.y) / (endpoint2.x - endpoint1.x) );
-            transform.Rotate(new Vector3(0f, 0f, zRotation));
+            transform.Rotate(new Vector3(0f, 0f, zRotation * Mathf.Rad2Deg));
         }
 
         #endregion
