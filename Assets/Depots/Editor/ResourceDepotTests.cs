@@ -26,7 +26,7 @@ namespace Assets.Depots.Editor {
             var location = BuildMapNode();
 
             //Execution
-            var depotToTest = factoryToUse.ConstructDepot(location);
+            var depotToTest = factoryToUse.ConstructDepotAt(location);
 
             //Validation
             Assert.AreEqual(location, depotToTest.Location);
@@ -39,7 +39,7 @@ namespace Assets.Depots.Editor {
             var location = BuildMapNode();
 
             //Execution
-            var depotToTest = factoryToUse.ConstructDepot(location);
+            var depotToTest = factoryToUse.ConstructDepotAt(location);
 
             //Validation
             var blobSite = depotToTest.Location.BlobSite;
@@ -70,7 +70,7 @@ namespace Assets.Depots.Editor {
             };
 
             //Execution
-            factoryToUse.ConstructDepot(location);
+            factoryToUse.ConstructDepotAt(location);
 
             //Validation
             Assert.That(clearedOfAllBlobs);
@@ -83,7 +83,7 @@ namespace Assets.Depots.Editor {
             var location = BuildMapNode();
 
             //Execution
-            var depotToTest = factoryToUse.ConstructDepot(location);
+            var depotToTest = factoryToUse.ConstructDepotAt(location);
 
             //Validation
             Assert.AreEqual(ResourceDepotProfile.Empty, depotToTest.Profile);
@@ -94,7 +94,7 @@ namespace Assets.Depots.Editor {
             //Setup
             var factoryToUse = BuildFactory();
             var location = BuildMapNode();
-            var depotToTest = factoryToUse.ConstructDepot(location);
+            var depotToTest = factoryToUse.ConstructDepotAt(location);
 
             var newProfile = new ResourceDepotProfile(20);
 
@@ -119,7 +119,7 @@ namespace Assets.Depots.Editor {
             //Setup
             var factoryToUse = BuildFactory();
             var location = BuildMapNode();
-            var depotToTest = factoryToUse.ConstructDepot(location);
+            var depotToTest = factoryToUse.ConstructDepotAt(location);
 
             bool clearedOfAllBlobs = false;
             location.BlobSite.AllBlobsCleared += delegate(object sender, EventArgs e) {

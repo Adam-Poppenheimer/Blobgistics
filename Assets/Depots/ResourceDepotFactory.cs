@@ -10,6 +10,7 @@ using Assets.Core;
 
 namespace Assets.Depots {
 
+    [ExecuteInEditMode]
     public class ResourceDepotFactory : ResourceDepotFactoryBase {
 
         #region instance fields and properties
@@ -21,6 +22,7 @@ namespace Assets.Depots {
         [SerializeField] private UIControlBase _uiControl;
 
         [SerializeField] private GameObject ResourceDepotPrefab;
+        [SerializeField] private ResourceDepotProfile StartingProfile;
 
         [SerializeField, HideInInspector] private List<ResourceDepotBase> InstantiatedDepots = new List<ResourceDepotBase>();
 
@@ -38,7 +40,7 @@ namespace Assets.Depots {
             return InstantiatedDepots.Exists(depot => depot.Location == location);
         }
 
-        public override ResourceDepotBase ConstructDepot(MapNodeBase location) {
+        public override ResourceDepotBase ConstructDepotAt(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }else if(HasDepotAtLocation(location)) {
@@ -58,15 +60,24 @@ namespace Assets.Depots {
 
             location.BlobSite.ClearContents();
             newDepot.SetLocation(location);
-            newDepot.Profile = ResourceDepotProfile.Empty;
+            newDepot.Profile = StartingProfile;
             newDepot.UIControl = UIControl;
+            newDepot.ParentFactory = this;
+
+            newDepot.transform.position = Vector3.zero;
+            newDepot.transform.SetParent(location.transform, false);
 
             InstantiatedDepots.Add(newDepot);
             return newDepot;
         }
 
         public override void DestroyDepot(ResourceDepotBase depot) {
+            UnsubscribeDepot(depot);
             DestroyImmediate(depot.gameObject);
+        }
+
+        public override void UnsubscribeDepot(ResourceDepotBase depot) {
+            InstantiatedDepots.Remove(depot);
         }
 
         #endregion

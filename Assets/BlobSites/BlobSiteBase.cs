@@ -56,7 +56,7 @@ namespace Assets.BlobSites {
         #region from Object
 
         public override string ToString() {
-            return "BlobSiteBase " + GetInstanceID();
+            return "BlobSiteBase on node " + name;
         }
 
         #endregion

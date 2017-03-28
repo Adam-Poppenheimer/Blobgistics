@@ -111,7 +111,11 @@ namespace Assets.BlobDistributors {
 
                 //Address candidates with the same priority in round-robin fashion
                 int indexOfLast = candidatesEqualToLast.IndexOf(lastHighwayServed);
-                for(int i = (indexOfLast + 1) % candidatesEqualToLast.Count; i != indexOfLast; ++i) {
+                for(
+                    int i = (indexOfLast + 1) % candidatesEqualToLast.Count;
+                    i != indexOfLast;
+                    i = ++i % candidatesEqualToLast.Count
+                ){
                     var candidateHighway = candidatesEqualToLast[i];
                     if(AttemptPull(candidateHighway, site)) {
                         LastServedHighwayOnBlobSite[site] = candidateHighway;

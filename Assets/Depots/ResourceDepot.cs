@@ -14,6 +14,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Depots {
 
+    [ExecuteInEditMode]
     public class ResourceDepot : ResourceDepotBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler {
 
@@ -31,28 +32,16 @@ namespace Assets.Depots {
         public void SetLocation(MapNodeBase value) {
             _location = value;
         }
-        [SerializeField, HideInInspector] private MapNodeBase _location;
+        [SerializeField] private MapNodeBase _location;
 
         public override ResourceDepotProfile Profile {
             get { return _profile; }
             set {
                 _profile = value;
-                var blobSite = Location.BlobSite;
-                int intendedTotalCapacity = 0;
-
-                blobSite.ClearPermissionsAndCapacity();
-
-                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                    blobSite.SetPlacementPermissionForResourceType(resourceType, true);
-                    blobSite.SetExtractionPermissionForResourceType(resourceType, true);
-                    blobSite.SetCapacityForResourceType(resourceType, _profile.PerResourceCapacity);
-                    intendedTotalCapacity += _profile.PerResourceCapacity;
-                }
-
-                blobSite.TotalCapacity = intendedTotalCapacity;
+                RefreshBlobSite();
             }
         }
-        [SerializeField, HideInInspector] private ResourceDepotProfile _profile;
+        [SerializeField] private ResourceDepotProfile _profile;
 
         #endregion
 
@@ -62,9 +51,29 @@ namespace Assets.Depots {
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        public ResourceDepotFactoryBase ParentFactory {
+            get { return _parentFactory; }
+            set { _parentFactory = value; }
+        }
+        [SerializeField] private ResourceDepotFactoryBase _parentFactory;
+
         #endregion
 
         #region instance methods
+
+        #region Unity event methods
+
+        private void Start() {
+            RefreshBlobSite();
+        }
+
+        private void OnDestroy() {
+            if(ParentFactory != null) {
+                ParentFactory.UnsubscribeDepot(this);
+            }
+        }
+
+        #endregion
 
         #region EventSystem interface implementations
 
@@ -101,6 +110,24 @@ namespace Assets.Depots {
         }
 
         #endregion
+
+        private void RefreshBlobSite() {
+            if(Location != null) {
+                var blobSite = Location.BlobSite;
+                int intendedTotalCapacity = 0;
+
+                blobSite.ClearPermissionsAndCapacity();
+
+                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                    blobSite.SetPlacementPermissionForResourceType(resourceType, true);
+                    blobSite.SetExtractionPermissionForResourceType(resourceType, true);
+                    blobSite.SetCapacityForResourceType(resourceType, _profile.PerResourceCapacity);
+                    intendedTotalCapacity += _profile.PerResourceCapacity;
+                }
+
+                blobSite.TotalCapacity = intendedTotalCapacity;
+            }
+        }
 
         #endregion
 

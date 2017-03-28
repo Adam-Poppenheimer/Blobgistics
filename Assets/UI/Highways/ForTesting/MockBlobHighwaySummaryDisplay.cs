@@ -28,6 +28,14 @@ namespace Assets.UI.Highways.ForTesting {
 
         #region from BlobHighwaySummaryDisplayBase
 
+        public override void Activate() {
+            throw new NotImplementedException();
+        }
+
+        public override void Deactivate() {
+            throw new NotImplementedException();
+        }
+
         public override void ClearDisplay() {
             WasCleared = true;
         }

@@ -57,6 +57,9 @@ namespace Assets.UI.Highways {
 
         #region instance methods
 
+        public abstract void Activate();
+        public abstract void Deactivate();
+
         public abstract void UpdateDisplay();
         public abstract void ClearDisplay();
 

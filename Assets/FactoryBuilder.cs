@@ -11,6 +11,7 @@ using UnityCustomUtilities.Misc;
 using Assets.Societies;
 using Assets.Editing;
 using Assets.Map;
+using Assets.Depots;
 
 namespace Assets {
 
@@ -21,6 +22,7 @@ namespace Assets {
 
         [SerializeField] private MapGraphBase MapGraph;
         [SerializeField] private SocietyFactoryBase SocietyFactory;
+        [SerializeField] private ResourceDepotFactoryBase ResourceDepotFactory;
 
         #endregion
 
@@ -39,6 +41,7 @@ namespace Assets {
         private void PushData() {
             EditorPrefabBuilder.MapGraph = MapGraph;
             EditorPrefabBuilder.SocietyFactory = SocietyFactory;
+            EditorPrefabBuilder.ResourceDepotFactory = ResourceDepotFactory;
         }
 
         #endregion

@@ -6,6 +6,7 @@ using Assets.Blobs;
 
 namespace Assets.Depots {
 
+    [Serializable]
     public struct ResourceDepotProfile {
 
         #region static fields and properties

@@ -36,6 +36,7 @@ namespace Assets.Highways {
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         [SerializeField] private GameObject TubePrefab;
+        [SerializeField] private BlobTubePrivateDataBase TubePrivateData;
 
         #endregion
 
@@ -45,24 +46,19 @@ namespace Assets.Highways {
 
         public override BlobTubeBase ConstructTube(Vector3 sourceLocation, Vector3 targetLocation) {
             BlobTube newTube = null;
-            BlobTubePrivateData newPrivateData = null;
 
             if(TubePrefab != null) {
                 var prefabClone = Instantiate<GameObject>(TubePrefab);
                 newTube = prefabClone.GetComponent<BlobTube>();
-                newPrivateData = prefabClone.AddComponent<BlobTubePrivateData>();
                 if(newTube == null) {
                     throw new BlobTubeException("The TubePrefab lacks a BlobTube component");
                 }
             }else {
                 var hostingObject = new GameObject();
                 newTube = hostingObject.AddComponent<BlobTube>();
-                newPrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
             }
-            
-            newPrivateData.SetBlobFactory(BlobFactory);
 
-            newTube.PrivateData = newPrivateData;
+            newTube.PrivateData = TubePrivateData;
             newTube.SetEndpoints(sourceLocation, targetLocation);
             return newTube;
         }

@@ -13,6 +13,12 @@ namespace Assets.Highways.ForTesting {
 
         #region from BlobTubePrivateDataBase
 
+        public override float MeshNonLengthDimensions {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         public override ResourceBlobFactoryBase BlobFactory {
             get { return _blobFactory; }
         }

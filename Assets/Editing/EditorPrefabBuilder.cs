@@ -9,6 +9,7 @@ using UnityEngine;
 using Assets.Highways;
 using Assets.Map;
 using Assets.Societies;
+using Assets.Depots;
 
 namespace Assets.Editing {
 
@@ -16,24 +17,6 @@ namespace Assets.Editing {
     public static class EditorPrefabBuilder {
 
         #region static fields and properties
-
-        public static BlobTubeFactoryBase TubeFactory {
-            get {
-                if(_tubeFactory == null) {
-                    throw new InvalidOperationException("TubeFactory is uninitialized");
-                } else {
-                    return _tubeFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _tubeFactory = value;
-                }
-            }
-        }
-        private static BlobTubeFactoryBase _tubeFactory;
 
         public static MapGraphBase MapGraph {
             get {
@@ -71,6 +54,24 @@ namespace Assets.Editing {
         }
         private static SocietyFactoryBase _societyFactory;
 
+        public static ResourceDepotFactoryBase ResourceDepotFactory {
+            get {
+                if(_resourceDepotFactory == null) {
+                    throw new InvalidOperationException("ResourceDepotFactory is uninitialized");
+                } else {
+                    return _resourceDepotFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _resourceDepotFactory = value;
+                }
+            }
+        }
+        private static ResourceDepotFactoryBase _resourceDepotFactory;
+
         #endregion
 
         #region static methods
@@ -91,6 +92,22 @@ namespace Assets.Editing {
             if(Selection.activeTransform != null) {
                 var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
                 return locationToBuild != null && SocietyFactory.CanConstructSocietyAt(locationToBuild);
+            }else {
+                return false;
+            }
+        }
+
+        [MenuItem("Strategy Blobs/Construct Resource Depot At Location")]
+        private static void ConstructResourceDepotAtLocation() {
+            var locationToConstruct = Selection.activeTransform.GetComponent<MapNodeBase>();
+            ResourceDepotFactory.ConstructDepotAt(locationToConstruct);
+        }
+
+        [MenuItem("Strategy Blobs/Construct Resource Depot At Location", true)]
+        private static bool ValidateConstructResourceDepotAtLocation() {
+            if(Selection.activeTransform != null) {
+                var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
+                return locationToBuild != null && !ResourceDepotFactory.HasDepotAtLocation(locationToBuild);
             }else {
                 return false;
             }

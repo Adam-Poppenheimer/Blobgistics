@@ -16,8 +16,10 @@ namespace Assets.Depots {
         public abstract bool HasDepotAtLocation(MapNodeBase location);
         public abstract ResourceDepotBase GetDepotAtLocation(MapNodeBase location);
 
-        public abstract ResourceDepotBase ConstructDepot(MapNodeBase location);
+        public abstract ResourceDepotBase ConstructDepotAt(MapNodeBase location);
+
         public abstract void DestroyDepot(ResourceDepotBase depot);
+        public abstract void UnsubscribeDepot(ResourceDepotBase depot);
 
         #endregion
 

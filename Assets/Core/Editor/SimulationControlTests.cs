@@ -326,7 +326,7 @@ namespace Assets.Core.Editor {
             var societyNode      = mapGraph.BuildNode(Vector3.left);
             var constructionNode = mapGraph.BuildNode(Vector3.up);
 
-            depotFactory.ConstructDepot(depotNode);
+            depotFactory.ConstructDepotAt(depotNode);
             societyFactory.ConstructSocietyAt(societyNode, societyFactory.StandardComplexityLadder);
             constructionZoneFactory.BuildConstructionZone(constructionNode, constructionZoneFactory.ResourceDepotProject);
 

@@ -21,6 +21,9 @@ namespace Assets.Core {
         public abstract void PushPointerEnterEvent<T>(T source, PointerEventData eventData) where T : class;
         public abstract void PushPointerExitEvent<T>(T source, PointerEventData eventData) where T : class;
 
+        public abstract void PushSelectEvent<T>(T source, BaseEventData eventData) where T : class;
+        public abstract void PushDeselectEvent<T>(T source, BaseEventData eventData) where T : class;
+
         #endregion
 
     }

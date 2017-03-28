@@ -156,6 +156,7 @@ namespace Assets.BlobSites {
                 contents.Add(blob);
                 blob.transform.SetParent(transform, false);
                 blob.transform.localPosition = new Vector3(0, 0, ResourceBlob.DesiredZPositionOfAllBlobs);
+                blob.transform.rotation = Quaternion.identity;
                 RaiseBlobPlacedInto(blob);
             }else {
                 throw new BlobSiteException("Cannot place this blob into this BlobSite");

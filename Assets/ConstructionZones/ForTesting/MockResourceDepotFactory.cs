@@ -20,7 +20,7 @@ namespace Assets.ConstructionZones.ForTesting {
 
         #region from ResourceDepotFactoryBase
 
-        public override ResourceDepotBase ConstructDepot(MapNodeBase map) {
+        public override ResourceDepotBase ConstructDepotAt(MapNodeBase map) {
             if(ConstructDepotCalled != null) {
                 ConstructDepotCalled(this, new MapNodeEventArgs(map));
             }
@@ -28,6 +28,10 @@ namespace Assets.ConstructionZones.ForTesting {
         }
 
         public override void DestroyDepot(ResourceDepotBase depot) {
+            throw new NotImplementedException();
+        }
+
+        public override void UnsubscribeDepot(ResourceDepotBase depot) {
             throw new NotImplementedException();
         }
 

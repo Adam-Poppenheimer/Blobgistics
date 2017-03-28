@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ using System.Collections.ObjectModel;
 namespace Assets.Highways {
 
     public class BlobHighway : BlobHighwayBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
-        IPointerEnterHandler, IPointerExitHandler {
+        IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler {
 
         #region static fields and properties
 
@@ -105,6 +106,7 @@ namespace Assets.Highways {
 
         public void OnPointerClick(PointerEventData eventData) {
             PrivateData.UIControl.PushPointerClickEvent(new BlobHighwayUISummary(this), eventData);
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnPointerEnter(PointerEventData eventData) {
@@ -113,6 +115,14 @@ namespace Assets.Highways {
 
         public void OnPointerExit(PointerEventData eventData) {
             PrivateData.UIControl.PushPointerExitEvent(new BlobHighwayUISummary(this), eventData);
+        }
+
+        public void OnSelect(BaseEventData eventData) {
+            PrivateData.UIControl.PushSelectEvent(new BlobHighwayUISummary(this), eventData);
+        }
+
+        public void OnDeselect(BaseEventData eventData) {
+            PrivateData.UIControl.PushDeselectEvent(new BlobHighwayUISummary(this), eventData);
         }
 
         #endregion
@@ -135,7 +145,9 @@ namespace Assets.Highways {
                 foreach(var resourceType in GetCommonResourceTypes(FirstEndpoint.BlobSite, SecondEndpoint.BlobSite)) {
                     if(GetPullingPermissionForFirstEndpoint(resourceType)) {
                         var pulledBlob = FirstEndpoint.BlobSite.ExtractBlobOfType(resourceType);
+                        pulledBlob.transform.SetParent(transform, true);
                         PrivateData.TubePullingFromFirstEndpoint.PushBlobInto(pulledBlob);
+                        StartCoroutine(PerformFirstEndpointExtractionCoroutine(pulledBlob));
                         return;
                     }
                 }
@@ -160,7 +172,9 @@ namespace Assets.Highways {
                 foreach(var resourceType in GetCommonResourceTypes(SecondEndpoint.BlobSite, FirstEndpoint.BlobSite)) {
                     if(GetPullingPermissionForSecondEndpoint(resourceType)) {
                         var pulledBlob = SecondEndpoint.BlobSite.ExtractBlobOfType(resourceType);
+                        pulledBlob.transform.SetParent(transform, true);
                         PrivateData.TubePullingFromSecondEndpoint.PushBlobInto(pulledBlob);
+                        StartCoroutine(PerformSecondEndpointExtractionCoroutine(pulledBlob));
                         return;
                     }
                 }
@@ -228,10 +242,39 @@ namespace Assets.Highways {
             var firstConnectionPoint = FirstEndpoint.BlobSite.GetConnectionPointInDirection(directionFromFirstToSecond);
             var secondConnectionPoint = SecondEndpoint.BlobSite.GetConnectionPointInDirection(directionFromSecondToFirst);
 
-            HighwayOrientationUtil.AlignTransformWithEndpoints(transform, firstConnectionPoint, secondConnectionPoint, true);
+            HighwayOrientationUtil.AlignTransformWithEndpoints(transform, firstConnectionPoint, secondConnectionPoint, false);
+
+            var boxCollider = GetComponent<BoxCollider2D>();
+            if(boxCollider != null) {
+                boxCollider.size = new Vector2(Vector3.Distance(firstConnectionPoint, secondConnectionPoint), boxCollider.size.y);
+            }
 
             PrivateData.TubePullingFromFirstEndpoint.SetEndpoints(firstConnectionPoint, secondConnectionPoint);
             PrivateData.TubePullingFromSecondEndpoint.SetEndpoints(secondConnectionPoint, firstConnectionPoint);
+        }
+
+        private IEnumerator PerformFirstEndpointExtractionCoroutine(ResourceBlob blob) {
+            yield return new WaitUntil(delegate() {
+                return PrivateData.TubePullingFromFirstEndpoint.CanPullBlobFrom(blob);
+            });
+            PrivateData.TubePullingFromFirstEndpoint.PullBlobFrom(blob);
+            if(PrivateData.SecondEndpoint.BlobSite.CanPlaceBlobInto(blob)) {
+                PrivateData.SecondEndpoint.BlobSite.PlaceBlobInto(blob);
+            }else {
+                Destroy(blob.gameObject);
+            }
+        }
+
+        private IEnumerator PerformSecondEndpointExtractionCoroutine(ResourceBlob blob) {
+            yield return new WaitUntil(delegate() {
+                return PrivateData.TubePullingFromSecondEndpoint.CanPullBlobFrom(blob);
+            });
+            PrivateData.TubePullingFromSecondEndpoint.PullBlobFrom(blob);
+            if(PrivateData.FirstEndpoint.BlobSite.CanPlaceBlobInto(blob)) {
+                PrivateData.FirstEndpoint.BlobSite.PlaceBlobInto(blob);
+            }else {
+                Destroy(blob.gameObject);
+            }
         }
 
         #endregion

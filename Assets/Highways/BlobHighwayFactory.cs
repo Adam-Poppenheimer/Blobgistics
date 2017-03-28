@@ -142,7 +142,7 @@ namespace Assets.Highways {
                 newHighway = hostingObject.AddComponent<BlobHighway>();
             }
             
-            hostingObject.name = string.Format("Highway [{0} <--> {1}]", firstEndpoint.ID, secondEndpoint.ID);
+            hostingObject.name = string.Format("Highway [{0} <--> {1}]", firstEndpoint.name, secondEndpoint.name);
             hostingObject.transform.SetParent(MapGraph.transform);
 
             var newPrivateData = hostingObject.AddComponent<BlobHighwayPrivateData>();

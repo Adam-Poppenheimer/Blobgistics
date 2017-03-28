@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,6 +8,9 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Blobs;
+
+using UnityCustomUtilities.Extensions;
+using UnityCustomUtilities.Meshes;
 
 namespace Assets.Highways {
 
@@ -99,7 +103,9 @@ namespace Assets.Highways {
         public override void PushBlobInto(ResourceBlob blob) {
             if(CanPushBlobInto(blob)) {
                 BlobQueue.Enqueue(blob);
+                blob.transform.SetParent(transform, false);
                 blob.transform.position = SourceLocation;
+                blob.transform.localScale = Vector3.one;
             }else {
                 throw new BlobTubeException("Cannot push this blob into this BlobTube");
             }
@@ -130,6 +136,15 @@ namespace Assets.Highways {
         public override void SetEndpoints(Vector3 newSourceLocation, Vector3 newTargetLocation) {
             sourceLocation = newSourceLocation;
             targetLocation = newTargetLocation;
+
+            var meshFilter = GetComponent<MeshFilter>();
+            if(meshFilter != null) {
+                meshFilter.mesh = BoxMeshBuilder.BuildMesh(
+                    Vector3.Distance(sourceLocation, targetLocation),
+                    PrivateData.MeshNonLengthDimensions,
+                    PrivateData.MeshNonLengthDimensions
+                );
+            }
 
             DirectionOfTubeMovement = (TargetLocation - SourceLocation).normalized;
         }

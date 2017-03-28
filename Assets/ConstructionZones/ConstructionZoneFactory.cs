@@ -141,7 +141,7 @@ namespace Assets.ConstructionZones {
         #endregion
 
         private void BuildResourceDepot(MapNodeBase location) {
-            ResourceDepotFactory.ConstructDepot(location);
+            ResourceDepotFactory.ConstructDepotAt(location);
         }
 
         #endregion
