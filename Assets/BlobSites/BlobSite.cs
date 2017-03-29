@@ -103,9 +103,9 @@ namespace Assets.BlobSites {
                         contents.Remove(blobToExtract);
                         blobToExtract.transform.SetParent(null, true);
                         RaiseBlobExtractedFrom(blobToExtract);
+                        PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
                         return blobToExtract;
                     }
-
                 }
             }
             throw new BlobSiteException("Cannot extract any blob from this BlobSite");
@@ -126,6 +126,7 @@ namespace Assets.BlobSites {
                 contents.Remove(blobToExtract);
                 blobToExtract.transform.SetParent(null, true);
                 RaiseBlobExtractedFrom(blobToExtract);
+                PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
                 return blobToExtract;
             }else {
                 throw new BlobSiteException("Cannot extract a blob of this type from this BlobSite");
@@ -154,9 +155,8 @@ namespace Assets.BlobSites {
             }
             if(CanPlaceBlobInto(blob)) {
                 contents.Add(blob);
-                blob.transform.SetParent(transform, false);
-                blob.transform.localPosition = new Vector3(0, 0, ResourceBlob.DesiredZPositionOfAllBlobs);
-                blob.transform.rotation = Quaternion.identity;
+                blob.transform.SetParent(transform, true);
+                PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
                 RaiseBlobPlacedInto(blob);
             }else {
                 throw new BlobSiteException("Cannot place this blob into this BlobSite");
@@ -247,6 +247,10 @@ namespace Assets.BlobSites {
         }
 
         public override void ClearContents() {
+            var blobsToRemove = new List<ResourceBlob>(contents);
+            foreach(var blob in blobsToRemove) {
+                Destroy(blob.gameObject);
+            }
             contents.Clear();
             RaiseAllBlobsCleared();
         }

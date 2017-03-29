@@ -22,8 +22,8 @@ namespace Assets.UI.Highways.ForTesting {
         public bool LastFirstEndpointPermissionRequested = false;
         public bool LastSecondEndpointPermissionRequested = false;
 
-        public ResourceType LastFirstEndpointResourceTypeChangeRequested = ResourceType.Blue;
-        public ResourceType LastSecondEndpointResourceTypeChangeRequested = ResourceType.Blue;
+        public ResourceType LastFirstEndpointResourceTypeChangeRequested = ResourceType.White;
+        public ResourceType LastSecondEndpointResourceTypeChangeRequested = ResourceType.White;
 
         public bool AcceptsUpgradeRequests = false;
 

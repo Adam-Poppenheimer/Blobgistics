@@ -200,19 +200,19 @@ namespace Assets.Map.Editor {
             var receivingSite = new MockBlobSite();
 
             sendingSite.AcceptsExtraction = true;
-            sendingSite.SetExtractionPermission(ResourceType.Red, true);
-            sendingSite.SetPlacementPermission(ResourceType.Red, true);
+            sendingSite.SetExtractionPermission(ResourceType.Food, true);
+            sendingSite.SetPlacementPermission(ResourceType.Food, true);
 
             receivingSite.AcceptsPlacement = true;
-            receivingSite.SetPlacementPermission(ResourceType.Red, true);
+            receivingSite.SetPlacementPermission(ResourceType.Food, true);
 
             var canonToTest = new ConnectionCanon(1f);
 
             //Execution
             var constructedHighway = canonToTest.BuildHighwayBetween(sendingSite, receivingSite);
-            constructedHighway.TubePullingFromFirstEndpoint.SetPermissionForResourceType(ResourceType.Red, true);
+            constructedHighway.TubePullingFromFirstEndpoint.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToExtract = BuildBlob(ResourceType.Red);
+            var blobToExtract = BuildBlob(ResourceType.Food);
             sendingSite.PlaceBlobInto(blobToExtract);
             canonToTest.TickExtraction(1f);
 
@@ -230,17 +230,17 @@ namespace Assets.Map.Editor {
             var receivingSite = new MockBlobSite();
 
             sendingSite.AcceptsExtraction = true;
-            sendingSite.SetExtractionPermission(ResourceType.Red, true);
-            sendingSite.SetPlacementPermission(ResourceType.Red, true);
+            sendingSite.SetExtractionPermission(ResourceType.Food, true);
+            sendingSite.SetPlacementPermission(ResourceType.Food, true);
 
             receivingSite.AcceptsPlacement = true;
-            receivingSite.SetPlacementPermission(ResourceType.Red, true);
+            receivingSite.SetPlacementPermission(ResourceType.Food, true);
 
             var canonToTest = new ConnectionCanon(1f);
             var refusingHighway = canonToTest.BuildHighwayBetween(sendingSite, receivingSite);
-            refusingHighway.TubePullingFromFirstEndpoint.SetPermissionForResourceType(ResourceType.Red, false);
+            refusingHighway.TubePullingFromFirstEndpoint.SetPermissionForResourceType(ResourceType.Food, false);
 
-            var blobToRefuse = BuildBlob(ResourceType.Red);
+            var blobToRefuse = BuildBlob(ResourceType.Food);
             sendingSite.PlaceBlobInto(blobToRefuse);
 
             //Execution
@@ -258,17 +258,17 @@ namespace Assets.Map.Editor {
             var receivingSite = new MockBlobSite();
 
             sendingSite.AcceptsExtraction = true;
-            sendingSite.SetExtractionPermission(ResourceType.Red, false);
-            sendingSite.SetPlacementPermission(ResourceType.Red, true);
+            sendingSite.SetExtractionPermission(ResourceType.Food, false);
+            sendingSite.SetPlacementPermission(ResourceType.Food, true);
 
             receivingSite.AcceptsPlacement = true;
-            receivingSite.SetPlacementPermission(ResourceType.Red, true);
+            receivingSite.SetPlacementPermission(ResourceType.Food, true);
 
             var canonToTest = new ConnectionCanon(1f);
             var refusingHighway = canonToTest.BuildHighwayBetween(sendingSite, receivingSite);
-            refusingHighway.TubePullingFromFirstEndpoint.SetPermissionForResourceType(ResourceType.Red, true);
+            refusingHighway.TubePullingFromFirstEndpoint.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToRefuse = BuildBlob(ResourceType.Red);
+            var blobToRefuse = BuildBlob(ResourceType.Food);
             sendingSite.PlaceBlobInto(blobToRefuse);
 
             //Execution

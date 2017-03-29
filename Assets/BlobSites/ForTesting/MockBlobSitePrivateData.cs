@@ -36,6 +36,18 @@ namespace Assets.BlobSites.ForTesting {
             }
         }
 
+        public override BlobAlignmentStrategyBase AlignmentStrategy {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override float BlobRealignmentSpeedPerSecond {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

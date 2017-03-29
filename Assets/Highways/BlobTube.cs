@@ -25,6 +25,8 @@ namespace Assets.Highways {
         }
         private Queue<ResourceBlob> BlobQueue = new Queue<ResourceBlob>();
 
+        private List<ResourceBlob> BlobsAtEnd = new List<ResourceBlob>();
+
         public override Vector3 SourceLocation {
             get { return sourceLocation; }
         }
@@ -66,7 +68,7 @@ namespace Assets.Highways {
         private Dictionary<ResourceType, bool> PermissionsForBlobTypes = 
             new Dictionary<ResourceType, bool>();
 
-        private Vector3 DirectionOfTubeMovement = Vector3.zero;
+        private float distanceBetweenEndpoints = 0f;
 
         #endregion
 
@@ -80,12 +82,16 @@ namespace Assets.Highways {
             }else if(!BlobQueue.Contains(blob)) {
                 throw new BlobTubeException("Cannot pull a blob from a tube it's not in");
             }
-            return blob.transform.position == TargetLocation && BlobQueue.Peek() == blob;
+            return BlobsAtEnd.Contains(blob) && BlobQueue.Peek() == blob;
         }
 
         public override void PullBlobFrom(ResourceBlob blob) {
             if(CanPullBlobFrom(blob)) {
+                if(BlobQueue.Peek() != blob) {
+                    throw new BlobTubeException("Blob given permission to be pulled is not actually at the end of the BlobTube");
+                }
                 BlobQueue.Dequeue();
+                BlobsAtEnd.Remove(blob);
             }else {
                 throw new BlobTubeException("Cannot pull this blob from this tube");
             }
@@ -103,9 +109,17 @@ namespace Assets.Highways {
         public override void PushBlobInto(ResourceBlob blob) {
             if(CanPushBlobInto(blob)) {
                 BlobQueue.Enqueue(blob);
-                blob.transform.SetParent(transform, false);
-                blob.transform.position = SourceLocation;
-                blob.transform.localScale = Vector3.one;
+                blob.transform.SetParent(transform, true);
+                blob.transform.rotation = Quaternion.identity;
+
+                var zOffsetSource = new Vector3(SourceLocation.x, SourceLocation.y, ResourceBlob.DesiredZPositionOfAllBlobs);
+                var zOffsetTarget = new Vector3(TargetLocation.x, TargetLocation.y, ResourceBlob.DesiredZPositionOfAllBlobs);
+
+                blob.PushNewMovementGoal(new MovementGoal(zOffsetSource, TransportSpeedPerSecond));
+                blob.PushNewMovementGoal(new MovementGoal(zOffsetTarget, TransportSpeedPerSecond, delegate() {
+                    BlobsAtEnd.Add(blob);
+                    RaiseBlobReachedEndOfTube(blob);
+                }));
             }else {
                 throw new BlobTubeException("Cannot push this blob into this BlobTube");
             }
@@ -115,6 +129,8 @@ namespace Assets.Highways {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
             }
+            BlobsAtEnd.Remove(blob);
+
             var listOfQueueContents = new List<ResourceBlob>(BlobQueue);
             bool retval = listOfQueueContents.Remove(blob);
             BlobQueue = new Queue<ResourceBlob>(listOfQueueContents);
@@ -137,24 +153,20 @@ namespace Assets.Highways {
             sourceLocation = newSourceLocation;
             targetLocation = newTargetLocation;
 
+            distanceBetweenEndpoints = Vector3.Distance(sourceLocation, targetLocation);
+
             var meshFilter = GetComponent<MeshFilter>();
             if(meshFilter != null) {
                 meshFilter.mesh = BoxMeshBuilder.BuildMesh(
-                    Vector3.Distance(sourceLocation, targetLocation),
+                    distanceBetweenEndpoints,
                     PrivateData.MeshNonLengthDimensions,
                     PrivateData.MeshNonLengthDimensions
                 );
             }
-
-            DirectionOfTubeMovement = (TargetLocation - SourceLocation).normalized;
         }
 
         public override void TickMovement(float secondsPassed) {
-            foreach(var blobWithin in BlobQueue) {
-                var distanceToMove = Mathf.Min(secondsPassed * TransportSpeedPerSecond,
-                    Vector3.Distance(blobWithin.transform.position, TargetLocation));
-                blobWithin.transform.Translate(DirectionOfTubeMovement * distanceToMove);
-            }
+            
         }
 
         public override bool GetPermissionForResourceType(ResourceType type) {

@@ -30,6 +30,18 @@ namespace Assets.Societies.ForTesting {
             get { return Vector3.zero; }
         }
 
+        public override BlobAlignmentStrategyBase AlignmentStrategy {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override float BlobRealignmentSpeedPerSecond {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

@@ -16,6 +16,9 @@ namespace Assets.BlobSites {
         public abstract Vector3 EastConnectionOffset  { get; }
         public abstract Vector3 WestConnectionOffset  { get; }
 
+        public abstract BlobAlignmentStrategyBase AlignmentStrategy { get; }
+        public abstract float BlobRealignmentSpeedPerSecond { get; }
+
         #endregion
 
     }

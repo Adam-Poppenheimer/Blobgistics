@@ -216,7 +216,7 @@ namespace Assets.BlobDistributors.Editor {
 
             highwayUp = highwayFactory.ConstructHighwayBetween(centerNode, upNode);
             highwayUp.Profile = new BlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(highwayUp.gameObject));
-            highwayUp.SetPullingPermissionForFirstEndpoint(ResourceType.Red, true);
+            highwayUp.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
             highwayUp.Priority = 1;
             distributorToTest.Tick(3f);
 
@@ -316,24 +316,24 @@ namespace Assets.BlobDistributors.Editor {
             rightNode  = mapGraph.BuildNode(Vector3.right);
             upNode     = mapGraph.BuildNode(Vector3.up);
             
-            centerNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
-            centerNode.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Red, true);
-            centerNode.BlobSite.SetCapacityForResourceType(ResourceType.Red, 30);
+            centerNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            centerNode.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
+            centerNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             centerNode.BlobSite.TotalCapacity = 100;
             for(int i = 0; i < 30; ++i) {
-                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Red));
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
             }
 
-            leftNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
-            leftNode.BlobSite.SetCapacityForResourceType(ResourceType.Red, 30);
+            leftNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            leftNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             leftNode.BlobSite.TotalCapacity = 100;
 
-            rightNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
-            rightNode.BlobSite.SetCapacityForResourceType(ResourceType.Red, 30);
+            rightNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            rightNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             rightNode.BlobSite.TotalCapacity = 100;
 
-            upNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Red, true);
-            upNode.BlobSite.SetCapacityForResourceType(ResourceType.Red, 30);
+            upNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            upNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             upNode.BlobSite.TotalCapacity = 100;
 
             mapGraph.AddUndirectedEdge(centerNode, leftNode);
@@ -352,13 +352,13 @@ namespace Assets.BlobDistributors.Editor {
             var highwayProfile = new BlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(new GameObject()));
 
             highwayLeft.Profile = highwayProfile;
-            highwayLeft.SetPullingPermissionForFirstEndpoint (ResourceType.Red, true);
+            highwayLeft.SetPullingPermissionForFirstEndpoint (ResourceType.Food, true);
 
             highwayRight.Profile = highwayProfile;
-            highwayRight.SetPullingPermissionForFirstEndpoint (ResourceType.Red, true);
+            highwayRight.SetPullingPermissionForFirstEndpoint (ResourceType.Food, true);
 
             highwayUp.Profile = highwayProfile;
-            highwayUp.SetPullingPermissionForFirstEndpoint (ResourceType.Red, true);
+            highwayUp.SetPullingPermissionForFirstEndpoint (ResourceType.Food, true);
         }
 
         #endregion

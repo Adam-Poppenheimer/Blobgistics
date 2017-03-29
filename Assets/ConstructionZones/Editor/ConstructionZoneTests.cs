@@ -199,24 +199,24 @@ namespace Assets.ConstructionZones.Editor {
             var alternateProject = new MockConstructionProject();
             alternateProject.SetCost(ResourceSummary.BuildResourceSummary(
                 factoryToUse.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 40),
-                new KeyValuePair<ResourceType, int>(ResourceType.Blue, 80)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 40),
+                new KeyValuePair<ResourceType, int>(ResourceType.White, 80)
             ));
 
             //Execution
             zoneToTest.CurrentProject = alternateProject;
 
             //Validation
-            Assert.AreEqual(40, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.Red), "Incorrect capacity for Red");
-            Assert.AreEqual(0, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.Green), "Incorrect capacity for Green");
-            Assert.AreEqual(80, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.Blue), "Incorrect capacity for Blue");
+            Assert.AreEqual(40, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.Food), "Incorrect capacity for Food");
+            Assert.AreEqual(0, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.Yellow), "Incorrect capacity for Yellow");
+            Assert.AreEqual(80, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.White), "Incorrect capacity for White");
 
-            Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Red), "Red lacks placement permission");
-            Assert.IsFalse(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Green), "Green falsely has placement permission");
-            Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Blue), "Blue lacks placement permission");
+            Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Food), "Food lacks placement permission");
+            Assert.IsFalse(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Yellow), "Yellow falsely has placement permission");
+            Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.White), "White lacks placement permission");
 
-            Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(ResourceType.Red), "Red falsely has extraction permission");
-            Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(ResourceType.Blue), "Blue falsely has extraction permission");
+            Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(ResourceType.Food), "Food falsely has extraction permission");
+            Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(ResourceType.White), "White falsely has extraction permission");
         }
 
         [Test]
@@ -231,20 +231,20 @@ namespace Assets.ConstructionZones.Editor {
             var blobSite = newLocation.BlobSite;
 
             //Execution and Validation
-            for(int i = 1; i < depotCost[ResourceType.Red]; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
-                Assert.AreEqual(depotCost[ResourceType.Red] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.Red],
-                    "Incorrect Red needed to finish on iteration " + i);
+            for(int i = 1; i < depotCost[ResourceType.Food]; ++i) {
+                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
+                Assert.AreEqual(depotCost[ResourceType.Food] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.Food],
+                    "Incorrect Food needed to finish on iteration " + i);
             }
-            for(int i = 1; i < depotCost[ResourceType.Green]; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Green));
-                Assert.AreEqual(depotCost[ResourceType.Green] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.Green],
-                    "Incorrect Red needed to finish on iteration " + i);
+            for(int i = 1; i < depotCost[ResourceType.Yellow]; ++i) {
+                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                Assert.AreEqual(depotCost[ResourceType.Yellow] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.Yellow],
+                    "Incorrect Food needed to finish on iteration " + i);
             }
-            for(int i = 1; i < depotCost[ResourceType.Blue]; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Blue));
-                Assert.AreEqual(depotCost[ResourceType.Blue] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.Blue],
-                    "Incorrect Red needed to finish on iteration " + i);
+            for(int i = 1; i < depotCost[ResourceType.White]; ++i) {
+                blobSite.PlaceBlobInto(BuildBlob(ResourceType.White));
+                Assert.AreEqual(depotCost[ResourceType.White] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.White],
+                    "Incorrect Food needed to finish on iteration " + i);
             }
 
             blobSite.ClearContents();
@@ -265,7 +265,7 @@ namespace Assets.ConstructionZones.Editor {
             var projectToComplete = new MockConstructionProject();
             projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
                 factoryToUse.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             ));
 
             MapNodeBase locationPlacedIntoBuildAction = null;
@@ -277,7 +277,7 @@ namespace Assets.ConstructionZones.Editor {
 
             //Execution
             for(int i = 0; i < 10; ++i) {
-                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
 
             //Validation
@@ -298,14 +298,14 @@ namespace Assets.ConstructionZones.Editor {
             var projectToComplete = new MockConstructionProject();
             projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
                 factoryToUse.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             ));
 
             factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
 
             //Execution
             for(int i = 0; i < 10; ++i) {
-                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
 
             //Validation
@@ -321,7 +321,7 @@ namespace Assets.ConstructionZones.Editor {
             var projectToComplete = new MockConstructionProject();
             projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
                 factoryToUse.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             ));
 
             factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
@@ -330,7 +330,7 @@ namespace Assets.ConstructionZones.Editor {
 
             //Execution
             for(int i = 0; i < 10; ++i) {
-                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
 
             //Validation

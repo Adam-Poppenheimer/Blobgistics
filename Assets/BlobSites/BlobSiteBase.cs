@@ -18,7 +18,7 @@ namespace Assets.BlobSites {
 
         public int TotalCapacity { get; set; }
 
-        public IBlobAlignmentStrategy AlignmentStrategy { get; set; }
+        public BlobAlignmentStrategyBase AlignmentStrategy { get; set; }
 
         public abstract int TotalSpaceLeft { get; }
 

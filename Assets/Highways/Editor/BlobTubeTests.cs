@@ -127,14 +127,14 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 10;
 
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
             ResourceBlob[] blobsToAdd = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
             };
 
             //Execution
@@ -156,15 +156,15 @@ namespace Assets.Highways.Editor {
 
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 5;
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
             ResourceBlob[] blobsToAdd = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
             };
 
             //Execution
@@ -184,8 +184,8 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 10;
 
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
-            var blobToAdd = BuildResourceBlob(ResourceType.Red);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
+            var blobToAdd = BuildResourceBlob(ResourceType.Food);
 
             //Execution
             tubeToTest.PushBlobInto(blobToAdd);
@@ -202,10 +202,10 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 10;
 
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var greenBlob = BuildResourceBlob(ResourceType.Green);
-            var blueBlob  = BuildResourceBlob(ResourceType.Blue );
+            var greenBlob = BuildResourceBlob(ResourceType.Yellow);
+            var blueBlob  = BuildResourceBlob(ResourceType.White );
 
             //Execution
             var canPushGreen = tubeToTest.CanPushBlobInto(greenBlob);
@@ -224,9 +224,9 @@ namespace Assets.Highways.Editor {
             tubeToTest.Capacity = 1;
             
             tubeToTest.SetEndpoints(new Vector3(-10f, 0f, 0f), new Vector3(10f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToAdd = BuildResourceBlob(ResourceType.Red);
+            var blobToAdd = BuildResourceBlob(ResourceType.Food);
 
             //Execute
             tubeToTest.PushBlobInto(blobToAdd);
@@ -245,14 +245,14 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(10f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
             ResourceBlob[] blobsToAdd = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
             };
 
             //Execution
@@ -277,9 +277,9 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 0.1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(10f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var movingBlob = BuildResourceBlob(ResourceType.Red);
+            var movingBlob = BuildResourceBlob(ResourceType.Food);
 
             //Execution
             bool hasReachedEndOfTube = false;
@@ -306,9 +306,9 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToManipulate = BuildResourceBlob(ResourceType.Red);
+            var blobToManipulate = BuildResourceBlob(ResourceType.Food);
 
             //Execution
             tubeToTest.PushBlobInto(blobToManipulate);
@@ -329,9 +329,9 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToManipulate = BuildResourceBlob(ResourceType.Red);
+            var blobToManipulate = BuildResourceBlob(ResourceType.Food);
 
             //Execution
             tubeToTest.PushBlobInto(blobToManipulate);
@@ -351,9 +351,9 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToManipulate = BuildResourceBlob(ResourceType.Red);
+            var blobToManipulate = BuildResourceBlob(ResourceType.Food);
 
             //Execution
             tubeToTest.PushBlobInto(blobToManipulate);
@@ -382,14 +382,14 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(5f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
             ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
             };
 
             //Execution
@@ -426,9 +426,9 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToManipulate = BuildResourceBlob(ResourceType.Red);
+            var blobToManipulate = BuildResourceBlob(ResourceType.Food);
 
             //Execute
             tubeToTest.PushBlobInto(blobToManipulate);
@@ -449,14 +449,14 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
             
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
             ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
             };
 
             //Execution
@@ -489,15 +489,15 @@ namespace Assets.Highways.Editor {
             tubeToTest.Capacity = 10;
             tubeToTest.TransportSpeedPerSecond = 1f;
 
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.Green, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Yellow, true);
 
             ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Green),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Yellow),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
             };
 
             foreach(var blob in blobsToManipulate) {
@@ -524,15 +524,15 @@ namespace Assets.Highways.Editor {
             tubeToTest.Capacity = 10;
             tubeToTest.TransportSpeedPerSecond = 1f;
 
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.Green, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Yellow, true);
 
             ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Green),
-                BuildResourceBlob(ResourceType.Red),
-                BuildResourceBlob(ResourceType.Red),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Yellow),
+                BuildResourceBlob(ResourceType.Food),
+                BuildResourceBlob(ResourceType.Food),
             };
 
             foreach(var blob in blobsToManipulate) {
@@ -552,15 +552,15 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(BuildPrivateData());
 
             //Execution
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.Green, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.Blue, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.Blue, false);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Yellow, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.White, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.White, false);
 
             //Validation
-            Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Red),   "Red is not permitted");
-            Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Green), "Green is not permitted");
-            Assert.False(tubeToTest.GetPermissionForResourceType(ResourceType.Blue), "Blue is falsely permitted");
+            Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Food),   "Food is not permitted");
+            Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Yellow), "Yellow is not permitted");
+            Assert.False(tubeToTest.GetPermissionForResourceType(ResourceType.White), "White is falsely permitted");
         }
 
         #endregion
@@ -614,9 +614,9 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, false);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, false);
 
-            var blobToPush = BuildResourceBlob(ResourceType.Red);
+            var blobToPush = BuildResourceBlob(ResourceType.Food);
 
             //Execution and Validation
             Assert.Throws<BlobTubeException>(delegate() {
@@ -634,10 +634,10 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            tubeToTest.SetPermissionForResourceType(ResourceType.Red, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
             tubeToTest.SetEndpoints(Vector3.zero, new Vector3(10f, 0f, 0f));
 
-            var blobToPull = BuildResourceBlob(ResourceType.Red);
+            var blobToPull = BuildResourceBlob(ResourceType.Food);
 
             //Execution
             tubeToTest.PushBlobInto(blobToPull);
@@ -658,7 +658,7 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            var blobToPull = BuildResourceBlob(ResourceType.Red);
+            var blobToPull = BuildResourceBlob(ResourceType.Food);
 
             //Execution and Validation
             Assert.Throws<BlobTubeException>(delegate() {
@@ -674,7 +674,7 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            var blobToPull = BuildResourceBlob(ResourceType.Red);
+            var blobToPull = BuildResourceBlob(ResourceType.Food);
 
             //Execution and Validation
             Assert.Throws<BlobTubeException>(delegate() {
@@ -712,7 +712,7 @@ namespace Assets.Highways.Editor {
             return newBlobTube;
         }
 
-        private ResourceBlob BuildResourceBlob(ResourceType typeOfBlob = ResourceType.Red) {
+        private ResourceBlob BuildResourceBlob(ResourceType typeOfBlob = ResourceType.Food) {
             var hostingGameObject = new GameObject();
             var newBlob = hostingGameObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = typeOfBlob;

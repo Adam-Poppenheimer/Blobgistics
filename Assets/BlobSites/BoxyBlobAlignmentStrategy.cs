@@ -9,15 +9,15 @@ using Assets.Blobs;
 
 namespace Assets.BlobSites {
 
-    public class BoxyBlobAlignmentStrategy : IBlobAlignmentStrategy {
+    public class BoxyBlobAlignmentStrategy : BlobAlignmentStrategyBase {
 
         #region instance fields and properties
 
-        private readonly float BoundingWidth;
-        private readonly float BoundingHeight;
+        [SerializeField, Range(0f, float.MaxValue)] private float BoundingWidth;
+        [SerializeField, Range(0f, float.MaxValue)] private float BoundingHeight;
 
-        private readonly int BlobsPerRow;
-        private readonly int BlobsPerColumn;
+        [SerializeField, Range(0f, 10000)] private int BlobsPerRow;
+        [SerializeField, Range(0f, 10000)] private int BlobsPerColumn;
 
         private Vector2 CenteringVector;
 
@@ -41,16 +41,24 @@ namespace Assets.BlobSites {
             BlobsPerRow    = blobsPerRow;
             BlobsPerColumn = blobsPerColumn;
 
-            CenteringVector = new Vector2(-BoundingWidth / 2f, -boundingHeight / 2f);
+            
         }
 
         #endregion
 
         #region instance methods
 
-        #region from IBlobAlignmentStrategy
+        #region Unity event methods
 
-        public void RealignBlobs(IEnumerable<ResourceBlob> blobsToAlign, Vector2 centerPosition,
+        private void OnValidate() {
+            CenteringVector = new Vector2(-BoundingWidth / 2f, -BoundingHeight / 2f);
+        }
+
+        #endregion
+
+        #region from BlobAlignmentStrategyBase
+
+        public override void RealignBlobs(IEnumerable<ResourceBlob> blobsToAlign, Vector2 centerPosition,
             float realignmentSpeedPerSecond) {
             int blobIndex = 0;
             var blobList = new List<ResourceBlob>(blobsToAlign);

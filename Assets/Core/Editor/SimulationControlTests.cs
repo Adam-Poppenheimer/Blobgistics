@@ -127,111 +127,111 @@ namespace Assets.Core.Editor {
             //Execution
 
             //Highway 1
-            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Red, true);
-            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Green, true);
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Food, true);
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Yellow, true);
 
-            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Red, false);
-            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Green, true);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Food, false);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Yellow, true);
 
             //Highway 2
 
-            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.Red, true);
-            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.Blue, true);
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.Food, true);
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.White, true);
 
-            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.Red, false);
-            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.Blue, true);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.Food, false);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.White, true);
 
             //Validation
 
             //Highway 1
 
             Assert.That(
-                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Red),
+                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Food),
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "1", "First", ResourceType.Red
+                    "1", "First", ResourceType.Food
                 )
             );
             Assert.That(
-                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Green),
+                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Yellow),
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "1", "First", ResourceType.Green
+                    "1", "First", ResourceType.Yellow
                 )
             );
             Assert.IsFalse(
-                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Blue),
+                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.White),
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "1", "First", ResourceType.Blue
+                    "1", "First", ResourceType.White
                 )
             );
 
             Assert.IsFalse(
-                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Red),
+                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Food),
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "1", "Second", ResourceType.Red
+                    "1", "Second", ResourceType.Food
                 )
             );
             Assert.That(
-                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Green),
+                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Yellow),
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "1", "Second", ResourceType.Green
+                    "1", "Second", ResourceType.Yellow
                 )
             );
             Assert.IsFalse(
-                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Blue),
+                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.White),
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "1", "Second", ResourceType.Blue
+                    "1", "Second", ResourceType.White
                 )
             );
 
             //Highway 2
 
             Assert.That(
-                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Red), 
+                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Food), 
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "2", "First", ResourceType.Red
+                    "2", "First", ResourceType.Food
                 )
             );
             Assert.IsFalse(
-                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Green), 
+                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Yellow), 
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "2", "First", ResourceType.Green
+                    "2", "First", ResourceType.Yellow
                 )
             );
             Assert.That(
-                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Blue), 
+                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.White), 
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "2", "First", ResourceType.Blue
+                    "2", "First", ResourceType.White
                 )
             );
 
             Assert.IsFalse(
-                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Red),
+                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Food),
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "2", "Second", ResourceType.Red
+                    "2", "Second", ResourceType.Food
                 )
             );
             Assert.IsFalse(
-                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Green), 
+                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Yellow), 
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "2", "Second", ResourceType.Green
+                    "2", "Second", ResourceType.Yellow
                 )
             );
             Assert.That(
-                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Blue),
+                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.White),
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "2", "Second", ResourceType.Blue
+                    "2", "Second", ResourceType.White
                 )
             );
         }
@@ -675,8 +675,8 @@ namespace Assets.Core.Editor {
 
             //Execution
             Assert.DoesNotThrow(delegate() {
-                controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(42, ResourceType.Red, true);
-                controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(42, ResourceType.Red, true);
+                controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(42, ResourceType.Food, true);
+                controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(42, ResourceType.Food, true);
             });
 
             //Validation
@@ -935,7 +935,7 @@ namespace Assets.Core.Editor {
             var newHighwayProfile = new BlobHighwayProfile(1f, 10,
                 ResourceSummary.BuildResourceSummary(
                     newFactory.gameObject,
-                    new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                    new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
                 )
             );
 
@@ -989,7 +989,7 @@ namespace Assets.Core.Editor {
             newControl.ResourceDepotFactory = newDepotFactory;
             newControl.UpgradedHighwayProfile = new BlobHighwayProfile(2, 20, ResourceSummary.BuildResourceSummary(
                 newControl.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Green, 5)
+                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 5)
             ));
 
             return newControl;
@@ -1030,29 +1030,29 @@ namespace Assets.Core.Editor {
             complexity1.SetName("Complexity1");
             complexity1.SetProduction(ResourceSummary.BuildResourceSummary(
                 complexity1.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 2)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 2)
             ));
 
             complexity1.SetWants(new List<ResourceSummary>() {
-                ResourceSummary.BuildResourceSummary(complexity1.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Green, 1)),
-                ResourceSummary.BuildResourceSummary(complexity1.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1))
+                ResourceSummary.BuildResourceSummary(complexity1.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1)),
+                ResourceSummary.BuildResourceSummary(complexity1.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.White, 1))
             });
             complexity1.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
                 complexity1.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             ));
 
             complexity2.SetName("Complexity2");
             complexity2.SetProduction(ResourceSummary.BuildResourceSummary(
                 complexity2.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Green, 2)
+                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 2)
             ));
             complexity2.SetWants(new List<ResourceSummary>() {
-                ResourceSummary.BuildResourceSummary(complexity2.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Blue, 1))
+                ResourceSummary.BuildResourceSummary(complexity2.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.White, 1))
             });
             complexity2.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
                 complexity2.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             ));
 
             newLadder.ComplexityHierarchy = new List<ComplexityDefinitionBase>() {

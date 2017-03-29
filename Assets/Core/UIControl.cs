@@ -7,12 +7,18 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 using Assets.Map;
+
 using Assets.Highways;
 using Assets.UI.Highways;
+
 using Assets.ConstructionZones;
 using Assets.UI.ConstructionZones;
+
 using Assets.HighwayUpgraders;
 using Assets.UI.HighwayUpgraders;
+
+using Assets.Societies;
+using Assets.UI.Societies;
 
 using UnityCustomUtilities.Extensions;
 
@@ -135,6 +141,30 @@ namespace Assets.Core {
         }
         [SerializeField] private HighwayUpgraderSummaryDisplayBase _highwayUpgraderSummaryDisplay;
 
+        public SocietyUISummaryDisplayBase SocietySummaryDisplay {
+            get {
+                if(_societySummaryDisplay == null) {
+                    throw new InvalidOperationException("SocietySummaryDisplay is uninitialized");
+                } else {
+                    return _societySummaryDisplay;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    if(_societySummaryDisplay != null) {
+                        _societySummaryDisplay.DestructionRequested -= SocietySummaryDisplay_DestructionRequested;
+                    }
+                    _societySummaryDisplay = value;
+                    if(_societySummaryDisplay != null) {
+                        _societySummaryDisplay.DestructionRequested += SocietySummaryDisplay_DestructionRequested;
+                    }
+                }
+            }
+        }
+        [SerializeField] private SocietyUISummaryDisplayBase _societySummaryDisplay;
+
         public ConstructionPanelBase ConstructionPanel {
             get {
                 if(_constructionPanel == null) {
@@ -192,6 +222,12 @@ namespace Assets.Core {
 
                 HighwayUpgraderSummaryDisplay.UpgraderDestructionRequested += HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
                 HighwayUpgraderSummaryDisplay.DisplayCloseRequested        += HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
+            }
+
+            if(SocietySummaryDisplay != null) {
+                SocietySummaryDisplay.DestructionRequested -= SocietySummaryDisplay_DestructionRequested;
+
+                SocietySummaryDisplay.DestructionRequested += SocietySummaryDisplay_DestructionRequested;
             }
         }
 
@@ -275,10 +311,25 @@ namespace Assets.Core {
                         HighwaySummaryDisplay.CurrentSummary.ID);
                     HighwaySummaryDisplay.Activate();
                 }
+            }else if(source is SocietyUISummary) {
+                if(SocietySummaryDisplay != null) {
+                    SocietySummaryDisplay.CurrentSummary = source as SocietyUISummary;
+                    SocietySummaryDisplay.CanBeDestroyed = SimulationControl.CanDestroySociety(SocietySummaryDisplay.CurrentSummary.ID);
+                    SocietySummaryDisplay.Activate();
+                }
             }
         }
 
-        public override void PushDeselectEvent<T>(T source, BaseEventData eventData) {  }
+        public override void PushUpdateSelectedEvent<T>(T source, BaseEventData eventData) {
+            if(source is SocietyUISummary) {
+                if(SocietySummaryDisplay != null) {
+                    SocietySummaryDisplay.CurrentSummary = source as SocietyUISummary;
+                    SocietySummaryDisplay.UpdateDisplay();
+                }
+            }
+        }
+
+        public override void PushDeselectEvent<T>(T source, BaseEventData eventData) {}
 
         #endregion
 
@@ -331,6 +382,13 @@ namespace Assets.Core {
 
         private void HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested(object sender, EventArgs e) {
             SimulationControl.DestroyHighwayUpgrader(HighwayUpgraderSummaryDisplay.SummaryToDisplay.ID);
+        }
+
+        private void SocietySummaryDisplay_DestructionRequested(object sender, EventArgs e) {
+            if(SimulationControl.CanDestroySociety(SocietySummaryDisplay.CurrentSummary.ID)) {
+                SimulationControl.DestroySociety(SocietySummaryDisplay.CurrentSummary.ID);
+                SocietySummaryDisplay.Deactivate();
+            }
         }
 
         #endregion

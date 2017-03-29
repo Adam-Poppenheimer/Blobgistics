@@ -6,8 +6,9 @@ using System.Text;
 namespace Assets.Blobs {
 
     public enum ResourceType {
-        Red,
-        Green,
+        Food,
+        Yellow,
+        White,
         Blue
     }
 

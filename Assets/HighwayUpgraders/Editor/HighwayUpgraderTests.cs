@@ -23,7 +23,7 @@ namespace Assets.HighwayUpgraders.Editor {
             get {
                 return ResourceSummary.BuildResourceSummary(
                     new GameObject(),
-                    new KeyValuePair<ResourceType, int>(ResourceType.Red, Int32.MaxValue)
+                    new KeyValuePair<ResourceType, int>(ResourceType.Food, Int32.MaxValue)
                 );
             }
         }
@@ -65,8 +65,8 @@ namespace Assets.HighwayUpgraders.Editor {
 
             var testProfile = new BlobHighwayProfile(24f, 100, ResourceSummary.BuildResourceSummary(
                 factoryToTest.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 15),
-                new KeyValuePair<ResourceType, int>(ResourceType.Green, 12)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 15),
+                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 12)
             ));
 
             //Execution
@@ -263,8 +263,8 @@ namespace Assets.HighwayUpgraders.Editor {
             var blobHighway = BuildBlobHighway();
             var cost = ResourceSummary.BuildResourceSummary(
                 new GameObject(),
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.Green, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 10)
             );
 
             var privateData = BuildUpgraderPrivateData();
@@ -276,14 +276,14 @@ namespace Assets.HighwayUpgraders.Editor {
 
             //Execution and Validation
             for(int redCount = 0; redCount < 9; ++redCount) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
-                Assert.AreEqual(cost[ResourceType.Red] - redCount - 1, upgraderToTest.GetResourcesNeededToUpgrade()[ResourceType.Red],
-                    "Incorrect resources needed in Red placement iteration " + redCount);
+                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
+                Assert.AreEqual(cost[ResourceType.Food] - redCount - 1, upgraderToTest.GetResourcesNeededToUpgrade()[ResourceType.Food],
+                    "Incorrect resources needed in Food placement iteration " + redCount);
             }
             for(int greenCount = 0; greenCount < 9; ++greenCount) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Green));
-                Assert.AreEqual(cost[ResourceType.Green] - greenCount - 1, upgraderToTest.GetResourcesNeededToUpgrade()[ResourceType.Green],
-                    "Incorrect resources needed in Green placement iteration " + greenCount);
+                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                Assert.AreEqual(cost[ResourceType.Yellow] - greenCount - 1, upgraderToTest.GetResourcesNeededToUpgrade()[ResourceType.Yellow],
+                    "Incorrect resources needed in Yellow placement iteration " + greenCount);
             }
         }
 
@@ -294,7 +294,7 @@ namespace Assets.HighwayUpgraders.Editor {
             var blobHighway = BuildBlobHighway();
             var cost = ResourceSummary.BuildResourceSummary(
                 new GameObject(),
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             );
             var newProfile = new BlobHighwayProfile(1f, 20, cost);
 
@@ -308,7 +308,7 @@ namespace Assets.HighwayUpgraders.Editor {
 
             //Execution
             for(int i = 0; i < 10; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
 
             //Validation
@@ -323,7 +323,7 @@ namespace Assets.HighwayUpgraders.Editor {
             var blobHighway = BuildBlobHighway();
             var cost = ResourceSummary.BuildResourceSummary(
                 new GameObject(),
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             );
             var newProfile = new BlobHighwayProfile(1f, 20, cost);
 
@@ -337,7 +337,7 @@ namespace Assets.HighwayUpgraders.Editor {
 
             //Execution
             for(int i = 0; i < 10; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
 
             //Validation
@@ -360,7 +360,7 @@ namespace Assets.HighwayUpgraders.Editor {
             var blobHighway = BuildBlobHighway();
             var cost = ResourceSummary.BuildResourceSummary(
                 new GameObject(),
-                new KeyValuePair<ResourceType, int>(ResourceType.Red, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             );
             var newProfile = new BlobHighwayProfile(1f, 20, cost);
 
@@ -379,7 +379,7 @@ namespace Assets.HighwayUpgraders.Editor {
 
             //Execution
             for(int i = 0; i < 10; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Red));
+                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
 
             //Validation

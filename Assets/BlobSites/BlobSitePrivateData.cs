@@ -45,6 +45,22 @@ namespace Assets.BlobSites {
         }
         [SerializeField] private Vector3 _westConnectionOffset = Vector3.zero;
 
+        public override BlobAlignmentStrategyBase AlignmentStrategy {
+            get { return _alignmentStrategy; }
+        }
+        public void SetAlignmentStrategy(BlobAlignmentStrategyBase value) {
+            _alignmentStrategy = value;
+        }
+        [SerializeField] private BlobAlignmentStrategyBase _alignmentStrategy;
+
+        public override float BlobRealignmentSpeedPerSecond {
+            get { return _blobRealignmentSpeedPerSecond; }
+        }
+        public void SetAlignmentStrategy(float value) {
+            _blobRealignmentSpeedPerSecond = value;
+        }
+        [SerializeField] private float _blobRealignmentSpeedPerSecond;
+
         #endregion
 
         #endregion

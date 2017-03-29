@@ -9,11 +9,11 @@ using Assets.Blobs;
 
 namespace Assets.BlobSites {
 
-    public interface IBlobAlignmentStrategy {
+    public abstract class BlobAlignmentStrategyBase : MonoBehaviour {
 
         #region methods
 
-        void RealignBlobs(IEnumerable<ResourceBlob> blobsToAlign, Vector2 centerPosition,
+        public abstract void RealignBlobs(IEnumerable<ResourceBlob> blobsToAlign, Vector2 centerPosition,
             float realignmentSpeedPerSecond);
 
         #endregion

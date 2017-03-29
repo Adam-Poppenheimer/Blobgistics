@@ -17,7 +17,7 @@ namespace Assets.Societies {
 
     [ExecuteInEditMode]
     public class Society : SocietyBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
-        IPointerEnterHandler, IPointerExitHandler {
+        IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler {
 
         #region instance fields and properties
 
@@ -52,7 +52,7 @@ namespace Assets.Societies {
         public override float SecondsUntilComplexityDescent {
             get {
                 if(!NeedsAreSatisfied) {
-                    return CurrentComplexity.ComplexityDescentDuration - SecondsOfUnsatisfiedNeeds;
+                    return Math.Max(0f, CurrentComplexity.ComplexityDescentDuration - SecondsOfUnsatisfiedNeeds);
                 }else {
                     return -1;
                 }
@@ -107,6 +107,13 @@ namespace Assets.Societies {
             }
         }
 
+        private void OnValidate() {
+            if(CurrentComplexity != null && Location != null) {
+                RefreshBlobSitePermissionsAndCapacities();
+                DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
+            }
+        }
+
         private void OnDestroy() {
             if(PrivateData != null && PrivateData.ParentFactory != null) {
                 PrivateData.ParentFactory.UnsubscribeSocietyBeingDestroyed(this);
@@ -130,7 +137,7 @@ namespace Assets.Societies {
         }
 
         public void OnPointerClick(PointerEventData eventData) {
-            PrivateData.UIControl.PushPointerClickEvent(new SocietyUISummary(this), eventData);
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnPointerEnter(PointerEventData eventData) {
@@ -139,6 +146,14 @@ namespace Assets.Societies {
 
         public void OnPointerExit(PointerEventData eventData) {
             PrivateData.UIControl.PushPointerExitEvent(new SocietyUISummary(this), eventData);
+        }
+
+        public void OnSelect(BaseEventData eventData) {
+            PrivateData.UIControl.PushSelectEvent(new SocietyUISummary(this), eventData);
+        }
+
+        public void OnDeselect(BaseEventData eventData) {
+            PrivateData.UIControl.PushDeselectEvent(new SocietyUISummary(this), eventData);
         }
 
         #endregion
@@ -172,14 +187,12 @@ namespace Assets.Societies {
                 }else if(NeedsAreSatisfied){
                     needsAreSatisfied = false;
                     secondsOfUnsatisfiedNeeds = 0f;
-                }else {
-                    secondsOfUnsatisfiedNeeds += CurrentComplexity.SecondsToFullyConsumeNeeds;
                 }
                 CurrentNeedConsumptionTimer -= CurrentComplexity.SecondsToFullyConsumeNeeds;
             }
 
             if(!NeedsAreSatisfied) {
-                secondsOfUnsatisfiedNeeds += CurrentNeedConsumptionTimer;
+                secondsOfUnsatisfiedNeeds += secondsPassed;
             }
         }
 
@@ -225,7 +238,9 @@ namespace Assets.Societies {
                 }
                 for(int i = 0; i < blobsOfTypeToProduce; ++i) {
                     if(PrivateData.Location.BlobSite.CanPlaceBlobOfTypeInto(resourceType)) {
-                        PrivateData.Location.BlobSite.PlaceBlobInto(PrivateData.BlobFactory.BuildBlob(resourceType));
+                        PrivateData.Location.BlobSite.PlaceBlobInto(PrivateData.BlobFactory.BuildBlob(
+                            resourceType, Location.BlobSite.transform.position)
+                        );
                     }else {
                         break;
                     }
@@ -270,7 +285,7 @@ namespace Assets.Societies {
 
         private bool CanDescendComplexityLadder() {
             var descentTransition = ActiveComplexityLadder.GetDescentTransition(CurrentComplexity);
-            return descentTransition != null && SecondsUntilComplexityDescent <= 0f;
+            return descentTransition != null && !NeedsAreSatisfied && Mathf.Approximately(0f, SecondsUntilComplexityDescent);
         }
 
         private void DescendComplexityLadder() {
@@ -278,6 +293,8 @@ namespace Assets.Societies {
                 var complexityBelow = ActiveComplexityLadder.GetDescentTransition(CurrentComplexity);
                 currentComplexity = complexityBelow;
                 PrivateData.Location.BlobSite.ClearContents();
+                secondsOfUnsatisfiedNeeds = 0f;
+                needsAreSatisfied = true;
 
                 RefreshBlobSitePermissionsAndCapacities();
             }else {

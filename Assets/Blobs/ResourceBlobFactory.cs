@@ -33,9 +33,9 @@ namespace Assets.Blobs {
         #region Unity event methods
 
         private void Awake() {
-            MaterialDict[ResourceType.Red]   = MaterialForRed;
-            MaterialDict[ResourceType.Green] = MaterialForGreen;
-            MaterialDict[ResourceType.Blue]  = MaterialForBlue;
+            MaterialDict[ResourceType.Food]   = MaterialForRed;
+            MaterialDict[ResourceType.Yellow] = MaterialForGreen;
+            MaterialDict[ResourceType.White]  = MaterialForBlue;
         }
 
         #endregion
@@ -50,12 +50,15 @@ namespace Assets.Blobs {
             if(blobComponent == null) {
                 throw new BlobException("BlobBuilder's BlobPrefab lacks a ResourceBlob component");
             }
-            blobGameObject.transform.position = (Vector3)startingXYCoordinates +
-                new Vector3(0f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs);
+            blobGameObject.transform.position = (Vector3)startingXYCoordinates + new Vector3(0f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs);
+
             var blobRenderer = blobGameObject.GetComponent<MeshRenderer>();
             if(blobRenderer != null) {
                 blobRenderer.material = MaterialDict[typeOfResource];
             }
+            blobComponent.BlobType = typeOfResource;
+            blobComponent.gameObject.name = string.Format("Blob ({0})", typeOfResource);
+
             return blobComponent;
         }
 

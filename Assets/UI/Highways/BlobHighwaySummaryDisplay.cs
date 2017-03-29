@@ -27,13 +27,13 @@ namespace Assets.UI.Highways {
             set {
                 _currentSummary = value;
                 if(_currentSummary != null) {
-                    FirstEndpointRedPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Red  ];
-                    FirstEndpointGreenPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Green];
-                    FirstEndpointBluePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue ];
+                    FirstEndpointRedPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food  ];
+                    FirstEndpointGreenPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
+                    FirstEndpointBluePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.White ];
 
-                    SecondEndpointRedPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Red  ];
-                    SecondEndpointGreenPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Green];
-                    SecondEndpointBluePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Blue ];
+                    SecondEndpointRedPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Food  ];
+                    SecondEndpointGreenPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
+                    SecondEndpointBluePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.White ];
                 }
             }
         }
@@ -82,6 +82,8 @@ namespace Assets.UI.Highways {
 
         #endregion
 
+        #region from BlobHighwaySummaryDisplayBase
+
         public override void Activate() {
             gameObject.SetActive(true);
             UpdateDisplay();
@@ -96,23 +98,23 @@ namespace Assets.UI.Highways {
             });
 
             FirstEndpointRedPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseFirstEndpointPermissionChanged(ResourceType.Red, newPermission);
+                RaiseFirstEndpointPermissionChanged(ResourceType.Food, newPermission);
             });
             FirstEndpointGreenPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseFirstEndpointPermissionChanged(ResourceType.Green, newPermission);
+                RaiseFirstEndpointPermissionChanged(ResourceType.Yellow, newPermission);
             });
             FirstEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseFirstEndpointPermissionChanged(ResourceType.Blue, newPermission);
+                RaiseFirstEndpointPermissionChanged(ResourceType.White, newPermission);
             });
 
             SecondEndpointRedPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseSecondEndpointPermissionChanged(ResourceType.Red, newPermission);
+                RaiseSecondEndpointPermissionChanged(ResourceType.Food, newPermission);
             });
             SecondEndpointGreenPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseSecondEndpointPermissionChanged(ResourceType.Green, newPermission);
+                RaiseSecondEndpointPermissionChanged(ResourceType.Yellow, newPermission);
             });
             SecondEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseSecondEndpointPermissionChanged(ResourceType.Blue, newPermission);
+                RaiseSecondEndpointPermissionChanged(ResourceType.White, newPermission);
             });
 
             StartCoroutine(ReselectToThis());
@@ -137,13 +139,13 @@ namespace Assets.UI.Highways {
         public override void UpdateDisplay() {
             PriorityInput.text = CurrentSummary.Priority.ToString();
 
-            FirstEndpointRedPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Red];
-            FirstEndpointGreenPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Green];
-            FirstEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue];
+            FirstEndpointRedPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food];
+            FirstEndpointGreenPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
+            FirstEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.White];
 
-            SecondEndpointRedPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Red];
-            SecondEndpointGreenPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Green];
-            SecondEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Blue];
+            SecondEndpointRedPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Food];
+            SecondEndpointGreenPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
+            SecondEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.White];
         }
 
         public override void ClearDisplay() {
@@ -159,6 +161,8 @@ namespace Assets.UI.Highways {
             SecondEndpointGreenPermissionToggle.isOn = false;            
             SecondEndpointBluePermissionToggle.isOn = false;
         }
+
+        #endregion
 
         public void DoOnChildSelected(BaseEventData eventData) {
             DeactivateOnNextUpdate = false;

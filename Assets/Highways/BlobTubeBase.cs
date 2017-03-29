@@ -24,6 +24,18 @@ namespace Assets.Highways {
 
         #endregion
 
+        #region events
+
+        public event EventHandler<BlobEventArgs> BlobReachedEndOfTube;
+
+        protected void RaiseBlobReachedEndOfTube(ResourceBlob blob) {
+            if(BlobReachedEndOfTube != null) {
+                BlobReachedEndOfTube(this, new BlobEventArgs(blob));
+            }
+        }
+
+        #endregion
+
         #region instance methods
 
         public abstract bool CanPushBlobInto(ResourceBlob blob);
