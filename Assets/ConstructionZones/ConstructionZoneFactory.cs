@@ -19,52 +19,29 @@ namespace Assets.ConstructionZones {
         #region from ConstructionZoneFactoryBase
 
         public override ConstructionProjectBase ResourceDepotProject {
-            get {
-                if(_resourceDepotProject == null) {
-                    _resourceDepotProject = new ConstructionProject(ResourceDepotCost, BuildResourceDepot);
-                }
-                return _resourceDepotProject;
-            }
+            get { return _resourceDepotProject; }
         }
-        private ConstructionProjectBase _resourceDepotProject;
+        [SerializeField] private ConstructionProjectBase _resourceDepotProject;
+
+        public override ConstructionProjectBase FarmlandProject {
+            get { return _farmlandProject; }
+        }
+        [SerializeField] private ConstructionProjectBase _farmlandProject;
+
+        public override ConstructionProjectBase VillageProject {
+            get { return _villageProject; }
+        }
+        [SerializeField] private ConstructionProjectBase _villageProject;
 
         #endregion
 
         [SerializeField] private GameObject ConstructionZonePrefab;
-
-        public ResourceDepotFactoryBase ResourceDepotFactory {
-            get {
-                if(_resourceDepotFactory == null) {
-                    throw new InvalidOperationException("ResourceDepotFactory is uninitialized");
-                } else {
-                    return _resourceDepotFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _resourceDepotFactory = value;
-                }
-            }
-        }
-        [SerializeField] private ResourceDepotFactoryBase _resourceDepotFactory;
 
         public UIControlBase UIControl {
             get { return _uiControl; }
             set { _uiControl = value; }
         }
         [SerializeField] private UIControlBase _uiControl;
-
-        private ResourceSummary ResourceDepotCost {
-            get {
-                if(_resourceDepotCost == null) {
-                    _resourceDepotCost = ResourceSummary.BuildResourceSummary(gameObject);
-                }
-                return _resourceDepotCost;
-            }
-        }
-        [SerializeField] private ResourceSummary _resourceDepotCost;
 
         private List<ConstructionZoneBase> InstantiatedConstructionZones = 
             new List<ConstructionZoneBase>();
@@ -120,6 +97,9 @@ namespace Assets.ConstructionZones {
                 newConstructionZone = hostingObject.AddComponent<ConstructionZone>();
             }
 
+            newConstructionZone.transform.SetParent(location.transform, false);
+            newConstructionZone.transform.localPosition = Vector3.zero;
+
             newConstructionZone.SetLocation(location);
             newConstructionZone.CurrentProject = project;
             newConstructionZone.ParentFactory = this;
@@ -134,15 +114,13 @@ namespace Assets.ConstructionZones {
                 throw new ArgumentNullException("constructionZone");
             }else {
                 InstantiatedConstructionZones.Remove(constructionZone);
+                constructionZone.Location.BlobSite.ClearContents();
+                constructionZone.Location.BlobSite.ClearPermissionsAndCapacity();
                 DestroyImmediate(constructionZone.gameObject);
             }
         }
 
         #endregion
-
-        private void BuildResourceDepot(MapNodeBase location) {
-            ResourceDepotFactory.ConstructDepotAt(location);
-        }
 
         #endregion
 

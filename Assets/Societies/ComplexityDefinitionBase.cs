@@ -30,6 +30,8 @@ namespace Assets.Societies {
 
         public abstract float ComplexityDescentDuration { get; }
 
+        public abstract Material MaterialForSociety { get; }
+
         #endregion
 
     }

@@ -21,9 +21,9 @@ namespace Assets.Highways {
         #region from BlobTubeBase
 
         public override ReadOnlyCollection<ResourceBlob> Contents {
-            get { return new List<ResourceBlob>(BlobQueue).AsReadOnly(); }
+            get { return contents.AsReadOnly(); }
         }
-        private Queue<ResourceBlob> BlobQueue = new Queue<ResourceBlob>();
+        private List<ResourceBlob> contents = new List<ResourceBlob>();
 
         private List<ResourceBlob> BlobsAtEnd = new List<ResourceBlob>();
 
@@ -40,7 +40,7 @@ namespace Assets.Highways {
         [SerializeField] public override int Capacity { get; set; }
 
         public override int SpaceLeft {
-            get { return Capacity - BlobQueue.Count; }
+            get { return Capacity - contents.Count; }
         }
 
         [SerializeField] public override float TransportSpeedPerSecond { get; set; }
@@ -79,18 +79,15 @@ namespace Assets.Highways {
         public override bool CanPullBlobFrom(ResourceBlob blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
-            }else if(!BlobQueue.Contains(blob)) {
+            }else if(!contents.Contains(blob)) {
                 throw new BlobTubeException("Cannot pull a blob from a tube it's not in");
             }
-            return BlobsAtEnd.Contains(blob) && BlobQueue.Peek() == blob;
+            return BlobsAtEnd.Contains(blob) && contents.Contains(blob);
         }
 
         public override void PullBlobFrom(ResourceBlob blob) {
             if(CanPullBlobFrom(blob)) {
-                if(BlobQueue.Peek() != blob) {
-                    throw new BlobTubeException("Blob given permission to be pulled is not actually at the end of the BlobTube");
-                }
-                BlobQueue.Dequeue();
+                contents.Remove(blob);
                 BlobsAtEnd.Remove(blob);
             }else {
                 throw new BlobTubeException("Cannot pull this blob from this tube");
@@ -103,12 +100,12 @@ namespace Assets.Highways {
             }
             bool blobTypeIsPermitted = false;
             PermissionsForBlobTypes.TryGetValue(blob.BlobType, out blobTypeIsPermitted);
-            return blobTypeIsPermitted && BlobQueue.Count < Capacity && !BlobQueue.Contains(blob);
+            return blobTypeIsPermitted && contents.Count < Capacity && !contents.Contains(blob);
         }
 
         public override void PushBlobInto(ResourceBlob blob) {
             if(CanPushBlobInto(blob)) {
-                BlobQueue.Enqueue(blob);
+                contents.Add(blob);
                 blob.transform.SetParent(transform, true);
                 blob.transform.rotation = Quaternion.identity;
 
@@ -131,9 +128,7 @@ namespace Assets.Highways {
             }
             BlobsAtEnd.Remove(blob);
 
-            var listOfQueueContents = new List<ResourceBlob>(BlobQueue);
-            bool retval = listOfQueueContents.Remove(blob);
-            BlobQueue = new Queue<ResourceBlob>(listOfQueueContents);
+            bool retval = contents.Remove(blob);
 
             if(retval) {
                 PrivateData.BlobFactory.DestroyBlob(blob);
@@ -142,11 +137,11 @@ namespace Assets.Highways {
         }
 
         public override void Clear() {
-            var blobsToRemove = new List<ResourceBlob>(BlobQueue);
+            var blobsToRemove = new List<ResourceBlob>(contents);
             for(int i = blobsToRemove.Count - 1; i >= 0; --i) {
                 RemoveBlobFrom(blobsToRemove[i]);
             }
-            BlobQueue.Clear();
+            contents.Clear();
         }
 
         public override void SetEndpoints(Vector3 newSourceLocation, Vector3 newTargetLocation) {

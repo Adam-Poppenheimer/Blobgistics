@@ -70,6 +70,7 @@ namespace Assets.Societies {
             set {
                 _privateData = value;
                 currentComplexity = _privateData.ActiveComplexityLadder.GetStartingComplexity();
+                RefreshAppearance();
                 RefreshBlobSitePermissionsAndCapacities();
                 DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
             }
@@ -109,6 +110,7 @@ namespace Assets.Societies {
 
         private void OnValidate() {
             if(CurrentComplexity != null && Location != null) {
+                RefreshAppearance();
                 RefreshBlobSitePermissionsAndCapacities();
                 DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
             }
@@ -255,7 +257,8 @@ namespace Assets.Societies {
                 }else if(wantSummary.IsContainedWithinBlobSite(PrivateData.Location.BlobSite)) {
                     foreach(var resourceType in wantSummary) {
                         for(int i = 0; i < wantSummary[resourceType]; ++i) {
-                            PrivateData.Location.BlobSite.ExtractBlobOfType(resourceType);
+                            var removedBlob = PrivateData.Location.BlobSite.ExtractBlobOfType(resourceType);
+                            PrivateData.BlobFactory.DestroyBlob(removedBlob);
                         }
                     }
                     return true;
@@ -276,7 +279,7 @@ namespace Assets.Societies {
                 var complexityAbove = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
                 currentComplexity = complexityAbove;
                 PrivateData.Location.BlobSite.ClearContents();
-
+                RefreshAppearance();
                 RefreshBlobSitePermissionsAndCapacities();
             }else {
                 throw new SocietyException("Society cannot ascend its complexity ladder");
@@ -296,6 +299,7 @@ namespace Assets.Societies {
                 secondsOfUnsatisfiedNeeds = 0f;
                 needsAreSatisfied = true;
 
+                RefreshAppearance();
                 RefreshBlobSitePermissionsAndCapacities();
             }else {
                 throw new SocietyException("Society cannot descend its ComplexityLadder");
@@ -395,6 +399,13 @@ namespace Assets.Societies {
             ProductionProfile.SetTotalCapacity(totalCapacity);
             ConsumptionProfile.SetTotalCapacity(totalCapacity);
             DefaultProfile.SetTotalCapacity(totalCapacity);
+        }
+
+        private void RefreshAppearance() {
+            var meshRenderer = GetComponent<MeshRenderer>();
+            if(meshRenderer != null) {
+                meshRenderer.sharedMaterial = CurrentComplexity.MaterialForSociety;
+            }
         }
 
         #endregion

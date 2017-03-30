@@ -112,7 +112,6 @@ namespace Assets.Societies {
 
             newSociety.PrivateData = newPrivateData;
             newSociety.transform.SetParent(location.transform, false);
-            newSociety.transform.localPosition = Vector3.zero;
 
             InstantiatedSocieties.Add(newSociety);
             return newSociety;

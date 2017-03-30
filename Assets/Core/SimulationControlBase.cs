@@ -25,6 +25,12 @@ namespace Assets.Core {
         public abstract bool CanCreateResourceDepotConstructionSiteOnNode(int nodeID);
         public abstract void CreateResourceDepotConstructionSiteOnNode(int nodeID);
 
+        public abstract bool CanCreateFarmlandConstructionSiteOnNode(int nodeID);
+        public abstract void CreateFarmlandConstructionSiteOnNode(int nodeID);
+
+        public abstract bool CanCreateVillageConstructionSiteOnNode(int nodeID);
+        public abstract void CreateVillageConstructionSiteOnNode(int nodeID);
+
         public abstract void DestroyConstructionZone(int zoneID);
 
         public abstract bool CanDestroySociety(int societyID);

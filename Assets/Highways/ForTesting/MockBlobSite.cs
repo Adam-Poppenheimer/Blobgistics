@@ -84,6 +84,14 @@ namespace Assets.Highways.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override bool CanExtractBlob(ResourceBlob blob) {
+            throw new NotImplementedException();
+        }
+
+        public override void ExtractBlob(ResourceBlob blob) {
+            throw new NotImplementedException();
+        }
+
         public override bool CanPlaceBlobInto(ResourceBlob blob) {
             throw new NotImplementedException();
         }

@@ -40,9 +40,22 @@ namespace Assets.UI.Highways {
         }
         private MapNodeUISummary _secondEndpoint;
 
-        public override bool GhostIsBuildable { get; set; }
+        public override bool GhostIsBuildable {
+            get { return _ghostIsBuildable; }
+            set {
+                _ghostIsBuildable = value;
+                var meshRenderer = GetComponent<MeshRenderer>();
+                if(meshRenderer != null) {
+                    meshRenderer.material = _ghostIsBuildable ? BuildableMaterial : UnbuildableMaterial;
+                }
+            }
+        }
+        private bool _ghostIsBuildable;
 
         private PointerEventData lastEventData;
+
+        [SerializeField] private Material BuildableMaterial;
+        [SerializeField] private Material UnbuildableMaterial;
 
         #endregion
 
@@ -101,8 +114,10 @@ namespace Assets.UI.Highways {
             transform.localScale = new Vector3(Vector3.Distance(endpoint1, endpoint2), 1f, 1f);
             transform.rotation = Quaternion.identity;
 
-            var zRotation = Mathf.Atan( (endpoint2.y - endpoint1.y) / (endpoint2.x - endpoint1.x) );
-            transform.Rotate(new Vector3(0f, 0f, zRotation * Mathf.Rad2Deg));
+            if(Vector3.Distance(endpoint1, endpoint2) >= 1f) {
+                var zRotation = Mathf.Atan( (endpoint2.y - endpoint1.y) / (endpoint2.x - endpoint1.x) );
+                transform.Rotate(new Vector3(0f, 0f, zRotation * Mathf.Rad2Deg));
+            }
         }
 
         #endregion

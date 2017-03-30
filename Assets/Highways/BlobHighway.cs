@@ -134,8 +134,12 @@ namespace Assets.Highways {
 
         public override bool CanPullFromFirstEndpoint() {
             if(PrivateData.TubePullingFromFirstEndpoint.SpaceLeft > 0) {
-                foreach(var resourceType in GetCommonResourceTypes(FirstEndpoint.BlobSite, SecondEndpoint.BlobSite)) {
-                    if(GetPullingPermissionForFirstEndpoint(resourceType)) {
+                foreach(var blob in FirstEndpoint.BlobSite.Contents) {
+                    if(
+                        FirstEndpoint.BlobSite.CanExtractBlob(blob) &&
+                        SecondEndpoint.BlobSite.CanPlaceBlobInto(blob) &&
+                        PrivateData.TubePullingFromFirstEndpoint.CanPushBlobInto(blob)
+                    ){
                         return true;
                     }
                 }
@@ -144,22 +148,30 @@ namespace Assets.Highways {
         }
 
         public override void PullFromFirstEndpoint() {
-            if(CanPullFromFirstEndpoint()) {
-                foreach(var resourceType in GetCommonResourceTypes(FirstEndpoint.BlobSite, SecondEndpoint.BlobSite)) {
-                    if(GetPullingPermissionForFirstEndpoint(resourceType)) {
-                        var pulledBlob = FirstEndpoint.BlobSite.ExtractBlobOfType(resourceType);
-                        PrivateData.TubePullingFromFirstEndpoint.PushBlobInto(pulledBlob);
+            if(PrivateData.TubePullingFromFirstEndpoint.SpaceLeft > 0) {
+                foreach(var blob in FirstEndpoint.BlobSite.Contents) {
+                    if(
+                        FirstEndpoint.BlobSite.CanExtractBlob(blob) &&
+                        SecondEndpoint.BlobSite.CanPlaceBlobInto(blob) &&
+                        PrivateData.TubePullingFromFirstEndpoint.CanPushBlobInto(blob)
+                    ){
+                        FirstEndpoint.BlobSite.ExtractBlob(blob);
+                        PrivateData.TubePullingFromFirstEndpoint.PushBlobInto(blob);
+                        return;
                     }
                 }
-            }else {
-                throw new BlobHighwayException("Cannot pull from this BlobHighway's FirstEndpoint");
             }
+            throw new BlobHighwayException("Cannot pull from this BlobHighway's FirstEndpoint");
         }
 
         public override bool CanPullFromSecondEndpoint() {
             if(PrivateData.TubePullingFromSecondEndpoint.SpaceLeft > 0) {
-                foreach(var resourceType in GetCommonResourceTypes(SecondEndpoint.BlobSite, FirstEndpoint.BlobSite)) {
-                    if(GetPullingPermissionForSecondEndpoint(resourceType)) {
+                foreach(var blob in SecondEndpoint.BlobSite.Contents) {
+                    if(
+                        SecondEndpoint.BlobSite.CanExtractBlob(blob) &&
+                        FirstEndpoint.BlobSite.CanPlaceBlobInto(blob) &&
+                        PrivateData.TubePullingFromSecondEndpoint.CanPushBlobInto(blob)
+                    ){
                         return true;
                     }
                 }
@@ -168,16 +180,20 @@ namespace Assets.Highways {
         }
 
         public override void PullFromSecondEndpoint() {
-            if(CanPullFromSecondEndpoint()) {
-                foreach(var resourceType in GetCommonResourceTypes(SecondEndpoint.BlobSite, FirstEndpoint.BlobSite)) {
-                    if(GetPullingPermissionForSecondEndpoint(resourceType)) {
-                        var pulledBlob = SecondEndpoint.BlobSite.ExtractBlobOfType(resourceType);
-                        PrivateData.TubePullingFromSecondEndpoint.PushBlobInto(pulledBlob);
+            if(PrivateData.TubePullingFromSecondEndpoint.SpaceLeft > 0) {
+                foreach(var blob in SecondEndpoint.BlobSite.Contents) {
+                    if(
+                        SecondEndpoint.BlobSite.CanExtractBlob(blob) &&
+                        FirstEndpoint.BlobSite.CanPlaceBlobInto(blob) &&
+                        PrivateData.TubePullingFromSecondEndpoint.CanPushBlobInto(blob)
+                    ){
+                        SecondEndpoint.BlobSite.ExtractBlob(blob);
+                        PrivateData.TubePullingFromSecondEndpoint.PushBlobInto(blob);
+                        return;
                     }
                 }
-            }else {
-                throw new BlobHighwayException("Cannot pull from this BlobHighway's SecondEndpoint");
             }
+            throw new BlobHighwayException("Cannot pull from this BlobHighway's FirstEndpoint");
         }
 
         public override bool GetPullingPermissionForFirstEndpoint(ResourceType type) {

@@ -101,6 +101,14 @@ namespace Assets.Map.Editor {
             throw new NotImplementedException();
         }
 
+        public override bool CanExtractBlob(ResourceBlob blob) {
+            throw new NotImplementedException();
+        }
+
+        public override void ExtractBlob(ResourceBlob blob) {
+            throw new NotImplementedException();
+        }
+
         public override IEnumerable<ResourceType> GetExtractableTypes() {
             throw new NotImplementedException();
         }

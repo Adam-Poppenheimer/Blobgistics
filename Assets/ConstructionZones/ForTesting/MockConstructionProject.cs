@@ -13,14 +13,6 @@ namespace Assets.ConstructionZones.ForTesting {
 
         #region ConstructionProjectBase
 
-        public override Action<MapNodeBase> BuildAction {
-            get { return _buildAction; }
-        }
-        public void SetBuildAction(Action<MapNodeBase> value) {
-            _buildAction = value;
-        }
-        private Action<MapNodeBase> _buildAction = null;
-
         public override ResourceSummary Cost {
             get {
                 if(_cost == null) {
@@ -37,7 +29,19 @@ namespace Assets.ConstructionZones.ForTesting {
         #endregion
 
         #endregion
-        
+
+        #region instance methods
+
+        #region from ConstructionProjectBase
+
+        public override void ExecuteBuild(MapNodeBase location) {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #endregion
+
     }
 
 }

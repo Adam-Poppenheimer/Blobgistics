@@ -269,9 +269,6 @@ namespace Assets.ConstructionZones.Editor {
             ));
 
             MapNodeBase locationPlacedIntoBuildAction = null;
-            projectToComplete.SetBuildAction(delegate(MapNodeBase location) {
-                locationPlacedIntoBuildAction = location;
-            });
 
             factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
 

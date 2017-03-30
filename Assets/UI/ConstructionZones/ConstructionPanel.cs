@@ -25,6 +25,8 @@ namespace Assets.UI.ConstructionZones {
         #endregion
 
         [SerializeField] private Button ConstructResourceDepotButton;
+        [SerializeField] private Button ConstructFarmlandButton;
+        [SerializeField] private Button ConstructVillageButton;
 
         #endregion
 
@@ -36,6 +38,16 @@ namespace Assets.UI.ConstructionZones {
             if(ConstructResourceDepotButton != null) {
                 ConstructResourceDepotButton.onClick.AddListener(delegate() {
                     RaiseDepotConstructionRequested();
+                });
+            }
+            if(ConstructFarmlandButton != null) {
+                ConstructFarmlandButton.onClick.AddListener(delegate() {
+                    RaiseFarmlandConstructionRequested();
+                });
+            }
+            if(ConstructVillageButton != null) {
+                ConstructVillageButton.onClick.AddListener(delegate() {
+                    RaiseVillageConstructionRequested();
                 });
             }
         }

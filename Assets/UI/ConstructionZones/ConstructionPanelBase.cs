@@ -24,13 +24,20 @@ namespace Assets.UI.ConstructionZones {
         #region events
 
         public event EventHandler<EventArgs> DepotConstructionRequested;
+        public event EventHandler<EventArgs> FarmlandConstructionRequested;
+        public event EventHandler<EventArgs> VillageConstructionRequested;
+
         public event EventHandler<EventArgs> CloseRequested;
 
-        protected void RaiseDepotConstructionRequested() {
-            if(DepotConstructionRequested != null) {
-                DepotConstructionRequested(this, EventArgs.Empty);
+        protected void RaiseEvent<T>(EventHandler<T> handler, T e) where T : EventArgs {
+            if(handler != null) {
+                handler(this, e);
             }
         }
+
+        protected void RaiseDepotConstructionRequested   () { RaiseEvent(DepotConstructionRequested,    EventArgs.Empty); }
+        protected void RaiseFarmlandConstructionRequested() { RaiseEvent(FarmlandConstructionRequested, EventArgs.Empty); }
+        protected void RaiseVillageConstructionRequested () { RaiseEvent(VillageConstructionRequested,  EventArgs.Empty); }
 
         protected void RaiseCloseRequested() {
             if(CloseRequested != null) {

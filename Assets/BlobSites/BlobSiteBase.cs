@@ -81,6 +81,9 @@ namespace Assets.BlobSites {
         public abstract bool         CanExtractBlobOfType(ResourceType type);
         public abstract ResourceBlob ExtractBlobOfType   (ResourceType type);
 
+        public abstract bool CanExtractBlob(ResourceBlob blob);
+        public abstract void ExtractBlob   (ResourceBlob blob);
+
         public abstract IEnumerable<ResourceType> GetExtractableTypes();
 
         public abstract IEnumerable<ResourceBlob> GetContentsOfType(ResourceType type);

@@ -110,7 +110,6 @@ namespace Assets.Societies {
         }
         [SerializeField] private float _secondsToFullyConsumeNeeds = 1f;
 
-
         public override float ComplexityDescentDuration {
             get { return _complexityDescentDuration; }
         }
@@ -118,6 +117,14 @@ namespace Assets.Societies {
             _complexityDescentDuration = value;
         }
         [SerializeField] private float _complexityDescentDuration = 10f;
+
+        public override Material MaterialForSociety {
+            get { return _materialForSociety; }
+        }
+        public void SetMaterialForSociety(Material value) {
+            _materialForSociety = value;
+        }
+        [SerializeField] private Material _materialForSociety;
 
         #endregion
 

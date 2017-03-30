@@ -205,6 +205,34 @@ namespace Assets.Core {
             }
         }
 
+        public override void CreateResourceDepotConstructionSiteOnNode(int nodeID) {
+            var node = MapGraph.GetNodeOfID(nodeID);
+
+            if(node == null) {
+                Debug.LogErrorFormat(MapNodeIDErrorMessage, nodeID);
+            }else if(!CanCreateResourceDepotConstructionSiteOnNode(nodeID)) {
+                Debug.LogErrorFormat("A ConstructionZone for a ResourceDepot cannot be built on node {0}", node);
+            }else {
+                ConstructionZoneFactory.BuildConstructionZone(node, ConstructionZoneFactory.ResourceDepotProject);
+            }
+        }
+
+        public override bool CanCreateFarmlandConstructionSiteOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
+        public override void CreateFarmlandConstructionSiteOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
+        public override bool CanCreateVillageConstructionSiteOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
+        public override void CreateVillageConstructionSiteOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
         public override bool CanDestroySociety(int societyID) {
             var society = SocietyFactory.GetSocietyOfID(societyID);
             if(society != null) {
@@ -242,18 +270,6 @@ namespace Assets.Core {
                 }else {
                     HighwayUpgraderFactory.BuildHighwayUpgrader(highway, edgeBlobSite, UpgradedHighwayProfile);
                 }
-            }
-        }
-
-        public override void CreateResourceDepotConstructionSiteOnNode(int nodeID) {
-            var node = MapGraph.GetNodeOfID(nodeID);
-
-            if(node == null) {
-                Debug.LogErrorFormat(MapNodeIDErrorMessage, nodeID);
-            }else if(!CanCreateResourceDepotConstructionSiteOnNode(nodeID)) {
-                Debug.LogErrorFormat("A ConstructionZone for a ResourceDepot cannot be built on node {0}", node);
-            }else {
-                ConstructionZoneFactory.BuildConstructionZone(node, ConstructionZoneFactory.ResourceDepotProject);
             }
         }
 

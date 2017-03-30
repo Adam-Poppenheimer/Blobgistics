@@ -108,6 +108,14 @@ namespace Assets.ConstructionZones.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override bool CanExtractBlob(ResourceBlob blob) {
+            throw new NotImplementedException();
+        }
+
+        public override void ExtractBlob(ResourceBlob blob) {
+            throw new NotImplementedException();
+        }
+
         public override int GetCapacityForResourceType(ResourceType type) {
             int retval;
             Capacities.TryGetValue(type, out retval);

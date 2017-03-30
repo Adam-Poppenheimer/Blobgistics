@@ -178,13 +178,17 @@ namespace Assets.Core {
                     throw new ArgumentNullException("value");
                 } else {
                     if(_constructionPanel != null) {
-                        _constructionPanel.CloseRequested             -= ConstructionPanel_CloseRequested;
-                        _constructionPanel.DepotConstructionRequested -= ConstructionPanel_DepotConstructionRequested;
+                        _constructionPanel.CloseRequested                -= ConstructionPanel_CloseRequested;
+                        _constructionPanel.DepotConstructionRequested    -= ConstructionPanel_DepotConstructionRequested;
+                        _constructionPanel.VillageConstructionRequested  -= ConstructionPanel_VillageConstructionRequested;
+                        _constructionPanel.FarmlandConstructionRequested -= ConstructionPanel_FarmlandConstructionRequested;
                     }
                     _constructionPanel = value;
                     if(_constructionPanel != null) {
-                        _constructionPanel.CloseRequested             += ConstructionPanel_CloseRequested;
-                        _constructionPanel.DepotConstructionRequested += ConstructionPanel_DepotConstructionRequested;
+                        _constructionPanel.CloseRequested                += ConstructionPanel_CloseRequested;
+                        _constructionPanel.DepotConstructionRequested    += ConstructionPanel_DepotConstructionRequested;
+                        _constructionPanel.VillageConstructionRequested  += ConstructionPanel_VillageConstructionRequested;
+                        _constructionPanel.FarmlandConstructionRequested += ConstructionPanel_FarmlandConstructionRequested;
                     }
                 }
             }
@@ -214,6 +218,14 @@ namespace Assets.Core {
 
                 ConstructionPanel.CloseRequested             += ConstructionPanel_CloseRequested;
                 ConstructionPanel.DepotConstructionRequested += ConstructionPanel_DepotConstructionRequested;
+            }
+
+            if(ConstructionZoneSummaryDisplay != null) {
+                ConstructionZoneSummaryDisplay.CloseRequested -= ConstructionZoneSummaryDisplay_CloseRequested;
+                ConstructionZoneSummaryDisplay.ConstructionZoneDestructionRequested -= ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
+
+                ConstructionZoneSummaryDisplay.CloseRequested += ConstructionZoneSummaryDisplay_CloseRequested;
+                ConstructionZoneSummaryDisplay.ConstructionZoneDestructionRequested += ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
             }
 
             if(HighwayUpgraderSummaryDisplay != null) {
@@ -355,6 +367,22 @@ namespace Assets.Core {
             ConstructionPanel.Deactivate();
         }
 
+        private void ConstructionPanel_FarmlandConstructionRequested(object sender, EventArgs e) {
+            if(SimulationControl.CanCreateFarmlandConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID)) {
+                SimulationControl.CreateFarmlandConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID);
+            }
+            ConstructionPanel.Clear();
+            ConstructionPanel.Deactivate();
+        }
+
+        private void ConstructionPanel_VillageConstructionRequested(object sender, EventArgs e) {
+            if(SimulationControl.CanCreateVillageConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID)) {
+                SimulationControl.CreateVillageConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID);
+            }
+            ConstructionPanel.Clear();
+            ConstructionPanel.Deactivate();
+        }
+
         private void ConstructionPanel_CloseRequested(object sender, EventArgs e) {
             ConstructionPanel.Clear();
             ConstructionPanel.Deactivate();
@@ -367,6 +395,7 @@ namespace Assets.Core {
 
         private void ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested(object sender, EventArgs e) {
             SimulationControl.DestroyConstructionZone(ConstructionZoneSummaryDisplay.SummaryToDisplay.ID);
+            ConstructionZoneSummaryDisplay.Deactivate();
         }
 
         private void HighwayDisplay_HighwayUpgradeRequested(object sender, EventArgs e) {

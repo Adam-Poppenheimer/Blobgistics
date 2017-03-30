@@ -123,13 +123,25 @@ namespace Assets.BlobSites {
                 var blobToExtract = contents.FindLast(delegate(ResourceBlob blob) {
                     return blob.BlobType == type;
                 });
-                contents.Remove(blobToExtract);
-                blobToExtract.transform.SetParent(null, true);
-                RaiseBlobExtractedFrom(blobToExtract);
-                PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
+                ExtractBlob(blobToExtract);
                 return blobToExtract;
             }else {
                 throw new BlobSiteException("Cannot extract a blob of this type from this BlobSite");
+            }
+        }
+
+        public override bool CanExtractBlob(ResourceBlob blob) {
+            return GetExtractionPermissionForResourceType(blob.BlobType) && contents.Contains(blob);
+        }
+
+        public override void ExtractBlob(ResourceBlob blob) {
+            if(CanExtractBlob(blob)) {
+                contents.Remove(blob);
+                blob.transform.SetParent(null, true);
+                RaiseBlobExtractedFrom(blob);
+                PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
+            }else {
+                throw new BlobSiteException("Cannot extract this blob from this BlobSite");
             }
         }
 

@@ -14,6 +14,8 @@ namespace Assets.ConstructionZones {
         #region instance fields and properties
 
         public abstract ConstructionProjectBase ResourceDepotProject { get; }
+        public abstract ConstructionProjectBase FarmlandProject      { get; }
+        public abstract ConstructionProjectBase VillageProject       { get; }
 
         #endregion
 

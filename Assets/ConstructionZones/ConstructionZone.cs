@@ -141,9 +141,7 @@ namespace Assets.ConstructionZones {
                 Location.BlobSite.ClearPermissionsAndCapacity();
                 Location.BlobSite.TotalCapacity = 0;
                 Location.BlobSite.BlobPlacedInto -= BlobSite_BlobPlacedInto;
-                if(CurrentProject.BuildAction != null) {
-                    CurrentProject.BuildAction(Location);
-                }
+                CurrentProject.ExecuteBuild(Location);
                 ParentFactory.DestroyConstructionZone(this);
             }
         }

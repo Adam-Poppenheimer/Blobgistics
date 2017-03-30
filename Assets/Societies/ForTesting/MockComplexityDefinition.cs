@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Assets.Blobs;
 using UnityCustomUtilities.Extensions;
+using UnityEngine;
 
 namespace Assets.Societies.ForTesting {
 
@@ -115,6 +116,12 @@ namespace Assets.Societies.ForTesting {
             _costOfAscent = value;
         }
         private ResourceSummary _costOfAscent = null;
+
+        public override Material MaterialForSociety {
+            get {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 

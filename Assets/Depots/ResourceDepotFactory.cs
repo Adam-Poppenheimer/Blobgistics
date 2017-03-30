@@ -78,6 +78,8 @@ namespace Assets.Depots {
 
         public override void UnsubscribeDepot(ResourceDepotBase depot) {
             InstantiatedDepots.Remove(depot);
+            depot.Location.BlobSite.ClearContents();
+            depot.Location.BlobSite.ClearPermissionsAndCapacity();
         }
 
         #endregion

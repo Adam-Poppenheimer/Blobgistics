@@ -951,7 +951,6 @@ namespace Assets.Core.Editor {
         private ConstructionZoneFactory BuildConstructionZoneFactory(ResourceDepotFactoryBase depotFactory) {
             var hostingObject = new GameObject();
             var newFactory = hostingObject.AddComponent<ConstructionZoneFactory>();
-            newFactory.ResourceDepotFactory = depotFactory;
             return newFactory;
         }
 

@@ -84,6 +84,22 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override bool CanCreateFarmlandConstructionSiteOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
+        public override bool CanCreateVillageConstructionSiteOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
+        public override void CreateFarmlandConstructionSiteOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
+        public override void CreateVillageConstructionSiteOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

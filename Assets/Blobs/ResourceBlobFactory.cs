@@ -13,9 +13,10 @@ namespace Assets.Blobs {
 
         #region static fields and properties
 
-        [SerializeField] private Material MaterialForRed   = null;
-        [SerializeField] private Material MaterialForGreen = null;
-        [SerializeField] private Material MaterialForBlue  = null;
+        [SerializeField] private Material MaterialForFood   = null;
+        [SerializeField] private Material MaterialForYellow = null;
+        [SerializeField] private Material MaterialForWhite  = null;
+        [SerializeField] private Material MaterialForBlue   = null;
 
         private static Dictionary<ResourceType, Material> MaterialDict =
             new Dictionary<ResourceType, Material>();
@@ -33,9 +34,10 @@ namespace Assets.Blobs {
         #region Unity event methods
 
         private void Awake() {
-            MaterialDict[ResourceType.Food]   = MaterialForRed;
-            MaterialDict[ResourceType.Yellow] = MaterialForGreen;
-            MaterialDict[ResourceType.White]  = MaterialForBlue;
+            MaterialDict[ResourceType.Food  ] = MaterialForFood;
+            MaterialDict[ResourceType.Yellow] = MaterialForYellow;
+            MaterialDict[ResourceType.White ] = MaterialForWhite;
+            MaterialDict[ResourceType.Blue  ] = MaterialForBlue;
         }
 
         #endregion
@@ -63,7 +65,7 @@ namespace Assets.Blobs {
         }
 
         public override void DestroyBlob(ResourceBlob blob) {
-            Destroy(blob);
+            DestroyImmediate(blob.gameObject);
         }
 
         #endregion
