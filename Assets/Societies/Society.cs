@@ -35,9 +35,15 @@ namespace Assets.Societies {
         [SerializeField, HideInInspector] private ComplexityLadderBase _activeComplexityLadder;
 
         public override ComplexityDefinitionBase CurrentComplexity {
-            get { return currentComplexity; }
+            get { return _currentComplexity; }
         }
-        [SerializeField] private ComplexityDefinitionBase currentComplexity;
+        public void SetCurrentComplexity(ComplexityDefinitionBase value) {
+            _currentComplexity = value;
+            RefreshAppearance();
+            RefreshBlobSitePermissionsAndCapacities();
+            DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
+        }
+        [SerializeField] private ComplexityDefinitionBase _currentComplexity;
 
         public override bool NeedsAreSatisfied {
             get { return needsAreSatisfied; }
@@ -67,13 +73,7 @@ namespace Assets.Societies {
 
         public SocietyPrivateDataBase PrivateData {
             get { return _privateData; }
-            set {
-                _privateData = value;
-                currentComplexity = _privateData.ActiveComplexityLadder.GetStartingComplexity();
-                RefreshAppearance();
-                RefreshBlobSitePermissionsAndCapacities();
-                DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
-            }
+            set { _privateData = value; }
         }
         [SerializeField, HideInInspector] private SocietyPrivateDataBase _privateData;
 
@@ -277,7 +277,7 @@ namespace Assets.Societies {
         private void AscendComplexityLadder() {
             if(CanAscendComplexityLadder()) {
                 var complexityAbove = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
-                currentComplexity = complexityAbove;
+                SetCurrentComplexity(complexityAbove);
                 PrivateData.Location.BlobSite.ClearContents();
                 RefreshAppearance();
                 RefreshBlobSitePermissionsAndCapacities();
@@ -294,7 +294,7 @@ namespace Assets.Societies {
         private void DescendComplexityLadder() {
             if(CanDescendComplexityLadder()) {
                 var complexityBelow = ActiveComplexityLadder.GetDescentTransition(CurrentComplexity);
-                currentComplexity = complexityBelow;
+                SetCurrentComplexity(complexityBelow);
                 PrivateData.Location.BlobSite.ClearContents();
                 secondsOfUnsatisfiedNeeds = 0f;
                 needsAreSatisfied = true;

@@ -14,8 +14,6 @@ namespace Assets.UI.ConstructionZones {
 
         #region from ConstructionPanelBase
 
-        public override bool HasPermissionForResourceDepot { get; set; }
-
         public override bool IsActivated {
             get { return gameObject.activeInHierarchy; }
         }
@@ -37,17 +35,17 @@ namespace Assets.UI.ConstructionZones {
         private void Awake() {
             if(ConstructResourceDepotButton != null) {
                 ConstructResourceDepotButton.onClick.AddListener(delegate() {
-                    RaiseDepotConstructionRequested();
+                    RaiseConstructionRequested("Resource Depot");
                 });
             }
             if(ConstructFarmlandButton != null) {
                 ConstructFarmlandButton.onClick.AddListener(delegate() {
-                    RaiseFarmlandConstructionRequested();
+                    RaiseConstructionRequested("Farmland");
                 });
             }
             if(ConstructVillageButton != null) {
                 ConstructVillageButton.onClick.AddListener(delegate() {
-                    RaiseVillageConstructionRequested();
+                    RaiseConstructionRequested("Village");
                 });
             }
         }
@@ -66,6 +64,22 @@ namespace Assets.UI.ConstructionZones {
 
         public override void Deactivate() {
             gameObject.SetActive(false);
+        }
+
+        public override void SetPermissions(IEnumerable<string> permittedProjects) {
+            ConstructResourceDepotButton.interactable = false;
+            ConstructFarmlandButton.interactable = false;
+            ConstructVillageButton.interactable = false;
+
+            if(permittedProjects.Contains("Resource Depot", StringComparer.InvariantCultureIgnoreCase)) {
+                ConstructResourceDepotButton.interactable = true;
+            }
+            if(permittedProjects.Contains("Farmland", StringComparer.InvariantCultureIgnoreCase)) {
+                ConstructFarmlandButton.interactable = true;
+            }
+            if(permittedProjects.Contains("Village", StringComparer.InvariantCultureIgnoreCase)) {
+                ConstructVillageButton.interactable = true;
+            }
         }
 
         #endregion

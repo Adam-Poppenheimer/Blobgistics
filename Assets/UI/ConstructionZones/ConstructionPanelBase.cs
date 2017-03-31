@@ -7,6 +7,8 @@ using UnityEngine;
 
 using Assets.Map;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.UI.ConstructionZones {
 
     public abstract class ConstructionPanelBase : MonoBehaviour {
@@ -17,15 +19,11 @@ namespace Assets.UI.ConstructionZones {
 
         public abstract MapNodeUISummary LocationToConstruct { get; set; }
 
-        public abstract bool HasPermissionForResourceDepot { get; set; }
-
         #endregion
 
         #region events
 
-        public event EventHandler<EventArgs> DepotConstructionRequested;
-        public event EventHandler<EventArgs> FarmlandConstructionRequested;
-        public event EventHandler<EventArgs> VillageConstructionRequested;
+        public event EventHandler<StringEventArgs> ConstructionRequested;
 
         public event EventHandler<EventArgs> CloseRequested;
 
@@ -35,15 +33,9 @@ namespace Assets.UI.ConstructionZones {
             }
         }
 
-        protected void RaiseDepotConstructionRequested   () { RaiseEvent(DepotConstructionRequested,    EventArgs.Empty); }
-        protected void RaiseFarmlandConstructionRequested() { RaiseEvent(FarmlandConstructionRequested, EventArgs.Empty); }
-        protected void RaiseVillageConstructionRequested () { RaiseEvent(VillageConstructionRequested,  EventArgs.Empty); }
+        protected void RaiseConstructionRequested(string projectName) { RaiseEvent(ConstructionRequested, new StringEventArgs(projectName)); }
 
-        protected void RaiseCloseRequested() {
-            if(CloseRequested != null) {
-                CloseRequested(this, EventArgs.Empty);
-            }
-        }
+        protected void RaiseCloseRequested() { RaiseEvent(CloseRequested, EventArgs.Empty); }
 
         #endregion
 
@@ -52,6 +44,8 @@ namespace Assets.UI.ConstructionZones {
         public abstract void Activate();
         public abstract void Deactivate();
         public abstract void Clear();
+
+        public abstract void SetPermissions(IEnumerable<string> permittedProjects);
 
         #endregion
 

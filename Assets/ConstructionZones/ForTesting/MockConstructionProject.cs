@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Assets.Blobs;
+using Assets.BlobSites;
 using Assets.Map;
 
 namespace Assets.ConstructionZones.ForTesting {
@@ -11,23 +12,6 @@ namespace Assets.ConstructionZones.ForTesting {
 
         #region instance fields and properties
 
-        #region ConstructionProjectBase
-
-        public override ResourceSummary Cost {
-            get {
-                if(_cost == null) {
-                    _cost = ResourceSummary.BuildResourceSummary(new UnityEngine.GameObject());
-                }
-                return _cost;
-            }
-        }
-        public void SetCost(ResourceSummary value) {
-            _cost = value;
-        }
-        private ResourceSummary _cost = null;
-
-        #endregion
-
         #endregion
 
         #region instance methods
@@ -35,6 +19,14 @@ namespace Assets.ConstructionZones.ForTesting {
         #region from ConstructionProjectBase
 
         public override void ExecuteBuild(MapNodeBase location) {
+            throw new NotImplementedException();
+        }
+
+        public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetSiteForProject(BlobSiteBase site) {
             throw new NotImplementedException();
         }
 

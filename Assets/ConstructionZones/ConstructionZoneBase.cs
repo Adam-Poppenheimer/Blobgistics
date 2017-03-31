@@ -22,12 +22,6 @@ namespace Assets.ConstructionZones {
 
         #endregion
 
-        #region instance methods
-
-        public abstract ResourceSummary GetResourcesNeededToFinish();
-
-        #endregion
-
     }
 
 }

@@ -52,6 +52,10 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity) {
+            throw new NotImplementedException();
+        }
+
         public override void DestroySociety(SocietyBase society) {
             throw new NotImplementedException();
         }

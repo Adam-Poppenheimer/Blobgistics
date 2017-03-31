@@ -59,8 +59,12 @@ namespace Assets.Societies {
             }
         }
 
+        public override bool ContainsComplexity(ComplexityDefinitionBase complexity) {
+            return ComplexityHierarchy.Contains(complexity);
+        }
+
         #endregion
-        
+
     }
 
 }

@@ -18,20 +18,7 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionZoneFactoryBase
 
-        public override ConstructionProjectBase ResourceDepotProject {
-            get { return _resourceDepotProject; }
-        }
-        [SerializeField] private ConstructionProjectBase _resourceDepotProject;
-
-        public override ConstructionProjectBase FarmlandProject {
-            get { return _farmlandProject; }
-        }
-        [SerializeField] private ConstructionProjectBase _farmlandProject;
-
-        public override ConstructionProjectBase VillageProject {
-            get { return _villageProject; }
-        }
-        [SerializeField] private ConstructionProjectBase _villageProject;
+        [SerializeField] private List<ConstructionProjectBase> AvailableProjects;
 
         #endregion
 
@@ -75,13 +62,21 @@ namespace Assets.ConstructionZones {
             }
         }
 
-        public override ConstructionZoneBase BuildConstructionZone(MapNodeBase location, ConstructionProjectBase project) {
+        public override bool CanBuildConstructionZone(MapNodeBase location, ConstructionProjectBase project) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }else if(project == null) {
                 throw new ArgumentNullException("project");
             }else if(HasConstructionZoneAtLocation(location)) {
-                throw new ConstructionZoneException("There already exists a ConstructionZone at that location");
+                return false;
+            }else {
+                return true;
+            }
+        }
+
+        public override ConstructionZoneBase BuildConstructionZone(MapNodeBase location, ConstructionProjectBase project) {
+            if(!CanBuildConstructionZone(location, project)) {
+                throw new ConstructionZoneException("Cannot build a construction zone on this location with this project");
             }
 
             ConstructionZone newConstructionZone = null;
@@ -118,6 +113,15 @@ namespace Assets.ConstructionZones {
                 constructionZone.Location.BlobSite.ClearPermissionsAndCapacity();
                 DestroyImmediate(constructionZone.gameObject);
             }
+        }
+
+        public override bool TryGetProjectOfName(string projectName, out ConstructionProjectBase project) {
+            project = AvailableProjects.Find(candidate => candidate.name.Equals(projectName, StringComparison.InvariantCultureIgnoreCase));
+            return project != null;
+        }
+
+        public override IEnumerable<ConstructionProjectBase> GetAllProjects() {
+            return AvailableProjects;
         }
 
         #endregion

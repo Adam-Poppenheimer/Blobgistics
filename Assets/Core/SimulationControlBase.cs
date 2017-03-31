@@ -5,6 +5,7 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.ConstructionZones;
 using Assets.Blobs;
 
 namespace Assets.Core {
@@ -22,14 +23,10 @@ namespace Assets.Core {
 
         public abstract void DestroyHighway(int highwayID);
 
-        public abstract bool CanCreateResourceDepotConstructionSiteOnNode(int nodeID);
-        public abstract void CreateResourceDepotConstructionSiteOnNode(int nodeID);
+        public abstract IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID);
 
-        public abstract bool CanCreateFarmlandConstructionSiteOnNode(int nodeID);
-        public abstract void CreateFarmlandConstructionSiteOnNode(int nodeID);
-
-        public abstract bool CanCreateVillageConstructionSiteOnNode(int nodeID);
-        public abstract void CreateVillageConstructionSiteOnNode(int nodeID);
+        public abstract bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName);
+        public abstract void CreateConstructionSiteOnNode(int nodeID, string buildingName);
 
         public abstract void DestroyConstructionZone(int zoneID);
 

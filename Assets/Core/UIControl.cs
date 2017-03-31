@@ -178,17 +178,13 @@ namespace Assets.Core {
                     throw new ArgumentNullException("value");
                 } else {
                     if(_constructionPanel != null) {
-                        _constructionPanel.CloseRequested                -= ConstructionPanel_CloseRequested;
-                        _constructionPanel.DepotConstructionRequested    -= ConstructionPanel_DepotConstructionRequested;
-                        _constructionPanel.VillageConstructionRequested  -= ConstructionPanel_VillageConstructionRequested;
-                        _constructionPanel.FarmlandConstructionRequested -= ConstructionPanel_FarmlandConstructionRequested;
+                        _constructionPanel.CloseRequested        -= ConstructionPanel_CloseRequested;
+                        _constructionPanel.ConstructionRequested -= ConstructionPanel_ConstructionRequested;
                     }
                     _constructionPanel = value;
                     if(_constructionPanel != null) {
-                        _constructionPanel.CloseRequested                += ConstructionPanel_CloseRequested;
-                        _constructionPanel.DepotConstructionRequested    += ConstructionPanel_DepotConstructionRequested;
-                        _constructionPanel.VillageConstructionRequested  += ConstructionPanel_VillageConstructionRequested;
-                        _constructionPanel.FarmlandConstructionRequested += ConstructionPanel_FarmlandConstructionRequested;
+                        _constructionPanel.CloseRequested        += ConstructionPanel_CloseRequested;
+                        _constructionPanel.ConstructionRequested += ConstructionPanel_ConstructionRequested;
                     }
                 }
             }
@@ -213,11 +209,11 @@ namespace Assets.Core {
             }
 
             if(ConstructionPanel != null) {
-                ConstructionPanel.CloseRequested             -= ConstructionPanel_CloseRequested;
-                ConstructionPanel.DepotConstructionRequested -= ConstructionPanel_DepotConstructionRequested;
+                ConstructionPanel.CloseRequested        -= ConstructionPanel_CloseRequested;
+                ConstructionPanel.ConstructionRequested -= ConstructionPanel_ConstructionRequested;
 
-                ConstructionPanel.CloseRequested             += ConstructionPanel_CloseRequested;
-                ConstructionPanel.DepotConstructionRequested += ConstructionPanel_DepotConstructionRequested;
+                ConstructionPanel.CloseRequested        += ConstructionPanel_CloseRequested;
+                ConstructionPanel.ConstructionRequested += ConstructionPanel_ConstructionRequested;
             }
 
             if(ConstructionZoneSummaryDisplay != null) {
@@ -281,13 +277,8 @@ namespace Assets.Core {
                 var summary = source as MapNodeUISummary;
                 ConstructionPanel.Clear();
                 ConstructionPanel.LocationToConstruct = summary;
-                ConstructionPanel.HasPermissionForResourceDepot = SimulationControl.CanCreateResourceDepotConstructionSiteOnNode(summary.ID);
+                ConstructionPanel.SetPermissions(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
                 ConstructionPanel.Activate();
-            }else if(source is ConstructionZoneUISummary) {
-                var summary = source as ConstructionZoneUISummary;
-                ConstructionZoneSummaryDisplay.Clear();
-                ConstructionZoneSummaryDisplay.SummaryToDisplay = summary;
-                ConstructionZoneSummaryDisplay.Activate();
             }else if(source is HighwayUpgraderUISummary) {
                 var summary = source as HighwayUpgraderUISummary;
                 HighwayUpgraderSummaryDisplay.Clear();
@@ -329,17 +320,16 @@ namespace Assets.Core {
                     SocietySummaryDisplay.CanBeDestroyed = SimulationControl.CanDestroySociety(SocietySummaryDisplay.CurrentSummary.ID);
                     SocietySummaryDisplay.Activate();
                 }
-            }
-        }
-
-        public override void PushUpdateSelectedEvent<T>(T source, BaseEventData eventData) {
-            if(source is SocietyUISummary) {
-                if(SocietySummaryDisplay != null) {
-                    SocietySummaryDisplay.CurrentSummary = source as SocietyUISummary;
-                    SocietySummaryDisplay.UpdateDisplay();
+            }else if(source is ConstructionZoneUISummary) {
+                if(ConstructionZoneSummaryDisplay != null) {
+                    ConstructionZoneSummaryDisplay.Clear();
+                    ConstructionZoneSummaryDisplay.CurrentSummary = source as ConstructionZoneUISummary;
+                    ConstructionZoneSummaryDisplay.Activate();
                 }
             }
         }
+
+        public override void PushUpdateSelectedEvent<T>(T source, BaseEventData eventData) {}
 
         public override void PushDeselectEvent<T>(T source, BaseEventData eventData) {}
 
@@ -359,25 +349,9 @@ namespace Assets.Core {
                 HighwaySummaryDisplay.CurrentSummary.ID, e.TypeChanged, e.IsNowPermitted);
         }
 
-        private void ConstructionPanel_DepotConstructionRequested(object sender, EventArgs e) {
-            if(SimulationControl.CanCreateResourceDepotConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID)) {
-                SimulationControl.CreateResourceDepotConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID);
-            }
-            ConstructionPanel.Clear();
-            ConstructionPanel.Deactivate();
-        }
-
-        private void ConstructionPanel_FarmlandConstructionRequested(object sender, EventArgs e) {
-            if(SimulationControl.CanCreateFarmlandConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID)) {
-                SimulationControl.CreateFarmlandConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID);
-            }
-            ConstructionPanel.Clear();
-            ConstructionPanel.Deactivate();
-        }
-
-        private void ConstructionPanel_VillageConstructionRequested(object sender, EventArgs e) {
-            if(SimulationControl.CanCreateVillageConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID)) {
-                SimulationControl.CreateVillageConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID);
+        private void ConstructionPanel_ConstructionRequested(object sender, StringEventArgs e) {
+            if(SimulationControl.CanCreateConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID, e.Value)) {
+                SimulationControl.CreateConstructionSiteOnNode(ConstructionPanel.LocationToConstruct.ID, e.Value);
             }
             ConstructionPanel.Clear();
             ConstructionPanel.Deactivate();
@@ -394,7 +368,7 @@ namespace Assets.Core {
         }
 
         private void ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested(object sender, EventArgs e) {
-            SimulationControl.DestroyConstructionZone(ConstructionZoneSummaryDisplay.SummaryToDisplay.ID);
+            SimulationControl.DestroyConstructionZone(ConstructionZoneSummaryDisplay.CurrentSummary.ID);
             ConstructionZoneSummaryDisplay.Deactivate();
         }
 

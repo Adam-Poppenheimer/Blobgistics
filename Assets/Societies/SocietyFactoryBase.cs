@@ -26,6 +26,7 @@ namespace Assets.Societies {
 
         public abstract bool        CanConstructSocietyAt(MapNodeBase location);
         public abstract SocietyBase ConstructSocietyAt   (MapNodeBase location, ComplexityLadderBase ladder);
+        public abstract SocietyBase ConstructSocietyAt   (MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity);
 
         public abstract void DestroySociety(SocietyBase society);
 

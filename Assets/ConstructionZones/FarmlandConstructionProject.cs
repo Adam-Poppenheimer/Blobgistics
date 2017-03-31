@@ -8,6 +8,7 @@ using UnityEngine;
 using Assets.Blobs;
 using Assets.Societies;
 using Assets.Map;
+using Assets.BlobSites;
 
 namespace Assets.ConstructionZones {
 
@@ -17,10 +18,8 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionProjectBase
 
-        public override ResourceSummary Cost {
-            get { return _cost; }
-        }
-        [SerializeField] private ResourceSummary _cost;
+        [SerializeField] private int NumberOfResourcesRequired;
+        [SerializeField] private List<ResourceType> ResourceTypesAccepted = new List<ResourceType>();
 
         #endregion
 
@@ -36,6 +35,20 @@ namespace Assets.ConstructionZones {
             if(SocietyFactory.CanConstructSocietyAt(location)) {
                 SocietyFactory.ConstructSocietyAt(location, SocietyFactory.StandardComplexityLadder);
             }
+        }
+
+        public override void SetSiteForProject(BlobSiteBase site) {
+            site.ClearContents();
+            site.ClearPermissionsAndCapacity();
+            foreach(var resourceType in ResourceTypesAccepted) {
+                site.SetPlacementPermissionForResourceType(resourceType, true);
+                site.SetCapacityForResourceType(resourceType, NumberOfResourcesRequired);
+            }
+            site.TotalCapacity = NumberOfResourcesRequired;
+        }
+
+        public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
+            return site.Contents.Count >= NumberOfResourcesRequired;
         }
 
         #endregion

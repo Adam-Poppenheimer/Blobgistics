@@ -328,24 +328,27 @@ namespace Assets.Core.Editor {
 
             depotFactory.ConstructDepotAt(depotNode);
             societyFactory.ConstructSocietyAt(societyNode, societyFactory.StandardComplexityLadder);
-            constructionZoneFactory.BuildConstructionZone(constructionNode, constructionZoneFactory.ResourceDepotProject);
+
+            ConstructionProjectBase project;
+            constructionZoneFactory.TryGetProjectOfName("Resource Depot", out project);
+            constructionZoneFactory.BuildConstructionZone(constructionNode, project);
 
             //Validation
 
             //Returns true when the MapNode is empty
-            Assert.That(controlToTest.CanCreateResourceDepotConstructionSiteOnNode(freeNode.ID),
+            Assert.That(controlToTest.CanCreateConstructionSiteOnNode(freeNode.ID, "Resource Depot"),
                 "Was not permitted to construct on freeNode");
 
             //Return false when there is a society on the MapNode
-            Assert.IsFalse(controlToTest.CanCreateResourceDepotConstructionSiteOnNode(depotNode.ID),
+            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(freeNode.ID, "Resource Depot"),
                 "Falsely permitted to construct on depotNode");
 
             //Returns false when there is another depot on the MapNode
-            Assert.IsFalse(controlToTest.CanCreateResourceDepotConstructionSiteOnNode(societyNode.ID),
+            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(freeNode.ID, "Resource Depot"),
                 "Falsely permitted to construct on societyNode");
 
             //Returns false when there is a ConstructionSite on the MapNode
-            Assert.IsFalse(controlToTest.CanCreateResourceDepotConstructionSiteOnNode(constructionNode.ID),
+            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(freeNode.ID, "Resource Depot"),
                 "Falsely permitted to construct on constructionNode");
         }
 
@@ -360,15 +363,18 @@ namespace Assets.Core.Editor {
             var nodeToPlaceUpon = mapGraph.BuildNode(Vector3.zero);
 
             //Execution
-            controlToTest.CreateResourceDepotConstructionSiteOnNode(nodeToPlaceUpon.ID);
+            controlToTest.CanCreateConstructionSiteOnNode(nodeToPlaceUpon.ID, "Resource Depot");
 
             //Validation
             
             Assert.NotNull(constructionZoneFactory.HasConstructionZoneAtLocation(nodeToPlaceUpon),
                 "constructionZoneFactory does not register a ConstructionZone at the specified location");
 
+            ConstructionProjectBase project;
+            constructionZoneFactory.TryGetProjectOfName("Resource Depot", out project);
             var zoneAtLocation = constructionZoneFactory.GetConstructionZoneAtLocation(nodeToPlaceUpon);
-            Assert.AreEqual(constructionZoneFactory.ResourceDepotProject, zoneAtLocation.CurrentProject,
+
+            Assert.AreEqual(project, zoneAtLocation.CurrentProject,
                 "The construction zone at the specified location has the wrong CurrentProject");
         }
 
@@ -382,7 +388,7 @@ namespace Assets.Core.Editor {
 
             var nodeToPlaceUpon = mapGraph.BuildNode(Vector3.zero);
 
-            controlToTest.CreateResourceDepotConstructionSiteOnNode(nodeToPlaceUpon.ID);
+            controlToTest.CreateConstructionSiteOnNode(nodeToPlaceUpon.ID, "Resource Depot");
 
             var zoneAtLocation = constructionZoneFactory.GetConstructionZoneAtLocation(nodeToPlaceUpon);
             zoneAtLocation.name = "SimulationControl Integration Tests' ConstructionZone";
@@ -743,7 +749,7 @@ namespace Assets.Core.Editor {
 
             //Execution
             Assert.DoesNotThrow(delegate() {
-                controlToTest.CanCreateResourceDepotConstructionSiteOnNode(42);
+                controlToTest.CanCreateConstructionSiteOnNode(42, "Resource Depot");
             });
 
             //Validation
@@ -765,7 +771,7 @@ namespace Assets.Core.Editor {
 
             //Execution
             Assert.DoesNotThrow(delegate() {
-                controlToTest.CreateResourceDepotConstructionSiteOnNode(42);
+                controlToTest.CreateConstructionSiteOnNode(42, "Resource Depot");
             });
 
             //Validation

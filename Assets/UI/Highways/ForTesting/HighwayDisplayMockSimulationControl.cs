@@ -51,10 +51,6 @@ namespace Assets.UI.Highways.ForTesting {
             return AcceptsUpgradeRequests;
         }
 
-        public override bool CanCreateResourceDepotConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
         public override bool CanDestroySociety(int societyID) {
             throw new NotImplementedException();
         }
@@ -67,10 +63,6 @@ namespace Assets.UI.Highways.ForTesting {
             if(HighwayUpgradeRequested != null) {
                 HighwayUpgradeRequested(this, new IntEventArgs(highwayID));
             }
-        }
-
-        public override void CreateResourceDepotConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
         }
 
         public override void DestroyConstructionZone(int zoneID) {
@@ -113,25 +105,21 @@ namespace Assets.UI.Highways.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool CanCreateFarmlandConstructionSiteOnNode(int nodeID) {
+        public override bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName) {
             throw new NotImplementedException();
         }
 
-        public override bool CanCreateVillageConstructionSiteOnNode(int nodeID) {
+        public override void CreateConstructionSiteOnNode(int nodeID, string buildingName) {
             throw new NotImplementedException();
         }
 
-        public override void CreateFarmlandConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateVillageConstructionSiteOnNode(int nodeID) {
+        public override IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
             throw new NotImplementedException();
         }
 
         #endregion
 
         #endregion
-        
+
     }
 }

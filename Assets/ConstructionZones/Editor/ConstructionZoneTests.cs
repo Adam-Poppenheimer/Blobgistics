@@ -24,29 +24,7 @@ namespace Assets.ConstructionZones.Editor {
 
         [Test]
         public void OnConstructionZoneBuiltViaFactory_UnderlyingBlobSiteHasCorrectPermissionsAndCapacities() {
-            //Setup
-            var factoryToUse = BuildConstructionZoneFactory();
-            var mapNode = BuildMapNode();
-
-            //Execution
-            factoryToUse.BuildConstructionZone(mapNode, factoryToUse.ResourceDepotProject);
-
-            //Validation
-            var projectCost = factoryToUse.ResourceDepotProject.Cost;
-            foreach(var resourceType in projectCost) {
-                if(projectCost[resourceType] > 0) {
-                    Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(resourceType),
-                        "BlobSite does not have placement permission for resourceType " + resourceType);
-
-                    Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(resourceType),
-                        "BlobSite falsely has extraction permission for resourceType " + resourceType);
-                }
-
-                Assert.AreEqual(projectCost[resourceType], mapNode.BlobSite.GetCapacityForResourceType(resourceType),
-                    "BlobSite has the incorrect capacity for resourceType "+ resourceType);
-            }
-            Assert.AreEqual(projectCost.GetTotalResourceCount(), mapNode.BlobSite.TotalCapacity,
-                "BlobSite has the incorrect TotalCapacity");
+            throw new NotImplementedException();
         }
 
         [Test]
@@ -61,7 +39,9 @@ namespace Assets.ConstructionZones.Editor {
             };
 
             //Execution
-            factoryToUse.BuildConstructionZone(mapNode, factoryToUse.ResourceDepotProject);
+            ConstructionProjectBase project;
+            factoryToUse.TryGetProjectOfName("Resource Depot", out project);
+            factoryToUse.BuildConstructionZone(mapNode, project);
 
             //Validation
             Assert.That(hasBeenCleared);
@@ -81,8 +61,10 @@ namespace Assets.ConstructionZones.Editor {
 
             //Execution and Validation
             int i = 0;
+            ConstructionProjectBase project;
+            factoryToUse.TryGetProjectOfName("Resource Depot", out project);
             for(; i < 50; ++i) {
-                zoneList.Add(factoryToUse.BuildConstructionZone(mapNodeList[i], factoryToUse.ResourceDepotProject));
+                zoneList.Add(factoryToUse.BuildConstructionZone(mapNodeList[i], project));
                 foreach(var outerZone in zoneList) {
                     foreach(var innerZone in zoneList) {
                         if(outerZone != innerZone) {
@@ -97,7 +79,7 @@ namespace Assets.ConstructionZones.Editor {
                 factoryToUse.DestroyConstructionZone(zoneToDestroy);
             }
             for(i = 10; i < 35; ++i) {
-                zoneList.Add(factoryToUse.BuildConstructionZone(mapNodeList[i], factoryToUse.ResourceDepotProject));
+                zoneList.Add(factoryToUse.BuildConstructionZone(mapNodeList[i], project));
                 foreach(var outerZone in zoneList) {
                     foreach(var innerZone in zoneList) {
                         if(outerZone != innerZone) {
@@ -120,9 +102,12 @@ namespace Assets.ConstructionZones.Editor {
                 BuildMapNode(),
             };
 
-            factoryToTest.BuildConstructionZone(mapNodes[0], factoryToTest.ResourceDepotProject);
-            factoryToTest.BuildConstructionZone(mapNodes[1], factoryToTest.ResourceDepotProject);
-            factoryToTest.BuildConstructionZone(mapNodes[4], factoryToTest.ResourceDepotProject);
+            ConstructionProjectBase project;
+            factoryToTest.TryGetProjectOfName("Resource Depot", out project);
+
+            factoryToTest.BuildConstructionZone(mapNodes[0], project);
+            factoryToTest.BuildConstructionZone(mapNodes[1], project);
+            factoryToTest.BuildConstructionZone(mapNodes[4], project);
 
             //Execution
 
@@ -144,9 +129,12 @@ namespace Assets.ConstructionZones.Editor {
                 BuildMapNode(),
             };
 
-            var zoneOnNode0 = factoryToTest.BuildConstructionZone(mapNodes[0], factoryToTest.ResourceDepotProject);
-            var zoneOnNode1 = factoryToTest.BuildConstructionZone(mapNodes[1], factoryToTest.ResourceDepotProject);
-            var zoneOnNode2 = factoryToTest.BuildConstructionZone(mapNodes[2], factoryToTest.ResourceDepotProject);
+            ConstructionProjectBase project;
+            factoryToTest.TryGetProjectOfName("Resource Depot", out project);
+
+            var zoneOnNode0 = factoryToTest.BuildConstructionZone(mapNodes[0], project);
+            var zoneOnNode1 = factoryToTest.BuildConstructionZone(mapNodes[1], project);
+            var zoneOnNode2 = factoryToTest.BuildConstructionZone(mapNodes[2], project);
 
             //Execution
 
@@ -168,12 +156,15 @@ namespace Assets.ConstructionZones.Editor {
                 BuildMapNode(),
             };
 
+            ConstructionProjectBase project;
+            factoryToTest.TryGetProjectOfName("Resource Depot", out project);
+
             var zones = new List<ConstructionZoneBase>() {
-                factoryToTest.BuildConstructionZone(mapNodes[0], factoryToTest.ResourceDepotProject),
-                factoryToTest.BuildConstructionZone(mapNodes[1], factoryToTest.ResourceDepotProject),
-                factoryToTest.BuildConstructionZone(mapNodes[2], factoryToTest.ResourceDepotProject),
-                factoryToTest.BuildConstructionZone(mapNodes[3], factoryToTest.ResourceDepotProject),
-                factoryToTest.BuildConstructionZone(mapNodes[4], factoryToTest.ResourceDepotProject),
+                factoryToTest.BuildConstructionZone(mapNodes[0], project),
+                factoryToTest.BuildConstructionZone(mapNodes[1], project),
+                factoryToTest.BuildConstructionZone(mapNodes[2], project),
+                factoryToTest.BuildConstructionZone(mapNodes[3], project),
+                factoryToTest.BuildConstructionZone(mapNodes[4], project),
             };
 
             //Execution
@@ -190,156 +181,22 @@ namespace Assets.ConstructionZones.Editor {
 
         [Test]
         public void OnCurrentProjectChanged_UnderlyingBlobSiteGainsCorrectPermissionsAndCapacities() {
-            //Setup
-            var factoryToUse = BuildConstructionZoneFactory();
-            var mapNode = BuildMapNode();
-
-            var zoneToTest = factoryToUse.BuildConstructionZone(mapNode, factoryToUse.ResourceDepotProject);
-
-            var alternateProject = new MockConstructionProject();
-            alternateProject.SetCost(ResourceSummary.BuildResourceSummary(
-                factoryToUse.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 40),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 80)
-            ));
-
-            //Execution
-            zoneToTest.CurrentProject = alternateProject;
-
-            //Validation
-            Assert.AreEqual(40, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.Food), "Incorrect capacity for Food");
-            Assert.AreEqual(0, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.Yellow), "Incorrect capacity for Yellow");
-            Assert.AreEqual(80, mapNode.BlobSite.GetCapacityForResourceType(ResourceType.White), "Incorrect capacity for White");
-
-            Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Food), "Food lacks placement permission");
-            Assert.IsFalse(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Yellow), "Yellow falsely has placement permission");
-            Assert.That(mapNode.BlobSite.GetPlacementPermissionForResourceType(ResourceType.White), "White lacks placement permission");
-
-            Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(ResourceType.Food), "Food falsely has extraction permission");
-            Assert.IsFalse(mapNode.BlobSite.GetExtractionPermissionForResourceType(ResourceType.White), "White falsely has extraction permission");
-        }
-
-        [Test]
-        public void OnBlobsAddedToAndRemovedFromUnderlyingSite_GetResourcesNeededToFinishIsAlwaysCorrect() {
-            //Setup
-            var newLocation = BuildMapNode();
-            var factoryToUse = BuildConstructionZoneFactory();
-
-            var zoneToTest = factoryToUse.BuildConstructionZone(newLocation, factoryToUse.ResourceDepotProject);
-
-            var depotCost = factoryToUse.ResourceDepotProject.Cost;
-            var blobSite = newLocation.BlobSite;
-
-            //Execution and Validation
-            for(int i = 1; i < depotCost[ResourceType.Food]; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
-                Assert.AreEqual(depotCost[ResourceType.Food] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.Food],
-                    "Incorrect Food needed to finish on iteration " + i);
-            }
-            for(int i = 1; i < depotCost[ResourceType.Yellow]; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
-                Assert.AreEqual(depotCost[ResourceType.Yellow] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.Yellow],
-                    "Incorrect Food needed to finish on iteration " + i);
-            }
-            for(int i = 1; i < depotCost[ResourceType.White]; ++i) {
-                blobSite.PlaceBlobInto(BuildBlob(ResourceType.White));
-                Assert.AreEqual(depotCost[ResourceType.White] - i, zoneToTest.GetResourcesNeededToFinish()[ResourceType.White],
-                    "Incorrect Food needed to finish on iteration " + i);
-            }
-
-            blobSite.ClearContents();
-            var resourcesNeeded = zoneToTest.GetResourcesNeededToFinish();
-
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                Assert.AreEqual(depotCost[resourceType], resourcesNeeded[resourceType],
-                    "Incorrect post-clear resources needed for resourceType " + resourceType);
-            }
+            throw new NotImplementedException();
         }
 
         [Test]
         public void OnUnderlyingBlobSiteMeetsConstructionConditions_ConstructionActionIsCalledCorrectly() {
-            //Setup
-            var newLocation = BuildMapNode();
-            var factoryToUse = BuildConstructionZoneFactory();
-
-            var projectToComplete = new MockConstructionProject();
-            projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
-                factoryToUse.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
-            ));
-
-            MapNodeBase locationPlacedIntoBuildAction = null;
-
-            factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
-
-            //Execution
-            for(int i = 0; i < 10; ++i) {
-                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            }
-
-            //Validation
-            Assert.AreEqual(newLocation, locationPlacedIntoBuildAction, "Delegate not called on correct location");
+            throw new NotImplementedException();
         }
 
         [Test]
         public void OnUnderlyingBlobSiteMeetsConstructionConditions_BlobSiteIsClearedOfContents() {
-            //Setup
-            var newLocation = BuildMapNode();
-
-            bool siteWasCleared = false;
-            newLocation.BlobSite.AllBlobsCleared += delegate(object sender, EventArgs e) {
-                siteWasCleared = true;
-            };
-
-            var factoryToUse = BuildConstructionZoneFactory();
-            var projectToComplete = new MockConstructionProject();
-            projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
-                factoryToUse.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
-            ));
-
-            factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
-
-            //Execution
-            for(int i = 0; i < 10; ++i) {
-                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            }
-
-            //Validation
-            Assert.That(siteWasCleared);
+            throw new NotImplementedException();
         }
 
         [Test]
         public void OnUnderlyingBlobSiteMeetsConstructionConditions_BlobSiteIsClearedOfPermissionsAndCapacities() {
-            //Setup
-            var newLocation = BuildMapNode();
-
-            var factoryToUse = BuildConstructionZoneFactory();
-            var projectToComplete = new MockConstructionProject();
-            projectToComplete.SetCost(ResourceSummary.BuildResourceSummary(
-                factoryToUse.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
-            ));
-
-            factoryToUse.BuildConstructionZone(newLocation, projectToComplete);
-
-            var blobSite = newLocation.BlobSite;
-
-            //Execution
-            for(int i = 0; i < 10; ++i) {
-                newLocation.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            }
-
-            //Validation
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                Assert.IsFalse(blobSite.GetPlacementPermissionForResourceType(resourceType),
-                    "blobSite falsely has placement permission for resourceType " + resourceType);
-                Assert.IsFalse(blobSite.GetExtractionPermissionForResourceType(resourceType),
-                    "blobSite falsely has extraction permission for resourceType " + resourceType);
-                Assert.AreEqual(0, blobSite.GetCapacityForResourceType(resourceType), 
-                    "blobSite has incorrect capacity for resourceType " + resourceType);
-            }
-            Assert.AreEqual(0, blobSite.TotalCapacity, "blobSite has incorrect TotalCapacity");
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -352,8 +209,11 @@ namespace Assets.ConstructionZones.Editor {
             var factoryToUse = BuildConstructionZoneFactory();
 
             //Execution and Validation
+            
+            ConstructionProjectBase project;
+            factoryToUse.TryGetProjectOfName("Resource Depot", out project);
             Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToUse.BuildConstructionZone(null, factoryToUse.ResourceDepotProject);
+                factoryToUse.BuildConstructionZone(null, project);
             });
         }
 
@@ -386,7 +246,9 @@ namespace Assets.ConstructionZones.Editor {
             var newLocation = BuildMapNode();
             var factoryToUse = BuildConstructionZoneFactory();
 
-            var zoneToTest = factoryToUse.BuildConstructionZone(newLocation, factoryToUse.ResourceDepotProject);
+            ConstructionProjectBase project;
+            factoryToUse.TryGetProjectOfName("Resource Depot", out project);
+            var zoneToTest = factoryToUse.BuildConstructionZone(newLocation, project);
 
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
@@ -429,16 +291,18 @@ namespace Assets.ConstructionZones.Editor {
         }
 
         [Test]
-        public void Factory_OnHasMapNodeAtLocationIsTrue_AndBuildConstructionZoneCalledAtLocation_ThrowsConstrutionZoneException() {
+        public void Factory_OnHasConstructionZoneAtLocationIsTrue_AndBuildConstructionZoneCalledAtLocation_ThrowsConstrutionZoneException() {
             //Setup
             var factoryToTest = BuildConstructionZoneFactory();
             var location = BuildMapNode();
 
-            factoryToTest.BuildConstructionZone(location, factoryToTest.ResourceDepotProject);
+            ConstructionProjectBase project;
+            factoryToTest.TryGetProjectOfName("Resource Depot", out project);
+            factoryToTest.BuildConstructionZone(location, project);
 
             //Execution and Validation
             Assert.Throws<ConstructionZoneException>(delegate() {
-                factoryToTest.BuildConstructionZone(location, factoryToTest.ResourceDepotProject);
+                factoryToTest.BuildConstructionZone(location, project);
             });
         }
 

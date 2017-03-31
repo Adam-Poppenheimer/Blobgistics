@@ -12,8 +12,6 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
         #region from ConstructionPanelBase
 
-        public override bool HasPermissionForResourceDepot { get; set; }
-
         public override bool IsActivated {
             get { return isActivated; }
         }
@@ -50,7 +48,11 @@ namespace Assets.UI.ConstructionZones.ForTesting {
         }
 
         public void RaiseResourceDepotConstructionRequest() {
-            RaiseDepotConstructionRequested();
+            RaiseConstructionRequested("Resource Depot");
+        }
+
+        public override void SetPermissions(IEnumerable<string> permittedProjects) {
+            throw new NotImplementedException();
         }
 
         #endregion

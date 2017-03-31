@@ -6,7 +6,7 @@ using UnityEngine;
 using Assets.Blobs;
 using Assets.Depots;
 using Assets.Map;
-
+using Assets.BlobSites;
 
 namespace Assets.ConstructionZones {
 
@@ -14,14 +14,7 @@ namespace Assets.ConstructionZones {
 
         #region instance fields and properties
 
-        #region from ConstructionProjectBase
-
-        public override ResourceSummary Cost {
-            get { return _cost; }
-        }
-        [SerializeField] private ResourceSummary _cost;
-
-        #endregion
+        [SerializeField] private ResourceSummary Cost;
 
         [SerializeField] private ResourceDepotFactoryBase DepotFactory;
 
@@ -33,6 +26,14 @@ namespace Assets.ConstructionZones {
 
         public override void ExecuteBuild(MapNodeBase location) {
             DepotFactory.ConstructDepotAt(location);
+        }
+
+        public override void SetSiteForProject(BlobSiteBase site) {
+            site.SetPlacementPermissionsAndCapacity(Cost);
+        }
+
+        public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
+            return Cost.IsContainedWithinBlobSite(site);
         }
 
         #endregion

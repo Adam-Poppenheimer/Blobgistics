@@ -191,13 +191,31 @@ namespace Assets.Core {
             }
         }
 
-        public override bool CanCreateResourceDepotConstructionSiteOnNode(int nodeID) {
+        public override IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
+            var retval = new List<string>();
+
             var node = MapGraph.GetNodeOfID(nodeID);
             if(node != null) {
+                foreach(var project in ConstructionZoneFactory.GetAllProjects()) {
+                    if(ConstructionZoneFactory.CanBuildConstructionZone(node, project)) {
+                        retval.Add(project.name);
+                    }
+                }
+            }else {
+                Debug.LogErrorFormat(MapNodeIDErrorMessage, nodeID);
+            }
+            return retval;
+        }
+
+        public override bool CanCreateConstructionSiteOnNode(int nodeID, string projectName) {
+            var node = MapGraph.GetNodeOfID(nodeID);
+            if(node != null) {
+                ConstructionProjectBase project;
                 return (
-                    !ConstructionZoneFactory.HasConstructionZoneAtLocation(node) &&
+                    ConstructionZoneFactory.TryGetProjectOfName(projectName, out project) &&
                     !SocietyFactory.HasSocietyAtLocation(node) &&
-                    !ResourceDepotFactory.HasDepotAtLocation(node)
+                    !ResourceDepotFactory.HasDepotAtLocation(node) &&
+                    ConstructionZoneFactory.CanBuildConstructionZone(node, project)
                 );
             }else {
                 Debug.LogErrorFormat(MapNodeIDErrorMessage, nodeID);
@@ -205,32 +223,19 @@ namespace Assets.Core {
             }
         }
 
-        public override void CreateResourceDepotConstructionSiteOnNode(int nodeID) {
+        public override void CreateConstructionSiteOnNode(int nodeID, string projectName) {
             var node = MapGraph.GetNodeOfID(nodeID);
 
             if(node == null) {
                 Debug.LogErrorFormat(MapNodeIDErrorMessage, nodeID);
-            }else if(!CanCreateResourceDepotConstructionSiteOnNode(nodeID)) {
-                Debug.LogErrorFormat("A ConstructionZone for a ResourceDepot cannot be built on node {0}", node);
+            }else if(!CanCreateConstructionSiteOnNode(nodeID, projectName)) {
+                Debug.LogErrorFormat("A ConstructionZone for a building of name {0} cannot be built on node {1}",
+                    projectName, node);
             }else {
-                ConstructionZoneFactory.BuildConstructionZone(node, ConstructionZoneFactory.ResourceDepotProject);
+                ConstructionProjectBase project;
+                ConstructionZoneFactory.TryGetProjectOfName(projectName, out project);
+                ConstructionZoneFactory.BuildConstructionZone(node, project);
             }
-        }
-
-        public override bool CanCreateFarmlandConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateFarmlandConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override bool CanCreateVillageConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateVillageConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
         }
 
         public override bool CanDestroySociety(int societyID) {

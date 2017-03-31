@@ -17,7 +17,7 @@ namespace Assets.UI.ConstructionZones.ForTesting {
         }
         private bool isActivated = false;
 
-        public override ConstructionZoneUISummary SummaryToDisplay { get; set; }
+        public override ConstructionZoneUISummary CurrentSummary { get; set; }
 
         #endregion
 
@@ -39,6 +39,10 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
         public override void Deactivate() {
             isActivated = false;
+        }
+
+        public override void UpdateDisplay() {
+            throw new NotImplementedException();
         }
 
         #endregion

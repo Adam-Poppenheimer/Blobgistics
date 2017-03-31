@@ -44,58 +44,12 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void OnPointerClickEventPushedIntoUIControl_ConstructionPanelBuildingPermissionsAreSetProperly() {
-            //Setup
-            var constructionPanel = BuildMockConstructionPanel();
-            var simulationControl = BuildMockSimulationControl();
-
-            var controlToTest = BuildUIControl();
-            controlToTest.ConstructionPanel = constructionPanel;
-            controlToTest.SimulationControl = simulationControl;
-
-            var eventSystem = BuildEventSystem();
-            var eventData = new PointerEventData(eventSystem);
-
-            var locationToConstruct = new MapNodeUISummary();
-
-            //Execution and Validation
-            simulationControl.PermitResourceDepots = true;
-            controlToTest.PushPointerClickEvent(locationToConstruct, eventData);
-
-            Assert.That(constructionPanel.HasPermissionForResourceDepot, "ConstructionPanel lacks resourceDepot permission in check 1");
-
-            simulationControl.PermitResourceDepots = false;
-            controlToTest.PushPointerClickEvent(locationToConstruct, eventData);
-
-            Assert.IsFalse(constructionPanel.HasPermissionForResourceDepot, "ConstructionPanel falsey permits resourceDepot in check 2");
+            throw new NotImplementedException();
         }
 
         [Test]
         public void OnConstructionPanelRaisesDepotConstructionRequestedEvent_ConstructResourceDepotRequestIsSentToSimulationControl_AndConstructionPanelIsCleareadAndDeactivated() {
-            //Setup
-            var constructionPanel = BuildMockConstructionPanel();
-            var simulationControl = BuildMockSimulationControl();
-
-            var controlToTest = BuildUIControl();
-            controlToTest.ConstructionPanel = constructionPanel;
-            controlToTest.SimulationControl = simulationControl;
-
-            bool receivedConstructionRequest = false;
-            simulationControl.ResourceDepotConstructionRequested += delegate(object sender, EventArgs e) {
-                receivedConstructionRequest = true;
-            };
-            simulationControl.PermitResourceDepots = true;
-
-            var locationToConstruct = new MapNodeUISummary();
-            locationToConstruct.ID = 50;
-            constructionPanel.LocationToConstruct = locationToConstruct;
-
-            //Execution
-            constructionPanel.RaiseResourceDepotConstructionRequest();
-
-            //Validation
-            Assert.That(receivedConstructionRequest, "SimulationControl did not receive the construction request");
-            Assert.IsTrue(constructionPanel.HasBeenCleared, "ConstructionPanel has not been cleared");
-            Assert.IsFalse(constructionPanel.IsActivated, "ConstructionPanel is still activated");
+            throw new NotImplementedException();
         }
 
         [Test]

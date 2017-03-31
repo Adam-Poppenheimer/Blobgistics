@@ -15,7 +15,7 @@ namespace Assets.UI.ConstructionZones {
 
         public abstract bool IsActivated { get; }
 
-        public abstract ConstructionZoneUISummary SummaryToDisplay { get; set; }
+        public abstract ConstructionZoneUISummary CurrentSummary { get; set; }
 
         #endregion
 
@@ -44,6 +44,8 @@ namespace Assets.UI.ConstructionZones {
         public abstract void Deactivate();
 
         public abstract void Clear();
+
+        public abstract void UpdateDisplay();
 
         #endregion
 

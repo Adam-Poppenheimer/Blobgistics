@@ -30,10 +30,6 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool CanCreateResourceDepotConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
         public override bool CanDestroySociety(int societyID) {
             throw new NotImplementedException();
         }
@@ -43,10 +39,6 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
         }
 
         public override void CreateHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateResourceDepotConstructionSiteOnNode(int nodeID) {
             throw new NotImplementedException();
         }
 
@@ -84,26 +76,22 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool CanCreateFarmlandConstructionSiteOnNode(int nodeID) {
+        public override bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName) {
             throw new NotImplementedException();
         }
 
-        public override bool CanCreateVillageConstructionSiteOnNode(int nodeID) {
+        public override void CreateConstructionSiteOnNode(int nodeID, string buildingName) {
             throw new NotImplementedException();
         }
 
-        public override void CreateFarmlandConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateVillageConstructionSiteOnNode(int nodeID) {
+        public override IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
             throw new NotImplementedException();
         }
 
         #endregion
 
         #endregion
-        
+
     }
 
 }

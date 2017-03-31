@@ -56,6 +56,10 @@ namespace Assets.Societies.ForTesting {
             return AscentChain[StartingIndex];
         }
 
+        public override bool ContainsComplexity(ComplexityDefinitionBase complexity) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

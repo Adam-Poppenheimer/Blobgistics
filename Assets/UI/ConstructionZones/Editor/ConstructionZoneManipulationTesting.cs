@@ -43,7 +43,7 @@ namespace Assets.UI.ConstructionZones.Editor {
             //Validation
             Assert.That(zonePanel.HasBeenCleared, "ConstructionZoneDisplay was not cleared");
             Assert.That(zonePanel.IsActivated, "ConstructionZoneDisplay was not activated");
-            Assert.AreEqual(zoneToSelect, zonePanel.SummaryToDisplay, "ConstructionZoneDisplay has the wrong SummaryToDisplay");
+            Assert.AreEqual(zoneToSelect, zonePanel.CurrentSummary, "ConstructionZoneDisplay has the wrong SummaryToDisplay");
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace Assets.UI.ConstructionZones.Editor {
             zoneToDestroy.ID = 1000;
 
             zonePanel.Activate();
-            zonePanel.SummaryToDisplay = zoneToDestroy;
+            zonePanel.CurrentSummary = zoneToDestroy;
 
             //Execution
             zonePanel.GenerateDestructionRequest();

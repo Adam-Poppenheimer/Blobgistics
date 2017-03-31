@@ -9,12 +9,6 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
     public class MockZoneConstructionSimulationControl : SimulationControlBase {
 
-        #region instance fields and properties
-
-        public bool PermitResourceDepots { get; set; }
-
-        #endregion
-
         #region events
 
         public event EventHandler<EventArgs> ResourceDepotConstructionRequested;
@@ -33,10 +27,6 @@ namespace Assets.UI.ConstructionZones.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool CanCreateResourceDepotConstructionSiteOnNode(int nodeID) {
-            return PermitResourceDepots;
-        }
-
         public override bool CanDestroySociety(int societyID) {
             throw new NotImplementedException();
         }
@@ -49,10 +39,16 @@ namespace Assets.UI.ConstructionZones.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void CreateResourceDepotConstructionSiteOnNode(int nodeID) {
-            if(ResourceDepotConstructionRequested != null) {
-                ResourceDepotConstructionRequested(this, EventArgs.Empty);
-            }
+        public override bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName) {
+            throw new NotImplementedException();
+        }
+
+        public override void CreateConstructionSiteOnNode(int nodeID, string buildingName) {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
+            throw new NotImplementedException();
         }
 
         public override void DestroyConstructionZone(int zoneID) {
@@ -84,22 +80,6 @@ namespace Assets.UI.ConstructionZones.ForTesting {
         }
 
         public override void TickSimulation(float secondsPassed) {
-            throw new NotImplementedException();
-        }
-
-        public override bool CanCreateFarmlandConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override bool CanCreateVillageConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateFarmlandConstructionSiteOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateVillageConstructionSiteOnNode(int nodeID) {
             throw new NotImplementedException();
         }
 

@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.ConstructionZones;
+
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
+using Assets.ConstructionZones;
+
 
 namespace Assets.UI.ConstructionZones {
 
-    public class ConstructionZoneSummaryDisplay : ConstructionZoneSummaryDisplayBase {
+    public class ConstructionZoneSummaryDisplay : ConstructionZoneSummaryDisplayBase, ISelectHandler, IDeselectHandler {
 
         #region instance fields and properties
 
@@ -18,11 +23,14 @@ namespace Assets.UI.ConstructionZones {
             get { return gameObject.activeInHierarchy; }
         }
 
-        public override ConstructionZoneUISummary SummaryToDisplay { get; set; }
+        public override ConstructionZoneUISummary CurrentSummary { get; set; }
 
         #endregion
 
+        [SerializeField] private Text ProjectNameField;
         [SerializeField] private Button DestroyButton;
+
+        private bool DeactivateOnNextUpdate = false;
 
         #endregion
 
@@ -38,28 +46,67 @@ namespace Assets.UI.ConstructionZones {
             }
         }
 
+        private void Update() {
+            if(DeactivateOnNextUpdate) {
+                Deactivate();
+                DeactivateOnNextUpdate = false;
+            }
+        }
+
+        #endregion
+
+        #region Unity EventSystem interfaces
+
+        public void OnSelect(BaseEventData eventData) {
+            DeactivateOnNextUpdate = false;
+        }
+
+        public void OnDeselect(BaseEventData eventData) {
+            DeactivateOnNextUpdate = true;
+        }
+
         #endregion
 
         #region from ConstructionZoneSummaryDisplayBase
 
         public override void Activate() {
             gameObject.SetActive(true);
+
+            UpdateDisplay();
+            StartCoroutine(ReselectToThis());
         }
 
         public override void Clear() {
-            SummaryToDisplay = null;
+            CurrentSummary = null;
         }
 
         public override void Deactivate() {
             gameObject.SetActive(false);
         }
 
-        #endregion
+        public override void UpdateDisplay() {
+            if(CurrentSummary != null) {
+                ProjectNameField.text = CurrentSummary.Project;
+            }
+        }
 
         #endregion
-        
 
-        
+        public void DoOnChildSelected(BaseEventData eventData) {
+            DeactivateOnNextUpdate = false;
+        }
+
+        public void DoOnChildDeselected(BaseEventData eventData) {
+            DeactivateOnNextUpdate = true;
+        }
+
+        private IEnumerator ReselectToThis() {
+            yield return new WaitForEndOfFrame();
+            EventSystem.current.SetSelectedGameObject(gameObject);
+        }
+
+        #endregion
+
     }
 
 }

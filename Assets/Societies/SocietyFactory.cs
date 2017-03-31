@@ -82,10 +82,16 @@ namespace Assets.Societies {
         }
 
         public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder) {
+            return ConstructSocietyAt(location, ladder, ladder.GetStartingComplexity());
+        }
+
+        public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }else if(ladder == null) {
                 throw new ArgumentNullException("ladder");
+            }else if(!ladder.ContainsComplexity(startingComplexity)) {
+                throw new SocietyException("The starting complexity of a society must be contained within its ActiveComplexityLadder");
             }else if(!CanConstructSocietyAt(location)) {
                 throw new SocietyException("Cannot construct a society at this location");
             }
@@ -111,6 +117,7 @@ namespace Assets.Societies {
             newPrivateData.SetParentFactory(this);
 
             newSociety.PrivateData = newPrivateData;
+            newSociety.SetCurrentComplexity(startingComplexity);
             newSociety.transform.SetParent(location.transform, false);
 
             InstantiatedSocieties.Add(newSociety);

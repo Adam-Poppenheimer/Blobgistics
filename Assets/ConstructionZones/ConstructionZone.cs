@@ -13,7 +13,7 @@ using Assets.Core;
 namespace Assets.ConstructionZones {
 
     public class ConstructionZone : ConstructionZoneBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
-        IPointerEnterHandler, IPointerExitHandler {
+        IPointerEnterHandler, IPointerExitHandler, ISelectHandler {
 
         #region instance fields and properties
 
@@ -31,23 +31,7 @@ namespace Assets.ConstructionZones {
                     throw new ArgumentNullException("value");
                 }else {
                     _currentProject = value;
-
-                    var blobSite = Location.BlobSite;
-                    blobSite.ClearPermissionsAndCapacity();
-                    blobSite.ClearContents();
-
-                    int runningCapacityTotal = 0;
-                    foreach(var resourceType in _currentProject.Cost) {
-                        if(_currentProject.Cost[resourceType] > 0) {
-                            blobSite.SetPlacementPermissionForResourceType(resourceType, true);
-                            blobSite.SetExtractionPermissionForResourceType(resourceType, false);
-                            blobSite.SetCapacityForResourceType(resourceType, _currentProject.Cost[resourceType]);
-                            runningCapacityTotal += _currentProject.Cost[resourceType];
-                        }
-                    }
-                    blobSite.TotalCapacity = runningCapacityTotal;
-
-                    blobSite.BlobPlacedInto += BlobSite_BlobPlacedInto;
+                    _currentProject.SetSiteForProject(Location.BlobSite);
                 }
             }
         }
@@ -58,7 +42,13 @@ namespace Assets.ConstructionZones {
             get { return _location; }
         }
         public void SetLocation(MapNodeBase value) {
+            if(_location != null) {
+                _location.BlobSite.BlobPlacedInto -= BlobSite_BlobPlacedInto;
+            }
             _location = value;
+            if(_location != null) {
+                _location.BlobSite.BlobPlacedInto += BlobSite_BlobPlacedInto;
+            }
         }
         [SerializeField, HideInInspector] private MapNodeBase _location;
 
@@ -108,6 +98,7 @@ namespace Assets.ConstructionZones {
 
         public void OnPointerClick(PointerEventData eventData) {
             UIControl.PushPointerClickEvent(new ConstructionZoneUISummary(this), eventData);
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnPointerEnter(PointerEventData eventData) {
@@ -118,25 +109,14 @@ namespace Assets.ConstructionZones {
             UIControl.PushPointerExitEvent(new ConstructionZoneUISummary(this), eventData);
         }
 
-        #endregion
-
-        #region from ConstructionZoneBase
-
-        public override ResourceSummary GetResourcesNeededToFinish() {
-            var countDict = new Dictionary<ResourceType, int>();
-            var blobSite = Location.BlobSite;
-
-            foreach(var resourceType in CurrentProject.Cost) {
-                countDict[resourceType] = CurrentProject.Cost[resourceType] - blobSite.GetCountOfContentsOfType(resourceType);
-            }
-
-            return ResourceSummary.BuildResourceSummary(gameObject, countDict);
+        public void OnSelect(BaseEventData eventData) {
+            UIControl.PushSelectEvent(new ConstructionZoneUISummary(this), eventData);
         }
 
         #endregion
 
         private void BlobSite_BlobPlacedInto(object sender, BlobEventArgs e) {
-            if(CurrentProject.Cost.IsContainedWithinBlobSite(Location.BlobSite)) {
+            if(CurrentProject.BlobSiteContainsNecessaryResources(Location.BlobSite)) {
                 Location.BlobSite.ClearContents();
                 Location.BlobSite.ClearPermissionsAndCapacity();
                 Location.BlobSite.TotalCapacity = 0;
@@ -147,7 +127,7 @@ namespace Assets.ConstructionZones {
         }
 
         #endregion
-                
+
     }
 
 }

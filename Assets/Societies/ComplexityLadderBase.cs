@@ -14,6 +14,8 @@ namespace Assets.Societies {
         public abstract ComplexityDefinitionBase GetAscentTransition(ComplexityDefinitionBase currentComplexity);
         public abstract ComplexityDefinitionBase GetDescentTransition(ComplexityDefinitionBase currentComplexity);
 
+        public abstract bool ContainsComplexity(ComplexityDefinitionBase complexity);
+
         #endregion
 
     }
