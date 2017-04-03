@@ -59,7 +59,11 @@ namespace Assets.UI.ConstructionZones.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void DestroyHighwayUpgrader(int highwayUpgraderID) {
+        public override bool HasHighwayUpgraderOnHighway(int highwayID) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroyHighwayUpgraderOnHighway(int highwayID) {
             throw new NotImplementedException();
         }
 

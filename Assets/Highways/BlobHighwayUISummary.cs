@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Blobs;
+using Assets.HighwayUpgraders;
 
 using UnityCustomUtilities.Extensions;
 
@@ -26,6 +27,8 @@ namespace Assets.Highways {
         public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint2 { get; set; }
 
         public BlobHighwayProfile Profile { get; set; }
+
+        public bool IsBeingUpgraded { get; set; }
 
         #endregion
 

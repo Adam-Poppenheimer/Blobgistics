@@ -74,7 +74,8 @@ namespace Assets.Core {
                         _highwayDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                         _highwayDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
                         _highwayDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
-                        _highwayDisplay.HighwayUpgradeRequested                 -= HighwayDisplay_HighwayUpgradeRequested;
+                        _highwayDisplay.BeginHighwayUpgradeRequested            -= HighwayDisplay_BeginHighwayUpgradeRequested;
+                        _highwayDisplay.CancelHighwayUpgradeRequested           -= HighwayDisplay_CancelHighwayUpgradeRequested;
                         
                     }
                     _highwayDisplay = value;
@@ -82,7 +83,8 @@ namespace Assets.Core {
                         _highwayDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                         _highwayDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
                         _highwayDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
-                        _highwayDisplay.HighwayUpgradeRequested                 += HighwayDisplay_HighwayUpgradeRequested;
+                        _highwayDisplay.BeginHighwayUpgradeRequested            += HighwayDisplay_BeginHighwayUpgradeRequested;
+                        _highwayDisplay.CancelHighwayUpgradeRequested           += HighwayDisplay_CancelHighwayUpgradeRequested;
                     }
                 }
             }
@@ -114,32 +116,6 @@ namespace Assets.Core {
             }
         }
         [SerializeField] private ConstructionZoneSummaryDisplayBase _constructionZoneSummaryDisplay;
-
-        public HighwayUpgraderSummaryDisplayBase HighwayUpgraderSummaryDisplay {
-            get {
-                if(_highwayUpgraderSummaryDisplay == null) {
-                    throw new InvalidOperationException("HighwayUpgraderSummaryDisplay is uninitialized");
-                } else {
-                    return _highwayUpgraderSummaryDisplay;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    if(_highwayUpgraderSummaryDisplay != null) {
-                        _highwayUpgraderSummaryDisplay.UpgraderDestructionRequested -= HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
-                        _highwayUpgraderSummaryDisplay.DisplayCloseRequested        -= HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
-                    }
-                    _highwayUpgraderSummaryDisplay = value;
-                    if(_highwayUpgraderSummaryDisplay != null) {
-                        _highwayUpgraderSummaryDisplay.UpgraderDestructionRequested += HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
-                        _highwayUpgraderSummaryDisplay.DisplayCloseRequested        += HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
-                    }
-                }
-            }
-        }
-        [SerializeField] private HighwayUpgraderSummaryDisplayBase _highwayUpgraderSummaryDisplay;
 
         public SocietyUISummaryDisplayBase SocietySummaryDisplay {
             get {
@@ -202,10 +178,14 @@ namespace Assets.Core {
                 HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                 HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
                 HighwaySummaryDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
+                HighwaySummaryDisplay.BeginHighwayUpgradeRequested            -= HighwayDisplay_BeginHighwayUpgradeRequested;
+                HighwaySummaryDisplay.CancelHighwayUpgradeRequested           -= HighwayDisplay_CancelHighwayUpgradeRequested;
 
                 HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                 HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
                 HighwaySummaryDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
+                HighwaySummaryDisplay.BeginHighwayUpgradeRequested            += HighwayDisplay_BeginHighwayUpgradeRequested;
+                HighwaySummaryDisplay.CancelHighwayUpgradeRequested           += HighwayDisplay_CancelHighwayUpgradeRequested;
             }
 
             if(ConstructionPanel != null) {
@@ -222,14 +202,6 @@ namespace Assets.Core {
 
                 ConstructionZoneSummaryDisplay.CloseRequested += ConstructionZoneSummaryDisplay_CloseRequested;
                 ConstructionZoneSummaryDisplay.ConstructionZoneDestructionRequested += ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
-            }
-
-            if(HighwayUpgraderSummaryDisplay != null) {
-                HighwayUpgraderSummaryDisplay.UpgraderDestructionRequested -= HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
-                HighwayUpgraderSummaryDisplay.DisplayCloseRequested        -= HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
-
-                HighwayUpgraderSummaryDisplay.UpgraderDestructionRequested += HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested;
-                HighwayUpgraderSummaryDisplay.DisplayCloseRequested        += HighwayUpgraderSummaryDisplay_DisplayCloseRequested;
             }
 
             if(SocietySummaryDisplay != null) {
@@ -279,11 +251,6 @@ namespace Assets.Core {
                 ConstructionPanel.LocationToConstruct = summary;
                 ConstructionPanel.SetPermissions(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
                 ConstructionPanel.Activate();
-            }else if(source is HighwayUpgraderUISummary) {
-                var summary = source as HighwayUpgraderUISummary;
-                HighwayUpgraderSummaryDisplay.Clear();
-                HighwayUpgraderSummaryDisplay.SummaryToDisplay = summary;
-                HighwayUpgraderSummaryDisplay.Activate();
             }
         }
 
@@ -311,6 +278,8 @@ namespace Assets.Core {
                 if(HighwaySummaryDisplay != null) {
                     HighwaySummaryDisplay.CurrentSummary = source as BlobHighwayUISummary;
                     HighwaySummaryDisplay.CanBeUpgraded = SimulationControl.CanCreateHighwayUpgraderOnHighway(
+                        HighwaySummaryDisplay.CurrentSummary.ID);
+                    HighwaySummaryDisplay.IsBeingUpgraded = SimulationControl.HasHighwayUpgraderOnHighway(
                         HighwaySummaryDisplay.CurrentSummary.ID);
                     HighwaySummaryDisplay.Activate();
                 }
@@ -372,19 +341,19 @@ namespace Assets.Core {
             ConstructionZoneSummaryDisplay.Deactivate();
         }
 
-        private void HighwayDisplay_HighwayUpgradeRequested(object sender, EventArgs e) {
+        private void HighwayDisplay_BeginHighwayUpgradeRequested(object sender, EventArgs e) {
             if(SimulationControl.CanCreateHighwayUpgraderOnHighway(HighwaySummaryDisplay.CurrentSummary.ID)) {
                 SimulationControl.CreateHighwayUpgraderOnHighway(HighwaySummaryDisplay.CurrentSummary.ID);
+                HighwaySummaryDisplay.IsBeingUpgraded = true;
+                EventSystem.current.SetSelectedGameObject(HighwaySummaryDisplay.gameObject);
             }
         }
 
-        private void HighwayUpgraderSummaryDisplay_DisplayCloseRequested(object sender, EventArgs e) {
-            HighwayUpgraderSummaryDisplay.Clear();
-            HighwayUpgraderSummaryDisplay.Deactivate();
-        }
-
-        private void HighwayUpgraderSummaryDisplay_UpgraderDestructionRequested(object sender, EventArgs e) {
-            SimulationControl.DestroyHighwayUpgrader(HighwayUpgraderSummaryDisplay.SummaryToDisplay.ID);
+        private void HighwayDisplay_CancelHighwayUpgradeRequested(object sender, EventArgs e) {
+            SimulationControl.DestroyHighwayUpgraderOnHighway(HighwaySummaryDisplay.CurrentSummary.ID);
+            HighwaySummaryDisplay.IsBeingUpgraded = false;
+            HighwaySummaryDisplay.CanBeUpgraded = SimulationControl.CanCreateHighwayUpgraderOnHighway(HighwaySummaryDisplay.CurrentSummary.ID);
+            EventSystem.current.SetSelectedGameObject(HighwaySummaryDisplay.gameObject);
         }
 
         private void SocietySummaryDisplay_DestructionRequested(object sender, EventArgs e) {

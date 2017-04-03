@@ -34,9 +34,9 @@ namespace Assets.Core {
         public abstract void DestroySociety(int societyID);
 
         public abstract bool CanCreateHighwayUpgraderOnHighway(int highwayID);
-        public abstract void CreateHighwayUpgraderOnHighway(int highwayID);
-
-        public abstract void DestroyHighwayUpgrader(int highwayUpgraderID);
+        public abstract bool HasHighwayUpgraderOnHighway      (int highwayID);
+        public abstract void CreateHighwayUpgraderOnHighway   (int highwayID);
+        public abstract void DestroyHighwayUpgraderOnHighway  (int highwayID);
 
         public abstract void TickSimulation(float secondsPassed);
 

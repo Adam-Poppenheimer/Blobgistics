@@ -4,8 +4,7 @@ using UnityEngine;
 
 using Assets.Core;
 using Assets.Map;
-
-using UnityCustomUtilities.UI;
+using Assets.HighwayUpgraders;
 
 namespace Assets.Highways {
 

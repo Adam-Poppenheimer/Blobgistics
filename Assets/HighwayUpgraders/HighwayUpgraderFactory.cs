@@ -24,6 +24,8 @@ namespace Assets.HighwayUpgraders {
         [SerializeField, HideInInspector] private List<HighwayUpgraderBase> InstantiatedUpgraders =
             new List<HighwayUpgraderBase>();
 
+        [SerializeField] private GameObject HighwayUpgraderPrefab;
+
         #endregion
 
         #region instance methods
@@ -62,17 +64,29 @@ namespace Assets.HighwayUpgraders {
             }else if(HasUpgraderTargetingHighway(targetedHighway)) {
                 throw new HighwayUpgraderException("There already exists an upgrader targeting the specified highway");
             }
-            var hostingObject = new GameObject();
+
+            GameObject hostingObject;
+            HighwayUpgrader newUpgrader;
+            if(HighwayUpgraderPrefab != null) {
+                hostingObject = Instantiate(HighwayUpgraderPrefab);
+                newUpgrader = hostingObject.GetComponent<HighwayUpgrader>();
+                if(newUpgrader == null) {
+                    throw new HighwayUpgraderException("The HighwayUpgrader prefab lacks a HighwayUpgrader component");
+                }
+            }else {
+                hostingObject = new GameObject();
+                newUpgrader = hostingObject.AddComponent<HighwayUpgrader>();
+            }
 
             var privateData = hostingObject.AddComponent<HighwayUpgraderPrivateData>();
+            privateData.SetSourceFactory(this);
+            privateData.SetUIControl(UIControl);
             privateData.SetTargetedHighway(targetedHighway);
             privateData.SetUnderlyingSite(underlyingSite);
             privateData.SetProfileToInsert(profileToInsert);
-            privateData.SetSourceFactory(this);
-            privateData.SetUIControl(UIControl);
 
-            var newUpgrader = hostingObject.AddComponent<HighwayUpgrader>();
             newUpgrader.PrivateData = privateData;
+            newUpgrader.transform.SetParent(targetedHighway.transform, false);
 
             InstantiatedUpgraders.Add(newUpgrader);
 

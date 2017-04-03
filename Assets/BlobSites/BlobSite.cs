@@ -260,10 +260,10 @@ namespace Assets.BlobSites {
 
         public override void ClearContents() {
             var blobsToRemove = new List<ResourceBlob>(contents);
+            contents.Clear();
             foreach(var blob in blobsToRemove) {
                 Destroy(blob.gameObject);
             }
-            contents.Clear();
             RaiseAllBlobsCleared();
         }
 

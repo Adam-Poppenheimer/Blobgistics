@@ -24,7 +24,7 @@ namespace Assets.Core {
         private static string HighwayIDErrorMessage = "There exists no Highway with ID {0}";
         private static string SocietyIDErrorMessage = "There exists no Society with ID {0}";
         private static string ConstructionZoneIDErrorMessage = "There exists no ConstructionZone with ID {0}";
-        private static string HighwayUpgraderIDErrorMessage = "There exists no HighwayUpgrader with ID {0}";
+        private static string HighwayUpgraderIDErrorMessage = "The highway with ID {0} has no HighwayUpgrader targeting it";
         private static string MapNodeIDErrorMessage = "There exists no MapNode with ID {0}";
 
         #endregion
@@ -296,12 +296,26 @@ namespace Assets.Core {
             }
         }
 
-        public override void DestroyHighwayUpgrader(int highwayUpgraderID) {
-            var upgraderToDestroy = HighwayUpgraderFactory.GetHighwayUpgraderOfID(highwayUpgraderID);
+        public override bool HasHighwayUpgraderOnHighway(int highwayID) {
+            var chosenHighway = HighwayFactory.GetHighwayOfID(highwayID);
+            if(chosenHighway == null) {
+                Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
+            }
+
+            return HighwayUpgraderFactory.HasUpgraderTargetingHighway(chosenHighway);
+        }
+
+        public override void DestroyHighwayUpgraderOnHighway(int highwayID) {
+            var chosenHighway = HighwayFactory.GetHighwayOfID(highwayID);
+            if(chosenHighway == null) {
+                Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
+            }
+
+            var upgraderToDestroy = HighwayUpgraderFactory.GetUpgraderTargetingHighway(chosenHighway);
             if(upgraderToDestroy != null) {
                 HighwayUpgraderFactory.DestroyHighwayUpgrader(upgraderToDestroy);
             }else {
-                Debug.LogErrorFormat(HighwayUpgraderIDErrorMessage, highwayUpgraderID);
+                Debug.LogErrorFormat(HighwayUpgraderIDErrorMessage, highwayID);
             }
         }
 

@@ -39,7 +39,23 @@ namespace Assets.UI.Highways {
         }
         private BlobHighwayUISummary _currentSummary;
 
-        public override bool CanBeUpgraded { get; set; }
+        public override bool CanBeUpgraded {
+            get { return _canBeUpgraded; }
+            set {
+                _canBeUpgraded = value;
+                RefreshUpgradeButtons();
+            }
+        }
+        private bool _canBeUpgraded;
+
+        public override bool IsBeingUpgraded {
+            get { return _isBeingUpgraded; }
+            set {
+                _isBeingUpgraded = value;
+                RefreshUpgradeButtons();
+            }
+        }
+        private bool _isBeingUpgraded;
 
         #endregion
 
@@ -52,6 +68,9 @@ namespace Assets.UI.Highways {
         [SerializeField] private Toggle SecondEndpointRedPermissionToggle;
         [SerializeField] private Toggle SecondEndpointGreenPermissionToggle;
         [SerializeField] private Toggle SecondEndpointBluePermissionToggle;
+
+        [SerializeField] private Button BeginUpgradeButton;
+        [SerializeField] private Button CancelUpgradeButton;
 
         private bool DeactivateOnNextUpdate = false;
 
@@ -117,6 +136,9 @@ namespace Assets.UI.Highways {
                 RaiseSecondEndpointPermissionChanged(ResourceType.White, newPermission);
             });
 
+            BeginUpgradeButton.onClick.AddListener (delegate() { RaiseBeginHighwayUpgradeRequested();  });
+            CancelUpgradeButton.onClick.AddListener(delegate() { RaiseCancelHighwayUpgradeRequested(); });
+
             StartCoroutine(ReselectToThis());
         }
 
@@ -132,6 +154,9 @@ namespace Assets.UI.Highways {
             SecondEndpointRedPermissionToggle.onValueChanged.RemoveAllListeners();
             SecondEndpointGreenPermissionToggle.onValueChanged.RemoveAllListeners();
             SecondEndpointBluePermissionToggle.onValueChanged.RemoveAllListeners();
+
+            BeginUpgradeButton.onClick.RemoveAllListeners();
+            CancelUpgradeButton.onClick.RemoveAllListeners();
 
             ClearDisplay();
         }
@@ -160,6 +185,9 @@ namespace Assets.UI.Highways {
             SecondEndpointRedPermissionToggle.isOn = false;            
             SecondEndpointGreenPermissionToggle.isOn = false;            
             SecondEndpointBluePermissionToggle.isOn = false;
+
+            CanBeUpgraded = false;
+            IsBeingUpgraded = false;
         }
 
         #endregion
@@ -175,6 +203,11 @@ namespace Assets.UI.Highways {
         private IEnumerator ReselectToThis() {
             yield return new WaitForEndOfFrame();
             EventSystem.current.SetSelectedGameObject(gameObject);
+        }
+
+        private void RefreshUpgradeButtons() {
+            BeginUpgradeButton.gameObject.SetActive(CanBeUpgraded && !IsBeingUpgraded);
+            CancelUpgradeButton.gameObject.SetActive(IsBeingUpgraded);
         }
 
         #endregion

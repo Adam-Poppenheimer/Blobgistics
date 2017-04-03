@@ -5,6 +5,7 @@ using System.Text;
 
 using Assets.Map;
 using Assets.Core;
+using Assets.HighwayUpgraders;
 
 namespace Assets.Highways.ForTesting {
 

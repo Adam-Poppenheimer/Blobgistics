@@ -278,6 +278,16 @@ namespace Assets.BlobDistributors.Editor {
             Assert.AreEqual(0, upCountAfter6Seconds,    "UpCountAfter6Seconds is incorrect");
         }
 
+        [Test]
+        public void OnSomeHighwayHasActiveUpgrader_TheUpgraderIsPrioritizedAboveAllHighways() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void OnMultipleHighwaysHaveActiveUpgrader_UpgradersAreAllServedRoundRobin() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region utilities

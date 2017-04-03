@@ -539,7 +539,7 @@ namespace Assets.Core.Editor {
             upgraderToDestroy.name = "SimulationControl Integration Tests' HighwayUpgrader";
 
             //Execution
-            controlToTest.DestroyHighwayUpgrader(upgraderToDestroy.ID);
+            throw new NotImplementedException();
 
             //Validation
             Assert.IsFalse(upgraderFactory.HasUpgraderTargetingHighway(highwayToUpgrade),
@@ -902,9 +902,7 @@ namespace Assets.Core.Editor {
             Debug.logger.logHandler = insertionHandler;
 
             //Execution
-            Assert.DoesNotThrow(delegate() {
-                controlToTest.DestroyHighwayUpgrader(42);
-            });
+            throw new NotImplementedException();
 
             //Validation
             Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");

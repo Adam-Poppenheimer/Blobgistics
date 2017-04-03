@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Assets.Map;
 using Assets.Highways;
+using Assets.HighwayUpgraders;
 using Assets.Blobs;
 using Assets.BlobSites;
 
@@ -40,8 +41,17 @@ namespace Assets.BlobDistributors {
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
+        public HighwayUpgraderFactoryBase HighwayUpgraderFactory {
+            get { return _highwayUpgraderFactory; }
+            set { _highwayUpgraderFactory = value; }
+        }
+        [SerializeField] private HighwayUpgraderFactoryBase _highwayUpgraderFactory;
+
         private Dictionary<BlobSiteBase, BlobHighwayBase> LastServedHighwayOnBlobSite = 
             new Dictionary<BlobSiteBase, BlobHighwayBase>();
+
+        private Dictionary<BlobSiteBase, MapEdgeBase> LastServedEdgeOnBlobSite = 
+            new Dictionary<BlobSiteBase, MapEdgeBase>();
 
         private float DistributionTimer = 0f;
 
@@ -62,20 +72,56 @@ namespace Assets.BlobDistributors {
         protected override void PerformDistribution() {
             foreach(var activeNode in MapGraph.Nodes) {
 
+                var adjacentEdges = new List<MapEdgeBase>(MapGraph.GetEdgesAttachedToNode(activeNode));
+                DistributeOnceFromSiteToEdges(activeNode.BlobSite, adjacentEdges);
+
                 var adjacentHighways = new List<BlobHighwayBase>();
                 foreach(var neighboringNode in MapGraph.GetNeighborsOfNode(activeNode)) {
                     if(HighwayFactory.HasHighwayBetween(activeNode, neighboringNode)) {
                         adjacentHighways.Add(HighwayFactory.GetHighwayBetween(activeNode, neighboringNode));
                     }
                 }
-
-                DistributeOnceFromSite(activeNode.BlobSite, adjacentHighways);
+                DistributeOnceFromSiteToHighways(activeNode.BlobSite, adjacentHighways);
             }
         }
 
         #endregion
 
-        private void DistributeOnceFromSite(BlobSiteBase site, List<BlobHighwayBase> adjacentHighways) {
+        private void DistributeOnceFromSiteToEdges(BlobSiteBase site, List<MapEdgeBase> adjacentEdges) {
+            MapEdgeBase lastEdgeServed;
+            LastServedEdgeOnBlobSite.TryGetValue(site, out lastEdgeServed);
+
+            if(lastEdgeServed == null) {
+
+                //When there was no last edge
+                foreach(var candidateEdge in adjacentEdges) {
+                    if(AttemptTransferIntoEdge(candidateEdge, site)) {
+                        LastServedEdgeOnBlobSite[site] = candidateEdge;
+                        return;
+                    }
+                }
+            }else {
+                //Address candidates in round-robin fashion
+                int indexOfLast = adjacentEdges.IndexOf(lastEdgeServed);
+                for(
+                    int i = (indexOfLast + 1) % adjacentEdges.Count;
+                    i != indexOfLast;
+                    i = ++i % adjacentEdges.Count
+                ){
+                    var candidateEdge = adjacentEdges[i];
+                    if(AttemptTransferIntoEdge(candidateEdge, site)) {
+                        LastServedEdgeOnBlobSite[site] = candidateEdge;
+                        return;
+                    }
+                }
+                if(AttemptTransferIntoEdge(lastEdgeServed, site)) {
+                    LastServedEdgeOnBlobSite[site] = lastEdgeServed;
+                    return;
+                }
+            }
+        }
+
+        private void DistributeOnceFromSiteToHighways(BlobSiteBase site, List<BlobHighwayBase> adjacentHighways) {
             BlobHighwayBase lastHighwayServed;
             LastServedHighwayOnBlobSite.TryGetValue(site, out lastHighwayServed);
 
@@ -149,6 +195,18 @@ namespace Assets.BlobDistributors {
             }else {
                 return false;
             }
+        }
+
+        private bool AttemptTransferIntoEdge(MapEdgeBase edge, BlobSiteBase siteToTransferFrom) {
+            var edgeSite = edge.BlobSite;
+            foreach(var transferCandidate in siteToTransferFrom.Contents) {
+                if(siteToTransferFrom.CanExtractBlob(transferCandidate) && edgeSite.CanPlaceBlobInto(transferCandidate)) {
+                    siteToTransferFrom.ExtractBlob(transferCandidate);
+                    edgeSite.PlaceBlobInto(transferCandidate);
+                    return true;
+                }
+            }
+            return false;
         }
 
         private int PriorityCompare(BlobHighwayBase highway1, BlobHighwayBase highway2) {

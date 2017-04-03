@@ -50,10 +50,12 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void DestroyHighwayUpgrader(int highwayUpgraderID) {
-            if(OnHighwayUpgraderDestructionRequested != null) {
-                OnHighwayUpgraderDestructionRequested(this, new IntEventArgs(highwayUpgraderID));
-            }
+        public override bool HasHighwayUpgraderOnHighway(int highwayID) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroyHighwayUpgraderOnHighway(int highwayID) {
+            throw new NotImplementedException();
         }
 
         public override void DestroySociety(int societyID) {

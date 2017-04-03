@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Assets.Core;
 using Assets.Map;
+using Assets.HighwayUpgraders;
 
 namespace Assets.Highways {
 

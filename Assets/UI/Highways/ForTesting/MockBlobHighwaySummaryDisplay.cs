@@ -16,6 +16,7 @@ namespace Assets.UI.Highways.ForTesting {
 
         public override BlobHighwayUISummary CurrentSummary { get; set; }
         public override bool CanBeUpgraded { get; set; }
+        public override bool IsBeingUpgraded { get; set; }
 
         #endregion
 
@@ -59,7 +60,7 @@ namespace Assets.UI.Highways.ForTesting {
         }
 
         public void RaiseUpgradeRequest() {
-            RaiseHighwayUpgradeRequested();
+            RaiseBeginHighwayUpgradeRequested();
         }
 
         #endregion
