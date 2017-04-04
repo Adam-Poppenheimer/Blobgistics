@@ -38,14 +38,17 @@ namespace Assets.BlobSites.ForTesting {
 
         public override BlobAlignmentStrategyBase AlignmentStrategy {
             get {
-                throw new NotImplementedException();
+                if(_alignmentStrategy == null) {
+                    var hostingObject = new GameObject();
+                    _alignmentStrategy = hostingObject.AddComponent<BoxyBlobAlignmentStrategy>();
+                }
+                return _alignmentStrategy;
             }
         }
+        private BlobAlignmentStrategyBase _alignmentStrategy = null;
 
         public override float BlobRealignmentSpeedPerSecond {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return 0f; }
         }
 
         #endregion

@@ -505,6 +505,9 @@ namespace Assets.HighwayUpgraders.Editor {
         private BlobSiteBase BuildBlobSite() {
             var hostingObject = new GameObject();
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
+            var newPrivateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+            newBlobSite.PrivateData = newPrivateData;
+
             return newBlobSite;
         }
 

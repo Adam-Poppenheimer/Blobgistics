@@ -73,7 +73,9 @@ namespace Assets.BlobDistributors {
             foreach(var activeNode in MapGraph.Nodes) {
 
                 var adjacentEdges = new List<MapEdgeBase>(MapGraph.GetEdgesAttachedToNode(activeNode));
-                DistributeOnceFromSiteToEdges(activeNode.BlobSite, adjacentEdges);
+                if(DistributeOnceFromSiteToEdges(activeNode.BlobSite, adjacentEdges)) {
+                    continue;
+                }
 
                 var adjacentHighways = new List<BlobHighwayBase>();
                 foreach(var neighboringNode in MapGraph.GetNeighborsOfNode(activeNode)) {
@@ -87,7 +89,7 @@ namespace Assets.BlobDistributors {
 
         #endregion
 
-        private void DistributeOnceFromSiteToEdges(BlobSiteBase site, List<MapEdgeBase> adjacentEdges) {
+        private bool DistributeOnceFromSiteToEdges(BlobSiteBase site, List<MapEdgeBase> adjacentEdges) {
             MapEdgeBase lastEdgeServed;
             LastServedEdgeOnBlobSite.TryGetValue(site, out lastEdgeServed);
 
@@ -97,7 +99,7 @@ namespace Assets.BlobDistributors {
                 foreach(var candidateEdge in adjacentEdges) {
                     if(AttemptTransferIntoEdge(candidateEdge, site)) {
                         LastServedEdgeOnBlobSite[site] = candidateEdge;
-                        return;
+                        return true;
                     }
                 }
             }else {
@@ -111,14 +113,15 @@ namespace Assets.BlobDistributors {
                     var candidateEdge = adjacentEdges[i];
                     if(AttemptTransferIntoEdge(candidateEdge, site)) {
                         LastServedEdgeOnBlobSite[site] = candidateEdge;
-                        return;
+                        return true;
                     }
                 }
                 if(AttemptTransferIntoEdge(lastEdgeServed, site)) {
                     LastServedEdgeOnBlobSite[site] = lastEdgeServed;
-                    return;
+                    return true;
                 }
             }
+            return false;
         }
 
         private void DistributeOnceFromSiteToHighways(BlobSiteBase site, List<BlobHighwayBase> adjacentHighways) {

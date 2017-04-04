@@ -196,7 +196,7 @@ namespace Assets.Core {
 
             var node = MapGraph.GetNodeOfID(nodeID);
             if(node != null) {
-                foreach(var project in ConstructionZoneFactory.GetAllProjects()) {
+                foreach(var project in ConstructionZoneFactory.GetAvailableProjects()) {
                     if(ConstructionZoneFactory.CanBuildConstructionZone(node, project)) {
                         retval.Add(project.name);
                     }
@@ -311,6 +311,9 @@ namespace Assets.Core {
                 Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
             }
 
+            if(!HighwayUpgraderFactory.HasUpgraderTargetingHighway(chosenHighway)) {
+                return;
+            }
             var upgraderToDestroy = HighwayUpgraderFactory.GetUpgraderTargetingHighway(chosenHighway);
             if(upgraderToDestroy != null) {
                 HighwayUpgraderFactory.DestroyHighwayUpgrader(upgraderToDestroy);

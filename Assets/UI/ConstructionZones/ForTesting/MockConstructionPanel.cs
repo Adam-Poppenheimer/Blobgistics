@@ -22,6 +22,7 @@ namespace Assets.UI.ConstructionZones.ForTesting {
         #endregion
 
         public bool HasBeenCleared = false;
+        public IEnumerable<string> LastPermissionsSet;
 
         #endregion
 
@@ -47,12 +48,12 @@ namespace Assets.UI.ConstructionZones.ForTesting {
             RaiseCloseRequested();
         }
 
-        public void RaiseResourceDepotConstructionRequest() {
-            RaiseConstructionRequested("Resource Depot");
+        public void RaiseConstructionRequest(string projectName) {
+            RaiseConstructionRequested(projectName);
         }
 
         public override void SetPermissions(IEnumerable<string> permittedProjects) {
-            throw new NotImplementedException();
+            LastPermissionsSet = permittedProjects;
         }
 
         #endregion

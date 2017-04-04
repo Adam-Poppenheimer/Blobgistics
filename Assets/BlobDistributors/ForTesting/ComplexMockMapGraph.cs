@@ -38,6 +38,7 @@ namespace Assets.BlobDistributors.ForTesting {
                     _blobSitePrivateData.SetSouthConnectionOffset(Vector3.zero);
                     _blobSitePrivateData.SetEastConnectionOffset(Vector3.zero);
                     _blobSitePrivateData.SetWestConnectionOffset(Vector3.zero);
+                    _blobSitePrivateData.SetAlignmentStrategy(gameObject.AddComponent<BoxyBlobAlignmentStrategy>());
                 }
                 return _blobSitePrivateData;
             }
@@ -55,6 +56,10 @@ namespace Assets.BlobDistributors.ForTesting {
             var newEdge = hostingObject.AddComponent<MapEdge>();
             newEdge.SetFirstNode(first);
             newEdge.SetSecondNode(second);
+
+            var newBlobSite = hostingObject.AddComponent<BlobSite>();
+            newBlobSite.PrivateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+            newEdge.SetBlobSite(newBlobSite);
             edges.Add(newEdge);
         }
 
@@ -75,11 +80,15 @@ namespace Assets.BlobDistributors.ForTesting {
         }
 
         public override MapEdgeBase GetEdge(MapNodeBase first, MapNodeBase second) {
-            throw new NotImplementedException();
+            return edges.Find(delegate(MapEdgeBase edge) {
+                return (edge.FirstNode == first && edge.SecondNode == second) || (edge.SecondNode == first && edge.FirstNode == second);
+            });
         }
 
         public override IEnumerable<MapEdgeBase> GetEdgesAttachedToNode(MapNodeBase node) {
-            throw new NotImplementedException();
+            return edges.Where(delegate(MapEdgeBase edge) {
+                return edge.FirstNode == node || edge.SecondNode == node;
+            });
         }
 
         public override IEnumerable<MapNodeBase> GetNeighborsOfNode(MapNodeBase node) {

@@ -83,7 +83,7 @@ namespace Assets.Societies.Editor {
             var startingComplexity = BuildComplexityDefinition();
             var complexityLadder = BuildComplexityLadder(0, startingComplexity);
             var privateData = BuildPrivateData(complexityLadder, StandardBlobFactory, BuildMapNode());
-            var newSociety = BuildSociety(privateData);
+            var newSociety = BuildSociety(privateData, startingComplexity);
 
             //Execution
             newSociety.PrivateData = privateData;
@@ -267,7 +267,7 @@ namespace Assets.Societies.Editor {
             var privateData = BuildPrivateData(complexityLadder, StandardBlobFactory, BuildMapNode());
 
             //Execution
-            var newSociety = BuildSociety(privateData);
+            var newSociety = BuildSociety(privateData, startingComplexity);
 
             //Validation
             Assert.AreEqual(40, newSociety.Location.BlobSite.GetSpaceLeftOfType(ResourceType.Food),
@@ -293,7 +293,7 @@ namespace Assets.Societies.Editor {
             var privateData = BuildPrivateData(currentLadder, StandardBlobFactory, BuildMapNode());
 
             //Execution
-            var societyToTest = BuildSociety(privateData);
+            var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Validation
             Assert.AreEqual(10, societyToTest.Location.BlobSite.GetCapacityForResourceType(ResourceType.Food));
@@ -439,11 +439,11 @@ namespace Assets.Societies.Editor {
             var societyToTest = BuildSociety(complexityToUse);
 
             //Execution
-            societyToTest.TickConsumption(2f);
+            societyToTest.TickConsumption(2.5f);
 
             //Validation
-            Assert.AreEqual(1f, societyToTest.SecondsOfUnsatisfiedNeeds, float.Epsilon);
-            Assert.AreEqual(9f, societyToTest.SecondsUntilComplexityDescent, float.Epsilon);
+            Assert.AreEqual(1.5f, societyToTest.SecondsOfUnsatisfiedNeeds, float.Epsilon);
+            Assert.AreEqual(8.5f, societyToTest.SecondsUntilComplexityDescent, float.Epsilon);
         }
 
         [Test]
@@ -514,7 +514,7 @@ namespace Assets.Societies.Editor {
             var activeLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
 
-            var societyToTest = BuildSociety(privateData);
+            var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Execution
             societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
@@ -666,7 +666,7 @@ namespace Assets.Societies.Editor {
             var activeLadder = BuildComplexityLadder(1, descentComplexity, currentComplexity);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
 
-            var societyToTest = BuildSociety(privateData);
+            var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Execution
             societyToTest.TickConsumption(2f);
@@ -693,7 +693,7 @@ namespace Assets.Societies.Editor {
             var activeLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
 
-            var societyToTest = BuildSociety(privateData);
+            var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Execution
             societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food  ));
@@ -726,7 +726,7 @@ namespace Assets.Societies.Editor {
             var activeLadder = BuildComplexityLadder(1, descentComplexity, currentComplexity);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
 
-            var societyToTest = BuildSociety(privateData);
+            var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Execution
             societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Yellow));
@@ -905,17 +905,18 @@ namespace Assets.Societies.Editor {
             return newPrivateData;
         }
 
-        private Society BuildSociety(SocietyPrivateDataBase privateData) {
+        private Society BuildSociety(SocietyPrivateDataBase privateData, ComplexityDefinitionBase startingComplexity) {
             var hostingObject = new GameObject();
             var newSociety = hostingObject.AddComponent<Society>();
             newSociety.PrivateData = privateData;
+            newSociety.SetCurrentComplexity(startingComplexity);
             return newSociety;
         }
 
         private Society BuildSociety(ComplexityDefinitionBase startingDefinition) {
             var activeLadder = BuildComplexityLadder(0, startingDefinition);
             var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
-            return BuildSociety(privateData);
+            return BuildSociety(privateData, startingDefinition);
         }
 
         private BlobSiteBase BuildBlobSite() {

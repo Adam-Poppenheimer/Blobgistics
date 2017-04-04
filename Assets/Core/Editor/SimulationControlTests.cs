@@ -340,15 +340,15 @@ namespace Assets.Core.Editor {
                 "Was not permitted to construct on freeNode");
 
             //Return false when there is a society on the MapNode
-            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(freeNode.ID, "Resource Depot"),
+            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(societyNode.ID, "Resource Depot"),
                 "Falsely permitted to construct on depotNode");
 
             //Returns false when there is another depot on the MapNode
-            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(freeNode.ID, "Resource Depot"),
+            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(depotNode.ID, "Resource Depot"),
                 "Falsely permitted to construct on societyNode");
 
             //Returns false when there is a ConstructionSite on the MapNode
-            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(freeNode.ID, "Resource Depot"),
+            Assert.IsFalse(controlToTest.CanCreateConstructionSiteOnNode(constructionNode.ID, "Resource Depot"),
                 "Falsely permitted to construct on constructionNode");
         }
 
@@ -363,11 +363,11 @@ namespace Assets.Core.Editor {
             var nodeToPlaceUpon = mapGraph.BuildNode(Vector3.zero);
 
             //Execution
-            controlToTest.CanCreateConstructionSiteOnNode(nodeToPlaceUpon.ID, "Resource Depot");
+            controlToTest.CreateConstructionSiteOnNode(nodeToPlaceUpon.ID, "Resource Depot");
 
             //Validation
             
-            Assert.NotNull(constructionZoneFactory.HasConstructionZoneAtLocation(nodeToPlaceUpon),
+            Assert.True(constructionZoneFactory.HasConstructionZoneAtLocation(nodeToPlaceUpon),
                 "constructionZoneFactory does not register a ConstructionZone at the specified location");
 
             ConstructionProjectBase project;
@@ -519,7 +519,7 @@ namespace Assets.Core.Editor {
         }
 
         [Test]
-        public void OnDestroyHighwayUpgraderIsCalled_SpecifiedHighwayUpgraderObjectIsRemovedFromHierarchyAndAllRecords() {
+        public void OnHasHighwayUpgraderOnHighwayIsCalled_ReturnValueRepresentsInternalState() {
             //Setup
             var controlToTest = BuildSimulationControl();
 
@@ -529,23 +529,74 @@ namespace Assets.Core.Editor {
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
 
             mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
 
-            var highwayToUpgrade = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+            var highwayRight = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+            var highwayLeft = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
 
-            controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
-            var upgraderToDestroy = upgraderFactory.GetUpgraderTargetingHighway(highwayToUpgrade);
-            upgraderToDestroy.name = "SimulationControl Integration Tests' HighwayUpgrader";
+            controlToTest.CreateHighwayUpgraderOnHighway(highwayRight.ID);
+
+            //Execution and Validation
+            Assert.That(controlToTest.HasHighwayUpgraderOnHighway(highwayRight.ID), "SimulationControl does not register an Upgrader on HighwayRight");
+            Assert.IsFalse(controlToTest.HasHighwayUpgraderOnHighway(highwayLeft.ID), "SimulationControl falsey registers an Upgrader on HighwayLeft");
+        }
+
+        [Test]
+        public void OnDestroyHighwayUpgraderOnHighwayIsCalled_AndHighwayHasAnUpgrader_ThatUpgraderIsDestroyed() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var highwayFactory = controlToTest.HighwayFactory;
+            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+
+            var highwayRight = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+
+            controlToTest.CreateHighwayUpgraderOnHighway(highwayRight.ID);
 
             //Execution
-            throw new NotImplementedException();
+            controlToTest.DestroyHighwayUpgraderOnHighway(highwayRight.ID);
 
             //Validation
-            Assert.IsFalse(upgraderFactory.HasUpgraderTargetingHighway(highwayToUpgrade),
-                "UpgraderFactory still registers the removed HighwayUpgrader");
-            Assert.IsNull(GameObject.Find("SimulationControl Integration Tests' HighwayUpgrader"),
-                "Destroyed HighwayUpgrader's GameObject still exists in the GameObject hierarchy");
+            Assert.IsFalse(upgraderFactory.HasUpgraderTargetingHighway(highwayRight),
+                "HighwayUpgrader still registers an upgrader targeting HighwayRight");
+
+            Assert.IsFalse(controlToTest.HasHighwayUpgraderOnHighway(highwayRight.ID),
+                "SimulationControl still registers an upgrader targeting HighwayRight");
+        }
+
+        [Test]
+        public void OnDestroyHighwayUpgraderOnHighwayIsCalled_AndHighwayDoesNotHaveAnUpgrader_NoExceptionIsThrown() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var highwayFactory = controlToTest.HighwayFactory;
+            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+
+            var highwayRight = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+
+            //Execution and Validation
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyHighwayUpgraderOnHighway(highwayRight.ID);
+            });
         }
 
         [Test]
@@ -892,26 +943,6 @@ namespace Assets.Core.Editor {
             Debug.logger.logHandler = defaultLogHandler;
         }
 
-        [Test]
-        public void OnDestroyHighwayUpgraderIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
-            //Setup
-            var controlToTest = BuildSimulationControl();
-
-            var defaultLogHandler = Debug.logger.logHandler;
-            var insertionHandler = new ListInsertionLogHandler();
-            Debug.logger.logHandler = insertionHandler;
-
-            //Execution
-            throw new NotImplementedException();
-
-            //Validation
-            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
-
-            //Cleanup
-            Debug.logger.logHandler = defaultLogHandler;
-        }
-
         #endregion
 
         #endregion
@@ -925,6 +956,8 @@ namespace Assets.Core.Editor {
             var newBlobSiteFactory = hostingObject.AddComponent<BlobSiteFactory>();
             var newBlobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
 
+            newBlobSitePrivateData.SetBlobRealignmentSpeedPerSecond(1f);
+            newBlobSitePrivateData.SetAlignmentStrategy(hostingObject.AddComponent<BoxyBlobAlignmentStrategy>());
             newBlobSiteFactory.BlobSitePrivateData = newBlobSitePrivateData;
 
             newMapGraph.BlobSiteFactory = newBlobSiteFactory;
@@ -944,6 +977,7 @@ namespace Assets.Core.Editor {
             );
 
             newBlobTubeFactory.BlobFactory = blobFactory;
+            newBlobTubeFactory.TubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
 
             newFactory.MapGraph = mapGraph;
             newFactory.BlobTubeFactory = newBlobTubeFactory;
@@ -955,6 +989,14 @@ namespace Assets.Core.Editor {
         private ConstructionZoneFactory BuildConstructionZoneFactory(ResourceDepotFactoryBase depotFactory) {
             var hostingObject = new GameObject();
             var newFactory = hostingObject.AddComponent<ConstructionZoneFactory>();
+
+            var resourceDepotProject = hostingObject.AddComponent<ResourceDepotConstructionProject>();
+            resourceDepotProject.Cost = ResourceSummary.BuildResourceSummary(hostingObject);
+            resourceDepotProject.name = "Resource Depot";
+
+            newFactory.AvailableProjects = new List<ConstructionProjectBase>() {
+                resourceDepotProject
+            };
             return newFactory;
         }
 

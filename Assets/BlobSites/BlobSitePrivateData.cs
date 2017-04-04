@@ -56,7 +56,7 @@ namespace Assets.BlobSites {
         public override float BlobRealignmentSpeedPerSecond {
             get { return _blobRealignmentSpeedPerSecond; }
         }
-        public void SetAlignmentStrategy(float value) {
+        public void SetBlobRealignmentSpeedPerSecond(float value) {
             _blobRealignmentSpeedPerSecond = value;
         }
         [SerializeField] private float _blobRealignmentSpeedPerSecond;

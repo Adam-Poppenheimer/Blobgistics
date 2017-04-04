@@ -189,12 +189,14 @@ namespace Assets.Societies {
                 }else if(NeedsAreSatisfied){
                     needsAreSatisfied = false;
                     secondsOfUnsatisfiedNeeds = 0f;
+                }else {
+                    secondsOfUnsatisfiedNeeds += CurrentComplexity.SecondsToFullyConsumeNeeds;
                 }
                 CurrentNeedConsumptionTimer -= CurrentComplexity.SecondsToFullyConsumeNeeds;
             }
 
             if(!NeedsAreSatisfied) {
-                secondsOfUnsatisfiedNeeds += secondsPassed;
+                secondsOfUnsatisfiedNeeds += CurrentNeedConsumptionTimer;
             }
         }
 

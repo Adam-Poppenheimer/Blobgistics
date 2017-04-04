@@ -12,6 +12,15 @@ namespace Assets.ConstructionZones.ForTesting {
 
         #region instance fields and properties
 
+        public bool SiteContainsNecessaryResources;
+
+        #endregion
+
+        #region events
+
+        public event EventHandler<EventArgs> BuildExecuted;
+        public event EventHandler<EventArgs> SiteSet;
+
         #endregion
 
         #region instance methods
@@ -19,15 +28,19 @@ namespace Assets.ConstructionZones.ForTesting {
         #region from ConstructionProjectBase
 
         public override void ExecuteBuild(MapNodeBase location) {
-            throw new NotImplementedException();
+            if(BuildExecuted != null) {
+                BuildExecuted(this, EventArgs.Empty);
+            }
         }
 
         public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
-            throw new NotImplementedException();
+            return SiteContainsNecessaryResources;
         }
 
         public override void SetSiteForProject(BlobSiteBase site) {
-            throw new NotImplementedException();
+            if(SiteSet != null) {
+                SiteSet(this, EventArgs.Empty);
+            }
         }
 
         #endregion

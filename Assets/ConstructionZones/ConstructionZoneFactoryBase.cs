@@ -25,7 +25,7 @@ namespace Assets.ConstructionZones {
 
         public abstract bool TryGetProjectOfName(string projectName, out ConstructionProjectBase project);
 
-        public abstract IEnumerable<ConstructionProjectBase> GetAllProjects();
+        public abstract IEnumerable<ConstructionProjectBase> GetAvailableProjects();
 
         #endregion
 

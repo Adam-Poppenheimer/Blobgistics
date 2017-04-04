@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Assets.Blobs;
 using Assets.Core;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.ConstructionZones.ForTesting {
 
@@ -11,7 +14,7 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
         #region events
 
-        public event EventHandler<EventArgs> ResourceDepotConstructionRequested;
+        public event EventHandler<StringEventArgs> ConstructionRequested;
 
         #endregion
 
@@ -40,15 +43,19 @@ namespace Assets.UI.ConstructionZones.ForTesting {
         }
 
         public override bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName) {
-            throw new NotImplementedException();
+            return true;
         }
 
         public override void CreateConstructionSiteOnNode(int nodeID, string buildingName) {
-            throw new NotImplementedException();
+            if(ConstructionRequested != null) {
+                ConstructionRequested(this, new StringEventArgs(buildingName));
+            }
         }
 
         public override IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
-            throw new NotImplementedException();
+            return new List<string>() {
+                "Resource Depot", "Farmland", "Village"
+            };
         }
 
         public override void DestroyConstructionZone(int zoneID) {

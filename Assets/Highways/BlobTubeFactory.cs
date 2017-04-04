@@ -35,8 +35,25 @@ namespace Assets.Highways {
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
+        public BlobTubePrivateDataBase TubePrivateData {
+            get {
+                if(_tubePrivateData == null) {
+                    throw new InvalidOperationException("TubePrivateData is uninitialized");
+                } else {
+                    return _tubePrivateData;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _tubePrivateData = value;
+                }
+            }
+        }
+        [SerializeField] private BlobTubePrivateDataBase _tubePrivateData;
+
         [SerializeField] private GameObject TubePrefab;
-        [SerializeField] private BlobTubePrivateDataBase TubePrivateData;
 
         #endregion
 

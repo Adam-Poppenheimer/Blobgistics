@@ -18,7 +18,12 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionZoneFactoryBase
 
-        [SerializeField] private List<ConstructionProjectBase> AvailableProjects;
+        public List<ConstructionProjectBase> AvailableProjects {
+            get { return _availableProjects; }
+            set { _availableProjects = value; }
+        }
+        [SerializeField] private List<ConstructionProjectBase> _availableProjects =
+            new List<ConstructionProjectBase>();
 
         #endregion
 
@@ -120,7 +125,7 @@ namespace Assets.ConstructionZones {
             return project != null;
         }
 
-        public override IEnumerable<ConstructionProjectBase> GetAllProjects() {
+        public override IEnumerable<ConstructionProjectBase> GetAvailableProjects() {
             return AvailableProjects;
         }
 

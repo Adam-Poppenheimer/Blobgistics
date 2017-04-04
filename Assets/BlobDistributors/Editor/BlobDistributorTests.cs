@@ -8,6 +8,7 @@ using NUnit.Framework;
 using Assets.Map;
 using Assets.Highways;
 using Assets.Blobs;
+using Assets.HighwayUpgraders;
 using Assets.BlobDistributors.ForTesting;
 
 namespace Assets.BlobDistributors.Editor {
@@ -279,13 +280,93 @@ namespace Assets.BlobDistributors.Editor {
         }
 
         [Test]
-        public void OnSomeHighwayHasActiveUpgrader_TheUpgraderIsPrioritizedAboveAllHighways() {
-            throw new NotImplementedException();
+        public void OnSomeHighwayHasActiveUpgrader_TheBlobSiteSupportingTheUpgraderIsPrioritizedAboveAllHighways() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+
+            MapNodeBase centerNode, leftNode, rightNode, upNode;
+            SetUpMapGraph(mapGraph, out centerNode, out leftNode, out rightNode, out upNode);
+
+            var highwayFactory = BuildMockHighwayFactory();
+
+            BlobHighwayBase highwayLeft, highwayRight, highwayUp;
+            SetUpHighwayFactory(highwayFactory, centerNode, leftNode, rightNode, upNode,
+                out highwayLeft, out highwayRight, out highwayUp);
+
+            highwayLeft.Priority = 100;
+            highwayRight.Priority = 10;
+            highwayUp.Priority = 1;
+
+            var upgraderFactory = BuildUpgraderFactory();
+            var onlyUpgrader = upgraderFactory.BuildHighwayUpgrader(highwayLeft,
+                mapGraph.GetEdge(centerNode, leftNode).BlobSite, upgraderFactory.ProfileToUse);
+
+            var distributorToTest = BuildBlobDistributor();
+            distributorToTest.SecondsToPerformDistributionTick = 1f;
+            distributorToTest.MapGraph = mapGraph;
+            distributorToTest.HighwayFactory = highwayFactory;
+            distributorToTest.HighwayUpgraderFactory = upgraderFactory;
+
+            //Execution
+            distributorToTest.Tick(5f);
+
+            int leftCountAfter5Seconds     = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
+            int rightCountAfter5Seconds    = highwayRight.ContentsPulledFromFirstEndpoint.Count;
+            int upCountAfter5Seconds       = highwayUp.ContentsPulledFromFirstEndpoint.Count;
+            int upgraderCountAfter5Seconds = onlyUpgrader.UnderlyingSite.GetCountOfContentsOfType(ResourceType.Food);
+
+            //Validation
+            Assert.AreEqual(0, leftCountAfter5Seconds,     "HighwayLeft has an incorrect pull count" );
+            Assert.AreEqual(0, rightCountAfter5Seconds,    "HighwayRight has an incorrect pull count");
+            Assert.AreEqual(0, upCountAfter5Seconds,       "HighwayUp has an incorrect pull count"   );
+            Assert.AreEqual(5, upgraderCountAfter5Seconds, "OnlyUpgrader has an incorrect pull count");
         }
 
         [Test]
         public void OnMultipleHighwaysHaveActiveUpgrader_UpgradersAreAllServedRoundRobin() {
-            throw new NotImplementedException();
+            //Setup
+            var mapGraph = BuildMapGraph();
+
+            MapNodeBase centerNode, leftNode, rightNode, upNode;
+            SetUpMapGraph(mapGraph, out centerNode, out leftNode, out rightNode, out upNode);
+
+            var highwayFactory = BuildMockHighwayFactory();
+
+            BlobHighwayBase highwayLeft, highwayRight, highwayUp;
+            SetUpHighwayFactory(highwayFactory, centerNode, leftNode, rightNode, upNode,
+                out highwayLeft, out highwayRight, out highwayUp);
+
+            highwayLeft.Priority = 100;
+            highwayRight.Priority = 10;
+            highwayUp.Priority = 1;
+
+            var upgraderFactory = BuildUpgraderFactory();
+            var upgraderLeft = upgraderFactory.BuildHighwayUpgrader(highwayLeft,
+                mapGraph.GetEdge(centerNode, leftNode).BlobSite, upgraderFactory.ProfileToUse);
+
+            var upgraderRight = upgraderFactory.BuildHighwayUpgrader(highwayRight,
+                mapGraph.GetEdge(centerNode, rightNode).BlobSite, upgraderFactory.ProfileToUse);
+
+            var upgraderUp = upgraderFactory.BuildHighwayUpgrader(highwayUp,
+                mapGraph.GetEdge(centerNode, upNode).BlobSite, upgraderFactory.ProfileToUse);
+
+            var distributorToTest = BuildBlobDistributor();
+            distributorToTest.SecondsToPerformDistributionTick = 1f;
+            distributorToTest.MapGraph = mapGraph;
+            distributorToTest.HighwayFactory = highwayFactory;
+            distributorToTest.HighwayUpgraderFactory = upgraderFactory;
+
+            //Execution
+            distributorToTest.Tick(9f);
+
+            int upgraderLeftCountAfter9Seconds  = upgraderLeft.UnderlyingSite.GetCountOfContentsOfType(ResourceType.Food);
+            int upgraderRightCountAfter9Seconds = upgraderRight.UnderlyingSite.GetCountOfContentsOfType(ResourceType.Food);
+            int upgraderUpCountAfter9Seconds    = upgraderUp.UnderlyingSite.GetCountOfContentsOfType(ResourceType.Food);
+
+            //Validation
+            Assert.AreEqual(3, upgraderLeftCountAfter9Seconds,  "UpgraderLeft has an incorrect pull count");
+            Assert.AreEqual(3, upgraderRightCountAfter9Seconds, "UpgraderRight has an incorrect pull count");
+            Assert.AreEqual(3, upgraderUpCountAfter9Seconds,    "UpgraderUp has an incorrect pull count");
         }
 
         #endregion
@@ -369,6 +450,11 @@ namespace Assets.BlobDistributors.Editor {
 
             highwayUp.Profile = highwayProfile;
             highwayUp.SetPullingPermissionForFirstEndpoint (ResourceType.Food, true);
+        }
+
+        private MockHighwayUpgraderFactory BuildUpgraderFactory() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockHighwayUpgraderFactory>();
         }
 
         #endregion

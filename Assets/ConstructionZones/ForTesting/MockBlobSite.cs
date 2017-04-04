@@ -69,6 +69,12 @@ namespace Assets.ConstructionZones.ForTesting {
 
         #endregion
 
+        #region events
+
+        public event EventHandler<EventArgs> PermissionsAndCapacitiesCleared;
+
+        #endregion
+
         #region instance methods
 
         #region from BlobSiteBase
@@ -98,6 +104,9 @@ namespace Assets.ConstructionZones.ForTesting {
             PlacementPermissions.Clear();
             ExtractionPermissions.Clear();
             Capacities.Clear();
+            if(PermissionsAndCapacitiesCleared != null) {
+                PermissionsAndCapacitiesCleared(this, EventArgs.Empty);
+            }
         }
 
         public override ResourceBlob ExtractAnyBlob() {

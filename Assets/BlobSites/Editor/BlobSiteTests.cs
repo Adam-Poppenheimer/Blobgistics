@@ -1120,6 +1120,16 @@ namespace Assets.BlobSites.Editor {
             Assert.That(!siteToTest.IsAtCapacity);
         }
 
+        [Test]
+        public void OnResourceBlobPlacedInto_BlobSiteIsMadeNewParentOfBlob_AndLocationDoesntChange() {
+            Assert.Ignore("This test is not implemented, but also not considered critical");
+        }
+
+        [Test]
+        public void OnResourceBlobPlacedInto_AlignmentStrategyIsCalledOnAllContents() {
+            Assert.Ignore("This test is not implemented, but also not considered critical");
+        }
+
         #endregion
 
         #region error handling
@@ -1189,7 +1199,9 @@ namespace Assets.BlobSites.Editor {
 
         private BlobSite BuildBlobSite(BlobSitePrivateDataBase privateData) {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<BlobSite>();
+            var newBlobSite = hostingObject.AddComponent<BlobSite>();
+            newBlobSite.PrivateData = privateData;
+            return newBlobSite;
         }
 
         private BlobSiteFactory BuildFactory(BlobSitePrivateDataBase privateData) {

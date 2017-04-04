@@ -82,6 +82,12 @@ namespace Assets.Societies {
         }
 
         public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder) {
+            if(location == null) {
+                throw new ArgumentNullException("location");
+            }else if(ladder == null) {
+                throw new ArgumentNullException("ladder");
+            }
+
             return ConstructSocietyAt(location, ladder, ladder.GetStartingComplexity());
         }
 

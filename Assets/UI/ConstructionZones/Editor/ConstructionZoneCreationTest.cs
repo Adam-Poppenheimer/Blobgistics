@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,6 +10,8 @@ using NUnit.Framework;
 using Assets.Core;
 using Assets.Map;
 using Assets.UI.ConstructionZones.ForTesting;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.ConstructionZones.Editor {
 
@@ -44,12 +47,61 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void OnPointerClickEventPushedIntoUIControl_ConstructionPanelBuildingPermissionsAreSetProperly() {
-            throw new NotImplementedException();
+            //Setup
+            var constructionPanel = BuildMockConstructionPanel();
+            var simulationControl = BuildMockSimulationControl();
+
+            var controlToTest = BuildUIControl();
+            controlToTest.ConstructionPanel = constructionPanel;
+            controlToTest.SimulationControl = simulationControl;
+
+            var eventSystem = BuildEventSystem();
+            var eventData = new PointerEventData(eventSystem);
+
+            var locationToConstruct = new MapNodeUISummary();
+
+            //Execution
+            controlToTest.PushPointerClickEvent(locationToConstruct, eventData);
+
+            //Validation
+            Assert.NotNull(constructionPanel.LastPermissionsSet, "ConstructionPanel received no permissions");
+            Assert.That(constructionPanel.LastPermissionsSet.Contains("Resource Depot"), "ConstructionPanel was not given permissions for Resource Depot");
+            Assert.That(constructionPanel.LastPermissionsSet.Contains("Farmland"), "ConstructionPanel was not given permissions for Farmland");
+            Assert.That(constructionPanel.LastPermissionsSet.Contains("Village"), "ConstructionPanel was not given permissions for Village");
         }
 
         [Test]
-        public void OnConstructionPanelRaisesDepotConstructionRequestedEvent_ConstructResourceDepotRequestIsSentToSimulationControl_AndConstructionPanelIsCleareadAndDeactivated() {
-            throw new NotImplementedException();
+        public void ConstructionPanelRaisesConstructionRequest_ProperRequestIsForwardedToSimulationControl_AndConstructionPanelIsDeactivated() {
+            //Setup
+            var constructionPanel = BuildMockConstructionPanel();
+            var simulationControl = BuildMockSimulationControl();
+
+            string lastConstructionRequested = null;
+            simulationControl.ConstructionRequested += delegate(object sender, StringEventArgs e) {
+                lastConstructionRequested = e.Value;
+            };
+
+            var controlToTest = BuildUIControl();
+            controlToTest.ConstructionPanel = constructionPanel;
+            controlToTest.SimulationControl = simulationControl;
+
+            var locationToConstruct = new MapNodeUISummary();
+            constructionPanel.LocationToConstruct = locationToConstruct;
+
+            //Execution and Validation
+            constructionPanel.RaiseConstructionRequest("Resource Depot");
+            Assert.AreEqual("Resource Depot", lastConstructionRequested, "Resource Depot construction request did not forward to SimulationControl");
+            Assert.IsFalse(constructionPanel.IsActivated, "ConstructionPanel was not deactivated after the Resource Depot request was sent");
+
+            constructionPanel.Activate();
+            constructionPanel.RaiseConstructionRequest("Farmland");
+            Assert.AreEqual("Farmland", lastConstructionRequested, "Farmland construction request did not forward to SimulationControl");
+            Assert.IsFalse(constructionPanel.IsActivated, "ConstructionPanel was not deactivated after the Farmland request was sent");
+
+            constructionPanel.Activate();
+            constructionPanel.RaiseConstructionRequest("Village");
+            Assert.AreEqual("Village", lastConstructionRequested, "Village construction request did not forward to SimulationControl");
+            Assert.IsFalse(constructionPanel.IsActivated, "ConstructionPanel was not deactivated after the Village request was sent");
         }
 
         [Test]

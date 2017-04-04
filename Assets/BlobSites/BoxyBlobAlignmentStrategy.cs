@@ -13,11 +13,11 @@ namespace Assets.BlobSites {
 
         #region instance fields and properties
 
-        [SerializeField, Range(0f, float.MaxValue)] private float BoundingWidth;
-        [SerializeField, Range(0f, float.MaxValue)] private float BoundingHeight;
+        [SerializeField, Range(0f, float.MaxValue)] private float BoundingWidth = 1f;
+        [SerializeField, Range(0f, float.MaxValue)] private float BoundingHeight = 1f;
 
-        [SerializeField, Range(0f, 10000)] private int BlobsPerRow;
-        [SerializeField, Range(0f, 10000)] private int BlobsPerColumn;
+        [SerializeField, Range(0f, 10000)] private int BlobsPerRow = 5;
+        [SerializeField, Range(0f, 10000)] private int BlobsPerColumn = 5;
 
         private Vector2 CenteringVector;
 
