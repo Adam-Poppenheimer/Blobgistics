@@ -21,8 +21,8 @@ namespace Assets.Highways {
 
         #region static fields and properties
 
-        private static float HighwayCollisionWidth = 0.6f;
-        private static float TubeCenterOffset = 0.2f;
+        public static readonly float HighwayCollisionWidth = 0.6f;
+        public static readonly float TubeCenterOffset = 0.2f;
 
         #endregion
 
@@ -57,11 +57,11 @@ namespace Assets.Highways {
             get { return PrivateData.SecondEndpoint; }
         }
 
-        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromFirstEndpoint {
+        public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint {
             get { return PrivateData.TubePullingFromFirstEndpoint.Contents; }
         }
 
-        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromSecondEndpoint {
+        public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint {
             get { return PrivateData.TubePullingFromSecondEndpoint.Contents; }
         }
 
@@ -210,11 +210,6 @@ namespace Assets.Highways {
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
             PrivateData.TubePullingFromSecondEndpoint.SetPermissionForResourceType(type, isPermitted);
-        }
-
-        public override void TickMovement(float secondsPassed) {
-            PrivateData.TubePullingFromFirstEndpoint.TickMovement(secondsPassed);
-            PrivateData.TubePullingFromSecondEndpoint.TickMovement(secondsPassed);
         }
 
         public override void Clear() {

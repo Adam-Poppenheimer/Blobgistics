@@ -45,13 +45,13 @@ namespace Assets.HighwayUpgraders.ForTesting {
             }
         }
 
-        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromFirstEndpoint {
+        public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint {
             get {
                 throw new NotImplementedException();
             }
         }
 
-        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromSecondEndpoint {
+        public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint {
             get {
                 throw new NotImplementedException();
             }
@@ -98,10 +98,6 @@ namespace Assets.HighwayUpgraders.ForTesting {
         }
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
-            throw new NotImplementedException();
-        }
-
-        public override void TickMovement(float secondsPassed) {
             throw new NotImplementedException();
         }
 

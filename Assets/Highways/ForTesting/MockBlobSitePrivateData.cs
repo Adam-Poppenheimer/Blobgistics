@@ -48,14 +48,16 @@ namespace Assets.Highways.ForTesting {
 
         public override BlobAlignmentStrategyBase AlignmentStrategy {
             get {
-                throw new NotImplementedException();
+                if(_alignmentStrategy == null) {
+                    _alignmentStrategy = gameObject.AddComponent<BoxyBlobAlignmentStrategy>();
+                }
+                return _alignmentStrategy;
             }
         }
+        private BlobAlignmentStrategyBase _alignmentStrategy;
 
         public override float BlobRealignmentSpeedPerSecond {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return 1f; }
         }
 
         #endregion

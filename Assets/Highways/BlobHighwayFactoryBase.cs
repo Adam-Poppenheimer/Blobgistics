@@ -23,8 +23,6 @@ namespace Assets.Highways {
 
         public abstract void DestroyHighway(BlobHighwayBase highway);
 
-        public abstract void TickHighways(float secondsPassed);
-
         #endregion
 
     }

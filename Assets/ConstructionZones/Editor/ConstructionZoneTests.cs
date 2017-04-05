@@ -450,7 +450,7 @@ namespace Assets.ConstructionZones.Editor {
         }
 
         [Test]
-        public void Factory_OnHasConstructionZoneAtLocationIsTrue_AndBuildConstructionZoneCalledAtLocation_ThrowsConstrutionZoneException() {
+        public void Factory_OnCanBuildConstructionZoneReturnsFalse_AndBuildConstructionZoneIsCalled_ThrowsConstructionZoneException() {
             //Setup
             var factoryToTest = BuildConstructionZoneFactory();
             var location = BuildMapNode();
@@ -463,11 +463,6 @@ namespace Assets.ConstructionZones.Editor {
             Assert.Throws<ConstructionZoneException>(delegate() {
                 factoryToTest.BuildConstructionZone(location, project);
             });
-        }
-
-        [Test]
-        public void Factory_OnCanBuildConstructionZoneReturnsFalse_AndBuildConstructionZoneIscalled_ThrowsConstructionZoneException() {
-            Assert.Ignore("Test is not implemented but not considered critical");
         }
 
         #endregion
@@ -500,7 +495,7 @@ namespace Assets.ConstructionZones.Editor {
             return hostingObject.AddComponent<MockResourceDepotFactory>();
         }
 
-        private ResourceBlob BuildBlob(ResourceType type) {
+        private ResourceBlobBase BuildBlob(ResourceType type) {
             var hostingObject = new GameObject();
             var newBlob = hostingObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = type;

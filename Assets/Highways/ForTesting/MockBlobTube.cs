@@ -16,10 +16,10 @@ namespace Assets.Highways.ForTesting {
 
         #region from BlobTubeBase
 
-        public override ReadOnlyCollection<ResourceBlob> Contents {
+        public override ReadOnlyCollection<ResourceBlobBase> Contents {
             get { return contents.AsReadOnly(); }
         }
-        private List<ResourceBlob> contents = new List<ResourceBlob>();
+        private List<ResourceBlobBase> contents = new List<ResourceBlobBase>();
 
         public override Vector3 SourceLocation {
             get { return sourceLocation; }
@@ -46,33 +46,27 @@ namespace Assets.Highways.ForTesting {
 
         #endregion
 
-        #region events
-
-        public event EventHandler<FloatEventArgs> TubeTicked;
-
-        #endregion
-
         #region instance methods
 
         #region from BlobTubeBase
 
-        public override bool CanPullBlobFrom(ResourceBlob blob) {
+        public override bool CanPullBlobFrom(ResourceBlobBase blob) {
             return false;
         }
 
-        public override bool CanPushBlobInto(ResourceBlob blob) {
+        public override bool CanPushBlobInto(ResourceBlobBase blob) {
             return GetPermissionForResourceType(blob.BlobType);
         }
 
-        public override void PullBlobFrom(ResourceBlob blob) {
+        public override void PullBlobFrom(ResourceBlobBase blob) {
             throw new NotImplementedException();
         }
 
-        public override void PushBlobInto(ResourceBlob blob) {
+        public override void PushBlobInto(ResourceBlobBase blob) {
             contents.Add(blob);
         }
 
-        public override bool RemoveBlobFrom(ResourceBlob blob) {
+        public override bool RemoveBlobFrom(ResourceBlobBase blob) {
             return contents.Remove(blob);
         }
 
@@ -93,10 +87,6 @@ namespace Assets.Highways.ForTesting {
 
         public override void SetPermissionForResourceType(ResourceType type, bool isPermitted) {
             Permissions[type] = isPermitted;
-        }
-
-        public override void TickMovement(float secondsPassed) {
-            TubeTicked(this, new FloatEventArgs(secondsPassed));
         }
 
         #endregion

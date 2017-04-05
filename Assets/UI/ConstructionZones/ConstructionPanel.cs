@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.Map;
+
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
+using Assets.Map;
 
 namespace Assets.UI.ConstructionZones {
 
-    public class ConstructionPanel : ConstructionPanelBase {
+    public class ConstructionPanel : ConstructionPanelBase, ISelectHandler, IDeselectHandler {
 
         #region instance fields and properties
 
@@ -25,6 +29,8 @@ namespace Assets.UI.ConstructionZones {
         [SerializeField] private Button ConstructResourceDepotButton;
         [SerializeField] private Button ConstructFarmlandButton;
         [SerializeField] private Button ConstructVillageButton;
+
+        private bool DeactivateOnNextUpdate = false;
 
         #endregion
 
@@ -50,12 +56,32 @@ namespace Assets.UI.ConstructionZones {
             }
         }
 
+        private void Update() {
+            if(DeactivateOnNextUpdate) {
+                Deactivate();
+                DeactivateOnNextUpdate = false;
+            }
+        }
+
+        #endregion
+
+        #region Unity EventSystem interfaces
+
+        public void OnSelect(BaseEventData eventData) {
+            DeactivateOnNextUpdate = false;
+        }
+
+        public void OnDeselect(BaseEventData eventData) {
+            DeactivateOnNextUpdate = true;
+        }
+
         #endregion
 
         #region from ConstructionPanelBase
 
         public override void Activate() {
             gameObject.SetActive(true);
+            StartCoroutine(ReselectToThis());
         }
 
         public override void Clear() {
@@ -63,6 +89,7 @@ namespace Assets.UI.ConstructionZones {
         }
 
         public override void Deactivate() {
+            Clear();
             gameObject.SetActive(false);
         }
 
@@ -83,6 +110,19 @@ namespace Assets.UI.ConstructionZones {
         }
 
         #endregion
+
+        public void DoOnChildSelected(BaseEventData eventData) {
+            DeactivateOnNextUpdate = false;
+        }
+
+        public void DoOnChildDeselected(BaseEventData eventData) {
+            DeactivateOnNextUpdate = true;
+        }
+
+        private IEnumerator ReselectToThis() {
+            yield return new WaitForEndOfFrame();
+            EventSystem.current.SetSelectedGameObject(gameObject);
+        }
 
         #endregion
 

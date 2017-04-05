@@ -14,22 +14,26 @@ namespace Assets.Highways.ForTesting {
 
         #region from ResourceBlobFactoryBase
 
-        public override ResourceBlob BuildBlob(ResourceType typeOfResource) {
+        public override ResourceBlobBase BuildBlob(ResourceType typeOfResource) {
             throw new NotImplementedException();
         }
 
-        public override ResourceBlob BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
+        public override ResourceBlobBase BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
             throw new NotImplementedException();
         }
 
-        public override void DestroyBlob(ResourceBlob blob) {
+        public override void DestroyBlob(ResourceBlobBase blob) {
             DestroyImmediate(blob.gameObject);
         }
 
+        public override void TickAllBlobs() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

@@ -244,15 +244,7 @@ namespace Assets.Core {
             }
         }
 
-        public override void PushPointerClickEvent<T>(T source, PointerEventData eventData) {
-            if(source is MapNodeUISummary) {
-                var summary = source as MapNodeUISummary;
-                ConstructionPanel.Clear();
-                ConstructionPanel.LocationToConstruct = summary;
-                ConstructionPanel.SetPermissions(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
-                ConstructionPanel.Activate();
-            }
-        }
+        public override void PushPointerClickEvent<T>(T source, PointerEventData eventData) {}
 
         public override void PushPointerEnterEvent<T>(T source, PointerEventData eventData) {
             if(source is MapNodeUISummary) {
@@ -274,7 +266,12 @@ namespace Assets.Core {
         }
 
         public override void PushSelectEvent<T>(T source, BaseEventData eventData) {
-            if(source is BlobHighwayUISummary) {
+            if(source is MapNodeUISummary) {
+                var summary = source as MapNodeUISummary;
+                ConstructionPanel.LocationToConstruct = summary;
+                ConstructionPanel.SetPermissions(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
+                ConstructionPanel.Activate();
+            }else if(source is BlobHighwayUISummary) {
                 if(HighwaySummaryDisplay != null) {
                     HighwaySummaryDisplay.CurrentSummary = source as BlobHighwayUISummary;
                     HighwaySummaryDisplay.CanBeUpgraded = SimulationControl.CanCreateHighwayUpgraderOnHighway(

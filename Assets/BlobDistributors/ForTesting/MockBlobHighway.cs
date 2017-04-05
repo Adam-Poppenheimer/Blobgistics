@@ -15,15 +15,15 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #region from BlobHighwayBase
 
-        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromFirstEndpoint {
+        public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint {
             get { return contentsPulledFromFirstEndpoint.AsReadOnly(); }
         }
-        private List<ResourceBlob> contentsPulledFromFirstEndpoint = new List<ResourceBlob>();
+        private List<ResourceBlobBase> contentsPulledFromFirstEndpoint = new List<ResourceBlobBase>();
 
-        public override ReadOnlyCollection<ResourceBlob> ContentsPulledFromSecondEndpoint {
+        public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint {
             get { return contentsPulledFromSecondEndpoint.AsReadOnly(); }
         }
-        private List<ResourceBlob> contentsPulledFromSecondEndpoint = new List<ResourceBlob>();
+        private List<ResourceBlobBase> contentsPulledFromSecondEndpoint = new List<ResourceBlobBase>();
 
         public override MapNodeBase FirstEndpoint {
             get { return _firstEndpoint; }
@@ -101,10 +101,6 @@ namespace Assets.BlobDistributors.ForTesting {
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
             
-        }
-
-        public override void TickMovement(float secondsPassed) {
-            throw new NotImplementedException();
         }
 
         #endregion

@@ -360,7 +360,6 @@ namespace Assets.Core {
 
         public override void TickSimulation(float secondsPassed) {
             if(SocietyFactory  != null) SocietyFactory.TickSocieties(secondsPassed);
-            if(HighwayFactory  != null) HighwayFactory.TickHighways(secondsPassed);
             if(BlobDistributor != null) BlobDistributor.Tick(secondsPassed);
         }
 

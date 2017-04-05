@@ -45,12 +45,6 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void TickHighways(float secondsPassed) {
-            if(FactoryTicked != null) {
-                FactoryTicked(this, new FloatEventArgs(secondsPassed));
-            }
-        }
-
         #endregion
 
         #endregion

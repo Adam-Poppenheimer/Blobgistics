@@ -22,6 +22,7 @@ namespace Assets.UI.Highways.ForTesting {
 
         public bool WasCleared = false;
         public bool WasUpdated = false;
+        public bool IsActivated = false;
 
         #endregion
 
@@ -30,11 +31,11 @@ namespace Assets.UI.Highways.ForTesting {
         #region from BlobHighwaySummaryDisplayBase
 
         public override void Activate() {
-            throw new NotImplementedException();
+            IsActivated = true;
         }
 
         public override void Deactivate() {
-            throw new NotImplementedException();
+            IsActivated = false;
         }
 
         public override void ClearDisplay() {
@@ -59,8 +60,12 @@ namespace Assets.UI.Highways.ForTesting {
             RaiseSecondEndpointPermissionChanged(type, isNowPermitted);
         }
 
-        public void RaiseUpgradeRequest() {
+        public void RaiseBeginUpgradeRequest() {
             RaiseBeginHighwayUpgradeRequested();
+        }
+
+        public void RaiseCancelUpgradeRequest() {
+            RaiseCancelHighwayUpgradeRequested();
         }
 
         #endregion

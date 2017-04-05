@@ -22,7 +22,7 @@ namespace Assets.UI.ConstructionZones.Editor {
         #region tests
 
         [Test]
-        public void OnPointerClickEventPushedIntoUIControl_ConstructionPanelIsActivated_Cleared_AndGivenTheClickedMapNodeAsItsLocation() {
+        public void OnSelectEventPushedIntoUIControl_ConstructionPanelIsActivated_AndGivenTheClickedMapNodeAsItsLocation() {
             //Setup
             var constructionPanel = BuildMockConstructionPanel();
             var simulationControl = BuildMockSimulationControl();
@@ -32,21 +32,20 @@ namespace Assets.UI.ConstructionZones.Editor {
             controlToTest.SimulationControl = simulationControl;
 
             var eventSystem = BuildEventSystem();
-            var eventData = new PointerEventData(eventSystem);
+            var eventData = new BaseEventData(eventSystem);
 
             var locationToConstruct = new MapNodeUISummary();
 
             //Execution
-            controlToTest.PushPointerClickEvent(locationToConstruct, eventData);
+            controlToTest.PushSelectEvent(locationToConstruct, eventData);
 
             //Validation
-            Assert.That(constructionPanel.HasBeenCleared, "ConstructionPanel was not cleared");
             Assert.That(constructionPanel.IsActivated, "ConstructionPanel was not activated");
             Assert.AreEqual(locationToConstruct, constructionPanel.LocationToConstruct, "ConstructionPanel has the wrong LocationToConstruct");
         }
 
         [Test]
-        public void OnPointerClickEventPushedIntoUIControl_ConstructionPanelBuildingPermissionsAreSetProperly() {
+        public void OnSelectEventPushedIntoUIControl_ConstructionPanelBuildingPermissionsAreSetProperly() {
             //Setup
             var constructionPanel = BuildMockConstructionPanel();
             var simulationControl = BuildMockSimulationControl();
@@ -56,12 +55,12 @@ namespace Assets.UI.ConstructionZones.Editor {
             controlToTest.SimulationControl = simulationControl;
 
             var eventSystem = BuildEventSystem();
-            var eventData = new PointerEventData(eventSystem);
+            var eventData = new BaseEventData(eventSystem);
 
             var locationToConstruct = new MapNodeUISummary();
 
             //Execution
-            controlToTest.PushPointerClickEvent(locationToConstruct, eventData);
+            controlToTest.PushSelectEvent(locationToConstruct, eventData);
 
             //Validation
             Assert.NotNull(constructionPanel.LastPermissionsSet, "ConstructionPanel received no permissions");

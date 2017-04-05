@@ -603,17 +603,11 @@ namespace Assets.Core.Editor {
         public void OnTickSimulationIsCalled_AllSimulationTickingIsPerformed() {
             //Setup
             var societyFactory = BuildMockSocietyFactory();
-            var highwayFactory = BuildMockHighwayFactory();
             var blobDistributor = BuildMockBlobDistributor();
 
             float amountTickedOnSociety = 0f;
             societyFactory.FactoryTicked += delegate(object sender, FloatEventArgs e) {
                 amountTickedOnSociety = e.Value;
-            };
-
-            float amountTickedOnHighway = 0f;
-            highwayFactory.FactoryTicked += delegate(object sender, FloatEventArgs e) {
-                amountTickedOnHighway = e.Value;
             };
 
             float amountTickedOnDistributor = 0f;
@@ -623,7 +617,6 @@ namespace Assets.Core.Editor {
 
             var controlToTest = BuildSimulationControl();
             controlToTest.SocietyFactory = societyFactory;
-            controlToTest.HighwayFactory = highwayFactory;
             controlToTest.BlobDistributor = blobDistributor;
 
             //Execution
@@ -631,7 +624,6 @@ namespace Assets.Core.Editor {
 
             //Validation
             Assert.AreEqual(5f, amountTickedOnSociety, "Incorrect amount ticked on Society");
-            Assert.AreEqual(5f, amountTickedOnHighway, "Incorrect amount ticked on Highway");
             Assert.AreEqual(5f, amountTickedOnDistributor, "Incorrect amount ticked on Distributor");
         }
 
@@ -976,8 +968,9 @@ namespace Assets.Core.Editor {
                 )
             );
 
-            newBlobTubeFactory.BlobFactory = blobFactory;
-            newBlobTubeFactory.TubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
+            var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
+            newTubePrivateData.SetBlobFactory(blobFactory);
+            newBlobTubeFactory.TubePrivateData = newTubePrivateData;
 
             newFactory.MapGraph = mapGraph;
             newFactory.BlobTubeFactory = newBlobTubeFactory;
@@ -1118,7 +1111,7 @@ namespace Assets.Core.Editor {
             return hostingObject.AddComponent<MockHighwayFactory>();
         }
 
-        private ResourceBlob BuildResourceBlob(ResourceType type) {
+        private ResourceBlobBase BuildResourceBlob(ResourceType type) {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<ResourceBlob>();
         }

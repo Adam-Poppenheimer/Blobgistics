@@ -8,23 +8,11 @@ using UnityEngine;
 
 namespace Assets.Blobs {
 
-    public class ResourceBlob : MonoBehaviour {
-
-        #region static fields and properties
-
-        public static readonly float DesiredZPositionOfAllBlobs = -1f;
-        public static readonly float RadiusOfBlobs = 0.25f;
-
-        private static readonly float SecondsToPopIn = 0.25f;
-        private static readonly Vector3 StartingVelocity = new Vector3(5f, 5f, 5f);
-
-        private static readonly float DestinationSnapDelta = 0.01f;
-
-        #endregion
+    public class ResourceBlob : ResourceBlobBase {
 
         #region instance fields and properties
 
-        public ResourceType BlobType;
+        public override ResourceType BlobType { get; set; }
 
         private Vector3 ScaleToPopTo;
         private Vector3 CurrentScaleVelocity;
@@ -49,11 +37,36 @@ namespace Assets.Blobs {
 
         #endregion
 
-        public void PushNewMovementGoal(MovementGoal goal) {
-            int previousCount = PendingMovementGoals.Count;
+        public override void PushNewMovementGoal(MovementGoal goal) {
             PendingMovementGoals.Enqueue(goal);
-            if(previousCount == 0) {
-                StartCoroutine(ExecutePendingMovementGoals());
+        }
+
+        public override void Tick(float secondsPassed) {
+            float secondsLeftToIncrementOn = secondsPassed;
+            while(PendingMovementGoals.Count > 0 && secondsLeftToIncrementOn > 0) {
+                var currentGoal = PendingMovementGoals.Peek();
+                float distanceToCurrentGoal = Vector3.Distance(transform.position, currentGoal.DesiredLocation);
+                if(distanceToCurrentGoal <= DestinationSnapDelta) {
+                    transform.position = currentGoal.DesiredLocation;
+                    if(currentGoal.ActionToPerformOnTermination != null) {
+                        currentGoal.ActionToPerformOnTermination();
+                    }
+                    PendingMovementGoals.Dequeue();
+                }else {
+                    float timeToAchieveGoal = distanceToCurrentGoal / currentGoal.SpeedPerSecond;
+                    if(timeToAchieveGoal <= secondsLeftToIncrementOn) {
+                        secondsLeftToIncrementOn -= timeToAchieveGoal;
+                        transform.position = currentGoal.DesiredLocation;
+                        if(currentGoal.ActionToPerformOnTermination != null) {
+                            currentGoal.ActionToPerformOnTermination();
+                        }
+                        PendingMovementGoals.Dequeue();
+                    }else {
+                        transform.position = Vector3.MoveTowards(transform.position, currentGoal.DesiredLocation,
+                            currentGoal.SpeedPerSecond * secondsLeftToIncrementOn);
+                        secondsLeftToIncrementOn = 0f;
+                    }
+                }
             }
         }
 

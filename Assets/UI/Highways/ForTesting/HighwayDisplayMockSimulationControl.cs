@@ -36,6 +36,7 @@ namespace Assets.UI.Highways.ForTesting {
         #region events
 
         public event EventHandler<IntEventArgs> HighwayUpgradeRequested;
+        public event EventHandler<IntEventArgs> HighwayUpgradeDestructionRequested;
 
         #endregion
 
@@ -74,11 +75,13 @@ namespace Assets.UI.Highways.ForTesting {
         }
 
         public override bool HasHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
+            return false;
         }
 
         public override void DestroyHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
+            if(HighwayUpgradeDestructionRequested != null) {
+                HighwayUpgradeDestructionRequested(this, new IntEventArgs(highwayID));
+            }
         }
 
         public override void DestroySociety(int societyID) {

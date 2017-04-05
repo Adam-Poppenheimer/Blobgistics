@@ -23,7 +23,7 @@ namespace Assets.UI.ConstructionZones.Editor {
         #region tests
 
         [Test]
-        public void OnConstructionZonePointerClickEventPushedIntoUIControl_ConstructionZoneSummaryDisplayIsCleared_Activated_AndGivenTheClickedZone() {
+        public void OnSelectEventPushedIntoUIControl_ConstructionZoneSummaryDisplayIsActivated_AndGivenTheClickedZone() {
             //Setup
             var zonePanel = BuildMockConstructionZonePanel();
             var simulationControl = BuildMockSimulationControl();
@@ -33,21 +33,20 @@ namespace Assets.UI.ConstructionZones.Editor {
             controlToTest.SimulationControl = simulationControl;
 
             var eventSystem = BuildEventSystem();
-            var eventData = new PointerEventData(eventSystem);
+            var eventData = new BaseEventData(eventSystem);
 
             var zoneToSelect = new ConstructionZoneUISummary();
 
             //Execution
-            controlToTest.PushPointerClickEvent(zoneToSelect, eventData);
+            controlToTest.PushSelectEvent(zoneToSelect, eventData);
 
             //Validation
-            Assert.That(zonePanel.HasBeenCleared, "ConstructionZoneDisplay was not cleared");
             Assert.That(zonePanel.IsActivated, "ConstructionZoneDisplay was not activated");
             Assert.AreEqual(zoneToSelect, zonePanel.CurrentSummary, "ConstructionZoneDisplay has the wrong SummaryToDisplay");
         }
 
         [Test]
-        public void OnConstructionZoneSummaryDisplayRaisesDestructionRequestedEvent_SimulationControlReceivesRequestToDestroyTheZone() {
+        public void OnDestructionRequestedEventRaised_SimulationControlReceivesRequestToDestroyTheZone() {
             //Setup
             var zonePanel = BuildMockConstructionZonePanel();
             var simulationControl = BuildMockSimulationControl();
@@ -74,7 +73,7 @@ namespace Assets.UI.ConstructionZones.Editor {
         }
 
         [Test]
-        public void OnConstructionZoneSummaryDisplayRaisesCloseRequestedEvent_SummaryDisplayIsCleared_AndDeactivated() {
+        public void OnCloseRequestedEventRaised_SummaryDisplayIsCleared_AndDeactivated() {
             //Setup
             var zonePanel = BuildMockConstructionZonePanel();
             var simulationControl = BuildMockSimulationControl();

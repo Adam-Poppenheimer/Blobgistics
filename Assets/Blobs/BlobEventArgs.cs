@@ -7,13 +7,13 @@ namespace Assets.Blobs {
 
         #region instance fields and properties
 
-        public readonly ResourceBlob Blob;
+        public readonly ResourceBlobBase Blob;
 
         #endregion
 
         #region constructors
 
-        public BlobEventArgs(ResourceBlob blob) {
+        public BlobEventArgs(ResourceBlobBase blob) {
             Blob = blob;
         }
 

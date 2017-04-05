@@ -872,7 +872,7 @@ namespace Assets.Societies.Editor {
 
         #region utility methods
 
-        private ResourceBlob BuildResourceBlob(ResourceType typeOfBlob) {
+        private ResourceBlobBase BuildResourceBlob(ResourceType typeOfBlob) {
             var hostingGameObject = new GameObject();
             var newBlob = hostingGameObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = typeOfBlob;

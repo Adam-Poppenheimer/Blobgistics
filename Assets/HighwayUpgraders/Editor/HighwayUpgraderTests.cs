@@ -511,7 +511,7 @@ namespace Assets.HighwayUpgraders.Editor {
             return newBlobSite;
         }
 
-        private ResourceBlob BuildBlob(ResourceType type) {
+        private ResourceBlobBase BuildBlob(ResourceType type) {
             var hostingObject = new GameObject();
             var newBlob = hostingObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = type;

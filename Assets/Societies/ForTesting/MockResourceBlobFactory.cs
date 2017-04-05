@@ -14,11 +14,11 @@ namespace Assets.Societies.ForTesting {
 
         #region from ResourceBlobFactoryBase
 
-        public override ResourceBlob BuildBlob(ResourceType typeOfResource) {
+        public override ResourceBlobBase BuildBlob(ResourceType typeOfResource) {
             return BuildBlob(typeOfResource, Vector2.zero);
         }
 
-        public override ResourceBlob BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
+        public override ResourceBlobBase BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
             var hostingGameObject = new GameObject();
             var newBlob = hostingGameObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = typeOfResource;
@@ -26,14 +26,18 @@ namespace Assets.Societies.ForTesting {
             return newBlob;
         }
 
-        public override void DestroyBlob(ResourceBlob blob) {
-            GameObject.DestroyImmediate(blob);
+        public override void DestroyBlob(ResourceBlobBase blob) {
+            GameObject.DestroyImmediate(blob.gameObject);
+        }
+
+        public override void TickAllBlobs() {
+            throw new NotImplementedException();
         }
 
         #endregion
 
         #endregion
-        
+
     }
 
 }

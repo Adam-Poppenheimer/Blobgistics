@@ -20,12 +20,12 @@ namespace Assets.Highways {
 
         #region from BlobTubeBase
 
-        public override ReadOnlyCollection<ResourceBlob> Contents {
+        public override ReadOnlyCollection<ResourceBlobBase> Contents {
             get { return contents.AsReadOnly(); }
         }
-        private List<ResourceBlob> contents = new List<ResourceBlob>();
+        private List<ResourceBlobBase> contents = new List<ResourceBlobBase>();
 
-        private List<ResourceBlob> BlobsAtEnd = new List<ResourceBlob>();
+        private List<ResourceBlobBase> BlobsAtEnd = new List<ResourceBlobBase>();
 
         public override Vector3 SourceLocation {
             get { return sourceLocation; }
@@ -76,7 +76,7 @@ namespace Assets.Highways {
 
         #region from BlobTubeBase
 
-        public override bool CanPullBlobFrom(ResourceBlob blob) {
+        public override bool CanPullBlobFrom(ResourceBlobBase blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
             }else if(!contents.Contains(blob)) {
@@ -85,7 +85,7 @@ namespace Assets.Highways {
             return BlobsAtEnd.Contains(blob) && contents.Contains(blob);
         }
 
-        public override void PullBlobFrom(ResourceBlob blob) {
+        public override void PullBlobFrom(ResourceBlobBase blob) {
             if(CanPullBlobFrom(blob)) {
                 contents.Remove(blob);
                 BlobsAtEnd.Remove(blob);
@@ -94,7 +94,7 @@ namespace Assets.Highways {
             }
         }
 
-        public override bool CanPushBlobInto(ResourceBlob blob) {
+        public override bool CanPushBlobInto(ResourceBlobBase blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
             }
@@ -103,7 +103,7 @@ namespace Assets.Highways {
             return blobTypeIsPermitted && contents.Count < Capacity && !contents.Contains(blob);
         }
 
-        public override void PushBlobInto(ResourceBlob blob) {
+        public override void PushBlobInto(ResourceBlobBase blob) {
             if(CanPushBlobInto(blob)) {
                 contents.Add(blob);
                 blob.transform.SetParent(transform, true);
@@ -122,7 +122,7 @@ namespace Assets.Highways {
             }
         }
 
-        public override bool RemoveBlobFrom(ResourceBlob blob) {
+        public override bool RemoveBlobFrom(ResourceBlobBase blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
             }
@@ -137,7 +137,7 @@ namespace Assets.Highways {
         }
 
         public override void Clear() {
-            var blobsToRemove = new List<ResourceBlob>(contents);
+            var blobsToRemove = new List<ResourceBlobBase>(contents);
             for(int i = blobsToRemove.Count - 1; i >= 0; --i) {
                 RemoveBlobFrom(blobsToRemove[i]);
             }
@@ -158,10 +158,6 @@ namespace Assets.Highways {
                     PrivateData.MeshNonLengthDimensions
                 );
             }
-        }
-
-        public override void TickMovement(float secondsPassed) {
-            
         }
 
         public override bool GetPermissionForResourceType(ResourceType type) {

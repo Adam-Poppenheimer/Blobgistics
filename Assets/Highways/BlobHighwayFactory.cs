@@ -182,12 +182,6 @@ namespace Assets.Highways {
             }
         }
 
-        public override void TickHighways(float secondsPassed) {
-            foreach(var highway in AllConstructedHighways) {
-                highway.TickMovement(secondsPassed);
-            }
-        }
-
         #endregion
 
         #endregion

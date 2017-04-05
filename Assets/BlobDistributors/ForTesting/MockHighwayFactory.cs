@@ -56,10 +56,6 @@ namespace Assets.BlobDistributors.ForTesting {
             return GetHighwayBetween(firstEndpoint, secondEndpoint) != null;
         }
 
-        public override void TickHighways(float secondsPassed) {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #endregion

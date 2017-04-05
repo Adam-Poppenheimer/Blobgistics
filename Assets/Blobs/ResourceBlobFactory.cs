@@ -11,21 +11,20 @@ namespace Assets.Blobs {
 
     public class ResourceBlobFactory : ResourceBlobFactoryBase {
 
-        #region static fields and properties
+        #region instance fields and properties
 
         [SerializeField] private Material MaterialForFood   = null;
         [SerializeField] private Material MaterialForYellow = null;
         [SerializeField] private Material MaterialForWhite  = null;
         [SerializeField] private Material MaterialForBlue   = null;
 
-        private static Dictionary<ResourceType, Material> MaterialDict =
+        private Dictionary<ResourceType, Material> MaterialDict =
             new Dictionary<ResourceType, Material>();
 
-        #endregion
-
-        #region instance fields and properties
-
         [SerializeField] private GameObject BlobPrefab = null;
+
+        private List<ResourceBlobBase> InstantiatedBlobs = 
+            new List<ResourceBlobBase>();
 
         #endregion
 
@@ -42,30 +41,37 @@ namespace Assets.Blobs {
 
         #endregion
 
-        public override ResourceBlob BuildBlob(ResourceType typeOfResource) {
+        public override ResourceBlobBase BuildBlob(ResourceType typeOfResource) {
             return BuildBlob(typeOfResource, Vector2.zero);
         }
 
-        public override ResourceBlob BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
-            var blobGameObject = Instantiate<GameObject>(BlobPrefab);
-            var blobComponent = blobGameObject.GetComponent<ResourceBlob>();
-            if(blobComponent == null) {
+        public override ResourceBlobBase BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
+            var prefabClone = Instantiate<GameObject>(BlobPrefab);
+            var newBlob = prefabClone.GetComponent<ResourceBlob>();
+            if(newBlob == null) {
                 throw new BlobException("BlobBuilder's BlobPrefab lacks a ResourceBlob component");
             }
-            blobGameObject.transform.position = (Vector3)startingXYCoordinates + new Vector3(0f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs);
+            prefabClone.transform.position = (Vector3)startingXYCoordinates + new Vector3(0f, 0f, ResourceBlob.DesiredZPositionOfAllBlobs);
 
-            var blobRenderer = blobGameObject.GetComponent<MeshRenderer>();
+            var blobRenderer = prefabClone.GetComponent<MeshRenderer>();
             if(blobRenderer != null) {
                 blobRenderer.material = MaterialDict[typeOfResource];
             }
-            blobComponent.BlobType = typeOfResource;
-            blobComponent.gameObject.name = string.Format("Blob ({0})", typeOfResource);
+            newBlob.BlobType = typeOfResource;
+            newBlob.gameObject.name = string.Format("Blob ({0})", typeOfResource);
 
-            return blobComponent;
+            InstantiatedBlobs.Add(newBlob);
+
+            return newBlob;
         }
 
-        public override void DestroyBlob(ResourceBlob blob) {
+        public override void DestroyBlob(ResourceBlobBase blob) {
+            InstantiatedBlobs.Remove(blob);
             DestroyImmediate(blob.gameObject);
+        }
+
+        public override void TickAllBlobs() {
+            throw new NotImplementedException();
         }
 
         #endregion

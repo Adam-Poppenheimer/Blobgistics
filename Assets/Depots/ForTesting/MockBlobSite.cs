@@ -15,10 +15,10 @@ namespace Assets.Depots.ForTesting {
 
         #region from BlobSiteBase
 
-        public override ReadOnlyCollection<ResourceBlob> Contents {
+        public override ReadOnlyCollection<ResourceBlobBase> Contents {
             get { return contents.AsReadOnly(); }
         }
-        private List<ResourceBlob> contents = new List<ResourceBlob>();
+        private List<ResourceBlobBase> contents = new List<ResourceBlobBase>();
 
         public override Vector3 EastConnectionPoint {
             get {
@@ -81,7 +81,7 @@ namespace Assets.Depots.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool CanPlaceBlobInto(ResourceBlob blob) {
+        public override bool CanPlaceBlobInto(ResourceBlobBase blob) {
             throw new NotImplementedException();
         }
 
@@ -99,19 +99,19 @@ namespace Assets.Depots.ForTesting {
             Capacities.Clear();
         }
 
-        public override ResourceBlob ExtractAnyBlob() {
+        public override ResourceBlobBase ExtractAnyBlob() {
             throw new NotImplementedException();
         }
 
-        public override ResourceBlob ExtractBlobOfType(ResourceType type) {
+        public override ResourceBlobBase ExtractBlobOfType(ResourceType type) {
             throw new NotImplementedException();
         }
 
-        public override bool CanExtractBlob(ResourceBlob blob) {
+        public override bool CanExtractBlob(ResourceBlobBase blob) {
             throw new NotImplementedException();
         }
 
-        public override void ExtractBlob(ResourceBlob blob) {
+        public override void ExtractBlob(ResourceBlobBase blob) {
             throw new NotImplementedException();
         }
 
@@ -121,7 +121,7 @@ namespace Assets.Depots.ForTesting {
             return retval;
         }
 
-        public override IEnumerable<ResourceBlob> GetContentsOfType(ResourceType type) {
+        public override IEnumerable<ResourceBlobBase> GetContentsOfType(ResourceType type) {
             throw new NotImplementedException();
         }
 
@@ -153,7 +153,7 @@ namespace Assets.Depots.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void PlaceBlobInto(ResourceBlob blob) {
+        public override void PlaceBlobInto(ResourceBlobBase blob) {
             throw new NotImplementedException();
         }
 

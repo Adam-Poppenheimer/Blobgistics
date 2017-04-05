@@ -18,7 +18,7 @@ namespace Assets.BlobSites {
         public int TotalCapacity { get; set; }
         public int TotalSpaceLeft { get; set; }
 
-        public List<ResourceBlob> Contents { get; set; }
+        public List<ResourceBlobBase> Contents { get; set; }
 
         public Vector3 NorthConnectionPoint { get; set; }
         public Vector3 SouthConnectionPoint { get; set; }
@@ -35,7 +35,7 @@ namespace Assets.BlobSites {
             TotalCapacity = siteToSummarize.TotalCapacity;
             TotalSpaceLeft = siteToSummarize.TotalSpaceLeft;
 
-            Contents = new List<ResourceBlob>(siteToSummarize.Contents);
+            Contents = new List<ResourceBlobBase>(siteToSummarize.Contents);
 
             NorthConnectionPoint = siteToSummarize.NorthConnectionPoint;
             SouthConnectionPoint = siteToSummarize.SouthConnectionPoint;

@@ -66,12 +66,17 @@ namespace Assets.Highways.Editor {
             BuildHighway(highwayData);
 
             //Validation
-            Assert.AreEqual(new Vector3(1f, 0f, 0f), tubePullingFromFirst.SourceLocation, "tubePullingFromFirst has incorrect SourceLocation");
-            Assert.AreEqual(new Vector3(9f, 0f, 0f), tubePullingFromFirst.TargetLocation, "tubePullingFromFirst has incorrect TargetLocation");
+            Assert.AreEqual(new Vector3(1f, BlobHighway.TubeCenterOffset, 0f), tubePullingFromFirst.SourceLocation,
+                "tubePullingFromFirst has incorrect SourceLocation");
 
-            Assert.AreEqual(new Vector3(9f, 0f, 0f), tubePullingFromSecond.SourceLocation, "tubePullingFromSecond has incorrect SourceLocation");
+            Assert.AreEqual(new Vector3(9f, BlobHighway.TubeCenterOffset, 0f), tubePullingFromFirst.TargetLocation,
+                "tubePullingFromFirst has incorrect TargetLocation");
 
-            Assert.AreEqual(new Vector3(1f, 0f, 0f), tubePullingFromSecond.TargetLocation, "tubePullingFromSecond has incorrect TargetLocation");
+            Assert.AreEqual(new Vector3(9f, -BlobHighway.TubeCenterOffset, 0f), tubePullingFromSecond.SourceLocation,
+                "tubePullingFromSecond has incorrect SourceLocation");
+
+            Assert.AreEqual(new Vector3(1f, -BlobHighway.TubeCenterOffset, 0f), tubePullingFromSecond.TargetLocation,
+                "tubePullingFromSecond has incorrect TargetLocation");
         }
 
         [Test]
@@ -785,40 +790,6 @@ namespace Assets.Highways.Editor {
         }
 
         [Test]
-        public void OnHighwayTicked_TubesWithinHighwayAlsoTicked() {
-            //Setup
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            var tubePullingFromFirst = BuildBlobTube();
-            var tubePullingFromSecond = BuildBlobTube();
-
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
-
-            float tubePullingFromFirstTickedAmount = 0f;
-            float tubePullingFromSecondTickedAmount = 0f;
-            tubePullingFromFirst.TubeTicked += delegate(object sender, FloatEventArgs e) {
-                tubePullingFromFirstTickedAmount = e.Value;
-            };
-            tubePullingFromSecond.TubeTicked += delegate(object sender, FloatEventArgs e) {
-                tubePullingFromSecondTickedAmount = e.Value;
-            };
-
-            //Execution
-            highwayToTest.TickMovement(1f);
-
-            //Validation
-            Assert.AreEqual(1f, tubePullingFromFirstTickedAmount, "tubePullingFromFirst ticked the incorrect amount");
-            Assert.AreEqual(1f, tubePullingFromSecondTickedAmount, "tubePullingFromSecond ticked the incorrect amount");
-        }
-
-        [Test]
         public void OnProfileChanged_BlobSpeedPerSecondChangesForBothTubes() {
             //Setup
             var firstEndpoint = BuildMapNode();
@@ -1096,7 +1067,7 @@ namespace Assets.Highways.Editor {
             return newHighway;
         }
 
-        private ResourceBlob BuildBlob(ResourceType type) {
+        private ResourceBlobBase BuildBlob(ResourceType type) {
             var hostingObject = new GameObject();
             var newBlob = hostingObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = type;
@@ -1118,7 +1089,9 @@ namespace Assets.Highways.Editor {
             newMapGraph.BlobSiteFactory = newBlobSiteFactory;
 
             var newTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
-            newTubeFactory.BlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
+            var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
+            newTubePrivateData.SetBlobFactory(hostingObject.AddComponent<MockResourceBlobFactory>());
+            newTubeFactory.TubePrivateData = newTubePrivateData;
 
             var newHighwayFactory = hostingObject.AddComponent<BlobHighwayFactory>();
             newHighwayFactory.MapGraph = newMapGraph;

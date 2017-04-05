@@ -24,7 +24,7 @@ namespace Assets.BlobSites {
 
         public abstract bool IsAtCapacity { get; }
 
-        public abstract ReadOnlyCollection<ResourceBlob> Contents { get; }
+        public abstract ReadOnlyCollection<ResourceBlobBase> Contents { get; }
 
         public abstract Vector3 NorthConnectionPoint { get; }
         public abstract Vector3 SouthConnectionPoint { get; }
@@ -39,9 +39,9 @@ namespace Assets.BlobSites {
         public event EventHandler<BlobEventArgs> BlobExtractedFrom;
         public event EventHandler<EventArgs>     AllBlobsCleared;
 
-        protected void RaiseBlobPlacedInto   (ResourceBlob blob) { RaiseEvent(BlobPlacedInto,    new BlobEventArgs(blob)); }
-        protected void RaiseBlobExtractedFrom(ResourceBlob blob) { RaiseEvent(BlobExtractedFrom, new BlobEventArgs(blob)); }
-        protected void RaiseAllBlobsCleared  ()                  { RaiseEvent(AllBlobsCleared,   EventArgs.Empty        ); }
+        protected void RaiseBlobPlacedInto   (ResourceBlobBase blob) { RaiseEvent(BlobPlacedInto,    new BlobEventArgs(blob)); }
+        protected void RaiseBlobExtractedFrom(ResourceBlobBase blob) { RaiseEvent(BlobExtractedFrom, new BlobEventArgs(blob)); }
+        protected void RaiseAllBlobsCleared  ()                      { RaiseEvent(AllBlobsCleared,       EventArgs.Empty    ); }
 
         protected void RaiseEvent<T>(EventHandler<T> handler, T e) where T : EventArgs {
             if(handler != null) {
@@ -71,22 +71,22 @@ namespace Assets.BlobSites {
             }
         }
 
-        public abstract bool CanPlaceBlobInto(ResourceBlob blob);
-        public abstract void PlaceBlobInto   (ResourceBlob blob);
+        public abstract bool CanPlaceBlobInto(ResourceBlobBase blob);
+        public abstract void PlaceBlobInto   (ResourceBlobBase blob);
         public abstract bool CanPlaceBlobOfTypeInto(ResourceType type);
 
-        public abstract bool         CanExtractAnyBlob();
-        public abstract ResourceBlob ExtractAnyBlob();
+        public abstract bool             CanExtractAnyBlob();
+        public abstract ResourceBlobBase ExtractAnyBlob();
 
-        public abstract bool         CanExtractBlobOfType(ResourceType type);
-        public abstract ResourceBlob ExtractBlobOfType   (ResourceType type);
+        public abstract bool             CanExtractBlobOfType(ResourceType type);
+        public abstract ResourceBlobBase ExtractBlobOfType   (ResourceType type);
 
-        public abstract bool CanExtractBlob(ResourceBlob blob);
-        public abstract void ExtractBlob   (ResourceBlob blob);
+        public abstract bool CanExtractBlob(ResourceBlobBase blob);
+        public abstract void ExtractBlob   (ResourceBlobBase blob);
 
         public abstract IEnumerable<ResourceType> GetExtractableTypes();
 
-        public abstract IEnumerable<ResourceBlob> GetContentsOfType(ResourceType type);
+        public abstract IEnumerable<ResourceBlobBase> GetContentsOfType(ResourceType type);
         public abstract int GetCountOfContentsOfType(ResourceType type);
         public abstract int GetSpaceLeftOfType(ResourceType type);
 

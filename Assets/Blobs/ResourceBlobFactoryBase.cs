@@ -8,10 +8,12 @@ namespace Assets.Blobs {
 
         #region instance methods
 
-        public abstract ResourceBlob BuildBlob(ResourceType typeOfResource);
-        public abstract ResourceBlob BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates);
+        public abstract ResourceBlobBase BuildBlob(ResourceType typeOfResource);
+        public abstract ResourceBlobBase BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates);
 
-        public abstract void DestroyBlob(ResourceBlob blob);
+        public abstract void DestroyBlob(ResourceBlobBase blob);
+
+        public abstract void TickAllBlobs();
 
         #endregion
 

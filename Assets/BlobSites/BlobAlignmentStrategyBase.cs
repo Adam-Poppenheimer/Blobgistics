@@ -13,7 +13,7 @@ namespace Assets.BlobSites {
 
         #region methods
 
-        public abstract void RealignBlobs(IEnumerable<ResourceBlob> blobsToAlign, Vector2 centerPosition,
+        public abstract void RealignBlobs(IEnumerable<ResourceBlobBase> blobsToAlign, Vector2 centerPosition,
             float realignmentSpeedPerSecond);
 
         #endregion

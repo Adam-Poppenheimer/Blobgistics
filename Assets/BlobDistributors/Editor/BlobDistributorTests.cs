@@ -383,7 +383,7 @@ namespace Assets.BlobDistributors.Editor {
             return hostingObject.AddComponent<BlobDistributor>();
         }
 
-        private ResourceBlob BuildResourceBlob(ResourceType type) {
+        private ResourceBlobBase BuildResourceBlob(ResourceType type) {
             var hostingObject = new GameObject();
             var newBlob = hostingObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = type;

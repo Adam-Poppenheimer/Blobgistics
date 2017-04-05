@@ -17,24 +17,6 @@ namespace Assets.Highways {
 
         #region instance fields and properties
 
-        public ResourceBlobFactoryBase BlobFactory {
-            get {
-                if(_blobFactory == null) {
-                    throw new InvalidOperationException("BlobFactory is uninitialized");
-                } else {
-                    return _blobFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _blobFactory = value;
-                }
-            }
-        }
-        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
-
         public BlobTubePrivateDataBase TubePrivateData {
             get {
                 if(_tubePrivateData == null) {

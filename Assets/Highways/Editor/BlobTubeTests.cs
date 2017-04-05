@@ -56,7 +56,7 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            var blobToAdd = BuildResourceBlob();
+            var blobToAdd = BuildRealResourceBlob();
 
             //Execution
             tubeToTest.SetPermissionForResourceType(blobToAdd.BlobType, true);
@@ -74,7 +74,7 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            var blobToAdd = BuildResourceBlob();
+            var blobToAdd = BuildRealResourceBlob();
 
             //Execution
             tubeToTest.SetPermissionForResourceType(blobToAdd.BlobType, false);
@@ -92,7 +92,7 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            var blobToAdd = BuildResourceBlob();
+            var blobToAdd = BuildRealResourceBlob();
 
             //Execution
             var canAddBlob = tubeToTest.CanPushBlobInto(blobToAdd);
@@ -109,7 +109,7 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            var blobToAdd = BuildResourceBlob();
+            var blobToAdd = BuildRealResourceBlob();
 
             //Execution
             tubeToTest.SetPermissionForResourceType(blobToAdd.BlobType, true);
@@ -129,12 +129,12 @@ namespace Assets.Highways.Editor {
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            ResourceBlob[] blobsToAdd = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
+            ResourceBlobBase[] blobsToAdd = new ResourceBlobBase[] {
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
             };
 
             //Execution
@@ -158,13 +158,13 @@ namespace Assets.Highways.Editor {
             tubeToTest.Capacity = 5;
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            ResourceBlob[] blobsToAdd = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
+            ResourceBlobBase[] blobsToAdd = new ResourceBlobBase[] {
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
             };
 
             //Execution
@@ -185,7 +185,7 @@ namespace Assets.Highways.Editor {
             tubeToTest.Capacity = 10;
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-            var blobToAdd = BuildResourceBlob(ResourceType.Food);
+            var blobToAdd = BuildRealResourceBlob(ResourceType.Food);
 
             //Execution
             tubeToTest.PushBlobInto(blobToAdd);
@@ -204,8 +204,8 @@ namespace Assets.Highways.Editor {
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var greenBlob = BuildResourceBlob(ResourceType.Yellow);
-            var blueBlob  = BuildResourceBlob(ResourceType.White );
+            var greenBlob = BuildRealResourceBlob(ResourceType.Yellow);
+            var blueBlob  = BuildRealResourceBlob(ResourceType.White );
 
             //Execution
             var canPushGreen = tubeToTest.CanPushBlobInto(greenBlob);
@@ -216,55 +216,28 @@ namespace Assets.Highways.Editor {
         }
 
         [Test]
-        public void OnBlobPushedIntoTube_BlobIsNowAtSourceLocationOfTube() {
+        public void OnBlobPushedIntoTube_BlobIsGivenGoalToMoveToStartOfTube_ThenEndOfTube() {
             //Setup
             var privateData = BuildPrivateData();
 
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
             
-            tubeToTest.SetEndpoints(new Vector3(-10f, 0f, 0f), new Vector3(10f, 0f, 0f));
+            var endpoint1 = new Vector3(-10f, 0f, ResourceBlobBase.DesiredZPositionOfAllBlobs);
+            var endpoint2 = new Vector3(10f, 0f, ResourceBlobBase.DesiredZPositionOfAllBlobs);
+            tubeToTest.SetEndpoints(endpoint1, endpoint2);
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToAdd = BuildResourceBlob(ResourceType.Food);
+            var blobHost = new GameObject();
+            var blobToAdd = blobHost.AddComponent<MockResourceBlob>();
 
             //Execute
             tubeToTest.PushBlobInto(blobToAdd);
 
-            //Validate
-            Assert.That(blobToAdd.transform.position.Equals(tubeToTest.SourceLocation));
-        }
-
-        [Test]
-        public void OnBlobTubeMovementTicked_AllBlobsInTubeAreMoved() {
-            //Setup
-            var privateData = BuildPrivateData();
-
-            var tubeToTest = BuildBlobTube(privateData);
-            tubeToTest.Capacity = 10;
-            tubeToTest.TransportSpeedPerSecond = 1f;
-            
-            tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(10f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-
-            ResourceBlob[] blobsToAdd = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-            };
-
-            //Execution
-            for(int i = 0; i < blobsToAdd.Length; ++i) {
-                tubeToTest.PushBlobInto(blobsToAdd[i]);
-            }
-            tubeToTest.TickMovement(1f);
-
-            //Validate
-            foreach(var blob in blobsToAdd) {
-                Assert.That(Mathf.Approximately(blob.transform.position.x, 1f));
-            }
+            //Validation
+            Assert.AreEqual(2, blobToAdd.PushedGoals.Count, "BlobToAdd has an incorrect number of pushed goals");
+            Assert.AreEqual(endpoint1, blobToAdd.PushedGoals[0].DesiredLocation, "BlobToAdd's first MovementGoal points to the wrong destination");
+            Assert.AreEqual(endpoint2, blobToAdd.PushedGoals[1].DesiredLocation, "BlobToAdd's second MovementGoal points to the wrong destination");
         }
 
         [Test]
@@ -279,13 +252,13 @@ namespace Assets.Highways.Editor {
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(10f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var movingBlob = BuildResourceBlob(ResourceType.Food);
+            var movingBlob = BuildRealResourceBlob(ResourceType.Food);
 
             //Execution
             bool hasReachedEndOfTube = false;
             tubeToTest.PushBlobInto(movingBlob);
             for(int i = 0; i < 100000; ++i) {
-                tubeToTest.TickMovement(0.01f);
+                movingBlob.Tick(0.01f);
                 if(tubeToTest.CanPullBlobFrom(movingBlob)) {
                     hasReachedEndOfTube = true;
                     break;
@@ -294,29 +267,6 @@ namespace Assets.Highways.Editor {
 
             //Validation
             Assert.That(hasReachedEndOfTube);
-        }
-
-        [Test]
-        public void WhenBlobIsVeryCloseToEndOfTube_BlobCanBePulledFromTube() {
-            //Setup
-            var privateData = BuildPrivateData();
-
-            var tubeToTest = BuildBlobTube(privateData);
-            tubeToTest.Capacity = 10;
-            tubeToTest.TransportSpeedPerSecond = 1f;
-            
-            tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-
-            var blobToManipulate = BuildResourceBlob(ResourceType.Food);
-
-            //Execution
-            tubeToTest.PushBlobInto(blobToManipulate);
-            tubeToTest.TickMovement(1f);
-            var canBePulled = tubeToTest.CanPullBlobFrom(blobToManipulate);
-
-            //Validation
-            Assert.That(canBePulled);
         }
     
         [Test]
@@ -331,7 +281,7 @@ namespace Assets.Highways.Editor {
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToManipulate = BuildResourceBlob(ResourceType.Food);
+            var blobToManipulate = BuildRealResourceBlob(ResourceType.Food);
 
             //Execution
             tubeToTest.PushBlobInto(blobToManipulate);
@@ -339,81 +289,6 @@ namespace Assets.Highways.Editor {
 
             //Validation
             Assert.That(!canBePulled);
-        }
-
-        [Test]
-        public void BlobInTubeHasReachedEnd_FurtherMovementTicksDoNotChangeBlobsPositionOrPullability() {
-            //Setup
-            var privateData = BuildPrivateData();
-
-            var tubeToTest = BuildBlobTube(privateData);
-            tubeToTest.Capacity = 10;
-            tubeToTest.TransportSpeedPerSecond = 1f;
-            
-            tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(1f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-
-            var blobToManipulate = BuildResourceBlob(ResourceType.Food);
-
-            //Execution
-            tubeToTest.PushBlobInto(blobToManipulate);
-            tubeToTest.TickMovement(1f);
-            var canBePulled = tubeToTest.CanPullBlobFrom(blobToManipulate);
-            var blobPositionX = blobToManipulate.transform.position.x;
-
-            //Validation
-            Assert.That(canBePulled, "Blob cannot be pulled to begin with");
-            for(int i = 1; i < 11; ++i) {
-                tubeToTest.TickMovement(1f);
-                Assert.That(tubeToTest.CanPullBlobFrom(blobToManipulate),
-                    string.Format("Blob lost the ability to be pulled on cycle {0}", i));
-                Assert.That(Mathf.Approximately(blobPositionX, tubeToTest.TargetLocation.x),
-                    string.Format("Blob wandered away from target location on cycle {0}", i));
-            }
-        }
-
-        [Test]
-        public void OnBlobTubeMovementTicked_BlobsReachTheEndInTheOrderTheyWerePushed() {
-            //Setup
-            var privateData = BuildPrivateData();
-
-            var tubeToTest = BuildBlobTube(privateData);
-            tubeToTest.Capacity = 10;
-            tubeToTest.TransportSpeedPerSecond = 1f;
-            
-            tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(5f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-
-            ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-            };
-
-            //Execution
-            foreach(var blob in blobsToManipulate) {
-                tubeToTest.PushBlobInto(blob);
-                tubeToTest.TickMovement(1f);
-            }
-
-            //Validation
-            for(int removalIndex = 0; removalIndex < 5; ++removalIndex) {
-                for(int blobIndex = 0; blobIndex < blobsToManipulate.Length; ++blobIndex) {
-                    var blobBeingLookedAt = blobsToManipulate[blobIndex];
-                    if(!tubeToTest.Contents.Contains(blobBeingLookedAt)) {
-                        continue;
-                    }
-                    if(blobIndex <= removalIndex) {
-                        Assert.That(tubeToTest.CanPullBlobFrom(blobBeingLookedAt));
-                        tubeToTest.PullBlobFrom(blobBeingLookedAt);
-                    }else {
-                        Assert.That(!tubeToTest.CanPullBlobFrom(blobBeingLookedAt));
-                    }
-                }
-                tubeToTest.TickMovement(1f);
-            }
         }
 
         [Test]
@@ -428,58 +303,17 @@ namespace Assets.Highways.Editor {
             tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var blobToManipulate = BuildResourceBlob(ResourceType.Food);
+            var blobToManipulate = BuildRealResourceBlob(ResourceType.Food);
+            blobToManipulate.transform.position = Vector3.zero;
 
             //Execute
             tubeToTest.PushBlobInto(blobToManipulate);
+            blobToManipulate.Tick(100f);
             tubeToTest.PullBlobFrom(blobToManipulate);
             var blobIsInTube = tubeToTest.Contents.Contains(blobToManipulate);
 
             //Validate
             Assert.That(!blobIsInTube);
-        }
-
-        [Test]
-        public void WhenMultipleBlobsPresent_OnlyEarliestBlobInsertedCanBePulled() {
-            //Setup
-            var privateData = BuildPrivateData();
-
-            var tubeToTest = BuildBlobTube(privateData);
-            tubeToTest.Capacity = 10;
-            tubeToTest.TransportSpeedPerSecond = 1f;
-            
-            tubeToTest.SetEndpoints(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
-            tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-
-            ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-            };
-
-            //Execution
-            foreach(var blob in blobsToManipulate) {
-                tubeToTest.PushBlobInto(blob);
-            }
-
-            //Validation
-            for(int outerBlobIndex = 0; outerBlobIndex < blobsToManipulate.Length; ++outerBlobIndex) {
-                for(int innerBlobIndex = outerBlobIndex + 1; innerBlobIndex < blobsToManipulate.Length; ++innerBlobIndex) {
-                    var blobNotToPull = blobsToManipulate[innerBlobIndex];
-                    Assert.That(
-                        !tubeToTest.CanPullBlobFrom(blobNotToPull),
-                        string.Format("Blob {0} is not leading the list and should not have be pullable, but was", innerBlobIndex)
-                    );
-                }
-                var blobToPull = blobsToManipulate[outerBlobIndex];
-                Assert.That(
-                    tubeToTest.CanPullBlobFrom(blobToPull), 
-                    string.Format("Blob {0} is at the front of the list and should've been pullable, but was not", outerBlobIndex)
-                );
-                tubeToTest.PullBlobFrom(blobToPull);
-            }
         }
 
         [Test]
@@ -492,12 +326,12 @@ namespace Assets.Highways.Editor {
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
             tubeToTest.SetPermissionForResourceType(ResourceType.Yellow, true);
 
-            ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Yellow),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
+            ResourceBlobBase[] blobsToManipulate = new ResourceBlobBase[] {
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Yellow),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
             };
 
             foreach(var blob in blobsToManipulate) {
@@ -527,12 +361,12 @@ namespace Assets.Highways.Editor {
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
             tubeToTest.SetPermissionForResourceType(ResourceType.Yellow, true);
 
-            ResourceBlob[] blobsToManipulate = new ResourceBlob[] {
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Yellow),
-                BuildResourceBlob(ResourceType.Food),
-                BuildResourceBlob(ResourceType.Food),
+            ResourceBlobBase[] blobsToManipulate = new ResourceBlobBase[] {
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Yellow),
+                BuildRealResourceBlob(ResourceType.Food),
+                BuildRealResourceBlob(ResourceType.Food),
             };
 
             foreach(var blob in blobsToManipulate) {
@@ -616,7 +450,7 @@ namespace Assets.Highways.Editor {
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, false);
 
-            var blobToPush = BuildResourceBlob(ResourceType.Food);
+            var blobToPush = BuildRealResourceBlob(ResourceType.Food);
 
             //Execution and Validation
             Assert.Throws<BlobTubeException>(delegate() {
@@ -637,7 +471,7 @@ namespace Assets.Highways.Editor {
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
             tubeToTest.SetEndpoints(Vector3.zero, new Vector3(10f, 0f, 0f));
 
-            var blobToPull = BuildResourceBlob(ResourceType.Food);
+            var blobToPull = BuildRealResourceBlob(ResourceType.Food);
 
             //Execution
             tubeToTest.PushBlobInto(blobToPull);
@@ -658,7 +492,7 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            var blobToPull = BuildResourceBlob(ResourceType.Food);
+            var blobToPull = BuildRealResourceBlob(ResourceType.Food);
 
             //Execution and Validation
             Assert.Throws<BlobTubeException>(delegate() {
@@ -674,7 +508,7 @@ namespace Assets.Highways.Editor {
             var tubeToTest = BuildBlobTube(privateData);
             tubeToTest.Capacity = 1;
 
-            var blobToPull = BuildResourceBlob(ResourceType.Food);
+            var blobToPull = BuildRealResourceBlob(ResourceType.Food);
 
             //Execution and Validation
             Assert.Throws<BlobTubeException>(delegate() {
@@ -712,7 +546,7 @@ namespace Assets.Highways.Editor {
             return newBlobTube;
         }
 
-        private ResourceBlob BuildResourceBlob(ResourceType typeOfBlob = ResourceType.Food) {
+        private ResourceBlobBase BuildRealResourceBlob(ResourceType typeOfBlob = ResourceType.Food) {
             var hostingGameObject = new GameObject();
             var newBlob = hostingGameObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = typeOfBlob;
@@ -722,8 +556,16 @@ namespace Assets.Highways.Editor {
         private BlobTubeFactory BuildTubeFactory() {
             var hostingObject = new GameObject();
             var newFactory = hostingObject.AddComponent<BlobTubeFactory>();
-            newFactory.BlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
+            var newPrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
+            newPrivateData.SetBlobFactory(hostingObject.AddComponent<MockResourceBlobFactory>());
+            newFactory.TubePrivateData = newPrivateData;
             return newFactory;
+        }
+
+        private void TickBlobsWithin(BlobTube tube, float secondsPassed) {
+            foreach(var blob in tube.Contents) {
+                blob.Tick(secondsPassed);
+            }
         }
 
         #endregion

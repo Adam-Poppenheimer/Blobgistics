@@ -21,8 +21,8 @@ namespace Assets.Highways {
         public abstract MapNodeBase FirstEndpoint  { get; } 
         public abstract MapNodeBase SecondEndpoint { get; }
 
-        public abstract ReadOnlyCollection<ResourceBlob> ContentsPulledFromFirstEndpoint { get; }
-        public abstract ReadOnlyCollection<ResourceBlob> ContentsPulledFromSecondEndpoint { get; }
+        public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint { get; }
+        public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint { get; }
 
         public abstract BlobHighwayProfile Profile { get; set; }
 
@@ -53,8 +53,6 @@ namespace Assets.Highways {
         public abstract void PullFromSecondEndpoint();
 
         public abstract void Clear();
-
-        public abstract void TickMovement(float secondsPassed);
 
         #endregion
 

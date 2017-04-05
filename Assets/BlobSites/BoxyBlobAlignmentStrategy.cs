@@ -58,13 +58,13 @@ namespace Assets.BlobSites {
 
         #region from BlobAlignmentStrategyBase
 
-        public override void RealignBlobs(IEnumerable<ResourceBlob> blobsToAlign, Vector2 centerPosition,
+        public override void RealignBlobs(IEnumerable<ResourceBlobBase> blobsToAlign, Vector2 centerPosition,
             float realignmentSpeedPerSecond) {
             int blobIndex = 0;
-            var blobList = new List<ResourceBlob>(blobsToAlign);
+            var blobList = new List<ResourceBlobBase>(blobsToAlign);
 
-            float xDistanceToWorkWith = BoundingWidth  - ResourceBlob.RadiusOfBlobs;
-            float yDistanceToWorkWith = BoundingHeight - ResourceBlob.RadiusOfBlobs;
+            float xDistanceToWorkWith = BoundingWidth  - ResourceBlobBase.RadiusOfBlobs;
+            float yDistanceToWorkWith = BoundingHeight - ResourceBlobBase.RadiusOfBlobs;
 
             for(int verticalIndex = 0; verticalIndex < BlobsPerColumn; ++verticalIndex) {
                 for(int horizontalIndex = 0; horizontalIndex < BlobsPerRow; ++horizontalIndex) {
@@ -73,9 +73,9 @@ namespace Assets.BlobSites {
                     }else {
                         var blobToPlace = blobList[blobIndex++];
                         var newBlobLocation = new Vector3(
-                            ResourceBlob.RadiusOfBlobs + ((float)horizontalIndex / (float)BlobsPerRow)    * xDistanceToWorkWith,
-                            ResourceBlob.RadiusOfBlobs + ((float)verticalIndex   / (float)BlobsPerColumn) * yDistanceToWorkWith,
-                            ResourceBlob.DesiredZPositionOfAllBlobs
+                            ResourceBlobBase.RadiusOfBlobs + ((float)horizontalIndex / (float)BlobsPerRow)    * xDistanceToWorkWith,
+                            ResourceBlobBase.RadiusOfBlobs + ((float)verticalIndex   / (float)BlobsPerColumn) * yDistanceToWorkWith,
+                            ResourceBlobBase.DesiredZPositionOfAllBlobs
                         ) + (Vector3)CenteringVector + (Vector3)centerPosition;
 
                         blobToPlace.PushNewMovementGoal(new MovementGoal(newBlobLocation, realignmentSpeedPerSecond));

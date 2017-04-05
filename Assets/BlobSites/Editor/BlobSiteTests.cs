@@ -570,7 +570,7 @@ namespace Assets.BlobSites.Editor {
             siteToTest.TotalCapacity = 1;
 
             bool eventHasFired = false;
-            ResourceBlob blobReturnedByEvent = null;
+            ResourceBlobBase blobReturnedByEvent = null;
             siteToTest.BlobPlacedInto += delegate(object sender, BlobEventArgs e) {
                 eventHasFired = true;
                 blobReturnedByEvent = e.Blob;
@@ -694,7 +694,7 @@ namespace Assets.BlobSites.Editor {
             var blobToInsert = BuildBlob(ResourceType.Food);
 
             bool eventHasFired = false;
-            ResourceBlob blobExtracted = null;
+            ResourceBlobBase blobExtracted = null;
             siteToTest.BlobExtractedFrom += delegate(object sender, BlobEventArgs e) {
                 eventHasFired = true;
                 blobExtracted = e.Blob;
@@ -1122,12 +1122,62 @@ namespace Assets.BlobSites.Editor {
 
         [Test]
         public void OnResourceBlobPlacedInto_BlobSiteIsMadeNewParentOfBlob_AndLocationDoesntChange() {
-            Assert.Ignore("This test is not implemented, but also not considered critical");
+            //Setup
+            var siteToTest = BuildBlobSite(PrivateData);
+
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
+            ));
+
+            var blobToPlace = BuildBlob(ResourceType.Food);
+            var blobStartingPosition = new Vector3(11f, 22f, 33f);
+            blobToPlace.transform.position = blobStartingPosition;
+
+            //Execution
+            siteToTest.PlaceBlobInto(blobToPlace);
+
+            //Validation
+            Assert.AreEqual(siteToTest.transform, blobToPlace.transform.parent, "BlobToPlace has an incorrect parent");
+            Assert.AreEqual(blobStartingPosition, blobToPlace.transform.position, "BlobToPlace was moved during placement");
         }
 
         [Test]
         public void OnResourceBlobPlacedInto_AlignmentStrategyIsCalledOnAllContents() {
-            Assert.Ignore("This test is not implemented, but also not considered critical");
+            //Setup
+            var hostingObject = new GameObject();
+            var newPrivateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+
+            var alignmentStrategy = hostingObject.AddComponent<MockBlobAlignmentStrategy>();
+
+            newPrivateData.SetAlignmentStrategy(alignmentStrategy);
+
+            var siteToTest = BuildBlobSite(newPrivateData);
+
+            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                siteToTest.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 5)
+            ));
+
+            var blob1 = BuildBlob(ResourceType.Food);
+            var blob2 = BuildBlob(ResourceType.Food);
+            var blob3 = BuildBlob(ResourceType.Food);
+
+            //Execution and Validation
+            siteToTest.PlaceBlobInto(blob1);
+            Assert.AreEqual(1, alignmentStrategy.LastAlignmentRequest.Count, "Placement of blob1 led to an incorrect number of blobs being aligned");
+            Assert.Contains(blob1, alignmentStrategy.LastAlignmentRequest, "Blob1 not requested for alignment after placement of blob1");
+
+            siteToTest.PlaceBlobInto(blob2);
+            Assert.AreEqual(2, alignmentStrategy.LastAlignmentRequest.Count, "Placement of blob2 led to an incorrect number of blobs being aligned");
+            Assert.Contains(blob1, alignmentStrategy.LastAlignmentRequest, "Blob1 not requested for alignment after placement of blob2");
+            Assert.Contains(blob2, alignmentStrategy.LastAlignmentRequest, "Blob2 not requested for alignment after placement of blob2");
+
+            siteToTest.PlaceBlobInto(blob3);
+            Assert.AreEqual(3, alignmentStrategy.LastAlignmentRequest.Count, "Placement of blob3 led to an incorrect number of blobs being aligned");
+            Assert.Contains(blob1, alignmentStrategy.LastAlignmentRequest, "Blob1 not requested for alignment after placement of blob3");
+            Assert.Contains(blob2, alignmentStrategy.LastAlignmentRequest, "Blob2 not requested for alignment after placement of blob3");
+            Assert.Contains(blob3, alignmentStrategy.LastAlignmentRequest, "Blob3 not requested for alignment after placement of blob3");
         }
 
         #endregion
@@ -1211,7 +1261,7 @@ namespace Assets.BlobSites.Editor {
             return newFactory;
         }
 
-        private ResourceBlob BuildBlob(ResourceType type) {
+        private ResourceBlobBase BuildBlob(ResourceType type) {
             var hostingObject = new GameObject();
             var newBlob = hostingObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = type;

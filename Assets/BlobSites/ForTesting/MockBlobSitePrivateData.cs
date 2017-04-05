@@ -45,6 +45,9 @@ namespace Assets.BlobSites.ForTesting {
                 return _alignmentStrategy;
             }
         }
+        public void SetAlignmentStrategy(BlobAlignmentStrategyBase value) {
+            _alignmentStrategy = value;
+        }
         private BlobAlignmentStrategyBase _alignmentStrategy = null;
 
         public override float BlobRealignmentSpeedPerSecond {

@@ -18,10 +18,10 @@ namespace Assets.BlobSites {
 
         #region from BlobSiteBase
 
-        public override ReadOnlyCollection<ResourceBlob> Contents {
+        public override ReadOnlyCollection<ResourceBlobBase> Contents {
             get { return contents.AsReadOnly(); }
         }
-        private List<ResourceBlob> contents = new List<ResourceBlob>();
+        private List<ResourceBlobBase> contents = new List<ResourceBlobBase>();
 
         public override Vector3 NorthConnectionPoint {
             get { return PrivateData.NorthConnectionOffset + transform.position; }
@@ -91,12 +91,12 @@ namespace Assets.BlobSites {
             return false;
         }
 
-        public override ResourceBlob ExtractAnyBlob() {
+        public override ResourceBlobBase ExtractAnyBlob() {
             
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                 if(GetExtractionPermissionForResourceType(resourceType)) {
 
-                    var blobToExtract = contents.FindLast(delegate(ResourceBlob blob) {
+                    var blobToExtract = contents.FindLast(delegate(ResourceBlobBase blob) {
                         return blob.BlobType == resourceType;
                     });
                     if(blobToExtract != null) {
@@ -113,14 +113,14 @@ namespace Assets.BlobSites {
         }
 
         public override bool CanExtractBlobOfType(ResourceType type) {
-            return GetExtractionPermissionForResourceType(type) && contents.Find(delegate(ResourceBlob blob) {
+            return GetExtractionPermissionForResourceType(type) && contents.Find(delegate(ResourceBlobBase blob) {
                 return blob.BlobType == type;
             }) != null;
         }
 
-        public override ResourceBlob ExtractBlobOfType(ResourceType type) {
+        public override ResourceBlobBase ExtractBlobOfType(ResourceType type) {
             if(CanExtractBlobOfType(type)) {
-                var blobToExtract = contents.FindLast(delegate(ResourceBlob blob) {
+                var blobToExtract = contents.FindLast(delegate(ResourceBlobBase blob) {
                     return blob.BlobType == type;
                 });
                 ExtractBlob(blobToExtract);
@@ -130,11 +130,11 @@ namespace Assets.BlobSites {
             }
         }
 
-        public override bool CanExtractBlob(ResourceBlob blob) {
+        public override bool CanExtractBlob(ResourceBlobBase blob) {
             return GetExtractionPermissionForResourceType(blob.BlobType) && contents.Contains(blob);
         }
 
-        public override void ExtractBlob(ResourceBlob blob) {
+        public override void ExtractBlob(ResourceBlobBase blob) {
             if(CanExtractBlob(blob)) {
                 contents.Remove(blob);
                 blob.transform.SetParent(null, true);
@@ -145,7 +145,7 @@ namespace Assets.BlobSites {
             }
         }
 
-        public override bool CanPlaceBlobInto(ResourceBlob blob) {
+        public override bool CanPlaceBlobInto(ResourceBlobBase blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
             }
@@ -161,7 +161,7 @@ namespace Assets.BlobSites {
             return isPermitted && hasSpecificSpaceLeft && hasGeneralSpaceLeft;
         }
 
-        public override void PlaceBlobInto(ResourceBlob blob) {
+        public override void PlaceBlobInto(ResourceBlobBase blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
             }
@@ -238,8 +238,8 @@ namespace Assets.BlobSites {
             CapacitiesByResourceType.Clear();
         }
 
-        public override IEnumerable<ResourceBlob> GetContentsOfType(ResourceType type) {
-            return contents.Where(delegate(ResourceBlob blob) {
+        public override IEnumerable<ResourceBlobBase> GetContentsOfType(ResourceType type) {
+            return contents.Where(delegate(ResourceBlobBase blob) {
                 return blob.BlobType == type;
             });
         }
@@ -259,7 +259,7 @@ namespace Assets.BlobSites {
         }
 
         public override void ClearContents() {
-            var blobsToRemove = new List<ResourceBlob>(contents);
+            var blobsToRemove = new List<ResourceBlobBase>(contents);
             contents.Clear();
             foreach(var blob in blobsToRemove) {
                 DestroyImmediate(blob.gameObject);

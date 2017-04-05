@@ -15,7 +15,7 @@ namespace Assets.Highways {
         public abstract Vector3 SourceLocation { get; }
         public abstract Vector3 TargetLocation { get; }
 
-        public abstract ReadOnlyCollection<ResourceBlob> Contents { get; }
+        public abstract ReadOnlyCollection<ResourceBlobBase> Contents { get; }
 
         public abstract int Capacity { get; set; }
         public abstract int SpaceLeft { get; }
@@ -28,7 +28,7 @@ namespace Assets.Highways {
 
         public event EventHandler<BlobEventArgs> BlobReachedEndOfTube;
 
-        protected void RaiseBlobReachedEndOfTube(ResourceBlob blob) {
+        protected void RaiseBlobReachedEndOfTube(ResourceBlobBase blob) {
             if(BlobReachedEndOfTube != null) {
                 BlobReachedEndOfTube(this, new BlobEventArgs(blob));
             }
@@ -38,20 +38,18 @@ namespace Assets.Highways {
 
         #region instance methods
 
-        public abstract bool CanPushBlobInto(ResourceBlob blob);
-        public abstract void PushBlobInto   (ResourceBlob blob);
+        public abstract bool CanPushBlobInto(ResourceBlobBase blob);
+        public abstract void PushBlobInto   (ResourceBlobBase blob);
 
-        public abstract bool CanPullBlobFrom(ResourceBlob blob);
-        public abstract void PullBlobFrom   (ResourceBlob blob);
+        public abstract bool CanPullBlobFrom(ResourceBlobBase blob);
+        public abstract void PullBlobFrom   (ResourceBlobBase blob);
 
-        public abstract bool RemoveBlobFrom(ResourceBlob blob);
+        public abstract bool RemoveBlobFrom(ResourceBlobBase blob);
 
         public abstract void Clear();
 
         public abstract void SetPermissionForResourceType(ResourceType type, bool isPermitted);
         public abstract bool GetPermissionForResourceType(ResourceType type);
-
-        public abstract void TickMovement(float secondsPassed);
 
         public abstract void SetEndpoints(Vector3 sourceLocation, Vector3 targetLocation);
 
