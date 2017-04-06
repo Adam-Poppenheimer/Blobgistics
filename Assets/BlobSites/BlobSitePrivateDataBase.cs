@@ -5,11 +5,15 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
+
 namespace Assets.BlobSites {
 
     public abstract class BlobSitePrivateDataBase : MonoBehaviour {
 
         #region instance fields and properties
+
+        public abstract ResourceBlobFactoryBase BlobFactory { get; }
 
         public abstract Vector3 NorthConnectionOffset { get; }
         public abstract Vector3 SouthConnectionOffset { get; }

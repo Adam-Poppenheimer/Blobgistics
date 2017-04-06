@@ -269,7 +269,7 @@ namespace Assets.Core {
             if(source is MapNodeUISummary) {
                 var summary = source as MapNodeUISummary;
                 ConstructionPanel.LocationToConstruct = summary;
-                ConstructionPanel.SetPermissions(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
+                ConstructionPanel.SetPermittedProjects(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
                 ConstructionPanel.Activate();
             }else if(source is BlobHighwayUISummary) {
                 if(HighwaySummaryDisplay != null) {

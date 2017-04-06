@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Map;
+using Assets.ConstructionZones;
 
 using UnityCustomUtilities.Extensions;
 
@@ -45,7 +46,7 @@ namespace Assets.UI.ConstructionZones {
         public abstract void Deactivate();
         public abstract void Clear();
 
-        public abstract void SetPermissions(IEnumerable<string> permittedProjects);
+        public abstract void SetPermittedProjects(IEnumerable<ConstructionProjectUISummary> permittedProjects);
 
         #endregion
 

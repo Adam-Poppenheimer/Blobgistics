@@ -110,6 +110,16 @@ namespace Assets.Blobs {
             return true;
         }
 
+        public string GetSummaryString() {
+            var retval = "";
+            foreach(var resourceType in this) {
+                if(this[resourceType] != 0) {
+                    retval += string.Format("{0} : {1}\n", resourceType, this[resourceType]);
+                }
+            }
+            return retval;
+        }
+
         #endregion
 
     }

@@ -64,9 +64,22 @@ namespace Assets.UI.ConstructionZones.Editor {
 
             //Validation
             Assert.NotNull(constructionPanel.LastPermissionsSet, "ConstructionPanel received no permissions");
-            Assert.That(constructionPanel.LastPermissionsSet.Contains("Resource Depot"), "ConstructionPanel was not given permissions for Resource Depot");
-            Assert.That(constructionPanel.LastPermissionsSet.Contains("Farmland"), "ConstructionPanel was not given permissions for Farmland");
-            Assert.That(constructionPanel.LastPermissionsSet.Contains("Village"), "ConstructionPanel was not given permissions for Village");
+
+            var hasResourceDepot = constructionPanel.LastPermissionsSet.Where(
+                summary => summary.Name.Equals("Resource Depot", StringComparison.InvariantCultureIgnoreCase)
+            ).Count() == 1;
+
+            var hasVillage = constructionPanel.LastPermissionsSet.Where(
+                summary => summary.Name.Equals("Village", StringComparison.InvariantCultureIgnoreCase)
+            ).Count() == 1;
+
+            var hasFarmland = constructionPanel.LastPermissionsSet.Where(
+                summary => summary.Name.Equals("Farmland", StringComparison.InvariantCultureIgnoreCase)
+            ).Count() == 1;
+
+            Assert.That(hasResourceDepot, "ConstructionPanel was not given permissions for Resource Depot");
+            Assert.That(hasVillage, "ConstructionPanel was not given permissions for Farmland");
+            Assert.That(hasFarmland, "ConstructionPanel was not given permissions for Village");
         }
 
         [Test]

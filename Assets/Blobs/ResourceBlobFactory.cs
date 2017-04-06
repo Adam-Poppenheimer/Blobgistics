@@ -59,6 +59,7 @@ namespace Assets.Blobs {
             }
             newBlob.BlobType = typeOfResource;
             newBlob.gameObject.name = string.Format("Blob ({0})", typeOfResource);
+            newBlob.ParentFactory = this;
 
             InstantiatedBlobs.Add(newBlob);
 
@@ -66,12 +67,23 @@ namespace Assets.Blobs {
         }
 
         public override void DestroyBlob(ResourceBlobBase blob) {
-            InstantiatedBlobs.Remove(blob);
-            DestroyImmediate(blob.gameObject);
+            UnsubscribeBlob(blob);
+            if(Application.isPlaying) {
+                Destroy(blob.gameObject);
+            }else {
+                DestroyImmediate(blob.gameObject);
+            }
         }
 
-        public override void TickAllBlobs() {
-            throw new NotImplementedException();
+        public override void UnsubscribeBlob(ResourceBlobBase blob) {
+            InstantiatedBlobs.Remove(blob);
+        }
+
+        public override void TickAllBlobs(float secondsPassed) {
+            var blobsToTick = new List<ResourceBlobBase>(InstantiatedBlobs);
+            foreach(var blob in blobsToTick) {
+                blob.Tick(secondsPassed);
+            }
         }
 
         #endregion

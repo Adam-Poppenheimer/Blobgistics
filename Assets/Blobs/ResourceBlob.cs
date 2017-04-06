@@ -14,6 +14,8 @@ namespace Assets.Blobs {
 
         public override ResourceType BlobType { get; set; }
 
+        public ResourceBlobFactoryBase ParentFactory { get; set; }
+
         private Vector3 ScaleToPopTo;
         private Vector3 CurrentScaleVelocity;
 
@@ -33,6 +35,12 @@ namespace Assets.Blobs {
         private void OnEnable() {
             CurrentScaleVelocity = new Vector3(StartingVelocity.x, StartingVelocity.y, StartingVelocity.z);
             StartCoroutine(PopIn());
+        }
+
+        private void OnDestroy() {
+            if(ParentFactory != null) {
+                ParentFactory.UnsubscribeBlob(this);
+            }
         }
 
         #endregion

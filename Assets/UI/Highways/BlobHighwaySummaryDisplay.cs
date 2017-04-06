@@ -27,13 +27,15 @@ namespace Assets.UI.Highways {
             set {
                 _currentSummary = value;
                 if(_currentSummary != null) {
-                    FirstEndpointRedPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food  ];
-                    FirstEndpointGreenPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
-                    FirstEndpointBluePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.White ];
+                    FirstEndpointFoodPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food  ];
+                    FirstEndpointYellowPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
+                    FirstEndpointWhitePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.White ];
+                    FirstEndpointBluePermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue  ];
 
-                    SecondEndpointRedPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Food  ];
-                    SecondEndpointGreenPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
-                    SecondEndpointBluePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.White ];
+                    SecondEndpointFoodPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Food  ];
+                    SecondEndpointYellowPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
+                    SecondEndpointWhitePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.White ];
+                    SecondEndpointBluePermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue  ];
                 }
             }
         }
@@ -61,12 +63,18 @@ namespace Assets.UI.Highways {
 
         [SerializeField] private InputField PriorityInput;
 
-        [SerializeField] private Toggle FirstEndpointRedPermissionToggle;
-        [SerializeField] private Toggle FirstEndpointGreenPermissionToggle;
+        [SerializeField] private RectTransform CommonActionsPane;
+        [SerializeField] private RectTransform FirstEndpointPane;
+        [SerializeField] private RectTransform SecondEndpointPane;
+
+        [SerializeField] private Toggle FirstEndpointFoodPermissionToggle;
+        [SerializeField] private Toggle FirstEndpointYellowPermissionToggle;
+        [SerializeField] private Toggle FirstEndpointWhitePermissionToggle;
         [SerializeField] private Toggle FirstEndpointBluePermissionToggle;
         
-        [SerializeField] private Toggle SecondEndpointRedPermissionToggle;
-        [SerializeField] private Toggle SecondEndpointGreenPermissionToggle;
+        [SerializeField] private Toggle SecondEndpointFoodPermissionToggle;
+        [SerializeField] private Toggle SecondEndpointYellowPermissionToggle;
+        [SerializeField] private Toggle SecondEndpointWhitePermissionToggle;
         [SerializeField] private Toggle SecondEndpointBluePermissionToggle;
 
         [SerializeField] private Button BeginUpgradeButton;
@@ -84,6 +92,9 @@ namespace Assets.UI.Highways {
             if(DeactivateOnNextUpdate) {
                 Deactivate();
                 DeactivateOnNextUpdate = false;
+            }else if(CurrentSummary != null) {
+                FirstEndpointPane.transform.position  = Camera.main.WorldToScreenPoint(CurrentSummary.FirstEndpoint);
+                SecondEndpointPane.transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.SecondEndpoint);
             }
         }
 
@@ -106,6 +117,11 @@ namespace Assets.UI.Highways {
         public override void Activate() {
             gameObject.SetActive(true);
             UpdateDisplay();
+
+            if(CurrentSummary != null) {
+                FirstEndpointPane.transform.position  = Camera.main.WorldToScreenPoint(CurrentSummary.FirstEndpoint);
+                SecondEndpointPane.transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.SecondEndpoint);
+            }
             
             PriorityInput.onEndEdit.AddListener(delegate(string value) {
                 int newPriority;
@@ -116,24 +132,30 @@ namespace Assets.UI.Highways {
                 }
             });
 
-            FirstEndpointRedPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+            FirstEndpointFoodPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
                 RaiseFirstEndpointPermissionChanged(ResourceType.Food, newPermission);
             });
-            FirstEndpointGreenPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+            FirstEndpointYellowPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
                 RaiseFirstEndpointPermissionChanged(ResourceType.Yellow, newPermission);
             });
-            FirstEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+            FirstEndpointWhitePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
                 RaiseFirstEndpointPermissionChanged(ResourceType.White, newPermission);
             });
+            FirstEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                RaiseFirstEndpointPermissionChanged(ResourceType.Blue, newPermission);
+            });
 
-            SecondEndpointRedPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+            SecondEndpointFoodPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
                 RaiseSecondEndpointPermissionChanged(ResourceType.Food, newPermission);
             });
-            SecondEndpointGreenPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+            SecondEndpointYellowPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
                 RaiseSecondEndpointPermissionChanged(ResourceType.Yellow, newPermission);
             });
-            SecondEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+            SecondEndpointWhitePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
                 RaiseSecondEndpointPermissionChanged(ResourceType.White, newPermission);
+            });
+            SecondEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                RaiseSecondEndpointPermissionChanged(ResourceType.Blue, newPermission);
             });
 
             BeginUpgradeButton.onClick.AddListener (delegate() { RaiseBeginHighwayUpgradeRequested();  });
@@ -147,12 +169,14 @@ namespace Assets.UI.Highways {
 
             PriorityInput.onEndEdit.RemoveAllListeners();
 
-            FirstEndpointRedPermissionToggle.onValueChanged.RemoveAllListeners();
-            FirstEndpointGreenPermissionToggle.onValueChanged.RemoveAllListeners();
+            FirstEndpointFoodPermissionToggle.onValueChanged.RemoveAllListeners();
+            FirstEndpointYellowPermissionToggle.onValueChanged.RemoveAllListeners();
+            FirstEndpointWhitePermissionToggle.onValueChanged.RemoveAllListeners();
             FirstEndpointBluePermissionToggle.onValueChanged.RemoveAllListeners();
 
-            SecondEndpointRedPermissionToggle.onValueChanged.RemoveAllListeners();
-            SecondEndpointGreenPermissionToggle.onValueChanged.RemoveAllListeners();
+            SecondEndpointFoodPermissionToggle.onValueChanged.RemoveAllListeners();
+            SecondEndpointYellowPermissionToggle.onValueChanged.RemoveAllListeners();
+            SecondEndpointWhitePermissionToggle.onValueChanged.RemoveAllListeners();
             SecondEndpointBluePermissionToggle.onValueChanged.RemoveAllListeners();
 
             BeginUpgradeButton.onClick.RemoveAllListeners();
@@ -162,15 +186,19 @@ namespace Assets.UI.Highways {
         }
 
         public override void UpdateDisplay() {
-            PriorityInput.text = CurrentSummary.Priority.ToString();
+            if(CurrentSummary != null) {
+                PriorityInput.text = CurrentSummary.Priority.ToString();
 
-            FirstEndpointRedPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food];
-            FirstEndpointGreenPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
-            FirstEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.White];
+                FirstEndpointFoodPermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food];
+                FirstEndpointYellowPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
+                FirstEndpointWhitePermissionToggle.isOn  = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.White];
+                FirstEndpointBluePermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue];
 
-            SecondEndpointRedPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Food];
-            SecondEndpointGreenPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
-            SecondEndpointBluePermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.White];
+                SecondEndpointFoodPermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Food];
+                SecondEndpointYellowPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
+                SecondEndpointWhitePermissionToggle.isOn  = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.White];
+                SecondEndpointBluePermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue];
+            }
         }
 
         public override void ClearDisplay() {
@@ -178,13 +206,15 @@ namespace Assets.UI.Highways {
 
             PriorityInput.text = "0";
 
-            FirstEndpointRedPermissionToggle.isOn = false;
-            FirstEndpointGreenPermissionToggle.isOn = false;
-            FirstEndpointBluePermissionToggle.isOn = false;
+            FirstEndpointFoodPermissionToggle.isOn   = false;
+            FirstEndpointYellowPermissionToggle.isOn = false;
+            FirstEndpointWhitePermissionToggle.isOn  = false;
+            FirstEndpointBluePermissionToggle.isOn   = false;
 
-            SecondEndpointRedPermissionToggle.isOn = false;            
-            SecondEndpointGreenPermissionToggle.isOn = false;            
-            SecondEndpointBluePermissionToggle.isOn = false;
+            SecondEndpointFoodPermissionToggle.isOn   = false;            
+            SecondEndpointYellowPermissionToggle.isOn = false;            
+            SecondEndpointWhitePermissionToggle.isOn  = false;
+            SecondEndpointBluePermissionToggle.isOn   = false;
 
             CanBeUpgraded = false;
             IsBeingUpgraded = false;

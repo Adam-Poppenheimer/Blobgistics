@@ -604,27 +604,35 @@ namespace Assets.Core.Editor {
             //Setup
             var societyFactory = BuildMockSocietyFactory();
             var blobDistributor = BuildMockBlobDistributor();
+            var blobFactory = BuildMockBlobFactory();
 
-            float amountTickedOnSociety = 0f;
+            float amountTickedOnSocietyFactory = 0f;
             societyFactory.FactoryTicked += delegate(object sender, FloatEventArgs e) {
-                amountTickedOnSociety = e.Value;
+                amountTickedOnSocietyFactory = e.Value;
             };
 
-            float amountTickedOnDistributor = 0f;
+            float amountTickedOnBlobDistributor = 0f;
             blobDistributor.Ticked += delegate(object sender, FloatEventArgs e) {
-                amountTickedOnDistributor = e.Value;
+                amountTickedOnBlobDistributor = e.Value;
+            };
+
+            float amountTickedOnBlobFactory = 0f;
+            blobFactory.Ticked += delegate(object sender, FloatEventArgs e) {
+                amountTickedOnBlobFactory = e.Value;
             };
 
             var controlToTest = BuildSimulationControl();
             controlToTest.SocietyFactory = societyFactory;
             controlToTest.BlobDistributor = blobDistributor;
+            controlToTest.BlobFactory = blobFactory;
 
             //Execution
             controlToTest.TickSimulation(5f);
 
             //Validation
-            Assert.AreEqual(5f, amountTickedOnSociety, "Incorrect amount ticked on Society");
-            Assert.AreEqual(5f, amountTickedOnDistributor, "Incorrect amount ticked on Distributor");
+            Assert.AreEqual(5f, amountTickedOnSocietyFactory,  "Incorrect amount ticked on SocietyFactory");
+            Assert.AreEqual(5f, amountTickedOnBlobDistributor, "Incorrect amount ticked on BlobDistributor");
+            Assert.AreEqual(5f, amountTickedOnBlobFactory,     "Incorrect amount ticked on BlobFactory");
         }
 
         #endregion
@@ -974,6 +982,7 @@ namespace Assets.Core.Editor {
 
             newFactory.MapGraph = mapGraph;
             newFactory.BlobTubeFactory = newBlobTubeFactory;
+            newFactory.BlobFactory = blobFactory;
             newFactory.StartingProfile = newHighwayProfile;
 
             return newFactory;
@@ -1119,6 +1128,11 @@ namespace Assets.Core.Editor {
         private MockBlobDistributor BuildMockBlobDistributor() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockBlobDistributor>();
+        }
+
+        private MockResourceBlobFactory BuildMockBlobFactory() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockResourceBlobFactory>();
         }
 
         #endregion

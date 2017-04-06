@@ -139,6 +139,24 @@ namespace Assets.Core {
         }
         [SerializeField] private ResourceDepotFactoryBase _resourceDepotFactory;
 
+        public ResourceBlobFactoryBase BlobFactory {
+            get {
+                if(_blobFactory == null) {
+                    throw new InvalidOperationException("BlobFactory is uninitialized");
+                } else {
+                    return _blobFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _blobFactory = value;
+                }
+            }
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
+
         public BlobHighwayProfile UpgradedHighwayProfile{
             get { return _upgradedHighwayProfile; }
             set { _upgradedHighwayProfile = value; }
@@ -191,14 +209,14 @@ namespace Assets.Core {
             }
         }
 
-        public override IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
-            var retval = new List<string>();
+        public override IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
+            var retval = new List<ConstructionProjectUISummary>();
 
             var node = MapGraph.GetNodeOfID(nodeID);
             if(node != null) {
                 foreach(var project in ConstructionZoneFactory.GetAvailableProjects()) {
                     if(ConstructionZoneFactory.CanBuildConstructionZone(node, project)) {
-                        retval.Add(project.name);
+                        retval.Add(new ConstructionProjectUISummary(project));
                     }
                 }
             }else {
@@ -361,6 +379,7 @@ namespace Assets.Core {
         public override void TickSimulation(float secondsPassed) {
             if(SocietyFactory  != null) SocietyFactory.TickSocieties(secondsPassed);
             if(BlobDistributor != null) BlobDistributor.Tick(secondsPassed);
+            if(BlobFactory != null) BlobFactory.TickAllBlobs(secondsPassed);
         }
 
         #endregion

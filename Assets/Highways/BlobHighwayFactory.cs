@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Map;
-using Assets.BlobSites;
+using Assets.Blobs;
 using Assets.Core;
 
 namespace Assets.Highways {
@@ -50,6 +50,24 @@ namespace Assets.Highways {
             }
         }
         [SerializeField] private BlobTubeFactoryBase _blobTubeFactory;
+
+        public ResourceBlobFactoryBase BlobFactory {
+            get {
+                if(_blobFactory == null) {
+                    throw new InvalidOperationException("BlobFactory is uninitialized");
+                } else {
+                    return _blobFactory;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    _blobFactory = value;
+                }
+            }
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         public UIControl UIControl {
             get { return _uiControl; }
@@ -149,6 +167,7 @@ namespace Assets.Highways {
             newPrivateData.SetFirstEndpoint(firstEndpoint);
             newPrivateData.SetSecondEndpoint(secondEndpoint);
             newPrivateData.SetUIControl(UIControl);
+            newPrivateData.SetBlobFactory(BlobFactory);
 
             newPrivateData.SetTubePullingFromFirstEndpoint(BlobTubeFactory.ConstructTube(
                 firstEndpoint.transform.position, secondEndpoint.transform.position));

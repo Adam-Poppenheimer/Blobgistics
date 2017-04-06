@@ -23,12 +23,14 @@ namespace Assets.Highways {
         public Transform Transform { get; set; }
 
         public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint1 { get; set; }
-
         public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint2 { get; set; }
 
         public BlobHighwayProfile Profile { get; set; }
 
         public bool IsBeingUpgraded { get; set; }
+
+        public Vector3 FirstEndpoint  { get; set; }
+        public Vector3 SecondEndpoint { get; set; }
 
         #endregion
 
@@ -50,6 +52,11 @@ namespace Assets.Highways {
             }
 
             Profile = highwayToSummarize.Profile;
+
+            Vector3 firstEndpoint, secondEndpoint;
+            highwayToSummarize.GetEndpointPositions(out firstEndpoint, out secondEndpoint);
+            FirstEndpoint = firstEndpoint;
+            SecondEndpoint = secondEndpoint;
         }
 
         #endregion

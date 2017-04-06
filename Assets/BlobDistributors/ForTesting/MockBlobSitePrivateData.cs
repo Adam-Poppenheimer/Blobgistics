@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using Assets.Blobs;
 using Assets.BlobSites;
 using UnityEngine;
 
@@ -52,10 +52,16 @@ namespace Assets.BlobDistributors.ForTesting {
             }
         }
 
+        public override ResourceBlobFactoryBase BlobFactory {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

@@ -54,6 +54,8 @@ namespace Assets.Highways {
 
         public abstract void Clear();
 
+        public abstract void GetEndpointPositions(out Vector3 firstEndpointPosition, out Vector3 secondEndpointPosition);
+
         #endregion
 
     }

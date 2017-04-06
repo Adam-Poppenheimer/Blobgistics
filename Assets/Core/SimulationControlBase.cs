@@ -23,7 +23,7 @@ namespace Assets.Core {
 
         public abstract void DestroyHighway(int highwayID);
 
-        public abstract IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID);
+        public abstract IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID);
 
         public abstract bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName);
         public abstract void CreateConstructionSiteOnNode(int nodeID, string buildingName);

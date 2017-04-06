@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using Assets.ConstructionZones;
 using Assets.Map;
 
 namespace Assets.UI.ConstructionZones.ForTesting {
@@ -22,7 +24,7 @@ namespace Assets.UI.ConstructionZones.ForTesting {
         #endregion
 
         public bool HasBeenCleared = false;
-        public IEnumerable<string> LastPermissionsSet;
+        public IEnumerable<ConstructionProjectUISummary> LastPermissionsSet;
 
         #endregion
 
@@ -52,7 +54,7 @@ namespace Assets.UI.ConstructionZones.ForTesting {
             RaiseConstructionRequested(projectName);
         }
 
-        public override void SetPermissions(IEnumerable<string> permittedProjects) {
+        public override void SetPermittedProjects(IEnumerable<ConstructionProjectUISummary> permittedProjects) {
             LastPermissionsSet = permittedProjects;
         }
 

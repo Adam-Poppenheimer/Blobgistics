@@ -6,6 +6,7 @@ using System.Text;
 using Assets.Blobs;
 using Assets.Highways;
 using Assets.Map;
+using UnityEngine;
 
 namespace Assets.BlobDistributors.ForTesting {
 
@@ -101,6 +102,10 @@ namespace Assets.BlobDistributors.ForTesting {
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
             
+        }
+
+        public override void GetEndpointPositions(out Vector3 firstEndpointPosition, out Vector3 secondEndpointPosition) {
+            throw new NotImplementedException();
         }
 
         #endregion

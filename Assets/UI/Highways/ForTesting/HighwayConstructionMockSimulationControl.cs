@@ -5,7 +5,7 @@ using System.Text;
 
 using Assets.Blobs;
 using Assets.Core;
-using Assets.Map;
+using Assets.ConstructionZones;
 
 namespace Assets.UI.Highways.ForTesting {
 
@@ -93,7 +93,7 @@ namespace Assets.UI.Highways.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
+        public override IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
             throw new NotImplementedException();
         }
 

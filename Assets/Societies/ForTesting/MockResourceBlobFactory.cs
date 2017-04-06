@@ -30,7 +30,11 @@ namespace Assets.Societies.ForTesting {
             GameObject.DestroyImmediate(blob.gameObject);
         }
 
-        public override void TickAllBlobs() {
+        public override void UnsubscribeBlob(ResourceBlobBase blob) {
+            throw new NotImplementedException();
+        }
+
+        public override void TickAllBlobs(float secondsPassed) {
             throw new NotImplementedException();
         }
 

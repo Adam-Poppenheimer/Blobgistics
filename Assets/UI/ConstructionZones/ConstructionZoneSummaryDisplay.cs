@@ -28,6 +28,7 @@ namespace Assets.UI.ConstructionZones {
         #endregion
 
         [SerializeField] private Text ProjectNameField;
+        [SerializeField] private Text CostField;
         [SerializeField] private Button DestroyButton;
 
         private bool DeactivateOnNextUpdate = false;
@@ -86,7 +87,8 @@ namespace Assets.UI.ConstructionZones {
 
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
-                ProjectNameField.text = CurrentSummary.Project;
+                ProjectNameField.text = CurrentSummary.Project.Name;
+                CostField.text = CurrentSummary.Project.CostSummaryString;
             }
         }
 

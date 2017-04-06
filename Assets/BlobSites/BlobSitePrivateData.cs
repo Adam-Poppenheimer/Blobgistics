@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
+
 namespace Assets.BlobSites {
 
     public class BlobSitePrivateData : BlobSitePrivateDataBase {
@@ -12,6 +14,14 @@ namespace Assets.BlobSites {
         #region instance fields and properties
 
         #region from BlobSitePrivateDataBase
+
+        public override ResourceBlobFactoryBase BlobFactory {
+            get { return _blobFactory; }
+        }
+        public void SetBlobFactory(ResourceBlobFactoryBase value) {
+            _blobFactory = value;
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         public override Vector3 NorthConnectionOffset {
             get { return _northConnectionOffset; }

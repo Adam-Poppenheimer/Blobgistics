@@ -5,6 +5,7 @@ using System.Text;
 
 using Assets.Blobs;
 using Assets.Core;
+using Assets.ConstructionZones;
 
 using UnityCustomUtilities.Extensions;
 
@@ -86,7 +87,7 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<string> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
+        public override IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
             throw new NotImplementedException();
         }
 

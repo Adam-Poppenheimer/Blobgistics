@@ -6,6 +6,7 @@ using System.Text;
 using Assets.Blobs;
 using Assets.Highways;
 using Assets.Map;
+using UnityEngine;
 
 namespace Assets.HighwayUpgraders.ForTesting {
 
@@ -98,6 +99,10 @@ namespace Assets.HighwayUpgraders.ForTesting {
         }
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
+            throw new NotImplementedException();
+        }
+
+        public override void GetEndpointPositions(out Vector3 firstEndpointPosition, out Vector3 secondEndpointPosition) {
             throw new NotImplementedException();
         }
 

@@ -19,6 +19,8 @@ namespace Assets.ConstructionZones {
         public abstract void SetSiteForProject(BlobSiteBase site);
         public abstract bool BlobSiteContainsNecessaryResources(BlobSiteBase site);
 
+        public abstract string GetCostSummaryString();
+
         #endregion
 
     }

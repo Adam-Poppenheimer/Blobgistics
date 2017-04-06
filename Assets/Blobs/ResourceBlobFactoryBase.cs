@@ -12,8 +12,9 @@ namespace Assets.Blobs {
         public abstract ResourceBlobBase BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates);
 
         public abstract void DestroyBlob(ResourceBlobBase blob);
+        public abstract void UnsubscribeBlob(ResourceBlobBase blob);
 
-        public abstract void TickAllBlobs();
+        public abstract void TickAllBlobs(float secondsPassed);
 
         #endregion
 

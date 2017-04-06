@@ -2,6 +2,7 @@
 
 using UnityEngine;
 
+using Assets.Blobs;
 using Assets.Core;
 using Assets.Map;
 using Assets.HighwayUpgraders;
@@ -13,6 +14,7 @@ namespace Assets.Highways {
         #region instance fields and properties
 
         public abstract UIControlBase UIControl { get; }
+        public abstract ResourceBlobFactoryBase BlobFactory { get; }
 
         public abstract BlobTubeBase TubePullingFromFirstEndpoint { get; }
         public abstract BlobTubeBase TubePullingFromSecondEndpoint { get; }

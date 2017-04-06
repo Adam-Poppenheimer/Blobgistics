@@ -262,7 +262,7 @@ namespace Assets.BlobSites {
             var blobsToRemove = new List<ResourceBlobBase>(contents);
             contents.Clear();
             foreach(var blob in blobsToRemove) {
-                DestroyImmediate(blob.gameObject);
+                PrivateData.BlobFactory.DestroyBlob(blob);
             }
             RaiseAllBlobsCleared();
         }

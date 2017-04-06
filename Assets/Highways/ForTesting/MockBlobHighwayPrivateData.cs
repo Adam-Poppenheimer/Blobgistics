@@ -6,6 +6,7 @@ using System.Text;
 using Assets.Map;
 using Assets.Core;
 using Assets.HighwayUpgraders;
+using Assets.Blobs;
 
 namespace Assets.Highways.ForTesting {
 
@@ -16,6 +17,12 @@ namespace Assets.Highways.ForTesting {
         #region from BlobHighwayPrivateDataBase
 
         public override UIControlBase UIControl {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ResourceBlobFactoryBase BlobFactory {
             get {
                 throw new NotImplementedException();
             }

@@ -5,9 +5,9 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
 using Assets.Core;
 using Assets.Map;
-using Assets.HighwayUpgraders;
 
 namespace Assets.Highways {
 
@@ -24,6 +24,14 @@ namespace Assets.Highways {
             _uiControl = value;
         }
         [SerializeField] private UIControlBase _uiControl;
+
+        public override ResourceBlobFactoryBase BlobFactory {
+            get { return _blobFactory; }
+        }
+        public void SetBlobFactory(ResourceBlobFactoryBase value) {
+            _blobFactory = value;
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
         public override MapNodeBase FirstEndpoint {
             get { return _firstEndpoint; }

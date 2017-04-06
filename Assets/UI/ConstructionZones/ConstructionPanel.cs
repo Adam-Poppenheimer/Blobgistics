@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 using Assets.Map;
+using Assets.ConstructionZones;
 
 namespace Assets.UI.ConstructionZones {
 
@@ -27,8 +28,13 @@ namespace Assets.UI.ConstructionZones {
         #endregion
 
         [SerializeField] private Button ConstructResourceDepotButton;
+        [SerializeField] private Text   ResourceDepotCostField;
+
         [SerializeField] private Button ConstructFarmlandButton;
+        [SerializeField] private Text   FarmlandCostField;
+
         [SerializeField] private Button ConstructVillageButton;
+        [SerializeField] private Text   VillageCostField;
 
         private bool DeactivateOnNextUpdate = false;
 
@@ -93,19 +99,36 @@ namespace Assets.UI.ConstructionZones {
             gameObject.SetActive(false);
         }
 
-        public override void SetPermissions(IEnumerable<string> permittedProjects) {
+        public override void SetPermittedProjects(IEnumerable<ConstructionProjectUISummary> permittedProjects) {
             ConstructResourceDepotButton.interactable = false;
             ConstructFarmlandButton.interactable = false;
             ConstructVillageButton.interactable = false;
 
-            if(permittedProjects.Contains("Resource Depot", StringComparer.InvariantCultureIgnoreCase)) {
+            var resourceDepotProject = permittedProjects.Where(
+                project => project.Name.Equals("Resource Depot", StringComparison.InvariantCultureIgnoreCase)
+            ).FirstOrDefault();
+
+            if(resourceDepotProject != null) {
                 ConstructResourceDepotButton.interactable = true;
+                ResourceDepotCostField.text = resourceDepotProject.CostSummaryString;
             }
-            if(permittedProjects.Contains("Farmland", StringComparer.InvariantCultureIgnoreCase)) {
-                ConstructFarmlandButton.interactable = true;
-            }
-            if(permittedProjects.Contains("Village", StringComparer.InvariantCultureIgnoreCase)) {
+            
+            var villageProject = permittedProjects.Where(
+                project => project.Name.Equals("Village", StringComparison.InvariantCultureIgnoreCase)
+            ).FirstOrDefault();
+
+            if(villageProject != null) {
                 ConstructVillageButton.interactable = true;
+                VillageCostField.text = villageProject.CostSummaryString;
+            }
+
+            var farmlandProject = permittedProjects.Where(
+                project => project.Name.Equals("Farmland", StringComparison.InvariantCultureIgnoreCase)
+            ).FirstOrDefault();
+
+            if(farmlandProject != null) {
+                ConstructFarmlandButton.interactable = true;
+                FarmlandCostField.text = farmlandProject.CostSummaryString;
             }
         }
 

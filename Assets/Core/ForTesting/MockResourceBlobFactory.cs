@@ -3,12 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Assets.Blobs;
 using UnityEngine;
 
-namespace Assets.Highways.ForTesting {
+using Assets.Blobs;
+
+using UnityCustomUtilities.Extensions;
+
+namespace Assets.Core.ForTesting {
 
     public class MockResourceBlobFactory : ResourceBlobFactoryBase {
+
+        #region events
+
+        public event EventHandler<FloatEventArgs> Ticked;
+
+        #endregion
 
         #region instance methods
 
@@ -23,7 +32,7 @@ namespace Assets.Highways.ForTesting {
         }
 
         public override void DestroyBlob(ResourceBlobBase blob) {
-            DestroyImmediate(blob.gameObject);
+            throw new NotImplementedException();
         }
 
         public override void UnsubscribeBlob(ResourceBlobBase blob) {
@@ -31,13 +40,15 @@ namespace Assets.Highways.ForTesting {
         }
 
         public override void TickAllBlobs(float secondsPassed) {
-            throw new NotImplementedException();
+            if(Ticked != null) {
+                Ticked(this, new FloatEventArgs(secondsPassed));
+            }
         }
 
         #endregion
 
         #endregion
-
+        
     }
 
 }

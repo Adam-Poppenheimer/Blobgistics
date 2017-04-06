@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Assets.Blobs;
 using UnityEngine;
 
 namespace Assets.BlobSites.ForTesting {
@@ -52,6 +53,12 @@ namespace Assets.BlobSites.ForTesting {
 
         public override float BlobRealignmentSpeedPerSecond {
             get { return 0f; }
+        }
+
+        public override ResourceBlobFactoryBase BlobFactory {
+            get {
+                throw new NotImplementedException();
+            }
         }
 
         #endregion

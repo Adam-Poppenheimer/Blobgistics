@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Assets.BlobSites;
+using Assets.Blobs;
 
 namespace Assets.HighwayUpgraders.ForTesting {
 
@@ -53,10 +54,16 @@ namespace Assets.HighwayUpgraders.ForTesting {
             }
         }
 
+        public override ResourceBlobFactoryBase BlobFactory {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

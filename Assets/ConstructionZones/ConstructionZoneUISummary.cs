@@ -10,7 +10,7 @@ namespace Assets.ConstructionZones {
         #region instance fields and properties
 
         public int ID { get; set; }
-        public string Project { get; set; }
+        public ConstructionProjectUISummary Project { get; set; }
 
         #endregion
 
@@ -20,7 +20,7 @@ namespace Assets.ConstructionZones {
 
         public ConstructionZoneUISummary(ConstructionZoneBase zoneToSummarize) {
             ID = zoneToSummarize.ID;
-            Project = zoneToSummarize.CurrentProject.name;
+            Project = new ConstructionProjectUISummary(zoneToSummarize.CurrentProject);
         }
 
         #endregion

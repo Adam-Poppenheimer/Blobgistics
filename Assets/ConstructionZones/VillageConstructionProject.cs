@@ -42,10 +42,14 @@ namespace Assets.ConstructionZones {
             site.SetPlacementPermissionsAndCapacity(Cost);
         }
 
+        public override string GetCostSummaryString() {
+            return Cost.GetSummaryString();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

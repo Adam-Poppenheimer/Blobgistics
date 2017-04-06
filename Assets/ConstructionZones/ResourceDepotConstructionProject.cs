@@ -52,6 +52,10 @@ namespace Assets.ConstructionZones {
             return Cost.IsContainedWithinBlobSite(site);
         }
 
+        public override string GetCostSummaryString() {
+            return Cost.GetSummaryString();
+        }
+
         #endregion
 
         #endregion

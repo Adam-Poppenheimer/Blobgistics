@@ -43,6 +43,10 @@ namespace Assets.ConstructionZones.ForTesting {
             }
         }
 
+        public override string GetCostSummaryString() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

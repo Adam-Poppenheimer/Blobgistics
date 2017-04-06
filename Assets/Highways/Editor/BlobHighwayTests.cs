@@ -1082,6 +1082,8 @@ namespace Assets.Highways.Editor {
         private BlobHighwayFactory BuildHighwayFactory() {
             var hostingObject = new GameObject();
 
+            var newBlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
+
             var newBlobSiteFactory = hostingObject.AddComponent<BlobSiteFactory>();
             newBlobSiteFactory.BlobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
 
@@ -1090,13 +1092,14 @@ namespace Assets.Highways.Editor {
 
             var newTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
             var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
-            newTubePrivateData.SetBlobFactory(hostingObject.AddComponent<MockResourceBlobFactory>());
+            newTubePrivateData.SetBlobFactory(newBlobFactory);
             newTubeFactory.TubePrivateData = newTubePrivateData;
 
             var newHighwayFactory = hostingObject.AddComponent<BlobHighwayFactory>();
             newHighwayFactory.MapGraph = newMapGraph;
             newHighwayFactory.BlobTubeFactory = newTubeFactory;
             newHighwayFactory.StartingProfile = new BlobHighwayProfile(1, 10, ResourceSummary.BuildResourceSummary(newHighwayFactory.gameObject));
+            newHighwayFactory.BlobFactory = newBlobFactory;
 
             return newHighwayFactory;
         }

@@ -14,7 +14,7 @@ namespace Assets.Map {
 
     [ExecuteInEditMode]
     public class MapNode : MapNodeBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
-        IPointerEnterHandler, IPointerExitHandler {
+        IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler {
 
         #region instance fields and properties
 
@@ -84,6 +84,7 @@ namespace Assets.Map {
 
         public void OnPointerClick(PointerEventData eventData) {
             UIControl.PushPointerClickEvent(new MapNodeUISummary(this), eventData);
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnPointerEnter(PointerEventData eventData) {
@@ -92,6 +93,14 @@ namespace Assets.Map {
 
         public void OnPointerExit(PointerEventData eventData) {
             UIControl.PushPointerExitEvent(new MapNodeUISummary(this), eventData);
+        }
+
+        public void OnSelect(BaseEventData eventData) {
+            UIControl.PushSelectEvent(new MapNodeUISummary(this), eventData);
+        }
+
+        public void OnDeselect(BaseEventData eventData) {
+            UIControl.PushDeselectEvent(new MapNodeUISummary(this), eventData);
         }
 
         #endregion
