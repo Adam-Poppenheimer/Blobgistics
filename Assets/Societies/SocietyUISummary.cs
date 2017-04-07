@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using Assets.Map;
 
 namespace Assets.Societies {
@@ -47,6 +49,10 @@ namespace Assets.Societies {
 
         public float SecondsUntilComplexityDescent {
             get { return SocietyToSummarize.SecondsUntilComplexityDescent; }
+        }
+
+        public Transform Transform {
+            get { return SocietyToSummarize.transform; }
         }
 
         private readonly SocietyBase SocietyToSummarize;

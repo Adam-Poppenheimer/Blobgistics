@@ -66,6 +66,8 @@ namespace Assets.UI.ConstructionZones {
             if(DeactivateOnNextUpdate) {
                 Deactivate();
                 DeactivateOnNextUpdate = false;
+            }else if(LocationToConstruct != null){
+                transform.position = Camera.main.WorldToScreenPoint(LocationToConstruct.Transform.position);
             }
         }
 
@@ -87,6 +89,9 @@ namespace Assets.UI.ConstructionZones {
 
         public override void Activate() {
             gameObject.SetActive(true);
+            if(LocationToConstruct != null) {
+                transform.position = Camera.main.WorldToScreenPoint(LocationToConstruct.Transform.position);
+            }
             StartCoroutine(ReselectToThis());
         }
 

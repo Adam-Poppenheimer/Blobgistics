@@ -949,7 +949,7 @@ namespace Assets.Core.Editor {
 
         #region utilities
 
-        private MapGraph BuildMapGraph() {
+        private MapGraph BuildMapGraph(ResourceBlobFactoryBase blobFactory) {
             var hostingObject = new GameObject();
 
             var newMapGraph = hostingObject.AddComponent<MapGraph>();
@@ -958,6 +958,8 @@ namespace Assets.Core.Editor {
 
             newBlobSitePrivateData.SetBlobRealignmentSpeedPerSecond(1f);
             newBlobSitePrivateData.SetAlignmentStrategy(hostingObject.AddComponent<BoxyBlobAlignmentStrategy>());
+            newBlobSitePrivateData.SetBlobFactory(blobFactory);
+
             newBlobSiteFactory.BlobSitePrivateData = newBlobSitePrivateData;
 
             newMapGraph.BlobSiteFactory = newBlobSiteFactory;
@@ -1028,7 +1030,7 @@ namespace Assets.Core.Editor {
             var newBlobFactory = BuildResourceBlobFactory();
             var newDepotFactory = BuildDepotFactory();
 
-            newControl.MapGraph = BuildMapGraph();
+            newControl.MapGraph = BuildMapGraph(newBlobFactory);
             newControl.HighwayFactory = BuildHighwayFactory(newControl.MapGraph, newBlobFactory);
             newControl.SocietyFactory = BuildSocietyFactory(newBlobFactory);
             newControl.ConstructionZoneFactory = BuildConstructionZoneFactory(newDepotFactory);

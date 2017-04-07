@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 namespace Assets.ConstructionZones {
 
     public class ConstructionZoneUISummary {
@@ -11,6 +13,8 @@ namespace Assets.ConstructionZones {
 
         public int ID { get; set; }
         public ConstructionProjectUISummary Project { get; set; }
+
+        public Transform Transform { get; set; }
 
         #endregion
 
@@ -21,6 +25,8 @@ namespace Assets.ConstructionZones {
         public ConstructionZoneUISummary(ConstructionZoneBase zoneToSummarize) {
             ID = zoneToSummarize.ID;
             Project = new ConstructionProjectUISummary(zoneToSummarize.CurrentProject);
+
+            Transform = zoneToSummarize.transform;
         }
 
         #endregion

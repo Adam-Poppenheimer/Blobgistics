@@ -23,11 +23,13 @@ namespace Assets.BlobSites.Editor {
                 if(_privateData == null) {
                     var hostingObject = new GameObject();
                     _privateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+                    var newBlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
+                    _privateData.SetBlobFactory(newBlobFactory);
                 }
                 return _privateData;
             }
         }
-        private BlobSitePrivateDataBase _privateData;
+        private MockBlobSitePrivateData _privateData;
 
         #endregion
 

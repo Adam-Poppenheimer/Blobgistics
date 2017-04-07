@@ -116,7 +116,11 @@ namespace Assets.ConstructionZones {
                 InstantiatedConstructionZones.Remove(constructionZone);
                 constructionZone.Location.BlobSite.ClearContents();
                 constructionZone.Location.BlobSite.ClearPermissionsAndCapacity();
-                DestroyImmediate(constructionZone.gameObject);
+                if(Application.isPlaying) {
+                    Destroy(constructionZone.gameObject);
+                }else {
+                    DestroyImmediate(constructionZone.gameObject);
+                }
             }
         }
 

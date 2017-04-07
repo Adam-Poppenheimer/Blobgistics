@@ -41,6 +41,7 @@ namespace Assets.Blobs {
             if(ParentFactory != null) {
                 ParentFactory.UnsubscribeBlob(this);
             }
+            RaiseBeingDestroyed();
         }
 
         #endregion

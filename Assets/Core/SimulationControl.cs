@@ -214,6 +214,13 @@ namespace Assets.Core {
 
             var node = MapGraph.GetNodeOfID(nodeID);
             if(node != null) {
+                if( ConstructionZoneFactory.HasConstructionZoneAtLocation(node) ||
+                    ResourceDepotFactory.HasDepotAtLocation(node) ||
+                    SocietyFactory.HasSocietyAtLocation(node)
+                ){
+                    return new List<ConstructionProjectUISummary>();
+                }
+
                 foreach(var project in ConstructionZoneFactory.GetAvailableProjects()) {
                     if(ConstructionZoneFactory.CanBuildConstructionZone(node, project)) {
                         retval.Add(new ConstructionProjectUISummary(project));

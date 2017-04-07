@@ -16,6 +16,8 @@ namespace Assets.Map {
         public int ID { get; set; }
         public BlobSiteUISummary BlobSite { get; set; }
 
+        public Transform Transform { get; set; }
+
         #endregion
 
         #region constructors
@@ -25,6 +27,7 @@ namespace Assets.Map {
         public MapNodeUISummary(MapNodeBase nodeToSummarize) {
             ID = nodeToSummarize.ID;
             BlobSite = new BlobSiteUISummary(nodeToSummarize.BlobSite);
+            Transform = nodeToSummarize.transform;
         }
 
         #endregion

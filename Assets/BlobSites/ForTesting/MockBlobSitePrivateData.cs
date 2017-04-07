@@ -56,10 +56,12 @@ namespace Assets.BlobSites.ForTesting {
         }
 
         public override ResourceBlobFactoryBase BlobFactory {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return _blobFactory; }
         }
+        public void SetBlobFactory(ResourceBlobFactoryBase value) {
+            _blobFactory = value;
+        }
+        private ResourceBlobFactoryBase _blobFactory;
 
         #endregion
 

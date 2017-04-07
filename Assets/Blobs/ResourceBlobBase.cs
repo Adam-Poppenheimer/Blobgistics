@@ -27,6 +27,18 @@ namespace Assets.Blobs {
 
         #endregion
 
+        #region events
+
+        public event EventHandler<EventArgs> BeingDestroyed;
+
+        protected void RaiseBeingDestroyed() {
+            if(BeingDestroyed != null) {
+                BeingDestroyed(this, EventArgs.Empty);
+            }
+        }
+
+        #endregion
+
         #region instance methods
 
         public abstract void PushNewMovementGoal(MovementGoal goal);

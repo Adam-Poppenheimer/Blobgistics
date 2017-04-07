@@ -442,8 +442,8 @@ namespace Assets.Societies.Editor {
             societyToTest.TickConsumption(2.5f);
 
             //Validation
-            Assert.AreEqual(1.5f, societyToTest.SecondsOfUnsatisfiedNeeds, float.Epsilon);
-            Assert.AreEqual(8.5f, societyToTest.SecondsUntilComplexityDescent, float.Epsilon);
+            Assert.AreEqual(2.5f, societyToTest.SecondsOfUnsatisfiedNeeds, float.Epsilon);
+            Assert.AreEqual(7.5f, societyToTest.SecondsUntilComplexityDescent, float.Epsilon);
         }
 
         [Test]
@@ -923,6 +923,7 @@ namespace Assets.Societies.Editor {
             var hostingObject = new GameObject();
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
             var privateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+            privateData.SetBlobFactory(hostingObject.AddComponent<MockResourceBlobFactory>());
 
             newBlobSite.PrivateData = privateData;
             return newBlobSite;

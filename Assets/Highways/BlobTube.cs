@@ -106,6 +106,8 @@ namespace Assets.Highways {
         public override void PushBlobInto(ResourceBlobBase blob) {
             if(CanPushBlobInto(blob)) {
                 contents.Add(blob);
+
+                blob.BeingDestroyed += Blob_OnBeingDestroyed;
                 blob.transform.SetParent(transform, true);
                 blob.transform.rotation = Quaternion.identity;
 
@@ -171,6 +173,12 @@ namespace Assets.Highways {
         }
 
         #endregion
+
+        private void Blob_OnBeingDestroyed(object sender, EventArgs e) {
+            var blob = sender as ResourceBlobBase;
+            BlobsAtEnd.Remove(blob);
+            contents.Remove(blob);
+        }
 
         #endregion
 

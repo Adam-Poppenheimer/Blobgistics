@@ -105,6 +105,8 @@ namespace Assets.UI.Societies {
                 SecondsUntilComplexityDescentSlot.text = CurrentSummary.SecondsUntilComplexityDescent.ToString("0.#");
 
                 DestroySocietyButton.interactable = CanBeDestroyed;
+
+                transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.Transform.position);
             }
         }
 
