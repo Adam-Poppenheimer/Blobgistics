@@ -25,6 +25,8 @@ namespace Assets.Societies {
         public abstract float SecondsOfUnsatisfiedNeeds { get; }
         public abstract float SecondsUntilComplexityDescent { get; }
 
+        public abstract bool AscensionIsPermitted { get; set; }
+
         public abstract MapNodeBase Location { get; }
 
         #endregion

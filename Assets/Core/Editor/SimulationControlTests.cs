@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
-using UnityEditor;
 
 using NUnit.Framework;
 
@@ -451,6 +450,11 @@ namespace Assets.Core.Editor {
                 "SocietyFactory still registers the removed middleNode");
             Assert.IsNull(GameObject.Find("SimulationControl Integration Tests' Society"),
                 "Destroyed Society's GameObject still exists in the GameObject hierarchy");
+        }
+
+        [Test]
+        public void OnSetAscensionPermissionForSocietyIsCalled_SpecifiedSocietyHasItsAscensionIsPermittedFieldChanged() {
+            Assert.Ignore("This test is unimplemented but also not considered critical");
         }
 
         [Test]

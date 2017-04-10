@@ -5,9 +5,9 @@ using System.Text;
 
 using UnityEngine;
 
-namespace Assets.Highways {
+namespace Assets.Map {
 
-    public static class HighwayOrientationUtil {
+    public static class EdgeOrientationUtil {
 
         #region static methods
 

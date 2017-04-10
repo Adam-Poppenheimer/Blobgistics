@@ -7,6 +7,8 @@ using UnityEngine;
 
 using Assets.Societies;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.UI.Societies {
 
     public abstract class SocietyUISummaryDisplayBase : MonoBehaviour {
@@ -21,10 +23,17 @@ namespace Assets.UI.Societies {
         #region events
 
         public event EventHandler<EventArgs> DestructionRequested;
+        public event EventHandler<BoolEventArgs> AscensionPermissionChangeRequested;
 
         protected void RaiseDestructionRequested() {
             if(DestructionRequested != null) {
                 DestructionRequested(this, EventArgs.Empty);
+            }
+        }
+
+        protected void RaiseAscensionPermissionChangeRequested(bool ascensionPermitted) {
+            if(AscensionPermissionChangeRequested != null) {
+                AscensionPermissionChangeRequested(this, new BoolEventArgs(ascensionPermitted));
             }
         }
 

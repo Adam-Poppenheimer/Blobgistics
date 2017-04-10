@@ -118,10 +118,7 @@ namespace Assets.UI.Highways {
             gameObject.SetActive(true);
             UpdateDisplay();
 
-            if(CurrentSummary != null) {
-                FirstEndpointPane.transform.position  = Camera.main.WorldToScreenPoint(CurrentSummary.FirstEndpoint);
-                SecondEndpointPane.transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.SecondEndpoint);
-            }
+            AlignPermissionPanes();
             
             PriorityInput.onEndEdit.AddListener(delegate(string value) {
                 int newPriority;
@@ -238,6 +235,49 @@ namespace Assets.UI.Highways {
         private void RefreshUpgradeButtons() {
             BeginUpgradeButton.gameObject.SetActive(CanBeUpgraded && !IsBeingUpgraded);
             CancelUpgradeButton.gameObject.SetActive(IsBeingUpgraded);
+        }
+
+        private void AlignPermissionPanes() {
+            if(CurrentSummary == null) {
+                return;
+            }
+
+            bool firstEndpointIsToRight = CurrentSummary.FirstEndpoint.x >= CurrentSummary.SecondEndpoint.x;
+            bool firstEndpointIsAbove = CurrentSummary.FirstEndpoint.y >= CurrentSummary.SecondEndpoint.y;
+
+            if(firstEndpointIsToRight) {
+                if(firstEndpointIsAbove) {
+                    //FirstEndpointPane is aligned with its bottom-left corner
+                    FirstEndpointPane.anchoredPosition = new Vector2(0, 0);
+                    FirstEndpointPane.pivot = new Vector2(0, 0);
+                    //SecondEndpointPane is aligned with its top-right corner
+                    SecondEndpointPane.anchoredPosition = new Vector2(1, 1);
+                    SecondEndpointPane.pivot = new Vector2(1, 1);
+                }else {
+                    //FirstEndpointPane is aligned with its top-left corner
+                    FirstEndpointPane.anchoredPosition = new Vector2(0, 1);
+                    FirstEndpointPane.pivot = new Vector2(0, 1);
+                    //SecondEndpointPane is aligned with its bottom right corner
+                    SecondEndpointPane.anchoredPosition = new Vector2(1, 0);
+                    SecondEndpointPane.pivot = new Vector2(1, 0);
+                }  
+            }else {
+                if(firstEndpointIsAbove) {
+                    //FirstEndpointPane is aligned with its bottom-right corner
+                    FirstEndpointPane.anchoredPosition = new Vector2(1, 0);
+                    FirstEndpointPane.pivot = new Vector2(1, 0);
+                    //SecondEndpointPane is aligned with its top-left corner
+                    SecondEndpointPane.anchoredPosition = new Vector2(0, 1);
+                    SecondEndpointPane.pivot = new Vector2(0, 1);
+                }else {
+                    //FirstEndpointPane is aligned top-right corner
+                    FirstEndpointPane.anchoredPosition = new Vector2(1, 1);
+                    FirstEndpointPane.pivot = new Vector2(1, 1);
+                    //SecondEndpointPane is aligned with its bottom-left corner
+                    SecondEndpointPane.anchoredPosition = new Vector2(0, 0);
+                    SecondEndpointPane.pivot = new Vector2(0, 0);
+                }
+            }
         }
 
         #endregion

@@ -255,7 +255,7 @@ namespace Assets.Highways {
             Vector3 firstConnectionPoint, secondConnectionPoint;
             GetEndpointPositions(out firstConnectionPoint, out secondConnectionPoint);
 
-            HighwayOrientationUtil.AlignTransformWithEndpoints(transform, firstConnectionPoint, secondConnectionPoint, false);
+            EdgeOrientationUtil.AlignTransformWithEndpoints(transform, firstConnectionPoint, secondConnectionPoint, false);
 
             var boxCollider = GetComponent<BoxCollider2D>();
             if(boxCollider != null) {

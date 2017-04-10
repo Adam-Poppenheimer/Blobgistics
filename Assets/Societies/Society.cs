@@ -65,6 +65,12 @@ namespace Assets.Societies {
             }
         }
 
+        public override bool AscensionIsPermitted {
+            get { return _ascensionIsPermitted; }
+            set { _ascensionIsPermitted = value; }
+        }
+        private bool _ascensionIsPermitted = true;
+
         public override MapNodeBase Location {
             get { return PrivateData.Location; }
         }
@@ -271,7 +277,8 @@ namespace Assets.Societies {
 
         private bool CanAscendComplexityLadder() {
             var complexityAbove = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
-            return complexityAbove != null && complexityAbove.CostOfAscent.IsContainedWithinBlobSite(PrivateData.Location.BlobSite);
+            return AscensionIsPermitted && complexityAbove != null &&
+                complexityAbove.CostOfAscent.IsContainedWithinBlobSite(PrivateData.Location.BlobSite);
         }
 
         private void AscendComplexityLadder() {

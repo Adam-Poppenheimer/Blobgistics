@@ -41,6 +41,8 @@ namespace Assets.UI.Societies {
         [SerializeField] private Text SecondsOfUnsatisfiedNeedsSlot;
         [SerializeField] private Text SecondsUntilComplexityDescentSlot;
 
+        [SerializeField] private Toggle PermitAscensionToggle;
+
         [SerializeField] private Button DestroySocietyButton;
 
         private bool DeactivateOnNextUpdate = false;
@@ -77,6 +79,10 @@ namespace Assets.UI.Societies {
         #region from SocietyUISummaryDisplayBase
 
         public override void Activate() {
+            PermitAscensionToggle.onValueChanged.AddListener(delegate(bool newValue) {
+                RaiseAscensionPermissionChangeRequested(newValue);
+            });
+
             DestroySocietyButton.onClick.AddListener(delegate() {
                 RaiseDestructionRequested();
             });
@@ -88,6 +94,7 @@ namespace Assets.UI.Societies {
 
         public override void Deactivate() {
             DestroySocietyButton.onClick.RemoveAllListeners();
+            PermitAscensionToggle.onValueChanged.RemoveAllListeners();
             ClearDisplay();
             gameObject.SetActive(false);
         }
@@ -103,6 +110,8 @@ namespace Assets.UI.Societies {
                 NeedsAreSatisfiedSlot.text = CurrentSummary.NeedsAreSatisfied.ToString();
                 SecondsOfUnsatisfiedNeedsSlot.text = CurrentSummary.SecondsOfUnsatisfiedNeeds.ToString("0.#");
                 SecondsUntilComplexityDescentSlot.text = CurrentSummary.SecondsUntilComplexityDescent.ToString("0.#");
+
+                PermitAscensionToggle.isOn = CurrentSummary.AscensionIsPermitted;
 
                 DestroySocietyButton.interactable = CanBeDestroyed;
 
@@ -122,6 +131,8 @@ namespace Assets.UI.Societies {
             NeedsAreSatisfiedSlot.text = "";
             SecondsOfUnsatisfiedNeedsSlot.text = "";
             SecondsUntilComplexityDescentSlot.text = "";
+
+            PermitAscensionToggle.isOn = false;
         }
 
         #endregion

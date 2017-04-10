@@ -131,10 +131,12 @@ namespace Assets.Core {
                 } else {
                     if(_societySummaryDisplay != null) {
                         _societySummaryDisplay.DestructionRequested -= SocietySummaryDisplay_DestructionRequested;
+                        _societySummaryDisplay.AscensionPermissionChangeRequested -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
                     }
                     _societySummaryDisplay = value;
                     if(_societySummaryDisplay != null) {
                         _societySummaryDisplay.DestructionRequested += SocietySummaryDisplay_DestructionRequested;
+                        _societySummaryDisplay.AscensionPermissionChangeRequested += SocietySummaryDisplay_AscensionPermissionChangeRequested;
                     }
                 }
             }
@@ -205,9 +207,11 @@ namespace Assets.Core {
             }
 
             if(SocietySummaryDisplay != null) {
-                SocietySummaryDisplay.DestructionRequested -= SocietySummaryDisplay_DestructionRequested;
+                SocietySummaryDisplay.DestructionRequested               -= SocietySummaryDisplay_DestructionRequested;
+                SocietySummaryDisplay.AscensionPermissionChangeRequested -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
 
-                SocietySummaryDisplay.DestructionRequested += SocietySummaryDisplay_DestructionRequested;
+                SocietySummaryDisplay.DestructionRequested               += SocietySummaryDisplay_DestructionRequested;
+                SocietySummaryDisplay.AscensionPermissionChangeRequested += SocietySummaryDisplay_AscensionPermissionChangeRequested;
             }
         }
 
@@ -358,6 +362,10 @@ namespace Assets.Core {
                 SimulationControl.DestroySociety(SocietySummaryDisplay.CurrentSummary.ID);
                 SocietySummaryDisplay.Deactivate();
             }
+        }
+
+        private void SocietySummaryDisplay_AscensionPermissionChangeRequested(object sender, BoolEventArgs e) {
+            SimulationControl.SetAscensionPermissionForSociety(SocietySummaryDisplay.CurrentSummary.ID, e.Value);
         }
 
         #endregion

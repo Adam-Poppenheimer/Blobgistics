@@ -125,6 +125,7 @@ namespace Assets.Societies {
             newSociety.PrivateData = newPrivateData;
             newSociety.SetCurrentComplexity(startingComplexity);
             newSociety.transform.SetParent(location.transform, false);
+            newSociety.AscensionIsPermitted = true;
 
             InstantiatedSocieties.Add(newSociety);
             return newSociety;

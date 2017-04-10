@@ -55,6 +55,10 @@ namespace Assets.Societies {
             get { return SocietyToSummarize.transform; }
         }
 
+        public bool AscensionIsPermitted {
+            get { return SocietyToSummarize.AscensionIsPermitted; }
+        }
+
         private readonly SocietyBase SocietyToSummarize;
 
         #endregion

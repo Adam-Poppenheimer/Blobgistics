@@ -97,6 +97,10 @@ namespace Assets.UI.Highways.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

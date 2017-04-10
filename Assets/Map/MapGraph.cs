@@ -10,6 +10,7 @@ using UnityCustomUtilities.Extensions;
 
 using Assets.BlobSites;
 using Assets.Core;
+using Assets.Highways;
 
 namespace Assets.Map {
 
@@ -56,6 +57,7 @@ namespace Assets.Map {
         [SerializeField] private UIControlBase _uiControl;
 
         [SerializeField] private GameObject NodePrefab;
+        [SerializeField] private GameObject EdgePrefab;
 
         private DictionaryOfLists<MapNodeBase, MapNodeBase> NeighborsOfNode {
             get {
@@ -113,14 +115,23 @@ namespace Assets.Map {
             }else if(HasEdge(first, second)) {
                 throw new MapGraphException("There already exists and edge between these two MapNodes");
             }
-            var hostingObject = new GameObject();
-            hostingObject.transform.SetParent(this.transform);
-            hostingObject.transform.position = (first.transform.position + second.transform.position) / 2;
 
-            var newEdge = hostingObject.AddComponent<MapEdge>();
+            MapEdge newEdge;
+            if(EdgePrefab != null) {
+                var edgePrefabClone = Instantiate(EdgePrefab);
+                newEdge = edgePrefabClone.GetComponent<MapEdge>();
+            }else {
+                var hostingObject = new GameObject();
+                newEdge = hostingObject.AddComponent<MapEdge>();
+            }
+
+            newEdge.transform.SetParent(this.transform);
+            EdgeOrientationUtil.AlignTransformWithEndpoints(newEdge.transform, first.transform.position, second.transform.position, true);
+            newEdge.transform.position += Vector3.forward;
+
             newEdge.SetFirstNode(first);
             newEdge.SetSecondNode(second);
-            newEdge.SetBlobSite(BlobSiteFactory.ConstructBlobSite(hostingObject));
+            newEdge.SetBlobSite(BlobSiteFactory.ConstructBlobSite(newEdge.gameObject));
             newEdge.gameObject.name = string.Format("Edge [{0}]", newEdge.ID);
 
             EdgeSet.Add(newEdge);
@@ -151,7 +162,11 @@ namespace Assets.Map {
             if(NeighborsOfNode.ContainsKey(edge.SecondNode)) {
                 NeighborsOfNode[edge.SecondNode].Remove(edge.FirstNode );
             }
-            DestroyImmediate(edge.gameObject);
+            if(Application.isPlaying) {
+                Destroy(edge.gameObject);
+            }else {
+                DestroyImmediate(edge.gameObject);
+            }
             return retval;
         }
 

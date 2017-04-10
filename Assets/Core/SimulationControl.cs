@@ -389,10 +389,19 @@ namespace Assets.Core {
             if(BlobFactory != null) BlobFactory.TickAllBlobs(secondsPassed);
         }
 
+        public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
+            var societyToChange = SocietyFactory.GetSocietyOfID(societyID);
+            if(societyToChange != null) {
+                societyToChange.AscensionIsPermitted = ascensionPermitted;
+            }else {
+                Debug.LogErrorFormat(SocietyIDErrorMessage, societyID);
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }
