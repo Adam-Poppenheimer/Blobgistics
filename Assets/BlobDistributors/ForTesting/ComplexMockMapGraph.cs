@@ -6,6 +6,7 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
 using Assets.Map;
 using Assets.BlobSites;
 
@@ -29,7 +30,16 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #endregion
 
-        private BlobSitePrivateDataBase BlobSitePrivateData {
+        public ResourceBlobFactoryBase BlobFactory {
+            get { return _blobFactory; }
+            set {
+                _blobFactory = value;
+                BlobSitePrivateData.SetBlobFactory(_blobFactory);
+            }
+        }
+        private ResourceBlobFactoryBase _blobFactory;
+
+        private BlobSitePrivateData BlobSitePrivateData {
             get {
                 if(_blobSitePrivateData == null) {
                     var hostingObject = new GameObject();

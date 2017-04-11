@@ -15,7 +15,15 @@ namespace Assets.Core.ForTesting {
 
         #region from BlobDistributorBase
 
-        public override float SecondsToPerformDistributionTick { get; set; }
+        public override float EdgePullCooldownInSeconds {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 
@@ -35,10 +43,6 @@ namespace Assets.Core.ForTesting {
             if(Ticked != null) {
                 Ticked(this, new FloatEventArgs(secondsPassed));
             }
-        }
-
-        protected override void PerformDistribution() {
-            throw new NotImplementedException();
         }
 
         #endregion

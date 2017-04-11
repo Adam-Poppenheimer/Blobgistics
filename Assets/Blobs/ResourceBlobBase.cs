@@ -42,6 +42,7 @@ namespace Assets.Blobs {
         #region instance methods
 
         public abstract void PushNewMovementGoal(MovementGoal goal);
+        public abstract void ClearAllMovementGoals();
 
         public abstract void Tick(float secondsPassed);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -10,6 +11,20 @@ using UnityCustomUtilities.Extensions;
 namespace Assets.Core.ForTesting {
 
     public class MockHighwayFactory : BlobHighwayFactoryBase {
+
+        #region instance fields and properties
+
+        #region from BlobHighwayFactoryBase
+
+        public override ReadOnlyCollection<BlobHighwayBase> Highways {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        #endregion
 
         #region events
 

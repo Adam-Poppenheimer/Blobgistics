@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Assets.Highways;
 using Assets.Map;
+using System.Collections.ObjectModel;
 
 namespace Assets.BlobDistributors.ForTesting {
 
@@ -14,7 +15,17 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #region instance fields and properties
 
-        private List<BlobHighwayBase> Highways = new List<BlobHighwayBase>();
+        #region from BlobHighwayFactoryBase
+
+        public override ReadOnlyCollection<BlobHighwayBase> Highways {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        private List<BlobHighwayBase> highways = new List<BlobHighwayBase>();
 
         #endregion
 
@@ -32,17 +43,17 @@ namespace Assets.BlobDistributors.ForTesting {
             newHighway.SetFirstEndpoint(firstEndpoint);
             newHighway.SetSecondEndpoint(secondEndpoint);
 
-            Highways.Add(newHighway);
+            highways.Add(newHighway);
             return newHighway;
         }
 
         public override void DestroyHighway(BlobHighwayBase highway) {
-            Highways.Remove(highway);
+            highways.Remove(highway);
             DestroyImmediate(highway.gameObject);
         }
 
         public override BlobHighwayBase GetHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
-            return Highways.Find(delegate(BlobHighwayBase highway) {
+            return highways.Find(delegate(BlobHighwayBase highway) {
                 return (highway.FirstEndpoint == firstEndpoint  && highway.SecondEndpoint == secondEndpoint) ||
                        (highway.FirstEndpoint == secondEndpoint && highway.SecondEndpoint == firstEndpoint );
             });

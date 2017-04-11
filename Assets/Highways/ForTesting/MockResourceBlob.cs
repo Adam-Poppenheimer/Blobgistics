@@ -29,6 +29,10 @@ namespace Assets.Highways.ForTesting {
             PushedGoals.Add(goal);
         }
 
+        public override void ClearAllMovementGoals() {
+            PushedGoals.Clear();
+        }
+
         public override void Tick(float secondsPassed) {
             
         }

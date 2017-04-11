@@ -21,11 +21,11 @@ namespace Assets.BlobDistributors {
 
         #region from BlobDistributorBase
 
-        public override float SecondsToPerformDistributionTick {
-            get { return _secondsToPerformDistributionTick; }
-            set { _secondsToPerformDistributionTick = value; }
+        public override float EdgePullCooldownInSeconds {
+            get { return _edgePullCooldownInSeconds; }
+            set { _edgePullCooldownInSeconds = value; }
         }
-        [SerializeField] private float _secondsToPerformDistributionTick = 1f;
+        [SerializeField] private float _edgePullCooldownInSeconds;
 
         #endregion
 
@@ -53,7 +53,11 @@ namespace Assets.BlobDistributors {
         private Dictionary<BlobSiteBase, MapEdgeBase> LastServedEdgeOnBlobSite = 
             new Dictionary<BlobSiteBase, MapEdgeBase>();
 
-        private float DistributionTimer = 0f;
+        private Dictionary<BlobSiteBase, Dictionary<BlobHighwayBase, float>> PullTimerForBlobHighwayOnSite =
+            new Dictionary<BlobSiteBase, Dictionary<BlobHighwayBase, float>>();
+
+        private Dictionary<BlobSiteBase, Dictionary<MapEdgeBase, float>> PullTimerForMapEdgeOnSite = 
+            new Dictionary<BlobSiteBase, Dictionary<MapEdgeBase, float>>();
 
         #endregion
 
@@ -62,20 +66,10 @@ namespace Assets.BlobDistributors {
         #region from BlobDistributorBase
 
         public override void Tick(float secondsPassed) {
-            DistributionTimer += secondsPassed;
-            while(DistributionTimer >= SecondsToPerformDistributionTick) {
-                DistributionTimer -= SecondsToPerformDistributionTick;
-                PerformDistribution();
-            }
-        }
-
-        protected override void PerformDistribution() {
             foreach(var activeNode in MapGraph.Nodes) {
 
                 var adjacentEdges = new List<MapEdgeBase>(MapGraph.GetEdgesAttachedToNode(activeNode));
-                if(DistributeOnceFromSiteToEdges(activeNode.BlobSite, adjacentEdges)) {
-                    continue;
-                }
+                DistributeFromSiteToEdges(activeNode.BlobSite, adjacentEdges, secondsPassed);
 
                 var adjacentHighways = new List<BlobHighwayBase>();
                 foreach(var neighboringNode in MapGraph.GetNeighborsOfNode(activeNode)) {
@@ -83,133 +77,179 @@ namespace Assets.BlobDistributors {
                         adjacentHighways.Add(HighwayFactory.GetHighwayBetween(activeNode, neighboringNode));
                     }
                 }
-                DistributeOnceFromSiteToHighways(activeNode.BlobSite, adjacentHighways);
+                DistributeFromSiteToHighways(activeNode.BlobSite, adjacentHighways, secondsPassed);
             }
         }
 
         #endregion
 
-        private bool DistributeOnceFromSiteToEdges(BlobSiteBase site, List<MapEdgeBase> adjacentEdges) {
+        private void DistributeFromSiteToEdges(BlobSiteBase site, List<MapEdgeBase> adjacentEdges, float secondsPassed) {
+            if(!PullTimerForMapEdgeOnSite.ContainsKey(site)) {
+                PullTimerForMapEdgeOnSite[site] = new Dictionary<MapEdgeBase, float>();
+            }
+
+            foreach(var edge in adjacentEdges) {
+                if(!PullTimerForMapEdgeOnSite[site].ContainsKey(edge)) {
+                    PullTimerForMapEdgeOnSite[site][edge] = secondsPassed;
+                }else {
+                    PullTimerForMapEdgeOnSite[site][edge] += secondsPassed;
+                }
+            }
+
+            
+
             MapEdgeBase lastEdgeServed;
             LastServedEdgeOnBlobSite.TryGetValue(site, out lastEdgeServed);
 
-            if(lastEdgeServed == null) {
+            bool continueCycling = true;
+            while(continueCycling) {
+                continueCycling = false;
 
-                //When there was no last edge
-                foreach(var candidateEdge in adjacentEdges) {
-                    if(AttemptTransferIntoEdge(candidateEdge, site)) {
-                        LastServedEdgeOnBlobSite[site] = candidateEdge;
-                        return true;
-                    }
-                }
-            }else {
-                //Address candidates in round-robin fashion
                 int indexOfLast = adjacentEdges.IndexOf(lastEdgeServed);
-                for(
-                    int i = (indexOfLast + 1) % adjacentEdges.Count;
-                    i != indexOfLast;
-                    i = ++i % adjacentEdges.Count
-                ){
-                    var candidateEdge = adjacentEdges[i];
-                    if(AttemptTransferIntoEdge(candidateEdge, site)) {
-                        LastServedEdgeOnBlobSite[site] = candidateEdge;
-                        return true;
+                if(indexOfLast < 0) {
+                    foreach(var candidateEdge in adjacentEdges) {
+                        if(AttemptTransferIntoEdge(candidateEdge, site)) {
+                            lastEdgeServed = candidateEdge;
+                            continueCycling = true;
+                        }
                     }
-                }
-                if(AttemptTransferIntoEdge(lastEdgeServed, site)) {
-                    LastServedEdgeOnBlobSite[site] = lastEdgeServed;
-                    return true;
+                }else {
+                    for(int i = (indexOfLast + 1) % adjacentEdges.Count;
+                        i != indexOfLast;
+                        i = ++i % adjacentEdges.Count
+                    ){
+                        var candidateEdge = adjacentEdges[i];
+                        if(AttemptTransferIntoEdge(candidateEdge, site)) {
+                            lastEdgeServed = candidateEdge;
+                            continueCycling = true;
+                        }
+                    }
+
+                    if(AttemptTransferIntoEdge(lastEdgeServed, site)) {
+                        continueCycling = true;
+                    }
                 }
             }
-            return false;
+
+            foreach(var edge in adjacentEdges) {
+                PullTimerForMapEdgeOnSite[site][edge] = Mathf.Clamp(PullTimerForMapEdgeOnSite[site][edge], 0f, EdgePullCooldownInSeconds);
+            }
         }
 
-        private void DistributeOnceFromSiteToHighways(BlobSiteBase site, List<BlobHighwayBase> adjacentHighways) {
-            BlobHighwayBase lastHighwayServed;
-            LastServedHighwayOnBlobSite.TryGetValue(site, out lastHighwayServed);
+        private void DistributeFromSiteToHighways(BlobSiteBase site, List<BlobHighwayBase> adjacentHighways, float secondsPassed) {
 
-            if(lastHighwayServed == null) {
+            var dictionaryOfPriorities = new SortedDictionary<int, List<BlobHighwayBase>>();
+            foreach(var highway in adjacentHighways) {
+                if(!dictionaryOfPriorities.ContainsKey(highway.Priority)) {
+                    dictionaryOfPriorities.Add(highway.Priority, new List<BlobHighwayBase>());
+                }
+                dictionaryOfPriorities[highway.Priority].Add(highway);
+            }
 
-                //When there was no last highway
-                adjacentHighways.Sort(PriorityCompare);
-                foreach(var candidateHighway in adjacentHighways) {
-                    if(AttemptPull(candidateHighway, site)) {
-                        LastServedHighwayOnBlobSite[site] = candidateHighway;
-                        return;
+            BlobHighwayBase lastHighwayServedOnSite;
+            LastServedHighwayOnBlobSite.TryGetValue(site, out lastHighwayServedOnSite);
+
+            foreach(var priorityList in dictionaryOfPriorities.Values) {
+                PerformRoundRobinDistributionOnHighways(site, priorityList, ref lastHighwayServedOnSite, secondsPassed);
+            }
+            LastServedHighwayOnBlobSite[site] = lastHighwayServedOnSite;
+
+        }
+
+        private void PerformRoundRobinDistributionOnHighways(BlobSiteBase site, List<BlobHighwayBase> highways,
+            ref BlobHighwayBase lastHighwayServed, float secondsPassed) {
+
+            if(!PullTimerForBlobHighwayOnSite.ContainsKey(site)) {
+                PullTimerForBlobHighwayOnSite[site] = new Dictionary<BlobHighwayBase, float>();
+            }
+
+            foreach(var highway in highways) {
+                if(!PullTimerForBlobHighwayOnSite[site].ContainsKey(highway)) {
+                    PullTimerForBlobHighwayOnSite[site][highway] = secondsPassed;
+                }else {
+                    PullTimerForBlobHighwayOnSite[site][highway] += secondsPassed;
+                }
+            }
+
+            bool continueCycling = true;
+            while(continueCycling) {
+                continueCycling = false;
+
+                int indexOfLast = highways.IndexOf(lastHighwayServed);
+                if(indexOfLast < 0) {
+                    foreach(var candidateHighway in highways) {
+                        if(AttemptPull(candidateHighway, site)) {
+                            lastHighwayServed = candidateHighway;
+                            continueCycling = true;
+                        }
+                    }
+                }else {
+                    for(int i = (indexOfLast + 1) % highways.Count;
+                        i != indexOfLast;
+                        i = ++i % highways.Count
+                    ){
+                        var candidateHighway = highways[i];
+                        if(AttemptPull(candidateHighway, site)) {
+                            lastHighwayServed = candidateHighway;
+                            continueCycling = true;
+                        }
+                    }
+
+                    if(AttemptPull(lastHighwayServed, site)) {
+                        continueCycling = true;
                     }
                 }
+            }
 
-            }else {
-
-                //When there was a last highway
-                var candidatesBeforeLast  = new List<BlobHighwayBase>(adjacentHighways.Where(highway => highway.Priority <  lastHighwayServed.Priority));
-                var candidatesEqualToLast = new List<BlobHighwayBase>(adjacentHighways.Where(highway => highway.Priority == lastHighwayServed.Priority));
-                var candidatesAfterLast   = new List<BlobHighwayBase>(adjacentHighways.Where(highway => highway.Priority >  lastHighwayServed.Priority));
-
-                candidatesBeforeLast.Sort(PriorityCompare);
-                candidatesEqualToLast.Sort(PriorityCompare);
-                candidatesAfterLast.Sort(PriorityCompare);
-
-                //Address highways with a higher priority
-                foreach(var candidateHighway in candidatesBeforeLast) {
-                    if(AttemptPull(candidateHighway, site)) {
-                        LastServedHighwayOnBlobSite[site] = candidateHighway;
-                        return;
-                    }
-                }
-
-                //Address candidates with the same priority in round-robin fashion
-                int indexOfLast = candidatesEqualToLast.IndexOf(lastHighwayServed);
-                for(
-                    int i = (indexOfLast + 1) % candidatesEqualToLast.Count;
-                    i != indexOfLast;
-                    i = ++i % candidatesEqualToLast.Count
-                ){
-                    var candidateHighway = candidatesEqualToLast[i];
-                    if(AttemptPull(candidateHighway, site)) {
-                        LastServedHighwayOnBlobSite[site] = candidateHighway;
-                        return;
-                    }
-                }
-                if(AttemptPull(lastHighwayServed, site)) {
-                    LastServedHighwayOnBlobSite[site] = lastHighwayServed;
-                    return;
-                }
-                
-                //Address candidates with a lower priority
-                foreach(var candidateHighway in candidatesAfterLast) {
-                    if(AttemptPull(candidateHighway, site)) {
-                        LastServedHighwayOnBlobSite[site] = candidateHighway;
-                        return;
-                    }
-                }
-
-                LastServedHighwayOnBlobSite[site] = null;
+            foreach(var highway in highways) {
+                PullTimerForBlobHighwayOnSite[site][highway] = 
+                    Mathf.Clamp(PullTimerForBlobHighwayOnSite[site][highway], 0f, highway.Profile.BlobPullCooldownInSeconds);
             }
         }
 
         private bool AttemptPull(BlobHighwayBase highwayToPull, BlobSiteBase site) {
-            if(highwayToPull.FirstEndpoint.BlobSite == site && highwayToPull.CanPullFromFirstEndpoint()) {
-                highwayToPull.PullFromFirstEndpoint();
-                return true;
-            }else if(highwayToPull.SecondEndpoint.BlobSite == site && highwayToPull.CanPullFromSecondEndpoint()) {
-                highwayToPull.PullFromSecondEndpoint();
-                return true;
-            }else {
-                return false;
+            bool retval = false;
+            var highwayPullTimer = PullTimerForBlobHighwayOnSite[site][highwayToPull];
+
+            if(highwayPullTimer >= highwayToPull.Profile.BlobPullCooldownInSeconds) {
+                if(highwayToPull.FirstEndpoint.BlobSite == site && highwayToPull.CanPullFromFirstEndpoint()) {
+                    highwayToPull.PullFromFirstEndpoint();
+                    highwayPullTimer -= highwayToPull.Profile.BlobPullCooldownInSeconds;
+                    retval = true;
+                }else if(highwayToPull.SecondEndpoint.BlobSite == site && highwayToPull.CanPullFromSecondEndpoint()) {
+                    highwayToPull.PullFromSecondEndpoint();
+                    highwayPullTimer -= highwayToPull.Profile.BlobPullCooldownInSeconds;
+                    retval = true;
+                }
             }
+
+            PullTimerForBlobHighwayOnSite[site][highwayToPull] = highwayPullTimer;
+            return retval;
         }
 
         private bool AttemptTransferIntoEdge(MapEdgeBase edge, BlobSiteBase siteToTransferFrom) {
+            if(!PullTimerForMapEdgeOnSite[siteToTransferFrom].ContainsKey(edge)) {
+                PullTimerForMapEdgeOnSite[siteToTransferFrom][edge] = 0f;
+            }
+
+            bool retval = false;
+            var edgePullTimer = PullTimerForMapEdgeOnSite[siteToTransferFrom][edge];
+
             var edgeSite = edge.BlobSite;
-            foreach(var transferCandidate in siteToTransferFrom.Contents) {
-                if(siteToTransferFrom.CanExtractBlob(transferCandidate) && edgeSite.CanPlaceBlobInto(transferCandidate)) {
-                    siteToTransferFrom.ExtractBlob(transferCandidate);
-                    edgeSite.PlaceBlobInto(transferCandidate);
-                    return true;
+            if(edgePullTimer >= EdgePullCooldownInSeconds) {
+                foreach(var transferCandidate in siteToTransferFrom.Contents) {
+                    if(siteToTransferFrom.CanExtractBlob(transferCandidate) && edgeSite.CanPlaceBlobInto(transferCandidate)) {
+                        siteToTransferFrom.ExtractBlob(transferCandidate);
+                        edgeSite.PlaceBlobInto(transferCandidate);
+                        edgePullTimer -= EdgePullCooldownInSeconds;
+                        retval = true;
+                        break;
+                    }
                 }
             }
-            return false;
+
+            PullTimerForMapEdgeOnSite[siteToTransferFrom][edge] = edgePullTimer;
+            return retval;
         }
 
         private int PriorityCompare(BlobHighwayBase highway1, BlobHighwayBase highway2) {

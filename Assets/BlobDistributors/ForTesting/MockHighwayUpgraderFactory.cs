@@ -21,7 +21,7 @@ namespace Assets.BlobDistributors.ForTesting {
                 if(!hasLoadedProfile) {
                     var profileCost = ResourceSummary.BuildResourceSummary(
                         gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Food, 10));
-                    _profileToUse = new BlobHighwayProfile(1f, 10, profileCost);
+                    _profileToUse = new BlobHighwayProfile(1f, 10, profileCost, 0.2f);
                     hasLoadedProfile = true;
                 }
                 return _profileToUse;

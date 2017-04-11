@@ -50,6 +50,10 @@ namespace Assets.Blobs {
             PendingMovementGoals.Enqueue(goal);
         }
 
+        public override void ClearAllMovementGoals() {
+            PendingMovementGoals.Clear();
+        }
+
         public override void Tick(float secondsPassed) {
             float secondsLeftToIncrementOn = secondsPassed;
             while(PendingMovementGoals.Count > 0 && secondsLeftToIncrementOn > 0) {

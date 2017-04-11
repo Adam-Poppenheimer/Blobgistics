@@ -11,15 +11,13 @@ namespace Assets.BlobDistributors {
 
         #region instance fields and properties
 
-        public abstract float SecondsToPerformDistributionTick { get; set; }
+        public abstract float EdgePullCooldownInSeconds { get; set; }
 
         #endregion
 
         #region instance methods
 
         public abstract void Tick(float secondsPassed);
-
-        protected abstract void PerformDistribution();
 
         #endregion
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,12 @@ using Assets.Map;
 namespace Assets.Highways {
 
     public abstract class BlobHighwayFactoryBase : MonoBehaviour {
+
+        #region instance fields and properties
+
+        public abstract ReadOnlyCollection<BlobHighwayBase> Highways { get; }
+
+        #endregion
 
         #region instance methods
 

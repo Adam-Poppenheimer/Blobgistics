@@ -979,7 +979,8 @@ namespace Assets.Core.Editor {
                 ResourceSummary.BuildResourceSummary(
                     newFactory.gameObject,
                     new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
-                )
+                ),
+                0.2f
             );
 
             var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
@@ -1043,7 +1044,7 @@ namespace Assets.Core.Editor {
             newControl.UpgradedHighwayProfile = new BlobHighwayProfile(2, 20, ResourceSummary.BuildResourceSummary(
                 newControl.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 5)
-            ));
+            ), 0.2f);
 
             return newControl;
         }

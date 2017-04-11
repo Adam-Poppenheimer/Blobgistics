@@ -47,7 +47,7 @@ namespace Assets.Highways {
                 UpdateTubesFromProfile();
             }
         }
-        [SerializeField, HideInInspector] private BlobHighwayProfile _profile;
+        [SerializeField] private BlobHighwayProfile _profile;
 
         public override MapNodeBase FirstEndpoint {
             get { return PrivateData.FirstEndpoint; }

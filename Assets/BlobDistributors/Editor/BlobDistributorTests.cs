@@ -20,33 +20,7 @@ namespace Assets.BlobDistributors.Editor {
         #region tests
 
         [Test]
-        public void OnDistributorIsRepeatedlyTicked_PerformsDistributionAtTheCorrectRate() {
-            //Setup
-            var mockMapGraph = BuildAccessingCountingMockMapGraph();
-
-            int numberOfTimesNodesWereAccessed = 0;
-            mockMapGraph.NodesAccessed += delegate(object sender, EventArgs e) {
-                ++numberOfTimesNodesWereAccessed;
-            };
-
-            var mockHighwayFactory = BuildMockHighwayFactory();
-            
-            var distributorToTest = BuildBlobDistributor();
-            distributorToTest.SecondsToPerformDistributionTick = 1f;
-            distributorToTest.MapGraph = mockMapGraph;
-            distributorToTest.HighwayFactory = mockHighwayFactory;
-
-            //Execution
-            for(int i = 0; i < 101; ++i) {
-                distributorToTest.Tick(0.25f);
-            }
-
-            //Validation
-            Assert.AreEqual(25, numberOfTimesNodesWereAccessed, "MapGraph.Nodes was not accessed the expected number of times");
-        }
-
-        [Test]
-        public void OnDistributionPerformed_HigherPriorityHighwaysAreFilledBeforeLowerPriorityOnesReceiveAny() {
+        public void OnDistributionIsPerformed_HigherPriorityHighwaysReceiveBlobsBeforeLowerPriorityOnes() {
             //Setup
             var mapGraph = BuildMapGraph();
 
@@ -64,36 +38,68 @@ namespace Assets.BlobDistributors.Editor {
             highwayUp.Priority = 100;
 
             var distributorToTest = BuildBlobDistributor();
-            distributorToTest.SecondsToPerformDistributionTick = 1f;
             distributorToTest.MapGraph = mapGraph;
             distributorToTest.HighwayFactory = highwayFactory;
 
             //Execution
-            distributorToTest.Tick(5f);
+            for(int i = 0; i < 6; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+            }
 
-            int leftCountAfter5Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
-            int rightCountAfter5Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
-            int upCountAfter5Seconds    = highwayUp.ContentsPulledFromFirstEndpoint.Count;
-
-            distributorToTest.Tick(5f);
-
-            int leftCountAfter10Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
-            int rightCountAfter10Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
-            int upCountAfter10Seconds    = highwayUp.ContentsPulledFromFirstEndpoint.Count;
+            int leftCountAfter6Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
+            int rightCountAfter6Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
+            int upCountAfter6Seconds    = highwayUp.ContentsPulledFromFirstEndpoint.Count;
 
             //Validation
-            Assert.AreEqual(5, leftCountAfter5Seconds,  "LeftCountAfter5Seconds is incorrect");
-            Assert.AreEqual(0, rightCountAfter5Seconds, "RightCountAfter5Seconds is incorrect");
-            Assert.AreEqual(0, upCountAfter5Seconds,    "UpCountAfter5Seconds is incorrect");
+            Assert.AreEqual(6, leftCountAfter6Seconds,  "LeftCountAfter6Seconds is incorrect");
+            Assert.AreEqual(0, rightCountAfter6Seconds, "RightCountAfter6Seconds is incorrect");
+            Assert.AreEqual(0, upCountAfter6Seconds,    "UpCountAfter6Seconds is incorrect");
+        }
 
-            Assert.AreEqual(5, leftCountAfter10Seconds,  "LeftCountAfter10Seconds is incorrect");
-            Assert.AreEqual(5, rightCountAfter10Seconds, "RightCountAfter10Seconds is incorrect");
-            Assert.AreEqual(0, upCountAfter10Seconds,    "UpCountAfter10Seconds is incorrect");
+        [Test]
+        public void OnDistributionIsPerformed_AndAHigherPriorityHighwayIsStillOnCooldown_LowerPriorityHighwaysCanReceiveBlobs() {
+            //Setup
+            var mapGraph = BuildMapGraph();
+
+            MapNodeBase centerNode, leftNode, rightNode, upNode;
+            SetUpMapGraph(mapGraph, out centerNode, out leftNode, out rightNode, out upNode);
+
+            var highwayFactory = BuildMockHighwayFactory();
+
+            BlobHighwayBase highwayLeft, highwayRight, highwayUp;
+            SetUpHighwayFactory(highwayFactory, centerNode, leftNode, rightNode, upNode,
+                out highwayLeft, out highwayRight, out highwayUp);
+
+            highwayLeft.Priority = 1;
+            highwayRight.Priority = 10;
+            highwayUp.Priority = 100;
+
+            var distributorToTest = BuildBlobDistributor();
+            distributorToTest.MapGraph = mapGraph;
+            distributorToTest.HighwayFactory = highwayFactory;
+
+            //Execution
+            for(int i = 0; i < 6; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+                Assert.AreEqual(i + 1, highwayLeft.ContentsPulledFromFirstEndpoint.Count, "Incorrect highwayLeft");
+                Assert.AreEqual(i + 1, highwayRight.ContentsPulledFromFirstEndpoint.Count, "Incorrect highwayRight");
+            }
+
+            int leftCountAfter6Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
+            int rightCountAfter6Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
+            int upCountAfter6Seconds    = highwayUp.ContentsPulledFromFirstEndpoint.Count;
+
+            //Validation
+            Assert.AreEqual(6, leftCountAfter6Seconds,  "LeftCountAfter6Seconds is incorrect");
+            Assert.AreEqual(6, rightCountAfter6Seconds, "RightCountAfter6Seconds is incorrect");
+            Assert.AreEqual(0, upCountAfter6Seconds,    "UpCountAfter6Seconds is incorrect");
         }
 
         [Test]
         public void OnDistributionPerformed_HighwaysWithTheSamePriorityGetServedRoundRobin() {
-            //Setup
             //Setup
             var mapGraph = BuildMapGraph();
 
@@ -111,18 +117,23 @@ namespace Assets.BlobDistributors.Editor {
             highwayUp.Priority = 10;
 
             var distributorToTest = BuildBlobDistributor();
-            distributorToTest.SecondsToPerformDistributionTick = 1f;
             distributorToTest.MapGraph = mapGraph;
             distributorToTest.HighwayFactory = highwayFactory;
 
             //Execution
-            distributorToTest.Tick(6f);
+            for(int i = 0; i < 6; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+            }
 
             int leftCountAfter6Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
             int rightCountAfter6Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
             int upCountAfter6Seconds    = highwayUp.ContentsPulledFromFirstEndpoint.Count;
 
-            distributorToTest.Tick(4f);
+            for(int i = 0; i < 4; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+            }
 
             int leftCountAfter10Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
             int rightCountAfter10Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
@@ -157,19 +168,24 @@ namespace Assets.BlobDistributors.Editor {
             highwayUp.Priority = 1000;
 
             var distributorToTest = BuildBlobDistributor();
-            distributorToTest.SecondsToPerformDistributionTick = 1f;
             distributorToTest.MapGraph = mapGraph;
             distributorToTest.HighwayFactory = highwayFactory;
 
             //Execution
-            distributorToTest.Tick(3f);
+            for(int i = 0; i < 3; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+            }
 
             int leftCountAfter3Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
             int rightCountAfter3Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
             int upCountAfter3Seconds    = highwayUp.ContentsPulledFromFirstEndpoint.Count;
 
             highwayUp.Priority = 1;
-            distributorToTest.Tick(3f);
+            for(int i = 0; i < 3; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+            }
 
             int leftCountAfter6Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
             int rightCountAfter6Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
@@ -205,21 +221,27 @@ namespace Assets.BlobDistributors.Editor {
             highwayRight.Priority = 100;
 
             var distributorToTest = BuildBlobDistributor();
-            distributorToTest.SecondsToPerformDistributionTick = 1f;
             distributorToTest.MapGraph = mapGraph;
             distributorToTest.HighwayFactory = highwayFactory;
 
             //Execution
-            distributorToTest.Tick(3f);
+            for(int i = 0; i < 3; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+            }
 
             int leftCountAfter3Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
             int rightCountAfter3Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
 
             highwayUp = highwayFactory.ConstructHighwayBetween(centerNode, upNode);
-            highwayUp.Profile = new BlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(highwayUp.gameObject));
+            highwayUp.Profile = new BlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(highwayUp.gameObject), 1f);
             highwayUp.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
             highwayUp.Priority = 1;
-            distributorToTest.Tick(3f);
+
+            for(int i = 0; i < 3; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+            }
 
             int leftCountAfter6Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
             int rightCountAfter6Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
@@ -253,11 +275,14 @@ namespace Assets.BlobDistributors.Editor {
             highwayUp.Priority = 100;
 
             var distributorToTest = BuildBlobDistributor();
-            distributorToTest.SecondsToPerformDistributionTick = 1f;
             distributorToTest.MapGraph = mapGraph;
             distributorToTest.HighwayFactory = highwayFactory;
 
             //Execution
+            for(int i = 0; i < 3; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+            }
+
             distributorToTest.Tick(3f);
 
             int leftCountAfter3Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
@@ -265,6 +290,11 @@ namespace Assets.BlobDistributors.Editor {
             int upCountAfter3Seconds    = highwayUp.ContentsPulledFromFirstEndpoint.Count;
 
             highwayFactory.DestroyHighway(highwayLeft);
+            
+            for(int i = 0; i < 3; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+            }
+
             distributorToTest.Tick(3f);
 
             int rightCountAfter6Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
@@ -302,13 +332,16 @@ namespace Assets.BlobDistributors.Editor {
                 mapGraph.GetEdge(centerNode, leftNode).BlobSite, upgraderFactory.ProfileToUse);
 
             var distributorToTest = BuildBlobDistributor();
-            distributorToTest.SecondsToPerformDistributionTick = 1f;
             distributorToTest.MapGraph = mapGraph;
             distributorToTest.HighwayFactory = highwayFactory;
             distributorToTest.HighwayUpgraderFactory = upgraderFactory;
+            distributorToTest.EdgePullCooldownInSeconds = 1f;
 
             //Execution
-            distributorToTest.Tick(5f);
+            for(int i = 0; i < 5; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+                distributorToTest.Tick(1f);
+            }
 
             int leftCountAfter5Seconds     = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
             int rightCountAfter5Seconds    = highwayRight.ContentsPulledFromFirstEndpoint.Count;
@@ -323,7 +356,7 @@ namespace Assets.BlobDistributors.Editor {
         }
 
         [Test]
-        public void OnMultipleHighwaysHaveActiveUpgrader_UpgradersAreAllServedRoundRobin() {
+        public void OnMultipleHighwaysHaveActiveUpgrader_AllUpgradersAreServedRoundRobin() {
             //Setup
             var mapGraph = BuildMapGraph();
 
@@ -351,10 +384,14 @@ namespace Assets.BlobDistributors.Editor {
                 mapGraph.GetEdge(centerNode, upNode).BlobSite, upgraderFactory.ProfileToUse);
 
             var distributorToTest = BuildBlobDistributor();
-            distributorToTest.SecondsToPerformDistributionTick = 1f;
             distributorToTest.MapGraph = mapGraph;
             distributorToTest.HighwayFactory = highwayFactory;
             distributorToTest.HighwayUpgraderFactory = upgraderFactory;
+            distributorToTest.EdgePullCooldownInSeconds = 1f;
+
+            for(int i = 0; i < 30; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+            }
 
             //Execution
             distributorToTest.Tick(9f);
@@ -364,9 +401,9 @@ namespace Assets.BlobDistributors.Editor {
             int upgraderUpCountAfter9Seconds    = upgraderUp.UnderlyingSite.GetCountOfContentsOfType(ResourceType.Food);
 
             //Validation
-            Assert.AreEqual(3, upgraderLeftCountAfter9Seconds,  "UpgraderLeft has an incorrect pull count");
-            Assert.AreEqual(3, upgraderRightCountAfter9Seconds, "UpgraderRight has an incorrect pull count");
-            Assert.AreEqual(3, upgraderUpCountAfter9Seconds,    "UpgraderUp has an incorrect pull count");
+            Assert.AreEqual(9, upgraderLeftCountAfter9Seconds,  "UpgraderLeft has an incorrect pull count");
+            Assert.AreEqual(9, upgraderRightCountAfter9Seconds, "UpgraderRight has an incorrect pull count");
+            Assert.AreEqual(9, upgraderUpCountAfter9Seconds,    "UpgraderUp has an incorrect pull count");
         }
 
         #endregion
@@ -375,7 +412,9 @@ namespace Assets.BlobDistributors.Editor {
 
         private ComplexMockMapGraph BuildMapGraph() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<ComplexMockMapGraph>();
+            var newMapGraph = hostingObject.AddComponent<ComplexMockMapGraph>();
+            newMapGraph.BlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
+            return newMapGraph;
         }
 
         private BlobDistributor BuildBlobDistributor() {
@@ -407,22 +446,23 @@ namespace Assets.BlobDistributors.Editor {
             rightNode  = mapGraph.BuildNode(Vector3.right);
             upNode     = mapGraph.BuildNode(Vector3.up);
             
+            centerNode.name = "Center Node";
             centerNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             centerNode.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
             centerNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             centerNode.BlobSite.TotalCapacity = 100;
-            for(int i = 0; i < 30; ++i) {
-                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
-            }
 
+            leftNode.name = "Left Node";
             leftNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             leftNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             leftNode.BlobSite.TotalCapacity = 100;
 
+            rightNode.name = "Right Node";
             rightNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             rightNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             rightNode.BlobSite.TotalCapacity = 100;
 
+            upNode.name = "Up Node";
             upNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             upNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             upNode.BlobSite.TotalCapacity = 100;
@@ -440,7 +480,7 @@ namespace Assets.BlobDistributors.Editor {
             highwayRight = highwayFactory.ConstructHighwayBetween(centerNode, rightNode);
             highwayUp    = highwayFactory.ConstructHighwayBetween(centerNode, upNode);
 
-            var highwayProfile = new BlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(new GameObject()));
+            var highwayProfile = new BlobHighwayProfile(1f, 20, ResourceSummary.BuildResourceSummary(new GameObject()), 1f);
 
             highwayLeft.Profile = highwayProfile;
             highwayLeft.SetPullingPermissionForFirstEndpoint (ResourceType.Food, true);

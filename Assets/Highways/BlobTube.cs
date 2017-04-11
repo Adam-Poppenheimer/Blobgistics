@@ -114,6 +114,7 @@ namespace Assets.Highways {
                 var zOffsetSource = new Vector3(SourceLocation.x, SourceLocation.y, ResourceBlob.DesiredZPositionOfAllBlobs);
                 var zOffsetTarget = new Vector3(TargetLocation.x, TargetLocation.y, ResourceBlob.DesiredZPositionOfAllBlobs);
 
+                blob.ClearAllMovementGoals();
                 blob.PushNewMovementGoal(new MovementGoal(zOffsetSource, TransportSpeedPerSecond));
                 blob.PushNewMovementGoal(new MovementGoal(zOffsetTarget, TransportSpeedPerSecond, delegate() {
                     BlobsAtEnd.Add(blob);

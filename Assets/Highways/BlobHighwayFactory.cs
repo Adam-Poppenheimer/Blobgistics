@@ -8,6 +8,7 @@ using UnityEngine;
 using Assets.Map;
 using Assets.Blobs;
 using Assets.Core;
+using System.Collections.ObjectModel;
 
 namespace Assets.Highways {
 
@@ -81,9 +82,13 @@ namespace Assets.Highways {
         }
         [SerializeField] private BlobHighwayProfile _startingProfile;
 
+        public override ReadOnlyCollection<BlobHighwayBase> Highways {
+            get { return AllConstructedHighways.AsReadOnly(); }
+        }
+
         [SerializeField] private GameObject HighwayPrefab;
 
-        [SerializeField, HideInInspector] private List<BlobHighway> AllConstructedHighways = new List<BlobHighway>();
+        [SerializeField, HideInInspector] private List<BlobHighwayBase> AllConstructedHighways = new List<BlobHighwayBase>();
 
         #endregion
 
@@ -98,7 +103,7 @@ namespace Assets.Highways {
                 throw new ArgumentNullException("secondEndpoint");
             }
 
-            return AllConstructedHighways.Where(delegate(BlobHighway highway) {
+            return AllConstructedHighways.Where(delegate(BlobHighwayBase highway) {
                 return (
                     (highway.FirstEndpoint == firstEndpoint  && highway.SecondEndpoint == secondEndpoint) ||
                     (highway.FirstEndpoint == secondEndpoint && highway.SecondEndpoint == firstEndpoint )
@@ -115,7 +120,7 @@ namespace Assets.Highways {
                 throw new BlobHighwayException("There exists no highway between these two points");
             }
 
-            var highwayQuery = AllConstructedHighways.Where(delegate(BlobHighway highway) {
+            var highwayQuery = AllConstructedHighways.Where(delegate(BlobHighwayBase highway) {
                 return (
                     (highway.FirstEndpoint == firstEndpoint  && highway.SecondEndpoint == secondEndpoint) ||
                     (highway.FirstEndpoint == secondEndpoint && highway.SecondEndpoint == firstEndpoint )
@@ -179,7 +184,6 @@ namespace Assets.Highways {
             newHighway.Profile = StartingProfile;
 
             AllConstructedHighways.Add(newHighway);
-
             return newHighway;
         }
 
@@ -192,12 +196,16 @@ namespace Assets.Highways {
                 throw new ArgumentNullException("highway");
             }
 
-            var highwayToRemove = AllConstructedHighways.Where(delegate(BlobHighway highwayToCheck) {
+            var highwayToRemove = AllConstructedHighways.Where(delegate(BlobHighwayBase highwayToCheck) {
                 return highway == highwayToCheck;
             }).FirstOrDefault();
             if(highwayToRemove != null) {
                 AllConstructedHighways.Remove(highwayToRemove);
-                DestroyImmediate(highwayToRemove.gameObject);
+                if(Application.isPlaying) {
+                    Destroy(highwayToRemove.gameObject);
+                }else {
+                    DestroyImmediate(highwayToRemove.gameObject);
+                }
             }
         }
 
