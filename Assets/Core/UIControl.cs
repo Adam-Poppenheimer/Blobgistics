@@ -20,6 +20,9 @@ using Assets.UI.HighwayUpgraders;
 using Assets.Societies;
 using Assets.UI.Societies;
 
+using Assets.ResourceDepots;
+using Assets.UI.ResourceDepots;
+
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core {
@@ -143,6 +146,30 @@ namespace Assets.Core {
         }
         [SerializeField] private SocietyUISummaryDisplayBase _societySummaryDisplay;
 
+        public ResourceDepotSummaryDisplayBase DepotSummaryDisplay {
+            get {
+                if(_depotSummaryDisplay == null) {
+                    throw new InvalidOperationException("DepotSummaryDisplay is uninitialized");
+                } else {
+                    return _depotSummaryDisplay;
+                }
+            }
+            set {
+                if(value == null) {
+                    throw new ArgumentNullException("value");
+                } else {
+                    if(_depotSummaryDisplay != null) {
+                        _depotSummaryDisplay.DestructionRequested -= DepotSummaryDisplay_DestructionRequested;
+                    }
+                    _depotSummaryDisplay = value;
+                    if(_depotSummaryDisplay != null) {
+                        _depotSummaryDisplay.DestructionRequested += DepotSummaryDisplay_DestructionRequested;
+                    }
+                }
+            }
+        }
+        [SerializeField] private ResourceDepotSummaryDisplayBase _depotSummaryDisplay;
+
         public ConstructionPanelBase ConstructionPanel {
             get {
                 if(_constructionPanel == null) {
@@ -213,6 +240,12 @@ namespace Assets.Core {
                 SocietySummaryDisplay.DestructionRequested               += SocietySummaryDisplay_DestructionRequested;
                 SocietySummaryDisplay.AscensionPermissionChangeRequested += SocietySummaryDisplay_AscensionPermissionChangeRequested;
             }
+
+            if(DepotSummaryDisplay != null) {
+                DepotSummaryDisplay.DestructionRequested -= DepotSummaryDisplay_DestructionRequested;
+
+                DepotSummaryDisplay.DestructionRequested += DepotSummaryDisplay_DestructionRequested;
+            }
         }
 
         #endregion
@@ -248,7 +281,9 @@ namespace Assets.Core {
             }
         }
 
-        public override void PushPointerClickEvent<T>(T source, PointerEventData eventData) {}
+        public override void PushPointerClickEvent<T>(T source, PointerEventData eventData) {
+            Debug.LogFormat("PushPointerClickEvent {0}", typeof(T).Name);
+        }
 
         public override void PushPointerEnterEvent<T>(T source, PointerEventData eventData) {
             if(source is MapNodeUISummary) {
@@ -270,12 +305,8 @@ namespace Assets.Core {
         }
 
         public override void PushSelectEvent<T>(T source, BaseEventData eventData) {
-            if(source is MapNodeUISummary) {
-                var summary = source as MapNodeUISummary;
-                ConstructionPanel.LocationToConstruct = summary;
-                ConstructionPanel.SetPermittedProjects(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
-                ConstructionPanel.Activate();
-            }else if(source is BlobHighwayUISummary) {
+            Debug.LogFormat("PushSelectEvent {0}", typeof(T).Name);
+            if(source is BlobHighwayUISummary) {
                 if(HighwaySummaryDisplay != null) {
                     HighwaySummaryDisplay.CurrentSummary = source as BlobHighwayUISummary;
                     HighwaySummaryDisplay.CanBeUpgraded = SimulationControl.CanCreateHighwayUpgraderOnHighway(
@@ -296,6 +327,16 @@ namespace Assets.Core {
                     ConstructionZoneSummaryDisplay.CurrentSummary = source as ConstructionZoneUISummary;
                     ConstructionZoneSummaryDisplay.Activate();
                 }
+            }else if(source is ResourceDepotUISummary) {
+                if(DepotSummaryDisplay != null) {
+                    DepotSummaryDisplay.CurrentSummary = source as ResourceDepotUISummary;
+                    DepotSummaryDisplay.Activate();
+                }
+            }else if(source is MapNodeUISummary) {
+                var summary = source as MapNodeUISummary;
+                ConstructionPanel.LocationToConstruct = summary;
+                ConstructionPanel.SetPermittedProjects(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
+                ConstructionPanel.Activate();
             }
         }
 
@@ -366,6 +407,11 @@ namespace Assets.Core {
 
         private void SocietySummaryDisplay_AscensionPermissionChangeRequested(object sender, BoolEventArgs e) {
             SimulationControl.SetAscensionPermissionForSociety(SocietySummaryDisplay.CurrentSummary.ID, e.Value);
+        }
+
+        private void DepotSummaryDisplay_DestructionRequested(object sender, EventArgs e) {
+            SimulationControl.DestroyResourceDepotOfID(DepotSummaryDisplay.CurrentSummary.ID);
+            DepotSummaryDisplay.Deactivate();
         }
 
         #endregion

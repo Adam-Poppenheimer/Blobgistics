@@ -329,7 +329,7 @@ namespace Assets.Societies {
                     capacityDict[resourceType] = valueInDict;
 
                     ProductionProfile.SetPlacementPermission(resourceType, true);
-                    DefaultProfile.SetPlacementPermission(resourceType, true);
+                    DefaultProfile.SetPlacementPermission(resourceType, false);
                     DefaultProfile.SetExtractionPermission(resourceType, true);
                 }
             }

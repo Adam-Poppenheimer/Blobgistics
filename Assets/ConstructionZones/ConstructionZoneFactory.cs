@@ -7,7 +7,7 @@ using UnityEngine;
 
 using Assets.Blobs;
 using Assets.Map;
-using Assets.Depots;
+using Assets.ResourceDepots;
 using Assets.Core;
 
 namespace Assets.ConstructionZones {
@@ -113,13 +113,21 @@ namespace Assets.ConstructionZones {
             if(constructionZone == null) {
                 throw new ArgumentNullException("constructionZone");
             }else {
-                InstantiatedConstructionZones.Remove(constructionZone);
-                constructionZone.Location.BlobSite.ClearContents();
-                constructionZone.Location.BlobSite.ClearPermissionsAndCapacity();
+                UnsubsribeConstructionZone(constructionZone);
                 if(Application.isPlaying) {
                     Destroy(constructionZone.gameObject);
                 }else {
                     DestroyImmediate(constructionZone.gameObject);
+                }
+            }
+        }
+
+        public override void UnsubsribeConstructionZone(ConstructionZoneBase constructionZone) {
+            if(constructionZone != null) {
+                InstantiatedConstructionZones.Remove(constructionZone);
+                if(constructionZone.Location != null) {
+                    constructionZone.Location.BlobSite.ClearContents();
+                    constructionZone.Location.BlobSite.ClearPermissionsAndCapacity();
                 }
             }
         }

@@ -8,7 +8,7 @@ using UnityEngine;
 using Assets.Blobs;
 using Assets.Map;
 
-namespace Assets.Depots {
+namespace Assets.ResourceDepots {
 
     public abstract class ResourceDepotBase : MonoBehaviour {
 

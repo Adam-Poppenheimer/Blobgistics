@@ -8,7 +8,7 @@ using UnityEngine;
 using Assets.Map;
 using Assets.Core;
 
-namespace Assets.Depots {
+namespace Assets.ResourceDepots {
 
     [ExecuteInEditMode]
     public class ResourceDepotFactory : ResourceDepotFactoryBase {
@@ -31,6 +31,10 @@ namespace Assets.Depots {
         #region instance methods
 
         #region from ResourceDepotFactoryBase
+
+        public override ResourceDepotBase GetDepotOfID(int id) {
+            return InstantiatedDepots.Find(depot => depot.ID == id);
+        }
 
         public override ResourceDepotBase GetDepotAtLocation(MapNodeBase location) {
             return InstantiatedDepots.Find(depot => depot.Location == location);

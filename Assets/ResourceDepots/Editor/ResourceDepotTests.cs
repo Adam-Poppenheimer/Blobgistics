@@ -7,11 +7,11 @@ using NUnit.Framework;
 
 using Assets.Map;
 using Assets.Blobs;
-using Assets.Depots.ForTesting;
+using Assets.ResourceDepots.ForTesting;
 
 using UnityCustomUtilities.Extensions;
 
-namespace Assets.Depots.Editor {
+namespace Assets.ResourceDepots.Editor {
 
     public class ResourceDepotTests {
 
@@ -20,7 +20,7 @@ namespace Assets.Depots.Editor {
         #region tests
 
         [Test]
-        public void OnResouceDepotConstructedViaFactory_LocationIsInitializedProperly() {
+        public void Factory_OnResouceDepotConstructed_LocationIsInitializedProperly() {
             //Setup
             var factoryToUse = BuildFactory();
             var location = BuildMapNode();
@@ -33,7 +33,7 @@ namespace Assets.Depots.Editor {
         }
 
         [Test]
-        public void OnResourceDepotConstructedViaFactory_UnderlyingBlobSiteHasProperDefaultPermissionsAndCapacities() {
+        public void Factory_OnResourceDepotConstructed_UnderlyingBlobSiteHasProperDefaultPermissionsAndCapacities() {
             //Setup
             var factoryToUse = BuildFactory();
             var location = BuildMapNode();
@@ -59,7 +59,7 @@ namespace Assets.Depots.Editor {
         }
 
         [Test]
-        public void OnResourceDepotConstructedViaFactory_UnderlyingBlobSiteIsClearedOfResources() {
+        public void Factory_OnResourceDepotConstructed_UnderlyingBlobSiteIsClearedOfResources() {
             //Setup
             var factoryToUse = BuildFactory();
             var location = BuildMapNode();
@@ -77,7 +77,7 @@ namespace Assets.Depots.Editor {
         }
 
         [Test]
-        public void OnResourceDepotConstructedViaFactory_ResourceDepotHasEmptyProfile() {
+        public void Factory_OnResourceDepotConstructed_ResourceDepotHasEmptyProfile() {
             //Setup
             var factoryToUse = BuildFactory();
             var location = BuildMapNode();
@@ -87,6 +87,31 @@ namespace Assets.Depots.Editor {
 
             //Validation
             Assert.AreEqual(ResourceDepotProfile.Empty, depotToTest.Profile);
+        }
+
+        [Test]
+        public void Factory_OnGetDepotOfIDCalled_ReturnsTheDepotWithTheAppropriateID_OrNullIfNoneExists() {
+            //Setup
+            var factoryToTest = BuildFactory();
+            var location1 = BuildMapNode();
+            var location2 = BuildMapNode();
+            var location3 = BuildMapNode();
+
+            var depot1 = factoryToTest.ConstructDepotAt(location1);
+            var depot2 = factoryToTest.ConstructDepotAt(location2);
+            var depot3 = factoryToTest.ConstructDepotAt(location3);
+
+            //Execution
+            var depotRetrievedFromID1 = factoryToTest.GetDepotOfID(depot1.ID);
+            var depotRetrievedFromID2 = factoryToTest.GetDepotOfID(depot2.ID);
+            var depotRetrievedFromID3 = factoryToTest.GetDepotOfID(depot3.ID);
+            var depotRetrievedFrom42 = factoryToTest.GetDepotOfID(42);
+
+            //Validation
+            Assert.AreEqual(depot1, depotRetrievedFromID1, "Depot1 was not returned when its ID was provided");
+            Assert.AreEqual(depot2, depotRetrievedFromID2, "Depot2 was not returned when its ID was provided");
+            Assert.AreEqual(depot3, depotRetrievedFromID3, "Depot3 was not returned when its ID was provided");
+            Assert.Null(depotRetrievedFrom42, "ID 42 falsely returned a ResourceDepot");
         }
 
         [Test]

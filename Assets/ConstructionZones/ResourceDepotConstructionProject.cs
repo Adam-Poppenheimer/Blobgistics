@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Assets.Blobs;
-using Assets.Depots;
+using Assets.ResourceDepots;
 using Assets.Map;
 using Assets.BlobSites;
 

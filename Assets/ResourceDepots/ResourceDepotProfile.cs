@@ -4,7 +4,7 @@ using UnityEngine;
 
 using Assets.Blobs;
 
-namespace Assets.Depots {
+namespace Assets.ResourceDepots {
 
     [Serializable]
     public struct ResourceDepotProfile {

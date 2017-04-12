@@ -12,7 +12,7 @@ using Assets.BlobSites;
 using Assets.ConstructionZones;
 using Assets.Highways;
 using Assets.HighwayUpgraders;
-using Assets.Depots;
+using Assets.ResourceDepots;
 using Assets.Societies;
 
 using Assets.Core.ForTesting;
@@ -639,6 +639,26 @@ namespace Assets.Core.Editor {
             Assert.AreEqual(5f, amountTickedOnBlobFactory,     "Incorrect amount ticked on BlobFactory");
         }
 
+        [Test]
+        public void OnDestroyResourceDepotIsCalled_SpecifiedDepotIsRemovedFromHierarchyAndAllRecords() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+            var blobToPlaceUpon = controlToTest.MapGraph.BuildNode(Vector3.zero);
+
+            var newDepot = controlToTest.ResourceDepotFactory.ConstructDepotAt(blobToPlaceUpon);
+            var depotName = "SimulationControlTest's Destroyed Depot";
+            var depotID = newDepot.ID;
+            newDepot.name = depotName;
+
+
+            //Execution
+            controlToTest.DestroyResourceDepotOfID(newDepot.ID);
+
+            //Validation
+            Assert.Null(GameObject.Find(depotName), "There still exists a GameObject with the destroyed depot's name");
+            Assert.Null(controlToTest.ResourceDepotFactory.GetDepotOfID(depotID), "DepotFactory still recognizes the destroyed depot");
+        }
+
         #endregion
 
         #region error handling 
@@ -937,6 +957,28 @@ namespace Assets.Core.Editor {
             //Execution
             Assert.DoesNotThrow(delegate() {
                 controlToTest.CreateHighwayUpgraderOnHighway(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnDestroyResourceDepotIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyResourceDepotOfID(42);
             });
 
             //Validation

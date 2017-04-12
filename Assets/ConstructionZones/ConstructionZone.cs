@@ -12,7 +12,7 @@ using Assets.Core;
 
 namespace Assets.ConstructionZones {
 
-    public class ConstructionZone : ConstructionZoneBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
+    public class ConstructionZone : ConstructionZoneBase, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler, ISelectHandler {
 
         #region instance fields and properties
@@ -50,7 +50,7 @@ namespace Assets.ConstructionZones {
                 _location.BlobSite.BlobPlacedInto += BlobSite_BlobPlacedInto;
             }
         }
-        [SerializeField, HideInInspector] private MapNodeBase _location;
+        [SerializeField] private MapNodeBase _location;
 
         #endregion
 
@@ -70,31 +70,30 @@ namespace Assets.ConstructionZones {
                 }
             }
         }
-        [SerializeField, HideInInspector] private ConstructionZoneFactoryBase _parentFactory;
+        [SerializeField] private ConstructionZoneFactoryBase _parentFactory;
 
         public UIControlBase UIControl {
             get { return _uiControl; }
             set { _uiControl = value; }
         }
-        [SerializeField, HideInInspector] private UIControlBase _uiControl;
+        [SerializeField] private UIControlBase _uiControl;
 
         #endregion
 
         #region instance methods
 
+        #region Unity event methods
+
+        private void OnDestroy() {
+            if(Location != null) {
+                Location.BlobSite.BlobPlacedInto -= BlobSite_BlobPlacedInto;
+            }
+            ParentFactory.UnsubsribeConstructionZone(this);
+        }
+
+        #endregion
+
         #region EventSystem interface implementations
-
-        public void OnBeginDrag(PointerEventData eventData) {
-            UIControl.PushBeginDragEvent(new ConstructionZoneUISummary(this), eventData);
-        }
-
-        public void OnDrag(PointerEventData eventData) {
-            UIControl.PushDragEvent(new ConstructionZoneUISummary(this), eventData);
-        }
-
-        public void OnEndDrag(PointerEventData eventData) {
-            UIControl.PushEndDragEvent(new ConstructionZoneUISummary(this), eventData);
-        }
 
         public void OnPointerClick(PointerEventData eventData) {
             UIControl.PushPointerClickEvent(new ConstructionZoneUISummary(this), eventData);

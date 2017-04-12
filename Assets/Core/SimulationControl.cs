@@ -9,7 +9,7 @@ using Assets.Map;
 using Assets.Highways;
 using Assets.Blobs;
 using Assets.Societies;
-using Assets.Depots;
+using Assets.ResourceDepots;
 using Assets.ConstructionZones;
 using Assets.HighwayUpgraders;
 using Assets.BlobDistributors;
@@ -26,6 +26,7 @@ namespace Assets.Core {
         private static string ConstructionZoneIDErrorMessage = "There exists no ConstructionZone with ID {0}";
         private static string HighwayUpgraderIDErrorMessage = "The highway with ID {0} has no HighwayUpgrader targeting it";
         private static string MapNodeIDErrorMessage = "There exists no MapNode with ID {0}";
+        private static string DepotIDErrorMessage = "There exists no ResourceDepot with ID {0}";
 
         #endregion
 
@@ -395,6 +396,15 @@ namespace Assets.Core {
                 societyToChange.AscensionIsPermitted = ascensionPermitted;
             }else {
                 Debug.LogErrorFormat(SocietyIDErrorMessage, societyID);
+            }
+        }
+
+        public override void DestroyResourceDepotOfID(int depotID) {
+            var depotToDestroy = ResourceDepotFactory.GetDepotOfID(depotID);
+            if(depotToDestroy != null) {
+                ResourceDepotFactory.DestroyDepot(depotToDestroy);
+            }else {
+                Debug.LogErrorFormat(DepotIDErrorMessage, depotID);
             }
         }
 

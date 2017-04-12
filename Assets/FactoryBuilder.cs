@@ -11,7 +11,7 @@ using UnityCustomUtilities.Misc;
 using Assets.Societies;
 using Assets.Editing;
 using Assets.Map;
-using Assets.Depots;
+using Assets.ResourceDepots;
 
 namespace Assets {
 

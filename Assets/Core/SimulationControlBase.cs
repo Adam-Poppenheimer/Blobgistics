@@ -40,6 +40,8 @@ namespace Assets.Core {
         public abstract void CreateHighwayUpgraderOnHighway   (int highwayID);
         public abstract void DestroyHighwayUpgraderOnHighway  (int highwayID);
 
+        public abstract void DestroyResourceDepotOfID(int depotID);
+
         public abstract void TickSimulation(float secondsPassed);
 
         #endregion

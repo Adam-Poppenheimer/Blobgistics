@@ -22,6 +22,7 @@ namespace Assets.ConstructionZones {
         public abstract ConstructionZoneBase BuildConstructionZone   (MapNodeBase location, ConstructionProjectBase project);
 
         public abstract void DestroyConstructionZone(ConstructionZoneBase constructionZone);
+        public abstract void UnsubsribeConstructionZone(ConstructionZoneBase constructionZone);
 
         public abstract bool TryGetProjectOfName(string projectName, out ConstructionProjectBase project);
 

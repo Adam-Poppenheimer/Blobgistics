@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using Assets.Depots;
+using Assets.ResourceDepots;
 using Assets.Map;
 
 namespace Assets.ConstructionZones.ForTesting {
@@ -19,6 +19,10 @@ namespace Assets.ConstructionZones.ForTesting {
         #region instance methods
 
         #region from ResourceDepotFactoryBase
+
+        public override ResourceDepotBase GetDepotOfID(int id) {
+            throw new NotImplementedException();
+        }
 
         public override ResourceDepotBase ConstructDepotAt(MapNodeBase map) {
             if(ConstructDepotCalled != null) {

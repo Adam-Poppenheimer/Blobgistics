@@ -5,7 +5,7 @@ using System.Text;
 using Assets.BlobSites;
 using Assets.Map;
 
-namespace Assets.Depots.ForTesting {
+namespace Assets.ResourceDepots.ForTesting {
 
     public class MockMapNode : MapNodeBase {
 

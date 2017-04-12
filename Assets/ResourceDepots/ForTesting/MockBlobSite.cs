@@ -7,7 +7,7 @@ using Assets.Blobs;
 using Assets.BlobSites;
 using UnityEngine;
 
-namespace Assets.Depots.ForTesting {
+namespace Assets.ResourceDepots.ForTesting {
 
     public class MockBlobSite : BlobSiteBase {
 

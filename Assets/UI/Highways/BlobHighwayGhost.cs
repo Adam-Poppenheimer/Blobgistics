@@ -104,20 +104,14 @@ namespace Assets.UI.Highways {
                 endpoint1 = FirstEndpoint.BlobSite.GetConnectionPointInDirection(directionToEndpoint2);
                 endpoint2 = SecondEndpoint.BlobSite.GetConnectionPointInDirection(directionToEndpoint1);
             }else {
-                var directionToEndpoint2 = FirstEndpoint.BlobSite.Transform.position.GetDominantManhattanDirectionTo(lastEventData.position);
+                endpoint2 = Camera.main.ScreenToWorldPoint((Vector3)lastEventData.position - new Vector3(0f, 0f, Camera.main.transform.position.z));
+
+                var directionToEndpoint2 = FirstEndpoint.BlobSite.Transform.position.GetDominantManhattanDirectionTo(endpoint2);
                 
                 endpoint1 = FirstEndpoint.BlobSite.GetConnectionPointInDirection(directionToEndpoint2);
-                endpoint2 = Camera.main.ScreenToWorldPoint(lastEventData.position);
             }
 
-            transform.position = (endpoint1 + endpoint2) / 2f;
-            transform.localScale = new Vector3(Vector3.Distance(endpoint1, endpoint2), 1f, 1f);
-            transform.rotation = Quaternion.identity;
-
-            if(Vector3.Distance(endpoint1, endpoint2) >= 1f) {
-                var zRotation = Mathf.Atan( (endpoint2.y - endpoint1.y) / (endpoint2.x - endpoint1.x) );
-                transform.Rotate(new Vector3(0f, 0f, zRotation * Mathf.Rad2Deg));
-            }
+            EdgeOrientationUtil.AlignTransformWithEndpoints(transform, endpoint1, endpoint2, true);
         }
 
         #endregion

@@ -9,7 +9,7 @@ using UnityEngine;
 using Assets.Highways;
 using Assets.Map;
 using Assets.Societies;
-using Assets.Depots;
+using Assets.ResourceDepots;
 
 namespace Assets.Editing {
 

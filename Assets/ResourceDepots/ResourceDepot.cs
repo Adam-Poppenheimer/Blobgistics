@@ -12,11 +12,11 @@ using Assets.Core;
 
 using UnityCustomUtilities.Extensions;
 
-namespace Assets.Depots {
+namespace Assets.ResourceDepots {
 
     [ExecuteInEditMode]
-    public class ResourceDepot : ResourceDepotBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
-        IPointerEnterHandler, IPointerExitHandler {
+    public class ResourceDepot : ResourceDepotBase, IPointerClickHandler,
+        IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler {
 
         #region instance fields and properties
 
@@ -77,20 +77,9 @@ namespace Assets.Depots {
 
         #region EventSystem interface implementations
 
-        public void OnBeginDrag(PointerEventData eventData) {
-            UIControl.PushBeginDragEvent(new ResourceDepotUISummary(this), eventData);
-        }
-
-        public void OnDrag(PointerEventData eventData) {
-            UIControl.PushDragEvent(new ResourceDepotUISummary(this), eventData);
-        }
-
-        public void OnEndDrag(PointerEventData eventData) {
-            UIControl.PushEndDragEvent(new ResourceDepotUISummary(this), eventData);
-        }
-
         public void OnPointerClick(PointerEventData eventData) {
             UIControl.PushPointerClickEvent(new ResourceDepotUISummary(this), eventData);
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnPointerEnter(PointerEventData eventData) {
@@ -99,6 +88,14 @@ namespace Assets.Depots {
 
         public void OnPointerExit(PointerEventData eventData) {
             UIControl.PushPointerExitEvent(new ResourceDepotUISummary(this), eventData);
+        }
+
+        public void OnSelect(BaseEventData eventData) {
+            UIControl.PushSelectEvent(new ResourceDepotUISummary(this), eventData);
+        }
+
+        public void OnDeselect(BaseEventData eventData) {
+            UIControl.PushDeselectEvent(new ResourceDepotUISummary(this), eventData);
         }
 
         #endregion

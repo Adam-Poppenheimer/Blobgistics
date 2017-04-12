@@ -29,6 +29,10 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
         #region from SimulationControlBase
 
+        public override void DestroyResourceDepotOfID(int depotID) {
+            throw new NotImplementedException();
+        }
+
         public override bool CanConnectNodesWithHighway(int node1ID, int node2ID) {
             throw new NotImplementedException();
         }

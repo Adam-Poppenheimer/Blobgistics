@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Assets.Blobs;
-using Assets.Core;
 using Assets.ConstructionZones;
 
-using UnityCustomUtilities.Extensions;
-
-namespace Assets.UI.HighwayUpgraders.ForTesting {
+namespace Assets.Core.ForTesting {
 
     public class MockSimulationControl : SimulationControlBase {
 
-        #region events
+        #region instance fields and properties
 
-        public event EventHandler<IntEventArgs> OnHighwayUpgraderDestructionRequested;
+        public int IDOfRequestedDepot;
 
         #endregion
 
@@ -23,11 +19,11 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
 
         #region from SimulationControlBase
 
-        public override void DestroyResourceDepotOfID(int depotID) {
+        public override bool CanConnectNodesWithHighway(int node1ID, int node2ID) {
             throw new NotImplementedException();
         }
 
-        public override bool CanConnectNodesWithHighway(int node1ID, int node2ID) {
+        public override bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName) {
             throw new NotImplementedException();
         }
 
@@ -43,6 +39,10 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void CreateConstructionSiteOnNode(int nodeID, string buildingName) {
+            throw new NotImplementedException();
+        }
+
         public override void CreateHighwayUpgraderOnHighway(int highwayID) {
             throw new NotImplementedException();
         }
@@ -55,15 +55,27 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool HasHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
-        }
-
         public override void DestroyHighwayUpgraderOnHighway(int highwayID) {
             throw new NotImplementedException();
         }
 
+        public override void DestroyResourceDepotOfID(int depotID) {
+            IDOfRequestedDepot = depotID;
+        }
+
         public override void DestroySociety(int societyID) {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasHighwayUpgraderOnHighway(int highwayID) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
             throw new NotImplementedException();
         }
 
@@ -83,26 +95,10 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateConstructionSiteOnNode(int nodeID, string buildingName) {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
-            throw new NotImplementedException();
-        }
-
-        public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #endregion
-
+        
     }
 
 }

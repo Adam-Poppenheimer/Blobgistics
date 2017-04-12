@@ -279,6 +279,47 @@ namespace Assets.Societies.Editor {
         }
 
         [Test]
+        public void OnCurrentComplexityChanged_ProductionsAreForbiddenPlacementIfNotAlsoNeeds_Wants_OrAscensionCosts() {
+            //Setup
+            var startingComplexity = BuildComplexityDefinition();
+            
+            startingComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(
+                startingComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
+            ));
+            startingComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
+                startingComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.White, 1)
+            ));
+            startingComplexity.SetWants(new List<ResourceSummary>() {
+                ResourceSummary.BuildResourceSummary(
+                    startingComplexity.gameObject,
+                    new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1)
+                )
+            });
+
+            startingComplexity.SetNeedsCapacityCoefficient(4);
+            startingComplexity.SetWantsCapacityCoefficient(5);
+            startingComplexity.SetProductionCapacityCoefficient(6);
+
+            var complexityLadder = BuildComplexityLadder(0, startingComplexity);
+            var privateData = BuildPrivateData(complexityLadder, StandardBlobFactory, BuildMapNode());
+
+            //Execution
+            var newSociety = BuildSociety(privateData, startingComplexity);
+
+            //Validation
+            Assert.IsTrue(newSociety.Location.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Food),
+                "Incorrect placement permission for Food");
+            Assert.IsTrue(newSociety.Location.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Yellow),
+                "Incorrect placement permission for Yellow");
+            Assert.IsFalse(newSociety.Location.BlobSite.GetPlacementPermissionForResourceType(ResourceType.White),
+                "Incorrect placement permission for White");
+        }
+
+        [Test]
         public void OnCurrentComplexityChanged_AscentCostsOfNextComplexityCorrectlyAffectCapacityOfLocationsBlobSite() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
@@ -322,10 +363,13 @@ namespace Assets.Societies.Editor {
             ));
             complexityToUse.SetSecondsToPerformFullProduction(1f);
 
-            var societyToTest = BuildSociety(complexityToUse);
+            var location = BuildMapNode();
+            location.BlobSite.SetPlacementPermissionsAndCapacity(complexityToUse.Production);
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+
+            var societyToTest = BuildSociety(complexityToUse, location);
 
             //Execution
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
             Assert.DoesNotThrow(delegate() {
                 societyToTest.TickProduction(complexityToUse.SecondsToPerformFullProduction);
             });
@@ -690,15 +734,19 @@ namespace Assets.Societies.Editor {
             ));
             currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
+            var location = BuildMapNode();
+            location.BlobSite.SetPlacementPermissionsAndCapacity(currentComplexity.Production);
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food  ));
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Yellow));
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.White ));
+
             var activeLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
-            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, location);
 
             var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Execution
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food  ));
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Yellow));
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.White ));
+            
             societyToTest.TickConsumption(1f);
 
             //Validation
@@ -723,14 +771,17 @@ namespace Assets.Societies.Editor {
 
             var descentComplexity = BuildComplexityDefinition();
 
+            var location = BuildMapNode();
+            location.BlobSite.SetPlacementPermissionsAndCapacity(currentComplexity.Production);
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Yellow));
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.White ));
+
             var activeLadder = BuildComplexityLadder(1, descentComplexity, currentComplexity);
-            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, location);
 
             var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Execution
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Yellow));
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.White ));
             societyToTest.TickConsumption(2f);
 
             //Validation
@@ -742,25 +793,34 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(
-                currentComplexity.gameObject,
+                new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
             currentComplexity.SetWants(new List<ResourceSummary>() { 
-                ResourceSummary.BuildResourceSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1))
+                ResourceSummary.BuildResourceSummary(new GameObject(), new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1))
             });
             currentComplexity.SetProduction(ResourceSummary.BuildResourceSummary(
-                currentComplexity.gameObject,
+                new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.White, 1)
             ));
+            currentComplexity.SetProductionCapacityCoefficient(5);
             currentComplexity.SetNeedsCapacityCoefficient(5);
             currentComplexity.SetWantsCapacityCoefficient(5);
 
-            var societyToTest = BuildSociety(currentComplexity);
+            var location = BuildMapNode();
+            location.BlobSite.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+                new GameObject(),
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.White, 1)
+            ));
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food  ));
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Yellow));
+            location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.White ));
+
+            var societyToTest = BuildSociety(currentComplexity, location);
 
             //Execution
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food  ));
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Yellow));
-            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.White ));
 
             //Validation
             Assert.That(!societyToTest.Location.BlobSite.CanExtractBlobOfType(ResourceType.Food  ));
@@ -913,10 +973,14 @@ namespace Assets.Societies.Editor {
             return newSociety;
         }
 
-        private Society BuildSociety(ComplexityDefinitionBase startingDefinition) {
-            var activeLadder = BuildComplexityLadder(0, startingDefinition);
-            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
-            return BuildSociety(privateData, startingDefinition);
+        private Society BuildSociety(ComplexityDefinitionBase startingComplexity) {
+            return BuildSociety(startingComplexity, BuildMapNode());
+        }
+
+        private Society BuildSociety(ComplexityDefinitionBase startingComplexity, MapNodeBase location) {
+            var activeLadder = BuildComplexityLadder(0, startingComplexity);
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, location);
+            return BuildSociety(privateData, startingComplexity);
         }
 
         private BlobSiteBase BuildBlobSite() {
