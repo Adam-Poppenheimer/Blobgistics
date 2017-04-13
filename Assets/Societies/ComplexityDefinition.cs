@@ -70,6 +70,14 @@ namespace Assets.Societies {
         }
         [SerializeField] private ResourceSummary _costOfAscent;
 
+        public override bool IsPermittedToAscend {
+            get { return _isPermittedToAscend; }
+        }
+        public void SetIsPermittedToAscend(bool value) {
+            _isPermittedToAscend = value;
+        }
+        [SerializeField] private bool _isPermittedToAscend;
+
         public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }
         }

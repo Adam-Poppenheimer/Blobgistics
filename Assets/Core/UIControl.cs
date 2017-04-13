@@ -281,9 +281,7 @@ namespace Assets.Core {
             }
         }
 
-        public override void PushPointerClickEvent<T>(T source, PointerEventData eventData) {
-            Debug.LogFormat("PushPointerClickEvent {0}", typeof(T).Name);
-        }
+        public override void PushPointerClickEvent<T>(T source, PointerEventData eventData) {}
 
         public override void PushPointerEnterEvent<T>(T source, PointerEventData eventData) {
             if(source is MapNodeUISummary) {
@@ -305,7 +303,6 @@ namespace Assets.Core {
         }
 
         public override void PushSelectEvent<T>(T source, BaseEventData eventData) {
-            Debug.LogFormat("PushSelectEvent {0}", typeof(T).Name);
             if(source is BlobHighwayUISummary) {
                 if(HighwaySummaryDisplay != null) {
                     HighwaySummaryDisplay.CurrentSummary = source as BlobHighwayUISummary;
@@ -343,6 +340,27 @@ namespace Assets.Core {
         public override void PushUpdateSelectedEvent<T>(T source, BaseEventData eventData) {}
 
         public override void PushDeselectEvent<T>(T source, BaseEventData eventData) {}
+
+        public override void PushObjectDestroyedEvent<T>(T source) {
+            if(source is BlobHighwayUISummary) {
+                if(source == HighwaySummaryDisplay.CurrentSummary) {
+                    HighwaySummaryDisplay.Deactivate();
+                }
+            }else if(source is SocietyUISummary) {
+                if(source == SocietySummaryDisplay.CurrentSummary) {
+                    SocietySummaryDisplay.Deactivate();
+                }
+                
+            }else if(source is ConstructionZoneUISummary) {
+                if(source == ConstructionZoneSummaryDisplay.CurrentSummary) {
+                    ConstructionZoneSummaryDisplay.Deactivate();
+                }
+            }else if(source is ResourceDepotUISummary) {
+                if(source == DepotSummaryDisplay.CurrentSummary) {
+                    DepotSummaryDisplay.Deactivate();
+                }
+            }
+        }
 
         #endregion
 

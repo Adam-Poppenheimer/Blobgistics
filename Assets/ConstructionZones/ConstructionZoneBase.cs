@@ -20,6 +20,8 @@ namespace Assets.ConstructionZones {
 
         public abstract ConstructionProjectBase CurrentProject { get; set; }
 
+        public abstract bool ProjectHasBeenCompleted { get; }
+
         #endregion
 
     }

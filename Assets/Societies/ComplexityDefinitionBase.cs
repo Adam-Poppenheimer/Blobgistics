@@ -20,6 +20,7 @@ namespace Assets.Societies {
         public abstract IEnumerable<ResourceSummary> Wants { get; }
 
         public abstract ResourceSummary CostOfAscent { get; }
+        public abstract bool IsPermittedToAscend { get; }
 
         public abstract uint ProductionCapacityCoefficient { get; }
         public abstract uint NeedsCapacityCoefficient { get; }

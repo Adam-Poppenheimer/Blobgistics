@@ -21,6 +21,8 @@ namespace Assets.HighwayUpgraders {
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        [SerializeField] private List<BlobHighwayProfile> ChainOfProfiles = new List<BlobHighwayProfile>();
+
         [SerializeField, HideInInspector] private List<HighwayUpgraderBase> InstantiatedUpgraders =
             new List<HighwayUpgraderBase>();
 
@@ -88,6 +90,8 @@ namespace Assets.HighwayUpgraders {
             newUpgrader.PrivateData = privateData;
             newUpgrader.transform.SetParent(targetedHighway.transform, false);
 
+            newUpgrader.name = "HighwayUpgrader on " + targetedHighway.name;
+
             InstantiatedUpgraders.Add(newUpgrader);
 
             return newUpgrader;
@@ -99,6 +103,20 @@ namespace Assets.HighwayUpgraders {
             }
             InstantiatedUpgraders.Remove(highwayUpgrader);
             DestroyImmediate(highwayUpgrader.gameObject);
+        }
+
+        public override BlobHighwayProfile GetNextProfileInUpgradeChain(BlobHighwayProfile currentProfile) {
+            if(currentProfile == null) {
+                throw new ArgumentNullException("currentProfile");
+            }
+            var indexOfCurrent = ChainOfProfiles.IndexOf(currentProfile);
+            if(indexOfCurrent < 0) {
+                return ChainOfProfiles.FirstOrDefault();
+            }else if(indexOfCurrent == ChainOfProfiles.Count - 1) {
+                return null;
+            }else {
+                return ChainOfProfiles[(indexOfCurrent + 1) % ChainOfProfiles.Count];
+            }
         }
 
         #endregion

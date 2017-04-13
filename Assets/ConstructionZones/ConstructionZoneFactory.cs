@@ -98,12 +98,13 @@ namespace Assets.ConstructionZones {
             }
 
             newConstructionZone.transform.SetParent(location.transform, false);
-            newConstructionZone.transform.localPosition = Vector3.zero;
 
             newConstructionZone.SetLocation(location);
             newConstructionZone.CurrentProject = project;
             newConstructionZone.ParentFactory = this;
             newConstructionZone.UIControl = UIControl;
+
+            newConstructionZone.name = "ConstructionZone for " + project.name;
 
             InstantiatedConstructionZones.Add(newConstructionZone);
             return newConstructionZone;
@@ -125,7 +126,7 @@ namespace Assets.ConstructionZones {
         public override void UnsubsribeConstructionZone(ConstructionZoneBase constructionZone) {
             if(constructionZone != null) {
                 InstantiatedConstructionZones.Remove(constructionZone);
-                if(constructionZone.Location != null) {
+                if(constructionZone.Location != null && !constructionZone.ProjectHasBeenCompleted) {
                     constructionZone.Location.BlobSite.ClearContents();
                     constructionZone.Location.BlobSite.ClearPermissionsAndCapacity();
                 }

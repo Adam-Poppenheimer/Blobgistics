@@ -77,7 +77,9 @@ namespace Assets.BlobDistributors {
                         adjacentHighways.Add(HighwayFactory.GetHighwayBetween(activeNode, neighboringNode));
                     }
                 }
-                DistributeFromSiteToHighways(activeNode.BlobSite, adjacentHighways, secondsPassed);
+                if(activeNode.BlobSite.Contents.Count > 0 && adjacentHighways.Count > 0) {
+                    DistributeFromSiteToHighways(activeNode.BlobSite, adjacentHighways, secondsPassed);
+                }
             }
         }
 

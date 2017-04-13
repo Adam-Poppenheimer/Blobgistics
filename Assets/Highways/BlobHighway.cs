@@ -93,6 +93,16 @@ namespace Assets.Highways {
 
         #region instance methods
 
+        #region Unity event methods
+
+        private void OnDestroy() {
+            if(PrivateData != null && PrivateData.UIControl != null) {
+                PrivateData.UIControl.PushObjectDestroyedEvent(new BlobHighwayUISummary(this));
+            }
+        }
+
+        #endregion
+
         #region EventSystem interface implementations
 
         public void OnBeginDrag(PointerEventData eventData) {
@@ -135,11 +145,10 @@ namespace Assets.Highways {
         public override bool CanPullFromFirstEndpoint() {
             if(PrivateData.TubePullingFromFirstEndpoint.SpaceLeft > 0) {
                 foreach(var blob in FirstEndpoint.BlobSite.Contents) {
-                    if(
-                        FirstEndpoint.BlobSite.CanExtractBlob(blob) &&
-                        SecondEndpoint.BlobSite.CanPlaceBlobInto(blob) &&
-                        PrivateData.TubePullingFromFirstEndpoint.CanPushBlobInto(blob)
-                    ){
+                    var canExtractFromFirstEndpoint = FirstEndpoint.BlobSite.CanExtractBlob(blob);
+                    var canPlaceIntoSecondEndpoint = SecondEndpoint.BlobSite.CanPlaceBlobInto(blob);
+                    var CanPushIntoTube = PrivateData.TubePullingFromFirstEndpoint.CanPushBlobInto(blob);
+                    if(canExtractFromFirstEndpoint && canPlaceIntoSecondEndpoint && CanPushIntoTube){
                         return true;
                     }
                 }
@@ -167,13 +176,14 @@ namespace Assets.Highways {
         public override bool CanPullFromSecondEndpoint() {
             if(PrivateData.TubePullingFromSecondEndpoint.SpaceLeft > 0) {
                 foreach(var blob in SecondEndpoint.BlobSite.Contents) {
-                    if(
-                        SecondEndpoint.BlobSite.CanExtractBlob(blob) &&
-                        FirstEndpoint.BlobSite.CanPlaceBlobInto(blob) &&
-                        PrivateData.TubePullingFromSecondEndpoint.CanPushBlobInto(blob)
-                    ){
+
+                    var canExtractFromSecondEndpoint = SecondEndpoint.BlobSite.CanExtractBlob(blob);
+                    var canPlaceIntoFirstEndpoint = FirstEndpoint.BlobSite.CanPlaceBlobInto(blob);
+                    var canPushIntoTube = PrivateData.TubePullingFromSecondEndpoint.CanPushBlobInto(blob);
+                    if(canExtractFromSecondEndpoint && canPlaceIntoFirstEndpoint && canPushIntoTube){
                         return true;
                     }
+
                 }
             }
             return false;

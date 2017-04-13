@@ -25,6 +25,8 @@ namespace Assets.Core {
         public abstract void PushUpdateSelectedEvent<T>(T source, BaseEventData eventData) where T : class;
         public abstract void PushDeselectEvent      <T>(T source, BaseEventData eventData) where T : class;
 
+        public abstract void PushObjectDestroyedEvent<T>(T source) where T : class;
+
         #endregion
 
     }

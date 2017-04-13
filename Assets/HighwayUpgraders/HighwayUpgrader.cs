@@ -38,21 +38,11 @@ namespace Assets.HighwayUpgraders {
         #endregion
 
         public HighwayUpgraderPrivateDataBase PrivateData {
-            get {
-                if(_privateData == null) {
-                    throw new InvalidOperationException("PrivateData is uninitialized");
-                } else {
-                    return _privateData;
-                }
-            }
+            get { return _privateData; }
             set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _privateData = value;
-                    _privateData.UnderlyingSite.BlobPlacedInto += UnderlyingSite_BlobPlacedInto;
-                    RefreshUnderlyingSite();
-                }
+                _privateData = value;
+                _privateData.UnderlyingSite.BlobPlacedInto += UnderlyingSite_BlobPlacedInto;
+                RefreshUnderlyingSite();
             }
         }
         [SerializeField] private HighwayUpgraderPrivateDataBase _privateData;
@@ -60,6 +50,16 @@ namespace Assets.HighwayUpgraders {
         #endregion
 
         #region instance methods
+
+        #region Unity event methods
+
+        private void OnDestroy() {
+            if(PrivateData != null && PrivateData.UnderlyingSite != null) {
+                PrivateData.UnderlyingSite.BlobPlacedInto -= UnderlyingSite_BlobPlacedInto;
+            }
+        }
+
+        #endregion
 
         #region EventSystem interface implementations
 

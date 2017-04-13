@@ -125,6 +125,7 @@ namespace Assets.Societies {
             newSociety.PrivateData = newPrivateData;
             newSociety.SetCurrentComplexity(startingComplexity);
             newSociety.transform.SetParent(location.transform, false);
+            newSociety.name = "Society at " + location.name;
             newSociety.AscensionIsPermitted = true;
 
             InstantiatedSocieties.Add(newSociety);
@@ -132,11 +133,11 @@ namespace Assets.Societies {
         }
 
         public override void DestroySociety(SocietyBase society) {
-            UnsubscribeSocietyBeingDestroyed(society);
+            UnsubscribeSociety(society);
             DestroyImmediate(society.gameObject);
         }
 
-        public override void UnsubscribeSocietyBeingDestroyed(SocietyBase societyBeingDestroyed) {
+        public override void UnsubscribeSociety(SocietyBase societyBeingDestroyed) {
             if(societyBeingDestroyed == null) {
                 throw new ArgumentNullException("societyBeingDestroyed");
             }

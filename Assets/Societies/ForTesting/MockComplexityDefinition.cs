@@ -117,6 +117,14 @@ namespace Assets.Societies.ForTesting {
         }
         private ResourceSummary _costOfAscent = null;
 
+        public override bool IsPermittedToAscend {
+            get { return _isPermittedToAscend; }
+        }
+        public void SetIsPermittedToAscend(bool value) {
+            _isPermittedToAscend = value;
+        }
+        private bool _isPermittedToAscend = true;
+
         public override Material MaterialForSociety {
             get {
                 throw new NotImplementedException();

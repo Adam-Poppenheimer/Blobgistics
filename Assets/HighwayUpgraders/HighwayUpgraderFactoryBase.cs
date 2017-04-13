@@ -24,6 +24,8 @@ namespace Assets.HighwayUpgraders {
 
         public abstract void DestroyHighwayUpgrader(HighwayUpgraderBase highwayUpgrader);
 
+        public abstract BlobHighwayProfile GetNextProfileInUpgradeChain(BlobHighwayProfile currentProfile);
+
         #endregion
 
     }

@@ -115,7 +115,6 @@ namespace Assets.UI.Highways {
         #region from BlobHighwaySummaryDisplayBase
 
         public override void Activate() {
-            gameObject.SetActive(true);
             UpdateDisplay();
 
             AlignPermissionPanes();
@@ -157,6 +156,8 @@ namespace Assets.UI.Highways {
 
             BeginUpgradeButton.onClick.AddListener (delegate() { RaiseBeginHighwayUpgradeRequested();  });
             CancelUpgradeButton.onClick.AddListener(delegate() { RaiseCancelHighwayUpgradeRequested(); });
+
+            gameObject.SetActive(true);
 
             StartCoroutine(ReselectToThis());
         }
@@ -278,6 +279,9 @@ namespace Assets.UI.Highways {
                     SecondEndpointPane.pivot = new Vector2(0, 0);
                 }
             }
+
+            FirstEndpointPane.transform.position  = Camera.main.WorldToScreenPoint(CurrentSummary.FirstEndpoint);
+            SecondEndpointPane.transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.SecondEndpoint);
         }
 
         #endregion

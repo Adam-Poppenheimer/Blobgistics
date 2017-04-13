@@ -479,7 +479,9 @@ namespace Assets.Core.Editor {
             var highway2 = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
             var highway3 = highwayFactory.ConstructHighwayBetween(middleNode, upNode);
 
-            highway1.Profile = controlToTest.UpgradedHighwayProfile;
+            throw new NotImplementedException();
+
+            /*highway1.Profile = controlToTest.UpgradedHighwayProfile;
 
             upgraderFactory.BuildHighwayUpgrader(highway3, mapGraph.GetEdge(middleNode, upNode).BlobSite, controlToTest.UpgradedHighwayProfile);
 
@@ -492,6 +494,7 @@ namespace Assets.Core.Editor {
                 "Does not permit a highwayUpgrader on highway 2");
             Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(highway3.ID), 
                 "Falsely permits a highwayUpgrader on highway 3");
+            */
         }
 
         [Test]
@@ -517,9 +520,13 @@ namespace Assets.Core.Editor {
             Assert.That(upgraderFactory.HasUpgraderTargetingHighway(highwayToUpgrade), 
                 "UpgraderFactory fails to register a HighwayUpgrader on highwayToUpgrade");
 
+            throw new NotImplementedException();
+
+            /*
             var upgraderOnHighway = upgraderFactory.GetUpgraderTargetingHighway(highwayToUpgrade);
             Assert.AreEqual(controlToTest.UpgradedHighwayProfile, upgraderOnHighway.ProfileToInsert,
                 "UpgraderOnHighway has an incorrect ProfileToInsert");
+            */
         }
 
         [Test]
@@ -1017,7 +1024,7 @@ namespace Assets.Core.Editor {
             var hostingObject = new GameObject();
             var newFactory = hostingObject.AddComponent<BlobHighwayFactory>();
             var newBlobTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
-            var newHighwayProfile = new BlobHighwayProfile(1f, 10,
+            var newHighwayProfile = BuildBlobHighwayProfile(1f, 10,
                 ResourceSummary.BuildResourceSummary(
                     newFactory.gameObject,
                     new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
@@ -1083,12 +1090,16 @@ namespace Assets.Core.Editor {
             newControl.ConstructionZoneFactory = BuildConstructionZoneFactory(newDepotFactory);
             newControl.HighwayUpgraderFactory = BuildHighwayUpgraderFactory();
             newControl.ResourceDepotFactory = newDepotFactory;
-            newControl.UpgradedHighwayProfile = new BlobHighwayProfile(2, 20, ResourceSummary.BuildResourceSummary(
+
+            throw new NotImplementedException();
+            /*
+            newControl.UpgradedHighwayProfile = BuildBlobHighwayProfile(2, 20, ResourceSummary.BuildResourceSummary(
                 newControl.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 5)
             ), 0.2f);
 
             return newControl;
+            */
         }
 
         private void CauseSocietyToAscend(SocietyBase society) {
@@ -1182,6 +1193,10 @@ namespace Assets.Core.Editor {
         private MockResourceBlobFactory BuildMockBlobFactory() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockResourceBlobFactory>();
+        }
+
+        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, ResourceSummary cost, float BlobPullCooldownInSeconds) {
+            throw new NotImplementedException();
         }
 
         #endregion

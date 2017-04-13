@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 using Assets.Map;
 using Assets.Blobs;
@@ -184,6 +185,8 @@ namespace Assets.Highways {
             newHighway.Profile = StartingProfile;
 
             AllConstructedHighways.Add(newHighway);
+
+            EventSystem.current.SetSelectedGameObject(newHighway.gameObject);
             return newHighway;
         }
 

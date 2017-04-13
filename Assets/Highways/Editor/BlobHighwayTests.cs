@@ -807,7 +807,7 @@ namespace Assets.Highways.Editor {
             var highwayToTest = BuildHighway(highwayData);
 
             //Execution
-            highwayToTest.Profile = new BlobHighwayProfile(5, 20, ResourceSummary.BuildResourceSummary(highwayToTest.gameObject), 1f);
+            highwayToTest.Profile = BuildBlobHighwayProfile(5, 20, ResourceSummary.BuildResourceSummary(highwayToTest.gameObject), 1f);
 
             //Validation
             Assert.AreEqual(5, tubePullingFromFirst.TransportSpeedPerSecond, "tubePullingFromFirst has incorrect BlobSpeedPerSecond");
@@ -1063,7 +1063,7 @@ namespace Assets.Highways.Editor {
             var hostingGameObject = new GameObject();
             var newHighway = hostingGameObject.AddComponent<BlobHighway>();
             newHighway.PrivateData = privateData;
-            newHighway.Profile = new BlobHighwayProfile(1f, 10,
+            newHighway.Profile = BuildBlobHighwayProfile(1f, 10,
                 ResourceSummary.BuildResourceSummary(newHighway.gameObject), 1f);
             return newHighway;
         }
@@ -1099,11 +1099,15 @@ namespace Assets.Highways.Editor {
             var newHighwayFactory = hostingObject.AddComponent<BlobHighwayFactory>();
             newHighwayFactory.MapGraph = newMapGraph;
             newHighwayFactory.BlobTubeFactory = newTubeFactory;
-            newHighwayFactory.StartingProfile = new BlobHighwayProfile(1, 10,
+            newHighwayFactory.StartingProfile = BuildBlobHighwayProfile(1, 10,
                 ResourceSummary.BuildResourceSummary(newHighwayFactory.gameObject), 1f);
             newHighwayFactory.BlobFactory = newBlobFactory;
 
             return newHighwayFactory;
+        }
+
+        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, ResourceSummary cost, float BlobPullCooldownInSeconds) {
+            throw new NotImplementedException();
         }
 
         #endregion

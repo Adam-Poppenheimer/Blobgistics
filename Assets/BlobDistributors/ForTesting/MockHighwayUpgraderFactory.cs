@@ -21,7 +21,11 @@ namespace Assets.BlobDistributors.ForTesting {
                 if(!hasLoadedProfile) {
                     var profileCost = ResourceSummary.BuildResourceSummary(
                         gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Food, 10));
-                    _profileToUse = new BlobHighwayProfile(1f, 10, profileCost, 0.2f);
+                    _profileToUse = gameObject.AddComponent<BlobHighwayProfile>();
+                    _profileToUse.SetBlobPullCooldownInSeconds(1f);
+                    _profileToUse.SetBlobSpeedPerSecond(1f);
+                    _profileToUse.SetCapacity(100);
+                    _profileToUse.SetCost(profileCost);
                     hasLoadedProfile = true;
                 }
                 return _profileToUse;
@@ -67,10 +71,14 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override BlobHighwayProfile GetNextProfileInUpgradeChain(BlobHighwayProfile currentProfile) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

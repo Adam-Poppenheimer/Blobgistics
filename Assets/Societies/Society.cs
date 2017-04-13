@@ -123,8 +123,13 @@ namespace Assets.Societies {
         }
 
         private void OnDestroy() {
-            if(PrivateData != null && PrivateData.ParentFactory != null) {
-                PrivateData.ParentFactory.UnsubscribeSocietyBeingDestroyed(this);
+            if(PrivateData != null) {
+                if(PrivateData.ParentFactory != null) {
+                    PrivateData.ParentFactory.UnsubscribeSociety(this);
+                }
+                if(PrivateData.UIControl != null) {
+                    PrivateData.UIControl.PushObjectDestroyedEvent(new SocietyUISummary(this));
+                }
             }
         }
 
@@ -277,7 +282,7 @@ namespace Assets.Societies {
 
         private bool CanAscendComplexityLadder() {
             var complexityAbove = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
-            return AscensionIsPermitted && complexityAbove != null &&
+            return CurrentComplexity.IsPermittedToAscend && AscensionIsPermitted && complexityAbove != null &&
                 complexityAbove.CostOfAscent.IsContainedWithinBlobSite(PrivateData.Location.BlobSite);
         }
 

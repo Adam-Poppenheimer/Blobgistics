@@ -30,6 +30,11 @@ namespace Assets.ConstructionZones.Editor {
         #region functionality
 
         [Test]
+        public void OnProjectCompleted_ProjectHasBeenCompletedSetToTrue_AndIsFalseOtherwise() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
         public void OnConstructionZoneBuiltViaFactory_ProjectIsInstructedToSetSite() {
             //Setup
             var hostingObject = new GameObject();

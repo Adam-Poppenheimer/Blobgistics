@@ -86,6 +86,7 @@ namespace Assets.UI.ConstructionZones {
         }
 
         public override void Deactivate() {
+            Clear();
             gameObject.SetActive(false);
         }
 

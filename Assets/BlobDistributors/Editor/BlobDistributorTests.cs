@@ -234,7 +234,7 @@ namespace Assets.BlobDistributors.Editor {
             int rightCountAfter3Seconds = highwayRight.ContentsPulledFromFirstEndpoint.Count;
 
             highwayUp = highwayFactory.ConstructHighwayBetween(centerNode, upNode);
-            highwayUp.Profile = new BlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(highwayUp.gameObject), 1f);
+            highwayUp.Profile = BuildBlobHighwayProfile(1f, 5, ResourceSummary.BuildResourceSummary(highwayUp.gameObject), 1f);
             highwayUp.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
             highwayUp.Priority = 1;
 
@@ -480,7 +480,7 @@ namespace Assets.BlobDistributors.Editor {
             highwayRight = highwayFactory.ConstructHighwayBetween(centerNode, rightNode);
             highwayUp    = highwayFactory.ConstructHighwayBetween(centerNode, upNode);
 
-            var highwayProfile = new BlobHighwayProfile(1f, 20, ResourceSummary.BuildResourceSummary(new GameObject()), 1f);
+            var highwayProfile = BuildBlobHighwayProfile(1f, 20, ResourceSummary.BuildResourceSummary(new GameObject()), 1f);
 
             highwayLeft.Profile = highwayProfile;
             highwayLeft.SetPullingPermissionForFirstEndpoint (ResourceType.Food, true);
@@ -495,6 +495,10 @@ namespace Assets.BlobDistributors.Editor {
         private MockHighwayUpgraderFactory BuildUpgraderFactory() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockHighwayUpgraderFactory>();
+        }
+
+        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, ResourceSummary cost, float BlobPullCooldownInSeconds) {
+            throw new NotImplementedException();
         }
 
         #endregion

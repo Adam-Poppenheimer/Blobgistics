@@ -36,10 +36,7 @@ namespace Assets.ResourceDepots {
 
         public override ResourceDepotProfile Profile {
             get { return _profile; }
-            set {
-                _profile = value;
-                RefreshBlobSite();
-            }
+            set { _profile = value; }
         }
         [SerializeField] private ResourceDepotProfile _profile;
 
@@ -70,6 +67,9 @@ namespace Assets.ResourceDepots {
         private void OnDestroy() {
             if(ParentFactory != null) {
                 ParentFactory.UnsubscribeDepot(this);
+            }
+            if(UIControl != null) {
+                UIControl.PushObjectDestroyedEvent(new ResourceDepotUISummary(this));
             }
         }
 
@@ -108,7 +108,7 @@ namespace Assets.ResourceDepots {
 
         #endregion
 
-        private void RefreshBlobSite() {
+        public void RefreshBlobSite() {
             if(Location != null) {
                 var blobSite = Location.BlobSite;
                 int intendedTotalCapacity = 0;

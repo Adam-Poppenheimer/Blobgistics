@@ -853,6 +853,11 @@ namespace Assets.Societies.Editor {
                 "Partially fulfilled needs were consumed");
         }
 
+        [Test]
+        public void WhenCurrentComplexityDoesNotPermitAscension_SocietyWillNeverAscend() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region error handling

@@ -52,23 +52,16 @@ namespace Assets.ConstructionZones {
         }
         [SerializeField] private MapNodeBase _location;
 
+        public override bool ProjectHasBeenCompleted {
+            get { return projectHasBeenCompleted; }
+        }
+        private bool projectHasBeenCompleted = false;
+
         #endregion
 
         public ConstructionZoneFactoryBase ParentFactory {
-            get {
-                if(_parentFactory == null) {
-                    throw new InvalidOperationException("ParentFactory is uninitialized");
-                } else {
-                    return _parentFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _parentFactory = value;
-                }
-            }
+            get { return _parentFactory; }
+            set { _parentFactory = value; }
         }
         [SerializeField] private ConstructionZoneFactoryBase _parentFactory;
 
@@ -88,7 +81,12 @@ namespace Assets.ConstructionZones {
             if(Location != null) {
                 Location.BlobSite.BlobPlacedInto -= BlobSite_BlobPlacedInto;
             }
-            ParentFactory.UnsubsribeConstructionZone(this);
+            if(ParentFactory != null) {
+                ParentFactory.UnsubsribeConstructionZone(this);
+            }
+            if(UIControl != null) {
+                UIControl.PushObjectDestroyedEvent(new ConstructionZoneUISummary(this));
+            }
         }
 
         #endregion
@@ -121,6 +119,7 @@ namespace Assets.ConstructionZones {
                 Location.BlobSite.TotalCapacity = 0;
                 Location.BlobSite.BlobPlacedInto -= BlobSite_BlobPlacedInto;
                 CurrentProject.ExecuteBuild(Location);
+                projectHasBeenCompleted = true;
                 ParentFactory.DestroyConstructionZone(this);
             }
         }

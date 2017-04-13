@@ -158,12 +158,6 @@ namespace Assets.Core {
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
-        public BlobHighwayProfile UpgradedHighwayProfile{
-            get { return _upgradedHighwayProfile; }
-            set { _upgradedHighwayProfile = value; }
-        }
-        [SerializeField] private BlobHighwayProfile _upgradedHighwayProfile;
-
         public BlobDistributorBase BlobDistributor{
             get { return _blobDistributor; }
             set { _blobDistributor = value; }
@@ -203,7 +197,7 @@ namespace Assets.Core {
             var highway = HighwayFactory.GetHighwayOfID(highwayID);
 
             if(highway != null) {
-                return highway.Profile != UpgradedHighwayProfile && !HighwayUpgraderFactory.HasUpgraderTargetingHighway(highway);
+                return HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highway.Profile) != null;
             }else {
                 Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
                 return false;
@@ -299,7 +293,8 @@ namespace Assets.Core {
                 if(!CanCreateHighwayUpgraderOnHighway(highwayID)) {
                     Debug.LogErrorFormat("A HighwayUpgrader cannot be built targeting highway {0}", highway);
                 }else {
-                    HighwayUpgraderFactory.BuildHighwayUpgrader(highway, edgeBlobSite, UpgradedHighwayProfile);
+                    HighwayUpgraderFactory.BuildHighwayUpgrader(highway, edgeBlobSite,
+                        HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highway.Profile));
                 }
             }
         }

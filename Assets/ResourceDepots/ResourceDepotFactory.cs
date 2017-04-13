@@ -68,8 +68,8 @@ namespace Assets.ResourceDepots {
             newDepot.UIControl = UIControl;
             newDepot.ParentFactory = this;
 
-            newDepot.transform.position = Vector3.zero;
             newDepot.transform.SetParent(location.transform, false);
+            newDepot.name = "ResourceDepot at " + location.name;
 
             InstantiatedDepots.Add(newDepot);
             return newDepot;

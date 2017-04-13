@@ -25,6 +25,11 @@ namespace Assets.Core.Editor {
         #region functionality
 
         [Test]
+        public void IMPLEMENT_AllUIObjectDestroyedMessages() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
         public void OnSocietyDisplayRaisesAscensionPermissionChangeRequestedEvent_RequestIsSentToSimulationControlProperly() {
             Assert.Ignore("This test is unimplemented but not considered critical");
         }
