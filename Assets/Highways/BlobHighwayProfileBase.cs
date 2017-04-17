@@ -14,8 +14,13 @@ namespace Assets.Highways {
         #region instance fields and properties
 
         public abstract float BlobSpeedPerSecond { get; }
+
         public abstract int Capacity { get; }
+
         public abstract ResourceSummary Cost { get; }
+
+        public abstract ResourceSummary Upkeep { get; }
+
         public abstract float BlobPullCooldownInSeconds { get; }
 
         #endregion

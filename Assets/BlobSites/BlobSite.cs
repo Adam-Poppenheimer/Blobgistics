@@ -100,10 +100,7 @@ namespace Assets.BlobSites {
                         return blob.BlobType == resourceType;
                     });
                     if(blobToExtract != null) {
-                        contents.Remove(blobToExtract);
-                        blobToExtract.transform.SetParent(null, true);
-                        RaiseBlobExtractedFrom(blobToExtract);
-                        PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
+                        ExtractBlob(blobToExtract);
                         return blobToExtract;
                     }
                 }
@@ -137,7 +134,14 @@ namespace Assets.BlobSites {
         public override void ExtractBlob(ResourceBlobBase blob) {
             if(CanExtractBlob(blob)) {
                 contents.Remove(blob);
+
+                var siteScale = transform.localScale;
+                var blobScale = blob.transform.localScale;
+
+                blob.transform.localScale = new Vector3(blobScale.x * siteScale.x, blobScale.y * siteScale.y, blobScale.z * siteScale.z);
+
                 blob.transform.SetParent(null, true);
+                
                 RaiseBlobExtractedFrom(blob);
                 PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
             }else {
@@ -166,7 +170,7 @@ namespace Assets.BlobSites {
                 throw new ArgumentNullException("blob");
             }
             if(CanPlaceBlobInto(blob)) {
-                contents.Add(blob);
+                contents.Add(blob);                
                 blob.transform.SetParent(transform, true);
                 PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
                 RaiseBlobPlacedInto(blob);

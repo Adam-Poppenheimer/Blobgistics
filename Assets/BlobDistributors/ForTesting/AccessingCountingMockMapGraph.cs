@@ -88,6 +88,18 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
+            throw new NotImplementedException();
+        }
+
+        public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
+            throw new NotImplementedException();
+        }
+
+        public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

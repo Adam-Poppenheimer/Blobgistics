@@ -37,6 +37,14 @@ namespace Assets.Highways {
         }
         [SerializeField] private ResourceSummary _cost;
 
+        public override ResourceSummary Upkeep {
+            get { return _upkeep; }
+        }
+        public void SetUpkeep(ResourceSummary value) {
+            _upkeep = value;
+        }
+        [SerializeField] private ResourceSummary _upkeep;
+
         public override float BlobPullCooldownInSeconds {
             get { return _blobPullCooldownInSeconds; }
         }

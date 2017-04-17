@@ -11,7 +11,7 @@ namespace Assets.Blobs {
 
         #region static fields and properties
 
-        public static readonly float DesiredZPositionOfAllBlobs = -1f;
+        public static readonly float DesiredZPositionOfAllBlobs = -2f;
         public static readonly float RadiusOfBlobs = 0.25f;
 
         protected static readonly float SecondsToPopIn = 0.25f;

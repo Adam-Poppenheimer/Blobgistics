@@ -40,6 +40,10 @@ namespace Assets.Map {
         }
         [SerializeField, HideInInspector] private BlobSiteBase _blobSite;
 
+        public override IEnumerable<MapNodeBase> Neighbors {
+            get { return ManagingGraph.GetNeighborsOfNode(this); }
+        }
+
         #endregion
 
         public UIControlBase UIControl {

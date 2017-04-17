@@ -14,6 +14,7 @@ using Assets.Highways;
 using Assets.HighwayUpgraders;
 using Assets.ResourceDepots;
 using Assets.Societies;
+using Assets.HighwayManager;
 
 using Assets.Core.ForTesting;
 
@@ -471,30 +472,39 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
+            var separateNodeFirst  = mapGraph.BuildNode(new Vector3(5, 5, 5));
+            var separateNodeSecond = mapGraph.BuildNode(new Vector3(7, 7, 7));
+
             mapGraph.AddUndirectedEdge(middleNode, rightNode);
             mapGraph.AddUndirectedEdge(middleNode, leftNode);
             mapGraph.AddUndirectedEdge(middleNode, upNode);
 
+            mapGraph.AddUndirectedEdge(separateNodeFirst, separateNodeSecond);
+
             var highway1 = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
             var highway3 = highwayFactory.ConstructHighwayBetween(middleNode, upNode);
+            
+            var separateHighway = highwayFactory.ConstructHighwayBetween(separateNodeFirst, separateNodeSecond);
 
-            throw new NotImplementedException();
+            highway1.Profile = upgraderFactory.GetNextProfileInUpgradeChain(highway1.Profile);
 
-            /*highway1.Profile = controlToTest.UpgradedHighwayProfile;
+            upgraderFactory.BuildHighwayUpgrader(highway3, mapGraph.GetEdge(middleNode, upNode).BlobSite,
+                upgraderFactory.GetNextProfileInUpgradeChain(highway3.Profile));
 
-            upgraderFactory.BuildHighwayUpgrader(highway3, mapGraph.GetEdge(middleNode, upNode).BlobSite, controlToTest.UpgradedHighwayProfile);
+            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(middleNode);
 
             //Execution
 
             //Validation
             Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(highway1.ID), 
-                "Falsely permits a highwayUpgrader on highway 1");
+                "Falsely permits a highwayUpgrader on highway 1, which already has an upgraded highway");
             Assert.IsTrue(controlToTest.CanCreateHighwayUpgraderOnHighway(highway2.ID), 
                 "Does not permit a highwayUpgrader on highway 2");
             Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(highway3.ID), 
-                "Falsely permits a highwayUpgrader on highway 3");
-            */
+                "Falsely permits a highwayUpgrader on highway 3, which already has an upgrader");
+            Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(separateHighway.ID),
+                "Falsely permits a highwayUpgrade on separateHighway, which has no nearby HighwayManager");
         }
 
         [Test]
@@ -1020,17 +1030,11 @@ namespace Assets.Core.Editor {
             return newMapGraph;
         }
 
-        private BlobHighwayFactory BuildHighwayFactory(MapGraphBase mapGraph, ResourceBlobFactoryBase blobFactory) {
+        private BlobHighwayFactory BuildHighwayFactory(MapGraphBase mapGraph, ResourceBlobFactoryBase blobFactory,
+            HighwayUpgraderFactoryBase upgraderFactory) {
             var hostingObject = new GameObject();
             var newFactory = hostingObject.AddComponent<BlobHighwayFactory>();
             var newBlobTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
-            var newHighwayProfile = BuildBlobHighwayProfile(1f, 10,
-                ResourceSummary.BuildResourceSummary(
-                    newFactory.gameObject,
-                    new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
-                ),
-                0.2f
-            );
 
             var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
             newTubePrivateData.SetBlobFactory(blobFactory);
@@ -1039,7 +1043,7 @@ namespace Assets.Core.Editor {
             newFactory.MapGraph = mapGraph;
             newFactory.BlobTubeFactory = newBlobTubeFactory;
             newFactory.BlobFactory = blobFactory;
-            newFactory.StartingProfile = newHighwayProfile;
+            newFactory.StartingProfile = upgraderFactory.GetStartingProfile();
 
             return newFactory;
         }
@@ -1075,7 +1079,19 @@ namespace Assets.Core.Editor {
 
         private HighwayUpgraderFactory BuildHighwayUpgraderFactory() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<HighwayUpgraderFactory>();
+            var newFactory = hostingObject.AddComponent<HighwayUpgraderFactory>();
+            newFactory.ChainOfProfiles = new List<BlobHighwayProfileBase>() {
+                BuildBlobHighwayProfile(1f, 10, ResourceSummary.BuildResourceSummary(
+                    newFactory.gameObject,
+                    new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
+                ), 0.2f),
+                BuildBlobHighwayProfile(2, 20, ResourceSummary.BuildResourceSummary(
+                    new GameObject(),
+                    new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 5)
+                ), 0.2f)
+            };
+            
+            return newFactory;
         }
 
         private SimulationControl BuildSimulationControl() {
@@ -1085,21 +1101,15 @@ namespace Assets.Core.Editor {
             var newDepotFactory = BuildDepotFactory();
 
             newControl.MapGraph = BuildMapGraph(newBlobFactory);
-            newControl.HighwayFactory = BuildHighwayFactory(newControl.MapGraph, newBlobFactory);
+            newControl.HighwayUpgraderFactory = BuildHighwayUpgraderFactory();
+            newControl.HighwayFactory = BuildHighwayFactory(newControl.MapGraph, newBlobFactory, newControl.HighwayUpgraderFactory);
             newControl.SocietyFactory = BuildSocietyFactory(newBlobFactory);
             newControl.ConstructionZoneFactory = BuildConstructionZoneFactory(newDepotFactory);
-            newControl.HighwayUpgraderFactory = BuildHighwayUpgraderFactory();
+            newControl.HighwayManagerFactory = BuildHighwayManagerFactory(newControl.MapGraph, newControl.HighwayFactory);
+            
             newControl.ResourceDepotFactory = newDepotFactory;
 
-            throw new NotImplementedException();
-            /*
-            newControl.UpgradedHighwayProfile = BuildBlobHighwayProfile(2, 20, ResourceSummary.BuildResourceSummary(
-                newControl.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 5)
-            ), 0.2f);
-
             return newControl;
-            */
         }
 
         private void CauseSocietyToAscend(SocietyBase society) {
@@ -1196,7 +1206,28 @@ namespace Assets.Core.Editor {
         }
 
         private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, ResourceSummary cost, float BlobPullCooldownInSeconds) {
-            throw new NotImplementedException();
+            var hostingObject = new GameObject();
+            var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
+
+            newProfile.SetBlobSpeedPerSecond(blobSpeedPerSecond);
+            newProfile.SetCapacity(capacity);
+            newProfile.SetCost(cost);
+            newProfile.SetBlobPullCooldownInSeconds(BlobPullCooldownInSeconds);
+
+            return newProfile;
+        }
+
+        private HighwayManagerFactoryBase BuildHighwayManagerFactory(MapGraphBase mapGraph, BlobHighwayFactoryBase highwayFactory) {
+            var hostingObject = new GameObject();
+            var newFactory = hostingObject.AddComponent<HighwayManagerFactory>();
+
+            newFactory.ManagementRadius = 2;
+            newFactory.NeedStockpileCoefficient = 1;
+            newFactory.SecondsForManagerToPerformConsumption = 10f;
+            newFactory.MapGraph = mapGraph;
+            newFactory.HighwayFactory = highwayFactory;
+
+            return newFactory;
         }
 
         #endregion

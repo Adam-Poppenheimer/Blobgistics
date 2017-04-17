@@ -23,7 +23,7 @@ namespace Assets.HighwayUpgraders {
             get { return GetInstanceID(); }
         }
 
-        public override BlobHighwayProfile ProfileToInsert {
+        public override BlobHighwayProfileBase ProfileToInsert {
             get { return PrivateData.ProfileToInsert; }
         }
 

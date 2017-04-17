@@ -20,11 +20,12 @@ namespace Assets.HighwayUpgraders {
         public abstract HighwayUpgraderBase GetUpgraderTargetingHighway(BlobHighwayBase highway);
 
         public abstract HighwayUpgraderBase BuildHighwayUpgrader(BlobHighwayBase targetedHighway, BlobSiteBase underlyingSite,
-            BlobHighwayProfile profileToInsert);
+            BlobHighwayProfileBase profileToInsert);
 
         public abstract void DestroyHighwayUpgrader(HighwayUpgraderBase highwayUpgrader);
 
-        public abstract BlobHighwayProfile GetNextProfileInUpgradeChain(BlobHighwayProfile currentProfile);
+        public abstract BlobHighwayProfileBase GetStartingProfile();
+        public abstract BlobHighwayProfileBase GetNextProfileInUpgradeChain(BlobHighwayProfileBase currentProfile);
 
         #endregion
 

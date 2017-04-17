@@ -40,14 +40,14 @@ namespace Assets.Highways {
         }
         [SerializeField] private int _priority = Int32.MaxValue;
 
-        public override BlobHighwayProfile Profile {
+        public override BlobHighwayProfileBase Profile {
             get { return _profile; }
             set {
                 _profile = value;
                 UpdateTubesFromProfile();
             }
         }
-        [SerializeField] private BlobHighwayProfile _profile;
+        [SerializeField] private BlobHighwayProfileBase _profile;
 
         public override MapNodeBase FirstEndpoint {
             get { return PrivateData.FirstEndpoint; }
@@ -65,16 +65,12 @@ namespace Assets.Highways {
             get { return PrivateData.TubePullingFromSecondEndpoint.Contents; }
         }
 
+        public override float Efficiency { get; set; }
+
         #endregion
 
         public BlobHighwayPrivateDataBase PrivateData {
-            get {
-                if(_privateData == null) {
-                    throw new InvalidOperationException("PrivateData is uninitialized");
-                } else {
-                    return _privateData;
-                }
-            }
+            get { return _privateData; }
             set {
                 if(value == null) {
                     throw new ArgumentNullException("value");
@@ -99,6 +95,12 @@ namespace Assets.Highways {
             if(PrivateData != null && PrivateData.UIControl != null) {
                 PrivateData.UIControl.PushObjectDestroyedEvent(new BlobHighwayUISummary(this));
             }
+        }
+
+        private void OnValidate() {
+            if(PrivateData != null) {
+                UpdateTubesFromProfile();
+            }            
         }
 
         #endregion

@@ -38,7 +38,7 @@ namespace Assets.HighwayUpgraders.ForTesting {
             }
         }
 
-        public override BlobHighwayProfile Profile { get; set; }
+        public override BlobHighwayProfileBase Profile { get; set; }
 
         public override MapNodeBase SecondEndpoint {
             get {
@@ -54,6 +54,16 @@ namespace Assets.HighwayUpgraders.ForTesting {
 
         public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint {
             get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override float Efficiency {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
                 throw new NotImplementedException();
             }
         }

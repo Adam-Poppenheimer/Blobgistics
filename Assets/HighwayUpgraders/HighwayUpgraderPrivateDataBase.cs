@@ -19,7 +19,7 @@ namespace Assets.HighwayUpgraders {
 
         public abstract BlobHighwayBase TargetedHighway { get; }
 
-        public abstract BlobHighwayProfile ProfileToInsert { get; }
+        public abstract BlobHighwayProfileBase ProfileToInsert { get; }
 
         public abstract HighwayUpgraderFactoryBase SourceFactory { get; }
 

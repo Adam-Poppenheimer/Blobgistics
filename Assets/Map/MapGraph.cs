@@ -59,6 +59,8 @@ namespace Assets.Map {
         [SerializeField] private GameObject NodePrefab;
         [SerializeField] private GameObject EdgePrefab;
 
+        private MapNodeShortestPathLogicBase ShortestPathLogic = MapNodeShortestPathLogic.Instance;
+
         private DictionaryOfLists<MapNodeBase, MapNodeBase> NeighborsOfNode {
             get {
                 if(_neighborsOfNode == null) {
@@ -76,6 +78,8 @@ namespace Assets.Map {
         #endregion
 
         #region instance methods
+
+        #region from MapGraphBase
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
             MapNode newNode = null;
@@ -125,13 +129,18 @@ namespace Assets.Map {
                 newEdge = hostingObject.AddComponent<MapEdge>();
             }
 
-            newEdge.transform.SetParent(this.transform);
+            var outerHost = new GameObject();
+
+            newEdge.transform.SetParent(outerHost.transform, false);
+            outerHost.transform.SetParent(this.transform, false);
+            EdgeOrientationUtil.AlignTransformWithEndpoints(outerHost.transform, first.transform.position, second.transform.position, false);
             EdgeOrientationUtil.AlignTransformWithEndpoints(newEdge.transform, first.transform.position, second.transform.position, true);
             newEdge.transform.position += Vector3.forward;
 
             newEdge.SetFirstNode(first);
             newEdge.SetSecondNode(second);
-            newEdge.SetBlobSite(BlobSiteFactory.ConstructBlobSite(newEdge.gameObject));
+            newEdge.SetBlobSite(BlobSiteFactory.ConstructBlobSite(outerHost.gameObject));
+            outerHost.gameObject.name = string.Format("Edge [{0}]", newEdge.ID);
             newEdge.gameObject.name = string.Format("Edge [{0}]", newEdge.ID);
 
             EdgeSet.Add(newEdge);
@@ -222,12 +231,46 @@ namespace Assets.Map {
             }
         }
 
-        public  override IEnumerable<MapEdgeBase> GetEdgesAttachedToNode(MapNodeBase node) {
+        public override IEnumerable<MapEdgeBase> GetEdgesAttachedToNode(MapNodeBase node) {
             var retval = new List<MapEdgeBase>();
             foreach(var neighbor in GetNeighborsOfNode(node)) {
                 retval.Add(GetEdge(node, neighbor));
             }
             return retval;
+        }
+
+        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
+            var retval = new List<NodeDistanceSearchResults>();
+            foreach(var nodeToCheck in Nodes) {
+                int distanceFromFirst = GetDistanceBetweenNodes(edge.FirstNode, nodeToCheck);
+                int distanceFromSecond = GetDistanceBetweenNodes(edge.SecondNode, nodeToCheck);
+                if(distanceFromFirst <= distanceInEdges || distanceFromSecond <= distanceInEdges) {
+                    retval.Add(new NodeDistanceSearchResults(nodeToCheck, Math.Min(distanceFromFirst, distanceFromSecond)));
+                }
+            }
+            return retval;
+        }
+
+        public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
+            return ShortestPathLogic.GetDistanceBetweenNodes(node1, node2, Nodes);
+        }
+
+        public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase start, MapNodeBase end) {
+            return ShortestPathLogic.GetShortestPathBetweenNodes(start, end, Nodes);
+        }
+
+        #endregion
+
+        private void GetNodesWithinDistanceOfNode(MapNodeBase node, uint distanceInEdges, ref HashSet<MapNodeBase> results) {
+            if(results.Contains(node) || distanceInEdges == 0) {
+                return;
+            }
+            results.Add(node);
+            foreach(var neighbor in GetNeighborsOfNode(node)) {
+                if(!results.Contains(neighbor)) {
+                    GetNodesWithinDistanceOfNode(neighbor, --distanceInEdges, ref results);
+                }
+            }
         }
 
         private Func<MapEdgeBase, bool> ConstructEdgeExistsTest(MapNodeBase first, MapNodeBase second) {

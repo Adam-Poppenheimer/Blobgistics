@@ -48,7 +48,17 @@ namespace Assets.BlobDistributors.ForTesting {
 
         public override int Priority { get; set; }
 
-        public override BlobHighwayProfile Profile { get; set; }
+        public override BlobHighwayProfileBase Profile { get; set; }
+
+        public override float Efficiency {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 

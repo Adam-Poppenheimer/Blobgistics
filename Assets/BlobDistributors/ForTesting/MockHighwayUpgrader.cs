@@ -21,7 +21,7 @@ namespace Assets.BlobDistributors.ForTesting {
             }
         }
 
-        public override BlobHighwayProfile ProfileToInsert {
+        public override BlobHighwayProfileBase ProfileToInsert {
             get {
                 throw new NotImplementedException();
             }

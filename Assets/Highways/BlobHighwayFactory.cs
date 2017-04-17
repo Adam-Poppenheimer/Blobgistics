@@ -77,11 +77,11 @@ namespace Assets.Highways {
         }
         [SerializeField] private UIControl _uiControl;
 
-        public BlobHighwayProfile StartingProfile {
+        public BlobHighwayProfileBase StartingProfile {
             get { return _startingProfile; }
             set { _startingProfile = value; }
         }
-        [SerializeField] private BlobHighwayProfile _startingProfile;
+        [SerializeField] private BlobHighwayProfileBase _startingProfile;
 
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
             get { return AllConstructedHighways.AsReadOnly(); }
@@ -186,7 +186,10 @@ namespace Assets.Highways {
 
             AllConstructedHighways.Add(newHighway);
 
-            EventSystem.current.SetSelectedGameObject(newHighway.gameObject);
+            if(EventSystem.current != null) {
+                EventSystem.current.SetSelectedGameObject(newHighway.gameObject);
+            }
+            RaiseHighwayConstructed(newHighway);
             return newHighway;
         }
 
@@ -204,6 +207,7 @@ namespace Assets.Highways {
             }).FirstOrDefault();
             if(highwayToRemove != null) {
                 AllConstructedHighways.Remove(highwayToRemove);
+                RaiseHighwayBeingDestroyed(highwayToRemove);
                 if(Application.isPlaying) {
                     Destroy(highwayToRemove.gameObject);
                 }else {

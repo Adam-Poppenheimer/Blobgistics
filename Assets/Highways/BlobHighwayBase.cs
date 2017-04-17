@@ -24,9 +24,11 @@ namespace Assets.Highways {
         public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint { get; }
         public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint { get; }
 
-        public abstract BlobHighwayProfile Profile { get; set; }
+        public abstract BlobHighwayProfileBase Profile { get; set; }
 
         public abstract int Priority { get; set; }
+
+        public abstract float Efficiency { get; set; }
 
         #endregion
 

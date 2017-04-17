@@ -19,6 +19,8 @@ namespace Assets.Map {
 
         public abstract BlobSiteBase BlobSite { get; }
 
+        public abstract IEnumerable<MapNodeBase> Neighbors { get; }
+
         #endregion
 
         #region instance methods

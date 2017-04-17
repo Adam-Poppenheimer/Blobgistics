@@ -21,7 +21,11 @@ namespace Assets.HighwayUpgraders {
         }
         [SerializeField] private UIControlBase _uiControl;
 
-        [SerializeField] private List<BlobHighwayProfile> ChainOfProfiles = new List<BlobHighwayProfile>();
+        public List<BlobHighwayProfileBase> ChainOfProfiles {
+            get { return _chainOfProfiles; }
+            set { _chainOfProfiles = value; }
+        }
+        [SerializeField] private List<BlobHighwayProfileBase> _chainOfProfiles = new List<BlobHighwayProfileBase>();
 
         [SerializeField, HideInInspector] private List<HighwayUpgraderBase> InstantiatedUpgraders =
             new List<HighwayUpgraderBase>();
@@ -58,7 +62,7 @@ namespace Assets.HighwayUpgraders {
         }
 
         public override HighwayUpgraderBase BuildHighwayUpgrader(BlobHighwayBase targetedHighway, BlobSiteBase underlyingSite,
-            BlobHighwayProfile profileToInsert) {
+            BlobHighwayProfileBase profileToInsert) {
             if(targetedHighway == null) {
                 throw new ArgumentNullException("targetedHighway");
             }else if(underlyingSite == null) {
@@ -105,7 +109,11 @@ namespace Assets.HighwayUpgraders {
             DestroyImmediate(highwayUpgrader.gameObject);
         }
 
-        public override BlobHighwayProfile GetNextProfileInUpgradeChain(BlobHighwayProfile currentProfile) {
+        public override BlobHighwayProfileBase GetStartingProfile() {
+            return ChainOfProfiles[0];
+        }
+
+        public override BlobHighwayProfileBase GetNextProfileInUpgradeChain(BlobHighwayProfileBase currentProfile) {
             if(currentProfile == null) {
                 throw new ArgumentNullException("currentProfile");
             }

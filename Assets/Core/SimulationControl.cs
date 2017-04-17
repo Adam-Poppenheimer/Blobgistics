@@ -13,7 +13,7 @@ using Assets.ResourceDepots;
 using Assets.ConstructionZones;
 using Assets.HighwayUpgraders;
 using Assets.BlobDistributors;
-
+using Assets.HighwayManager;
 
 namespace Assets.Core {
 
@@ -158,6 +158,12 @@ namespace Assets.Core {
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
+        public HighwayManagerFactoryBase HighwayManagerFactory {
+            get { return _highwayManagerFactory; }
+            set { _highwayManagerFactory = value; }
+        }
+        [SerializeField] private HighwayManagerFactoryBase _highwayManagerFactory;
+
         public BlobDistributorBase BlobDistributor{
             get { return _blobDistributor; }
             set { _blobDistributor = value; }
@@ -197,7 +203,10 @@ namespace Assets.Core {
             var highway = HighwayFactory.GetHighwayOfID(highwayID);
 
             if(highway != null) {
-                return HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highway.Profile) != null;
+                var hasProfileToUpgradeTo = HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highway.Profile) != null;
+                var hasUpgraderTargetingHighwayAlready = HighwayUpgraderFactory.HasUpgraderTargetingHighway(highway);
+                var hasHighwayManager = HighwayManagerFactory.GetManagerServingHighway(highway) != null || true;
+                return hasProfileToUpgradeTo && !hasUpgraderTargetingHighwayAlready && hasHighwayManager;
             }else {
                 Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
                 return false;

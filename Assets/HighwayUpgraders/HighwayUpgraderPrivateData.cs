@@ -17,13 +17,13 @@ namespace Assets.HighwayUpgraders {
 
         #region from HighwayUpgraderPrivateDataBase
 
-        public override BlobHighwayProfile ProfileToInsert {
+        public override BlobHighwayProfileBase ProfileToInsert {
             get { return _profileToInsert; }
         }
-        public void SetProfileToInsert(BlobHighwayProfile value) {
+        public void SetProfileToInsert(BlobHighwayProfileBase value) {
             _profileToInsert = value;
         }
-        [SerializeField] private BlobHighwayProfile _profileToInsert;
+        [SerializeField] private BlobHighwayProfileBase _profileToInsert;
 
         public override BlobHighwayBase TargetedHighway {
             get { return _targetedHighway; }

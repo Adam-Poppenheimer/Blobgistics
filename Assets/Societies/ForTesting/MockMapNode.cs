@@ -33,10 +33,16 @@ namespace Assets.Societies.ForTesting {
             }
         }
 
+        public override IEnumerable<MapNodeBase> Neighbors {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

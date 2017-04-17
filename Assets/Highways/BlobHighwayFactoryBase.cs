@@ -18,6 +18,25 @@ namespace Assets.Highways {
 
         #endregion
 
+        #region events
+
+        public event EventHandler<BlobHighwayEventArgs> HighwayConstructed;
+        public event EventHandler<BlobHighwayEventArgs> HighwayBeingDestroyed;
+
+        protected void RaiseHighwayConstructed(BlobHighwayBase newHighway) {
+            if(HighwayConstructed != null) {
+                HighwayConstructed(this, new BlobHighwayEventArgs(newHighway));
+            }
+        }
+
+        protected void RaiseHighwayBeingDestroyed(BlobHighwayBase oldHighway) {
+            if(HighwayBeingDestroyed != null) {
+                HighwayBeingDestroyed(this, new BlobHighwayEventArgs(oldHighway));
+            }
+        }
+
+        #endregion
+
         #region instance methods
 
         public abstract BlobHighwayBase GetHighwayOfID(int highwayID);

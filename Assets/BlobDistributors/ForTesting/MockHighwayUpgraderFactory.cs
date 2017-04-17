@@ -44,7 +44,7 @@ namespace Assets.BlobDistributors.ForTesting {
         #region from HighwayUpgraderFactoryBase
 
         public override HighwayUpgraderBase BuildHighwayUpgrader(BlobHighwayBase targetedHighway,
-            BlobSiteBase underlyingSite, BlobHighwayProfile profileToInsert) {
+            BlobSiteBase underlyingSite, BlobHighwayProfileBase profileToInsert) {
             
             var hostingObject = new GameObject();
             var newUpgrader = hostingObject.AddComponent<MockHighwayUpgrader>();
@@ -71,7 +71,11 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override BlobHighwayProfile GetNextProfileInUpgradeChain(BlobHighwayProfile currentProfile) {
+        public override BlobHighwayProfileBase GetStartingProfile() {
+            throw new NotImplementedException();
+        }
+
+        public override BlobHighwayProfileBase GetNextProfileInUpgradeChain(BlobHighwayProfileBase currentProfile) {
             throw new NotImplementedException();
         }
 
