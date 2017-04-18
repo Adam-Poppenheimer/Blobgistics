@@ -14,6 +14,8 @@ namespace Assets.HighwayManager {
 
         #region instance methods
 
+        public abstract HighwayManagerBase GetHighwayManagerOfID(int id);
+
         public abstract HighwayManagerBase GetHighwayManagerAtLocation(MapNodeBase location);
 
         public abstract HighwayManagerBase GetManagerServingHighway(BlobHighwayBase highway);

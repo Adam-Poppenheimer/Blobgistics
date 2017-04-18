@@ -6,8 +6,12 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
 using Assets.Highways;
 using Assets.Map;
+using Assets.Core;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.HighwayManager {
 
@@ -25,7 +29,13 @@ namespace Assets.HighwayManager {
 
         public abstract MapNodeBase Location { get; }
 
+        public abstract UIControlBase UIControl { get; }
+
+        public abstract ResourceBlobFactoryBase BlobFactory { get; }
+
         public abstract float LastCalculatedEfficiency { get; }
+
+        public abstract ReadOnlyDictionary<ResourceType, int> LastCalculatedUpkeep { get; }
 
         #endregion
 

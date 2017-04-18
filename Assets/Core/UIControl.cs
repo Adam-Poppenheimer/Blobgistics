@@ -23,6 +23,9 @@ using Assets.UI.Societies;
 using Assets.ResourceDepots;
 using Assets.UI.ResourceDepots;
 
+using Assets.HighwayManager;
+using Assets.UI.HighwayManager;
+
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core {
@@ -32,169 +35,115 @@ namespace Assets.Core {
         #region instance fields and properties
 
         public SimulationControlBase SimulationControl {
-            get {
-                if(_simulationControl == null) {
-                    throw new InvalidOperationException("SimulationControl is uninitialized");
-                } else {
-                    return _simulationControl;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _simulationControl = value;
-                }
-            }
+            get { return _simulationControl; }
+            set { _simulationControl = value; }
         }
         [SerializeField] private SimulationControlBase _simulationControl;
 
         public BlobHighwayGhostBase HighwayGhost {
-            get {
-                if(_highwayGhost == null) {
-                    throw new InvalidOperationException("HighwayGhost is uninitialized");
-                } else {
-                    return _highwayGhost;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _highwayGhost = value;
-                }
-            }
+            get { return _highwayGhost; }
+            set { _highwayGhost = value; }
         }
         [SerializeField] private BlobHighwayGhostBase _highwayGhost;
 
         public BlobHighwaySummaryDisplayBase HighwaySummaryDisplay {
             get { return _highwayDisplay; }
             set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    if(_highwayDisplay != null) {
-                        _highwayDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
-                        _highwayDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-                        _highwayDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
-                        _highwayDisplay.BeginHighwayUpgradeRequested            -= HighwayDisplay_BeginHighwayUpgradeRequested;
-                        _highwayDisplay.CancelHighwayUpgradeRequested           -= HighwayDisplay_CancelHighwayUpgradeRequested;
+                if(_highwayDisplay != null) {
+                    _highwayDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
+                    _highwayDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
+                    _highwayDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
+                    _highwayDisplay.BeginHighwayUpgradeRequested            -= HighwayDisplay_BeginHighwayUpgradeRequested;
+                    _highwayDisplay.CancelHighwayUpgradeRequested           -= HighwayDisplay_CancelHighwayUpgradeRequested;
                         
-                    }
-                    _highwayDisplay = value;
-                    if(_highwayDisplay != null) {
-                        _highwayDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
-                        _highwayDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-                        _highwayDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
-                        _highwayDisplay.BeginHighwayUpgradeRequested            += HighwayDisplay_BeginHighwayUpgradeRequested;
-                        _highwayDisplay.CancelHighwayUpgradeRequested           += HighwayDisplay_CancelHighwayUpgradeRequested;
-                    }
+                }
+                _highwayDisplay = value;
+                if(_highwayDisplay != null) {
+                    _highwayDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
+                    _highwayDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
+                    _highwayDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
+                    _highwayDisplay.BeginHighwayUpgradeRequested            += HighwayDisplay_BeginHighwayUpgradeRequested;
+                    _highwayDisplay.CancelHighwayUpgradeRequested           += HighwayDisplay_CancelHighwayUpgradeRequested;
                 }
             }
         }
         [SerializeField] private BlobHighwaySummaryDisplayBase _highwayDisplay;
 
         public ConstructionZoneSummaryDisplayBase ConstructionZoneSummaryDisplay {
-            get {
-                if(_constructionZoneSummaryDisplay == null) {
-                    throw new InvalidOperationException("ConstructionZoneDisplay is uninitialized");
-                } else {
-                    return _constructionZoneSummaryDisplay;
-                }
-            }
+            get { return _constructionZoneSummaryDisplay; }
             set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    if(_constructionZoneSummaryDisplay != null) {
-                        _constructionZoneSummaryDisplay.ConstructionZoneDestructionRequested -= ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
-                        _constructionZoneSummaryDisplay.CloseRequested                       -= ConstructionZoneSummaryDisplay_CloseRequested;
-                    }
-                    _constructionZoneSummaryDisplay = value;
-                    if(_constructionZoneSummaryDisplay != null) {
-                        _constructionZoneSummaryDisplay.ConstructionZoneDestructionRequested += ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
-                        _constructionZoneSummaryDisplay.CloseRequested                       += ConstructionZoneSummaryDisplay_CloseRequested;
-                    }
+                if(_constructionZoneSummaryDisplay != null) {
+                    _constructionZoneSummaryDisplay.ConstructionZoneDestructionRequested -= ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
+                    _constructionZoneSummaryDisplay.CloseRequested                       -= ConstructionZoneSummaryDisplay_CloseRequested;
+                }
+                _constructionZoneSummaryDisplay = value;
+                if(_constructionZoneSummaryDisplay != null) {
+                    _constructionZoneSummaryDisplay.ConstructionZoneDestructionRequested += ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;
+                    _constructionZoneSummaryDisplay.CloseRequested                       += ConstructionZoneSummaryDisplay_CloseRequested;
                 }
             }
         }
         [SerializeField] private ConstructionZoneSummaryDisplayBase _constructionZoneSummaryDisplay;
 
         public SocietyUISummaryDisplayBase SocietySummaryDisplay {
-            get {
-                if(_societySummaryDisplay == null) {
-                    throw new InvalidOperationException("SocietySummaryDisplay is uninitialized");
-                } else {
-                    return _societySummaryDisplay;
-                }
-            }
+            get { return _societySummaryDisplay; }
             set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    if(_societySummaryDisplay != null) {
-                        _societySummaryDisplay.DestructionRequested -= SocietySummaryDisplay_DestructionRequested;
-                        _societySummaryDisplay.AscensionPermissionChangeRequested -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
-                    }
-                    _societySummaryDisplay = value;
-                    if(_societySummaryDisplay != null) {
-                        _societySummaryDisplay.DestructionRequested += SocietySummaryDisplay_DestructionRequested;
-                        _societySummaryDisplay.AscensionPermissionChangeRequested += SocietySummaryDisplay_AscensionPermissionChangeRequested;
-                    }
+                if(_societySummaryDisplay != null) {
+                    _societySummaryDisplay.DestructionRequested -= SocietySummaryDisplay_DestructionRequested;
+                    _societySummaryDisplay.AscensionPermissionChangeRequested -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                }
+                _societySummaryDisplay = value;
+                if(_societySummaryDisplay != null) {
+                    _societySummaryDisplay.DestructionRequested += SocietySummaryDisplay_DestructionRequested;
+                    _societySummaryDisplay.AscensionPermissionChangeRequested += SocietySummaryDisplay_AscensionPermissionChangeRequested;
                 }
             }
         }
         [SerializeField] private SocietyUISummaryDisplayBase _societySummaryDisplay;
 
         public ResourceDepotSummaryDisplayBase DepotSummaryDisplay {
-            get {
-                if(_depotSummaryDisplay == null) {
-                    throw new InvalidOperationException("DepotSummaryDisplay is uninitialized");
-                } else {
-                    return _depotSummaryDisplay;
-                }
-            }
+            get { return _depotSummaryDisplay; }
             set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    if(_depotSummaryDisplay != null) {
-                        _depotSummaryDisplay.DestructionRequested -= DepotSummaryDisplay_DestructionRequested;
-                    }
-                    _depotSummaryDisplay = value;
-                    if(_depotSummaryDisplay != null) {
-                        _depotSummaryDisplay.DestructionRequested += DepotSummaryDisplay_DestructionRequested;
-                    }
+                if(_depotSummaryDisplay != null) {
+                    _depotSummaryDisplay.DestructionRequested -= DepotSummaryDisplay_DestructionRequested;
+                }
+                _depotSummaryDisplay = value;
+                if(_depotSummaryDisplay != null) {
+                    _depotSummaryDisplay.DestructionRequested += DepotSummaryDisplay_DestructionRequested;
                 }
             }
         }
         [SerializeField] private ResourceDepotSummaryDisplayBase _depotSummaryDisplay;
 
         public ConstructionPanelBase ConstructionPanel {
-            get {
-                if(_constructionPanel == null) {
-                    throw new InvalidOperationException("ConstructionPanel is uninitialized");
-                } else {
-                    return _constructionPanel;
-                }
-            }
+            get { return _constructionPanel; }
             set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    if(_constructionPanel != null) {
-                        _constructionPanel.CloseRequested        -= ConstructionPanel_CloseRequested;
-                        _constructionPanel.ConstructionRequested -= ConstructionPanel_ConstructionRequested;
-                    }
-                    _constructionPanel = value;
-                    if(_constructionPanel != null) {
-                        _constructionPanel.CloseRequested        += ConstructionPanel_CloseRequested;
-                        _constructionPanel.ConstructionRequested += ConstructionPanel_ConstructionRequested;
-                    }
+                if(_constructionPanel != null) {
+                    _constructionPanel.CloseRequested        -= ConstructionPanel_CloseRequested;
+                    _constructionPanel.ConstructionRequested -= ConstructionPanel_ConstructionRequested;
+                }
+                _constructionPanel = value;
+                if(_constructionPanel != null) {
+                    _constructionPanel.CloseRequested        += ConstructionPanel_CloseRequested;
+                    _constructionPanel.ConstructionRequested += ConstructionPanel_ConstructionRequested;
                 }
             }
         }
         [SerializeField] private ConstructionPanelBase _constructionPanel;
+
+        public HighwayManagerSummaryDisplayBase HighwayManagerSummaryDisplay {
+            get { return _highwayManagerDisplay; }
+            set {
+                if(_highwayManagerDisplay != null) {
+                    _highwayManagerDisplay.DestructionRequested -= HighwayManagerDisplay_DestructionRequested;
+                }
+                _highwayManagerDisplay = value;
+                if(_highwayManagerDisplay != null) {
+                    _highwayManagerDisplay.DestructionRequested += HighwayManagerDisplay_DestructionRequested;
+                }
+            }
+        }
+        [SerializeField] private HighwayManagerSummaryDisplayBase _highwayManagerDisplay;
 
         #endregion
 
@@ -334,6 +283,12 @@ namespace Assets.Core {
                 ConstructionPanel.LocationToConstruct = summary;
                 ConstructionPanel.SetPermittedProjects(SimulationControl.GetAllPermittedConstructionZoneProjectsOnNode(summary.ID));
                 ConstructionPanel.Activate();
+            }else if(source is HighwayManagerUISummary) {
+                var summary = source as HighwayManagerUISummary;
+                if(HighwayManagerSummaryDisplay != null) {
+                    HighwayManagerSummaryDisplay.CurrentSummary = summary;
+                    HighwayManagerSummaryDisplay.Activate();
+                }
             }
         }
 
@@ -430,6 +385,11 @@ namespace Assets.Core {
         private void DepotSummaryDisplay_DestructionRequested(object sender, EventArgs e) {
             SimulationControl.DestroyResourceDepotOfID(DepotSummaryDisplay.CurrentSummary.ID);
             DepotSummaryDisplay.Deactivate();
+        }
+
+        private void HighwayManagerDisplay_DestructionRequested(object sender, EventArgs e) {
+            SimulationControl.DestroyHighwayManagerOfID(HighwayManagerSummaryDisplay.CurrentSummary.ID);
+            HighwayManagerSummaryDisplay.Deactivate();
         }
 
         #endregion

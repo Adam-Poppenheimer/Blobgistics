@@ -5,16 +5,18 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 using Assets.Blobs;
 using Assets.Highways;
 using Assets.Map;
+using Assets.Core;
 
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.HighwayManager {
 
-    public class HighwayManager : HighwayManagerBase {
+    public class HighwayManager : HighwayManagerBase, IPointerClickHandler, ISelectHandler, IDeselectHandler {
 
         #region instance fields and properties
 
@@ -56,10 +58,32 @@ namespace Assets.HighwayManager {
         }
         [SerializeField] private float _secondsToPerformConsumption;
 
+        public override UIControlBase UIControl {
+            get { return _uiControl; }
+        }
+        public void SetUIControl(UIControlBase value) {
+            _uiControl = value;
+        }
+        [SerializeField] private UIControlBase _uiControl;
+
+        public override ResourceBlobFactoryBase BlobFactory {
+            get { return _blobFactory; }
+        }
+        public void SetBlobFactory(ResourceBlobFactoryBase value) {
+            _blobFactory = value;
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
+
         public override float LastCalculatedEfficiency {
             get { return lastCalculatedEfficiency; }
         }
         private float lastCalculatedEfficiency = 1f;
+
+        public override ReadOnlyDictionary<ResourceType, int> LastCalculatedUpkeep {
+            get { return new ReadOnlyDictionary<ResourceType, int>(lastCalculatedUpkeep); }
+        }
+        private Dictionary<ResourceType, int> lastCalculatedUpkeep =
+            new Dictionary<ResourceType, int>();
 
         #endregion
 
@@ -79,6 +103,25 @@ namespace Assets.HighwayManager {
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                 blobSite.SetPlacementPermissionForResourceType(resourceType, true);
             }
+        }
+
+        #endregion
+
+        #region Unity EventSystem interfaces
+
+        public void OnPointerClick(PointerEventData eventData) {
+            UIControl.PushPointerClickEvent(new HighwayManagerUISummary(this), eventData);
+            if(EventSystem.current != null) {
+                EventSystem.current.SetSelectedGameObject(gameObject);
+            }
+        }
+
+        public void OnSelect(BaseEventData eventData) {
+            UIControl.PushSelectEvent(new HighwayManagerUISummary(this), eventData);
+        }
+
+        public void OnDeselect(BaseEventData eventData) {
+            UIControl.PushDeselectEvent(new HighwayManagerUISummary(this), eventData);
         }
 
         #endregion
@@ -111,30 +154,39 @@ namespace Assets.HighwayManager {
                 resourcesNeededByType[resourceType] = 0;
             }
 
-            var highwaysBeingManaged = ParentFactory.GetHighwaysServedByManager(this);
+            var highwaysBeingManaged = new List<BlobHighwayBase>(ParentFactory.GetHighwaysServedByManager(this));
             PrepareBlobSiteForConsumption(highwaysBeingManaged);
 
-            foreach(var highway in highwaysBeingManaged) {
+            foreach(var highway in new List<BlobHighwayBase>(highwaysBeingManaged)) {
+                int totalUpkeepForHighway = 0;
                 foreach(var resourceType in highway.Profile.Upkeep) {
                     int upkeepOfResource = highway.Profile.Upkeep[resourceType];
                     resourcesNeededByType[resourceType] += upkeepOfResource;
                     totalNeedCount += upkeepOfResource;
+                    totalUpkeepForHighway += upkeepOfResource;
+                }
+                if(totalUpkeepForHighway == 0) {
+                    highwaysBeingManaged.Remove(highway);
                 }
             }
+            lastCalculatedUpkeep = resourcesNeededByType;
 
             var blobSite = Location.BlobSite;
             foreach(var resourceType in resourcesNeededByType.Keys) {
                 for(int i = 0; i < resourcesNeededByType[resourceType]; ++i) {
                     if(blobSite.CanExtractBlobOfType(resourceType)) {
-                        blobSite.ExtractBlobOfType(resourceType);
+                        BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(resourceType));
                         ++runningConsumptionTotal;
                     }else {
                         break;
                     }
                 }
             }
-
-            lastCalculatedEfficiency = ((float)runningConsumptionTotal) / ((float)totalNeedCount);
+            if(totalNeedCount == 0) {
+                lastCalculatedEfficiency = 1f;
+            }else {
+                lastCalculatedEfficiency = ((float)runningConsumptionTotal) / ((float)totalNeedCount);
+            }
 
             foreach(var highway in highwaysBeingManaged) {
                 highway.Efficiency = lastCalculatedEfficiency;
@@ -174,7 +226,7 @@ namespace Assets.HighwayManager {
             }
             blobSite.TotalCapacity = totalCapacity;
         }
-
+        
         #endregion
 
     }

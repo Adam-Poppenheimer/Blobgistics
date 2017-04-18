@@ -13,6 +13,8 @@ namespace Assets.Core.ForTesting {
 
         public int IDOfRequestedDepot;
 
+        public int IDOfRequestedManager;
+
         #endregion
 
         #region instance methods
@@ -89,6 +91,10 @@ namespace Assets.Core.ForTesting {
 
         public override void SetHighwayPullingPermissionOnSecondEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
             throw new NotImplementedException();
+        }
+
+        public override void DestroyHighwayManagerOfID(int managerID) {
+            IDOfRequestedManager = managerID;
         }
 
         public override void TickSimulation(float secondsPassed) {

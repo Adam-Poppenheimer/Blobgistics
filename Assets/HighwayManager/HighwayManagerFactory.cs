@@ -5,8 +5,10 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
 using Assets.Highways;
 using Assets.Map;
+using Assets.Core;
 
 namespace Assets.HighwayManager {
 
@@ -54,6 +56,18 @@ namespace Assets.HighwayManager {
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
+
+        public ResourceBlobFactoryBase BlobFactory {
+            get { return _blobFactory; }
+            set { _blobFactory = value; }
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
+
         [SerializeField] private GameObject ManagerPrefab;
 
         [SerializeField, HideInInspector] private List<HighwayManagerBase> InstantiatedManagers = new List<HighwayManagerBase>();
@@ -81,6 +95,10 @@ namespace Assets.HighwayManager {
         #endregion
 
         #region from HighwayManagerFactoryBase
+
+        public override HighwayManagerBase GetHighwayManagerOfID(int id) {
+            return InstantiatedManagers.Find(manager => manager.ID == id);
+        }
 
         public override IEnumerable<BlobHighwayBase> GetHighwaysServedByManager(HighwayManagerBase manager) {
             if(manager == null) {
@@ -144,6 +162,8 @@ namespace Assets.HighwayManager {
             newManager.SetNeedStockpileCoefficient(NeedStockpileCoefficient);
             newManager.SetSecondsToPerformConsumption(SecondsForManagerToPerformConsumption);
             newManager.ParentFactory = this;
+            newManager.SetUIControl(UIControl);
+            newManager.SetBlobFactory(BlobFactory);
 
             InstantiatedManagers.Add(newManager);
 

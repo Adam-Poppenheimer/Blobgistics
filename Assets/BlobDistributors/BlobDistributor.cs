@@ -205,22 +205,24 @@ namespace Assets.BlobDistributors {
 
             foreach(var highway in highways) {
                 PullTimerForBlobHighwayOnSite[site][highway] = 
-                    Mathf.Clamp(PullTimerForBlobHighwayOnSite[site][highway], 0f, highway.Profile.BlobPullCooldownInSeconds);
+                    Mathf.Clamp(PullTimerForBlobHighwayOnSite[site][highway], 0f, highway.BlobPullCooldownInSeconds);
             }
         }
 
         private bool AttemptPull(BlobHighwayBase highwayToPull, BlobSiteBase site) {
             bool retval = false;
-            var highwayPullTimer = PullTimerForBlobHighwayOnSite[site][highwayToPull];
 
-            if(highwayPullTimer >= highwayToPull.Profile.BlobPullCooldownInSeconds) {
+            var highwayPullTimer = PullTimerForBlobHighwayOnSite[site][highwayToPull];
+            float effectiveHighwayCooldown = highwayToPull.BlobPullCooldownInSeconds;
+
+            if(highwayPullTimer >= effectiveHighwayCooldown) {
                 if(highwayToPull.FirstEndpoint.BlobSite == site && highwayToPull.CanPullFromFirstEndpoint()) {
                     highwayToPull.PullFromFirstEndpoint();
-                    highwayPullTimer -= highwayToPull.Profile.BlobPullCooldownInSeconds;
+                    highwayPullTimer -= effectiveHighwayCooldown;
                     retval = true;
                 }else if(highwayToPull.SecondEndpoint.BlobSite == site && highwayToPull.CanPullFromSecondEndpoint()) {
                     highwayToPull.PullFromSecondEndpoint();
-                    highwayPullTimer -= highwayToPull.Profile.BlobPullCooldownInSeconds;
+                    highwayPullTimer -= effectiveHighwayCooldown;
                     retval = true;
                 }
             }

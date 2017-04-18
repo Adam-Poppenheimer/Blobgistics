@@ -60,7 +60,7 @@ namespace Assets.UI.ResourceDepots {
             gameObject.SetActive(true);
             UpdateDisplay();
 
-            DestroyButton.onClick.AddListener( delegate() {
+            DestroyButton.onClick.AddListener(delegate() {
                 RaiseDestructionRequested();
             } );
 

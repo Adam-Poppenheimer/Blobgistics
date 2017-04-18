@@ -99,6 +99,10 @@ namespace Assets.UI.HighwayUpgraders.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void DestroyHighwayManagerOfID(int managerID) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

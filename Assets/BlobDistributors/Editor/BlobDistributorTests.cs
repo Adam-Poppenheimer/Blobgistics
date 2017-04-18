@@ -406,6 +406,11 @@ namespace Assets.BlobDistributors.Editor {
             Assert.AreEqual(9, upgraderUpCountAfter9Seconds,    "UpgraderUp has an incorrect pull count");
         }
 
+        [Test]
+        public void OnDistributionIsPerformed_HighwayEfficiencyModifiesPullCooldown() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region utilities

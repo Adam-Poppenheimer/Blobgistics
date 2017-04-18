@@ -68,6 +68,12 @@ namespace Assets.HighwayUpgraders.ForTesting {
             }
         }
 
+        public override float BlobPullCooldownInSeconds {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

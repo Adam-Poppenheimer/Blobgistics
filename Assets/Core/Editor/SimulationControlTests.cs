@@ -523,20 +523,19 @@ namespace Assets.Core.Editor {
 
             var highwayToUpgrade = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
 
+            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(middleNode);
+
             //Execution
+            var upgradedProfile = controlToTest.HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highwayToUpgrade.Profile);
             controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
 
             //Validation
             Assert.That(upgraderFactory.HasUpgraderTargetingHighway(highwayToUpgrade), 
                 "UpgraderFactory fails to register a HighwayUpgrader on highwayToUpgrade");
 
-            throw new NotImplementedException();
-
-            /*
             var upgraderOnHighway = upgraderFactory.GetUpgraderTargetingHighway(highwayToUpgrade);
-            Assert.AreEqual(controlToTest.UpgradedHighwayProfile, upgraderOnHighway.ProfileToInsert,
+            Assert.AreEqual(upgradedProfile, upgraderOnHighway.ProfileToInsert,
                 "UpgraderOnHighway has an incorrect ProfileToInsert");
-            */
         }
 
         [Test]
@@ -557,6 +556,8 @@ namespace Assets.Core.Editor {
 
             var highwayRight = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
             var highwayLeft = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
+
+            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(middleNode);
 
             controlToTest.CreateHighwayUpgraderOnHighway(highwayRight.ID);
 
@@ -582,6 +583,8 @@ namespace Assets.Core.Editor {
             mapGraph.AddUndirectedEdge(middleNode, leftNode);
 
             var highwayRight = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
+
+            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(middleNode);
 
             controlToTest.CreateHighwayUpgraderOnHighway(highwayRight.ID);
 
@@ -660,9 +663,9 @@ namespace Assets.Core.Editor {
         public void OnDestroyResourceDepotIsCalled_SpecifiedDepotIsRemovedFromHierarchyAndAllRecords() {
             //Setup
             var controlToTest = BuildSimulationControl();
-            var blobToPlaceUpon = controlToTest.MapGraph.BuildNode(Vector3.zero);
+            var nodeToPlaceUpon = controlToTest.MapGraph.BuildNode(Vector3.zero);
 
-            var newDepot = controlToTest.ResourceDepotFactory.ConstructDepotAt(blobToPlaceUpon);
+            var newDepot = controlToTest.ResourceDepotFactory.ConstructDepotAt(nodeToPlaceUpon);
             var depotName = "SimulationControlTest's Destroyed Depot";
             var depotID = newDepot.ID;
             newDepot.name = depotName;
@@ -674,6 +677,26 @@ namespace Assets.Core.Editor {
             //Validation
             Assert.Null(GameObject.Find(depotName), "There still exists a GameObject with the destroyed depot's name");
             Assert.Null(controlToTest.ResourceDepotFactory.GetDepotOfID(depotID), "DepotFactory still recognizes the destroyed depot");
+        }
+
+        [Test]
+        public void OnDestroyHighwayManagerIsCalled_SpecifiedManagerObjectIsRemovedFromHierarchyAndAllRecords() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+            var nodeToPlaceUpon = controlToTest.MapGraph.BuildNode(Vector3.zero);
+
+            var newManager = controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(nodeToPlaceUpon);
+            var managerName = "SimulationControlTest's Destroyed HighwayManager";
+            var managerID = newManager.ID;
+            newManager.name = managerName;
+
+
+            //Execution
+            controlToTest.DestroyHighwayManagerOfID(newManager.ID);
+
+            //Validation
+            Assert.Null(GameObject.Find(managerName), "There still exists a GameObject with the destroyed manager's name");
+            Assert.Null(controlToTest.ResourceDepotFactory.GetDepotOfID(managerID), "HighwayManagerFactory still recognizes the destroyed manager");
         }
 
         #endregion
@@ -996,6 +1019,28 @@ namespace Assets.Core.Editor {
             //Execution
             Assert.DoesNotThrow(delegate() {
                 controlToTest.DestroyResourceDepotOfID(42);
+            });
+
+            //Validation
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
+
+        [Test]
+        public void OnDestroyHighwayManagerIsCalledOnAnInvalidID_AnErrorIsLogged_ButNoExceptionIsThrown() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyHighwayManagerOfID(42);
             });
 
             //Validation

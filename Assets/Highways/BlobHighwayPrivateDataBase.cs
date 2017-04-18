@@ -22,6 +22,9 @@ namespace Assets.Highways {
         public abstract MapNodeBase FirstEndpoint { get; }
         public abstract MapNodeBase SecondEndpoint { get; }
 
+        public abstract float BlobSpeedEfficiencyCoefficient { get; }
+        public abstract float MaximumCooldownCoefficientFromEfficiency { get; }
+
         #endregion
 
     }

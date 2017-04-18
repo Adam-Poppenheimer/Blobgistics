@@ -30,6 +30,8 @@ namespace Assets.Highways {
 
         public abstract float Efficiency { get; set; }
 
+        public abstract float BlobPullCooldownInSeconds { get; }
+
         #endregion
 
         #region instance methods

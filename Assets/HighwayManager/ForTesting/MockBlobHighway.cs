@@ -52,6 +52,12 @@ namespace Assets.HighwayManager.ForTesting {
             }
         }
 
+        public override float BlobPullCooldownInSeconds {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         public override BlobHighwayProfileBase Profile { get; set; }
 
         public override MapNodeBase SecondEndpoint {

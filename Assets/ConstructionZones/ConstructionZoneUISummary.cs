@@ -24,7 +24,9 @@ namespace Assets.ConstructionZones {
 
         public ConstructionZoneUISummary(ConstructionZoneBase zoneToSummarize) {
             ID = zoneToSummarize.ID;
-            Project = new ConstructionProjectUISummary(zoneToSummarize.CurrentProject);
+            if(zoneToSummarize.CurrentProject != null) {
+                Project = new ConstructionProjectUISummary(zoneToSummarize.CurrentProject);
+            }
 
             Transform = zoneToSummarize.transform;
         }

@@ -65,7 +65,22 @@ namespace Assets.Highways {
             get { return PrivateData.TubePullingFromSecondEndpoint.Contents; }
         }
 
-        public override float Efficiency { get; set; }
+        public override float Efficiency {
+            get { return _efficiency; }
+            set {
+                _efficiency = value;
+                var speedForTubes = Profile.BlobSpeedPerSecond * (1 - ((1f - _efficiency) * PrivateData.BlobSpeedEfficiencyCoefficient));
+                PrivateData.TubePullingFromFirstEndpoint.TransportSpeedPerSecond  = speedForTubes;
+                PrivateData.TubePullingFromSecondEndpoint.TransportSpeedPerSecond = speedForTubes;
+            }
+        }
+        private float _efficiency = 1f;
+
+        public override float BlobPullCooldownInSeconds {
+            get {
+                return Profile.BlobPullCooldownInSeconds * (1 + (1 - Efficiency) * PrivateData.MaximumCooldownCoefficientFromEfficiency);
+            }
+        }
 
         #endregion
 

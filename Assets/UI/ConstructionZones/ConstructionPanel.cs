@@ -36,6 +36,9 @@ namespace Assets.UI.ConstructionZones {
         [SerializeField] private Button ConstructVillageButton;
         [SerializeField] private Text   VillageCostField;
 
+        [SerializeField] private Button ConstructHighwayManagerButton;
+        [SerializeField] private Text   HighwayManagerCostField;
+
         private bool DeactivateOnNextUpdate = false;
 
         #endregion
@@ -58,6 +61,11 @@ namespace Assets.UI.ConstructionZones {
             if(ConstructVillageButton != null) {
                 ConstructVillageButton.onClick.AddListener(delegate() {
                     RaiseConstructionRequested("Village");
+                });
+            }
+            if(ConstructHighwayManagerButton != null) {
+                ConstructHighwayManagerButton.onClick.AddListener(delegate() {
+                    RaiseConstructionRequested("Highway Manager");
                 });
             }
         }
@@ -134,6 +142,15 @@ namespace Assets.UI.ConstructionZones {
             if(farmlandProject != null) {
                 ConstructFarmlandButton.interactable = true;
                 FarmlandCostField.text = farmlandProject.CostSummaryString;
+            }
+
+            var highwayManagerProject = permittedProjects.Where(
+                project => project.Name.Equals("Highway Manager", StringComparison.InvariantCultureIgnoreCase)
+            ).FirstOrDefault();
+
+            if(highwayManagerProject != null) {
+                ConstructHighwayManagerButton.interactable = true;
+                HighwayManagerCostField.text = highwayManagerProject.CostSummaryString;
             }
         }
 

@@ -60,6 +60,18 @@ namespace Assets.Highways.ForTesting {
         }
         private MapNodeBase _secondEndpoint;
 
+        public override float BlobSpeedEfficiencyCoefficient {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override float MaximumCooldownCoefficientFromEfficiency {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

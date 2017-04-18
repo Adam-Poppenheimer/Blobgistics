@@ -49,6 +49,28 @@ namespace Assets.HighwayManager.Editor {
         }
 
         [Test]
+        public void Factory_OnHighwayManagerConstructed_GetManagerOfIDReturnsManagerCorrectly() {
+            //Setup
+            var factoryToTest = BuildHighwayManagerFactory();
+            var location1 = BuildMockMapNode();
+            var location2 = BuildMockMapNode();
+            var location3 = BuildMockMapNode();
+            var location4 = BuildMockMapNode();
+
+            //Execution
+            var manager1 = factoryToTest.ConstructHighwayManagerAtLocation(location1);
+            var manager2 = factoryToTest.ConstructHighwayManagerAtLocation(location2);
+            var manager3 = factoryToTest.ConstructHighwayManagerAtLocation(location3);
+            var manager4 = factoryToTest.ConstructHighwayManagerAtLocation(location4);
+
+            //Validation
+            Assert.AreEqual(manager1, factoryToTest.GetHighwayManagerOfID(manager1.ID), "Manager1.ID did not return manager1");
+            Assert.AreEqual(manager2, factoryToTest.GetHighwayManagerOfID(manager2.ID), "Manager2.ID did not return manager1");
+            Assert.AreEqual(manager3, factoryToTest.GetHighwayManagerOfID(manager3.ID), "Manager3.ID did not return manager1");
+            Assert.AreEqual(manager4, factoryToTest.GetHighwayManagerOfID(manager4.ID), "Manager4.ID did not return manager1");
+        }
+
+        [Test]
         public void Factory_OnHighwayManagerConstructed_ManagerHasTheProperLocation() {
             //Setup
             var factoryToTest = BuildHighwayManagerFactory();
@@ -421,7 +443,7 @@ namespace Assets.HighwayManager.Editor {
         #region for HighwayManager
 
         [Test]
-        public void OnTickConsumptionIsCalled_ConsumptionPerformedAtSpecifiedRate_WithHighwaysGottenFromParentFactory() {
+        public void OnTickConsumptionIsCalled_ConsumptionPerformedAtSpecifiedRate_WithHighwaysGottenFromParentFactory_AndLastCalculatedUpkeepIsSetProperly() {
             //Setup
             var mapGraph = BuildMockMapGraph();
             var node1 = mapGraph.BuildNode(Vector3.zero);
@@ -469,6 +491,7 @@ namespace Assets.HighwayManager.Editor {
             managerFactory.ManagementRadius = 2;
             managerFactory.SecondsForManagerToPerformConsumption = 1f;
             managerFactory.NeedStockpileCoefficient = 5;
+            managerFactory.BlobFactory = BuildMockBlobFactory();
 
             managerFactory.SubscribeHighway(highwayBetween1And2);
             managerFactory.SubscribeHighway(highwayBetween2And3);
@@ -482,8 +505,11 @@ namespace Assets.HighwayManager.Editor {
             managerToTest.TickConsumption(0.5f);
 
             //Validation
-            Assert.AreEqual(0, node1.BlobSite.GetCountOfContentsOfType(ResourceType.Food), "BlobSite was left with an incorrect amount of food");
+            Assert.AreEqual(0, node1.BlobSite.GetCountOfContentsOfType(ResourceType.Food),   "BlobSite was left with an incorrect amount of food");
             Assert.AreEqual(1, node1.BlobSite.GetCountOfContentsOfType(ResourceType.Yellow), "BlobSite was left with an incorrect amount of yellow");
+
+            Assert.AreEqual(3, managerToTest.LastCalculatedUpkeep[ResourceType.Food],   "LastCalculatedUpkeep has the wrong food value");
+            Assert.AreEqual(3, managerToTest.LastCalculatedUpkeep[ResourceType.Yellow], "LastCalculatedUpkeep has the wrong yellow value");
         }
 
         [Test]
@@ -527,6 +553,7 @@ namespace Assets.HighwayManager.Editor {
             managerFactory.ManagementRadius = 2;
             managerFactory.SecondsForManagerToPerformConsumption = 1f;
             managerFactory.NeedStockpileCoefficient = 5;
+            managerFactory.BlobFactory = BuildMockBlobFactory();
 
             managerFactory.SubscribeHighway(highwayBetween1And2);
             managerFactory.SubscribeHighway(highwayBetween2And3);
@@ -595,6 +622,11 @@ namespace Assets.HighwayManager.Editor {
         private MockBlobHighwayFactory BuildMockHighwayFactory() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockBlobHighwayFactory>();
+        }
+
+        private MockResourceBlobFactory BuildMockBlobFactory() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockResourceBlobFactory>();
         }
 
         #endregion

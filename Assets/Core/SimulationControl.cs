@@ -27,6 +27,7 @@ namespace Assets.Core {
         private static string HighwayUpgraderIDErrorMessage = "The highway with ID {0} has no HighwayUpgrader targeting it";
         private static string MapNodeIDErrorMessage = "There exists no MapNode with ID {0}";
         private static string DepotIDErrorMessage = "There exists no ResourceDepot with ID {0}";
+        private static string HighwayManagerIDErrorMessage = "There exists no HighwayManager with ID {0}";
 
         #endregion
 
@@ -205,7 +206,7 @@ namespace Assets.Core {
             if(highway != null) {
                 var hasProfileToUpgradeTo = HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highway.Profile) != null;
                 var hasUpgraderTargetingHighwayAlready = HighwayUpgraderFactory.HasUpgraderTargetingHighway(highway);
-                var hasHighwayManager = HighwayManagerFactory.GetManagerServingHighway(highway) != null || true;
+                var hasHighwayManager = HighwayManagerFactory.GetManagerServingHighway(highway) != null;
                 return hasProfileToUpgradeTo && !hasUpgraderTargetingHighwayAlready && hasHighwayManager;
             }else {
                 Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
@@ -244,6 +245,7 @@ namespace Assets.Core {
                     ConstructionZoneFactory.TryGetProjectOfName(projectName, out project) &&
                     !SocietyFactory.HasSocietyAtLocation(node) &&
                     !ResourceDepotFactory.HasDepotAtLocation(node) &&
+                    HighwayManagerFactory.GetHighwayManagerAtLocation(node) == null &&
                     ConstructionZoneFactory.CanBuildConstructionZone(node, project)
                 );
             }else {
@@ -389,9 +391,10 @@ namespace Assets.Core {
         }
 
         public override void TickSimulation(float secondsPassed) {
-            if(SocietyFactory  != null) SocietyFactory.TickSocieties(secondsPassed);
-            if(BlobDistributor != null) BlobDistributor.Tick(secondsPassed);
-            if(BlobFactory != null) BlobFactory.TickAllBlobs(secondsPassed);
+            if(SocietyFactory        != null) SocietyFactory.TickSocieties          (secondsPassed);
+            if(BlobDistributor       != null) BlobDistributor.Tick                  (secondsPassed);
+            if(BlobFactory           != null) BlobFactory.TickAllBlobs              (secondsPassed);
+            if(HighwayManagerFactory != null) HighwayManagerFactory.TickAllManangers(secondsPassed);
         }
 
         public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
@@ -409,6 +412,15 @@ namespace Assets.Core {
                 ResourceDepotFactory.DestroyDepot(depotToDestroy);
             }else {
                 Debug.LogErrorFormat(DepotIDErrorMessage, depotID);
+            }
+        }
+
+        public override void DestroyHighwayManagerOfID(int managerID) {
+            var managerToDestroy = HighwayManagerFactory.GetHighwayManagerOfID(managerID);
+            if(managerToDestroy != null) {
+                HighwayManagerFactory.DestroyHighwayManager(managerToDestroy);
+            }else {
+                Debug.LogErrorFormat(HighwayManagerIDErrorMessage, managerID);
             }
         }
 

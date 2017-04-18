@@ -105,6 +105,10 @@ namespace Assets.UI.Highways.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void DestroyHighwayManagerOfID(int managerID) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

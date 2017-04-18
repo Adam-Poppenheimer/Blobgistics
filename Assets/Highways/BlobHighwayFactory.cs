@@ -83,6 +83,18 @@ namespace Assets.Highways {
         }
         [SerializeField] private BlobHighwayProfileBase _startingProfile;
 
+        public float BlobSpeedEfficiencyCoefficient {
+            get { return _blobSpeedEfficiencyCoefficient; }
+            set { _blobSpeedEfficiencyCoefficient = value; }
+        }
+        [SerializeField] private float _blobSpeedEfficiencyCoefficient;
+
+        public float MaximumCooldownCoefficientFromEfficiency {
+            get { return _maximumCooldownCoefficientFromEfficiency; }
+            set { _maximumCooldownCoefficientFromEfficiency = value; }
+        }
+        [SerializeField] private float _maximumCooldownCoefficientFromEfficiency;
+
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
             get { return AllConstructedHighways.AsReadOnly(); }
         }
@@ -174,6 +186,8 @@ namespace Assets.Highways {
             newPrivateData.SetSecondEndpoint(secondEndpoint);
             newPrivateData.SetUIControl(UIControl);
             newPrivateData.SetBlobFactory(BlobFactory);
+            newPrivateData.SetBlobSpeedEfficiencyCoefficient(BlobSpeedEfficiencyCoefficient);
+            newPrivateData.SetMaximumCooldownCoefficientFromEfficiency(MaximumCooldownCoefficientFromEfficiency);
 
             newPrivateData.SetTubePullingFromFirstEndpoint(BlobTubeFactory.ConstructTube(
                 firstEndpoint.transform.position, secondEndpoint.transform.position));

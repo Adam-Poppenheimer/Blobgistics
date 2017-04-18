@@ -60,6 +60,12 @@ namespace Assets.BlobDistributors.ForTesting {
             }
         }
 
+        public override float BlobPullCooldownInSeconds {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

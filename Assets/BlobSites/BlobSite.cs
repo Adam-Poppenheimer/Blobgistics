@@ -50,20 +50,8 @@ namespace Assets.BlobSites {
         #endregion
 
         public BlobSitePrivateDataBase PrivateData {
-            get {
-                if(_privateData == null) {
-                    throw new InvalidOperationException("PrivateData is uninitialized");
-                } else {
-                    return _privateData;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _privateData = value;
-                }
-            }
+            get { return _privateData; }
+            set { _privateData = value; }
         }
         [SerializeField] private BlobSitePrivateDataBase _privateData;
         

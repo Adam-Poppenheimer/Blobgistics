@@ -868,6 +868,11 @@ namespace Assets.Highways.Editor {
             Assert.AreEqual(0, tubePullingFromSecond.Contents.Count, "tubePullingFromSecond still has blobs within it");
         }
 
+        [Test]
+        public void OnEfficiencyChanged_MovementSpeedOfBlobsIsAffectedMultiplicatively() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region error checking

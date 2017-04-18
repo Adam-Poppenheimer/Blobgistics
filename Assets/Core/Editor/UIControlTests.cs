@@ -10,6 +10,7 @@ using NUnit.Framework;
 
 using Assets.Core;
 using Assets.ResourceDepots;
+using Assets.HighwayManager;
 using Assets.Core.ForTesting;
 using Assets.UI.ResourceDepots;
 
@@ -108,6 +109,82 @@ namespace Assets.Core.Editor {
             Assert.IsFalse(summaryDisplay.IsActive, "SummaryDisplay is still active");
         }
 
+        [Test]
+        public void OnSelectEventPushedWithHighwayManagerUISummary_HighwayManagerDisplayIsGivenTheSummary_AndActivated() {
+            //Setup
+            var summaryDisplay = BuildMockManagerDisplay();
+            var simulationControl = BuildMockSimulationControl();
+
+            var uiControl = BuildUIControl();
+            uiControl.HighwayManagerSummaryDisplay = summaryDisplay;
+            uiControl.SimulationControl = simulationControl;
+
+            var eventSystem = BuildEventSystem();
+            var eventData = new BaseEventData(eventSystem);
+
+            var summaryToPush = new HighwayManagerUISummary();
+            summaryToPush.ID = 1;
+
+            //Execution
+            uiControl.PushSelectEvent(summaryToPush, eventData);
+
+            //Validation
+            Assert.AreEqual(summaryToPush, summaryDisplay.CurrentSummary, "The wrong summary is in the display");
+            Assert.That(summaryDisplay.IsActive, "The display was not activated");
+        }
+
+        [Test]
+        public void OnHighwayManagerDisplayRaisesDestructionRequestedEvent_RequestIsSentToSimulationControlProperly() {
+            //Setup
+            var summaryDisplay = BuildMockManagerDisplay();
+            var simulationControl = BuildMockSimulationControl();
+
+            var uiControl = BuildUIControl();
+            uiControl.HighwayManagerSummaryDisplay = summaryDisplay;
+            uiControl.SimulationControl = simulationControl;
+
+            var eventSystem = BuildEventSystem();
+            var eventData = new BaseEventData(eventSystem);
+
+            var summaryToPush = new HighwayManagerUISummary();
+            summaryToPush.ID = 1;
+
+            uiControl.PushSelectEvent(summaryToPush, eventData);
+
+            //Execution
+            summaryDisplay.RaiseDestructionRequestedEvent();
+
+            //Validation
+            Assert.AreEqual(summaryToPush.ID, simulationControl.IDOfRequestedManager, "SimulationControl did not receive the proper ID");
+        }
+
+        [Test]
+        public void OnHighwayManagerDisplayRaisesDestructionRequestedEvent_HighwayManagerDisplayIsDeactivated() {
+            //Setup
+            var summaryDisplay = BuildMockManagerDisplay();
+            var simulationControl = BuildMockSimulationControl();
+
+            var uiControl = BuildUIControl();
+            uiControl.HighwayManagerSummaryDisplay = summaryDisplay;
+            uiControl.SimulationControl = simulationControl;
+
+            var eventSystem = BuildEventSystem();
+            var eventData = new BaseEventData(eventSystem);
+
+            var summaryToPush = new HighwayManagerUISummary();
+            summaryToPush.ID = 1;
+
+            uiControl.PushSelectEvent(summaryToPush, eventData);
+
+            summaryDisplay.Activate();
+
+            //Execution
+            summaryDisplay.RaiseDestructionRequestedEvent();
+
+            //Validation
+            Assert.IsFalse(summaryDisplay.IsActive, "SummaryDisplay is still active");
+        }
+
         #endregion
 
         #endregion
@@ -132,6 +209,11 @@ namespace Assets.Core.Editor {
         private EventSystem BuildEventSystem() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<EventSystem>();
+        }
+
+        private MockHighwayManagerUISummaryDisplay BuildMockManagerDisplay() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockHighwayManagerUISummaryDisplay>();
         }
 
         #endregion
