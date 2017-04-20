@@ -5,11 +5,12 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
 using Assets.HighwayManager;
 
 namespace Assets.UI.HighwayManager {
 
-    public abstract class HighwayManagerSummaryDisplayBase : MonoBehaviour {
+    public abstract class HighwayManagerSummaryDisplayBase : IntelligentPanel {
 
         #region instance fields and properties
 
@@ -26,16 +27,6 @@ namespace Assets.UI.HighwayManager {
                 DestructionRequested(this, EventArgs.Empty);
             }
         }
-
-        #endregion
-
-        #region instance methods
-
-        public abstract void Activate();
-        public abstract void Deactivate();
-
-        public abstract void UpdateDisplay();
-        public abstract void ClearDisplay();
 
         #endregion
 

@@ -11,7 +11,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Societies {
 
-    public abstract class SocietyUISummaryDisplayBase : MonoBehaviour {
+    public abstract class SocietyUISummaryDisplayBase : IntelligentPanel {
 
         #region instance fields and properties
 
@@ -36,16 +36,6 @@ namespace Assets.UI.Societies {
                 AscensionPermissionChangeRequested(this, new BoolEventArgs(ascensionPermitted));
             }
         }
-
-        #endregion
-
-        #region instance methods
-
-        public abstract void Activate();
-        public abstract void Deactivate();
-
-        public abstract void UpdateDisplay();
-        public abstract void ClearDisplay();
 
         #endregion
 

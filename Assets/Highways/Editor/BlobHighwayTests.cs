@@ -790,34 +790,6 @@ namespace Assets.Highways.Editor {
         }
 
         [Test]
-        public void OnProfileChanged_BlobSpeedPerSecondChangesForBothTubes() {
-            //Setup
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            var tubePullingFromFirst = BuildBlobTube();
-            var tubePullingFromSecond = BuildBlobTube();
-
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
-
-            //Execution
-            highwayToTest.Profile = BuildBlobHighwayProfile(5, 20, ResourceSummary.BuildResourceSummary(highwayToTest.gameObject), 1f);
-
-            //Validation
-            Assert.AreEqual(5, tubePullingFromFirst.TransportSpeedPerSecond, "tubePullingFromFirst has incorrect BlobSpeedPerSecond");
-            Assert.AreEqual(5, tubePullingFromSecond.TransportSpeedPerSecond, "tubePullingFromSecond has incorrect BlobSpeedPerSecond");
-
-            Assert.AreEqual(20, tubePullingFromFirst.Capacity, "tubePullingFromFirst has incorrect Capacity");
-            Assert.AreEqual(20, tubePullingFromSecond.Capacity, "tubePullingFromSecond has incorrect Capacity");
-        }
-
-        [Test]
         public void OnClearCalled_AllTubesAreClearedAsWell() {
             //Setup
             var firstEndpoint = BuildMapNode();
@@ -1061,15 +1033,15 @@ namespace Assets.Highways.Editor {
 
         private MockBlobHighwayPrivateData BuildHighwayPrivateData() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockBlobHighwayPrivateData>();
+            var newData = hostingObject.AddComponent<MockBlobHighwayPrivateData>();
+            newData.SetProfile(BuildBlobHighwayProfile(1f, 10, 0.5f));
+            return newData;
         }
 
         private BlobHighway BuildHighway(BlobHighwayPrivateDataBase privateData) {
             var hostingGameObject = new GameObject();
             var newHighway = hostingGameObject.AddComponent<BlobHighway>();
             newHighway.PrivateData = privateData;
-            newHighway.Profile = BuildBlobHighwayProfile(1f, 10,
-                ResourceSummary.BuildResourceSummary(newHighway.gameObject), 1f);
             return newHighway;
         }
 
@@ -1104,15 +1076,21 @@ namespace Assets.Highways.Editor {
             var newHighwayFactory = hostingObject.AddComponent<BlobHighwayFactory>();
             newHighwayFactory.MapGraph = newMapGraph;
             newHighwayFactory.BlobTubeFactory = newTubeFactory;
-            newHighwayFactory.StartingProfile = BuildBlobHighwayProfile(1, 10,
-                ResourceSummary.BuildResourceSummary(newHighwayFactory.gameObject), 1f);
+            newHighwayFactory.StartingProfile = BuildBlobHighwayProfile(1, 10, 1f);
             newHighwayFactory.BlobFactory = newBlobFactory;
 
             return newHighwayFactory;
         }
 
-        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, ResourceSummary cost, float BlobPullCooldownInSeconds) {
-            throw new NotImplementedException();
+        private BlobHighwayProfileBase BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float BlobPullCooldownInSeconds) {
+            var hostingObject = new GameObject();
+            var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
+
+            newProfile.SetBlobSpeedPerSecond(blobSpeedPerSecond);
+            newProfile.SetCapacity(capacity);
+            newProfile.SetBlobPullCooldownInSeconds(BlobPullCooldownInSeconds);
+
+            return newProfile;
         }
 
         #endregion

@@ -12,7 +12,7 @@ using Assets.Societies;
 
 namespace Assets.UI.Societies {
 
-    public class SocietyUISummaryDisplay : SocietyUISummaryDisplayBase, ISelectHandler, IDeselectHandler {
+    public class SocietyUISummaryDisplay : SocietyUISummaryDisplayBase {
 
         #region instance fields and properties
 
@@ -31,21 +31,24 @@ namespace Assets.UI.Societies {
 
         #endregion
 
-        [SerializeField] private Text LocationIDSlot;
-
-        [SerializeField] private Text CurrentComplexitySlot;
-        [SerializeField] private Text DescentComplexitySlot;
-        [SerializeField] private Text AscentComplexitySlot;
-
-        [SerializeField] private Text NeedsAreSatisfiedSlot;
-        [SerializeField] private Text SecondsOfUnsatisfiedNeedsSlot;
-        [SerializeField] private Text SecondsUntilComplexityDescentSlot;
-
+        [SerializeField] private Text   LocationIDField;
+        [SerializeField] private Toggle NeedsAreSatisfiedToggle;
+        [SerializeField] private Text   SecondsOfUnsatisfiedNeedsField;
+        [SerializeField] private Text   SecondsUntilComplexityDescentField;
         [SerializeField] private Toggle PermitAscensionToggle;
 
         [SerializeField] private Button DestroySocietyButton;
 
-        private bool DeactivateOnNextUpdate = false;
+        [SerializeField] private Text CurrentComplexityNameField;
+        [SerializeField] private Text CurrentComplexityProductionField;
+        [SerializeField] private Text CurrentComplexityNeedsField;
+        [SerializeField] private Text CurrentComplexityWantsField;
+        [SerializeField] private Text CurrentComplexityCostOfAscentField;
+
+        [SerializeField] private Text DescentComplexityNameField;
+        [SerializeField] private Text AscentComplexityNameField;
+
+        
 
         #endregion
 
@@ -53,32 +56,15 @@ namespace Assets.UI.Societies {
 
         #region Unity event methods
 
-        private void Update() {
-            if(DeactivateOnNextUpdate) {
-                Deactivate();
-                DeactivateOnNextUpdate = false;
-            }else {
-                UpdateDisplay();
-            }
+        protected override void DoOnUpdate() {
+            UpdateDisplay();
         }
 
         #endregion
 
-        #region Unity EventSystem interfaces
+        #region from IntelligentPanel
 
-        public void OnSelect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void OnDeselect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        #endregion
-
-        #region from SocietyUISummaryDisplayBase
-
-        public override void Activate() {
+        protected override void DoOnActivate() {
             PermitAscensionToggle.onValueChanged.AddListener(delegate(bool newValue) {
                 RaiseAscensionPermissionChangeRequested(newValue);
             });
@@ -86,30 +72,24 @@ namespace Assets.UI.Societies {
             DestroySocietyButton.onClick.AddListener(delegate() {
                 RaiseDestructionRequested();
             });
-            gameObject.SetActive(true);
-            UpdateDisplay();
-
-            StartCoroutine(ReselectToThis());
         }
 
-        public override void Deactivate() {
+        protected override void DoOnDeactivate() {
             DestroySocietyButton.onClick.RemoveAllListeners();
             PermitAscensionToggle.onValueChanged.RemoveAllListeners();
-            ClearDisplay();
-            gameObject.SetActive(false);
         }
 
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
-                LocationIDSlot.text = CurrentSummary.Location != null ? CurrentSummary.Location.ID.ToString() : "";
+                LocationIDField.text = CurrentSummary.Location != null ? CurrentSummary.Location.ID.ToString() : "";
                 
-                CurrentComplexitySlot.text = CurrentSummary.CurrentComplexity;
-                DescentComplexitySlot.text = CurrentSummary.DescentComplexity;
-                AscentComplexitySlot.text = CurrentSummary.AscentComplexity;
+                CurrentComplexityNameField.text = CurrentSummary.CurrentComplexity;
+                DescentComplexityNameField.text = CurrentSummary.DescentComplexity;
+                AscentComplexityNameField.text = CurrentSummary.AscentComplexity;
 
-                NeedsAreSatisfiedSlot.text = CurrentSummary.NeedsAreSatisfied.ToString();
-                SecondsOfUnsatisfiedNeedsSlot.text = CurrentSummary.SecondsOfUnsatisfiedNeeds.ToString("0.#");
-                SecondsUntilComplexityDescentSlot.text = CurrentSummary.SecondsUntilComplexityDescent.ToString("0.#");
+                NeedsAreSatisfiedToggle.isOn = CurrentSummary.NeedsAreSatisfied;
+                SecondsOfUnsatisfiedNeedsField.text = CurrentSummary.SecondsOfUnsatisfiedNeeds.ToString("0.#");
+                SecondsUntilComplexityDescentField.text = CurrentSummary.SecondsUntilComplexityDescent.ToString("0.#");
 
                 PermitAscensionToggle.isOn = CurrentSummary.AscensionIsPermitted;
 
@@ -122,33 +102,20 @@ namespace Assets.UI.Societies {
         public override void ClearDisplay() {
             CurrentSummary = null;
 
-            LocationIDSlot.text = "";
+            LocationIDField.text = "";
                 
-            CurrentComplexitySlot.text = "";
-            DescentComplexitySlot.text = "";
-            AscentComplexitySlot.text = "";
+            CurrentComplexityNameField.text = "";
+            DescentComplexityNameField.text = "";
+            AscentComplexityNameField.text = "";
 
-            NeedsAreSatisfiedSlot.text = "";
-            SecondsOfUnsatisfiedNeedsSlot.text = "";
-            SecondsUntilComplexityDescentSlot.text = "";
+            NeedsAreSatisfiedToggle.isOn = false;
+            SecondsOfUnsatisfiedNeedsField.text = "";
+            SecondsUntilComplexityDescentField.text = "";
 
             PermitAscensionToggle.isOn = false;
         }
 
         #endregion
-
-        public void DoOnChildSelected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void DoOnChildDeselected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        private IEnumerator ReselectToThis() {
-            yield return new WaitForEndOfFrame();
-            EventSystem.current.SetSelectedGameObject(gameObject);
-        }
 
         #endregion
 

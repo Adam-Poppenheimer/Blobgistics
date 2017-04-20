@@ -25,6 +25,8 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #endregion
 
+        public BlobHighwayProfileBase StartingProfile { get; set; }
+
         private List<BlobHighwayBase> highways = new List<BlobHighwayBase>();
 
         #endregion

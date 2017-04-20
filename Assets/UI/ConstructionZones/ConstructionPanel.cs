@@ -13,15 +13,11 @@ using Assets.ConstructionZones;
 
 namespace Assets.UI.ConstructionZones {
 
-    public class ConstructionPanel : ConstructionPanelBase, ISelectHandler, IDeselectHandler {
+    public class ConstructionPanel : ConstructionPanelBase {
 
         #region instance fields and properties
 
         #region from ConstructionPanelBase
-
-        public override bool IsActivated {
-            get { return gameObject.activeInHierarchy; }
-        }
 
         public override MapNodeUISummary LocationToConstruct { get; set; }
 
@@ -38,8 +34,6 @@ namespace Assets.UI.ConstructionZones {
 
         [SerializeField] private Button ConstructHighwayManagerButton;
         [SerializeField] private Text   HighwayManagerCostField;
-
-        private bool DeactivateOnNextUpdate = false;
 
         #endregion
 
@@ -70,47 +64,29 @@ namespace Assets.UI.ConstructionZones {
             }
         }
 
-        private void Update() {
-            if(DeactivateOnNextUpdate) {
-                Deactivate();
-                DeactivateOnNextUpdate = false;
-            }else if(LocationToConstruct != null){
+        protected override void DoOnUpdate() {
+            if(LocationToConstruct != null){
                 transform.position = Camera.main.WorldToScreenPoint(LocationToConstruct.Transform.position);
             }
         }
 
         #endregion
 
-        #region Unity EventSystem interfaces
+        #region from IntelligentPanel
 
-        public void OnSelect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
+        protected override void DoOnActivate() {
+            if(LocationToConstruct != null) {
+                transform.position = Camera.main.WorldToScreenPoint(LocationToConstruct.Transform.position);
+            }
         }
 
-        public void OnDeselect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
+        public override void ClearDisplay() {
+            LocationToConstruct = null;
         }
 
         #endregion
 
         #region from ConstructionPanelBase
-
-        public override void Activate() {
-            gameObject.SetActive(true);
-            if(LocationToConstruct != null) {
-                transform.position = Camera.main.WorldToScreenPoint(LocationToConstruct.Transform.position);
-            }
-            StartCoroutine(ReselectToThis());
-        }
-
-        public override void Clear() {
-            LocationToConstruct = null;
-        }
-
-        public override void Deactivate() {
-            Clear();
-            gameObject.SetActive(false);
-        }
 
         public override void SetPermittedProjects(IEnumerable<ConstructionProjectUISummary> permittedProjects) {
             ConstructResourceDepotButton.interactable = false;
@@ -155,19 +131,6 @@ namespace Assets.UI.ConstructionZones {
         }
 
         #endregion
-
-        public void DoOnChildSelected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void DoOnChildDeselected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        private IEnumerator ReselectToThis() {
-            yield return new WaitForEndOfFrame();
-            EventSystem.current.SetSelectedGameObject(gameObject);
-        }
 
         #endregion
 

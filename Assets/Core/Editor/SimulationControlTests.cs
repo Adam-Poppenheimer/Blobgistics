@@ -11,7 +11,6 @@ using Assets.Blobs;
 using Assets.BlobSites;
 using Assets.ConstructionZones;
 using Assets.Highways;
-using Assets.HighwayUpgraders;
 using Assets.ResourceDepots;
 using Assets.Societies;
 using Assets.HighwayManager;
@@ -29,6 +28,72 @@ namespace Assets.Core.Editor {
         #region tests
 
         #region functionality
+
+        [Test]
+        public void OnSetHighwayUpkeepRequestCalled_TheCorrectHighwayHasItsUpkeepRequestsSetProperly() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var highwayfactory = controlToTest.HighwayFactory;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+
+            mapGraph.AddUndirectedEdge(middleNode, rightNode);
+            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+
+            var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
+            var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
+
+            //Execution
+            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.Food,   true);
+            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.Yellow, true);
+            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.White,  false);
+            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.Blue,   false);
+
+            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.Food,   false);
+            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.Yellow, false);
+            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.White,  true);
+            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.Blue,   true);
+
+            //Validation
+            Assert.That   (highway1.IsRequestingFood,   "Highway1 is not requesting food");
+            Assert.That   (highway1.IsRequestingYellow, "Highway1 is not requesting yellow");
+            Assert.IsFalse(highway1.IsRequestingWhite,  "Highway1 is falsely requesting white");
+            Assert.IsFalse(highway1.IsRequestingBlue,   "Highway1 is falsely requesting blue");
+
+            Assert.IsFalse(highway2.IsRequestingFood,   "Highway2 is falsely requesting food");
+            Assert.IsFalse(highway2.IsRequestingYellow, "Highway2 is falsely requesting yellow");
+            Assert.That   (highway2.IsRequestingWhite,  "Highway2 is not requesting white");
+            Assert.That   (highway2.IsRequestingBlue,   "Highway2 is not requesting blue");
+        }
+
+        [Test]
+        public void OnSetHighwayUpkeepRequestCalled_AndHighwayIDIsInvalid_DisplaysErrorMessage_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.SetHighwayUpkeepRequest(42, ResourceType.Food, true);
+            });
+
+            //Validation
+
+            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not just one message received");
+            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last().LogType, "The message received was not an error message");
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
+        }
 
         [Test]
         public void OnCanConnectNodesWithHighwayIsCalled_ReturnValueProperlyRepresentsInternalState() {
@@ -459,171 +524,6 @@ namespace Assets.Core.Editor {
         }
 
         [Test]
-        public void OnCanCreateHighwayUpgraderOnHighwayIsCalled_ReturnValueRepresentsInternalState() {
-            //Setup
-            var controlToTest = BuildSimulationControl();
-
-            var mapGraph = controlToTest.MapGraph;
-            var highwayFactory = controlToTest.HighwayFactory;
-            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-            var upNode     = mapGraph.BuildNode(Vector3.up);
-
-            var separateNodeFirst  = mapGraph.BuildNode(new Vector3(5, 5, 5));
-            var separateNodeSecond = mapGraph.BuildNode(new Vector3(7, 7, 7));
-
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
-
-            mapGraph.AddUndirectedEdge(separateNodeFirst, separateNodeSecond);
-
-            var highway1 = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
-            var highway2 = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
-            var highway3 = highwayFactory.ConstructHighwayBetween(middleNode, upNode);
-            
-            var separateHighway = highwayFactory.ConstructHighwayBetween(separateNodeFirst, separateNodeSecond);
-
-            highway1.Profile = upgraderFactory.GetNextProfileInUpgradeChain(highway1.Profile);
-
-            upgraderFactory.BuildHighwayUpgrader(highway3, mapGraph.GetEdge(middleNode, upNode).BlobSite,
-                upgraderFactory.GetNextProfileInUpgradeChain(highway3.Profile));
-
-            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(middleNode);
-
-            //Execution
-
-            //Validation
-            Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(highway1.ID), 
-                "Falsely permits a highwayUpgrader on highway 1, which already has an upgraded highway");
-            Assert.IsTrue(controlToTest.CanCreateHighwayUpgraderOnHighway(highway2.ID), 
-                "Does not permit a highwayUpgrader on highway 2");
-            Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(highway3.ID), 
-                "Falsely permits a highwayUpgrader on highway 3, which already has an upgrader");
-            Assert.IsFalse(controlToTest.CanCreateHighwayUpgraderOnHighway(separateHighway.ID),
-                "Falsely permits a highwayUpgrade on separateHighway, which has no nearby HighwayManager");
-        }
-
-        [Test]
-        public void OnCreateHighwayUpgraderOnHighwayIsCalled_ProperHighwayUpgraderIsCreatedWithTheProperState() {
-            //Setup
-            var controlToTest = BuildSimulationControl();
-
-            var mapGraph = controlToTest.MapGraph;
-            var highwayFactory = controlToTest.HighwayFactory;
-            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-
-            var highwayToUpgrade = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
-
-            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(middleNode);
-
-            //Execution
-            var upgradedProfile = controlToTest.HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highwayToUpgrade.Profile);
-            controlToTest.CreateHighwayUpgraderOnHighway(highwayToUpgrade.ID);
-
-            //Validation
-            Assert.That(upgraderFactory.HasUpgraderTargetingHighway(highwayToUpgrade), 
-                "UpgraderFactory fails to register a HighwayUpgrader on highwayToUpgrade");
-
-            var upgraderOnHighway = upgraderFactory.GetUpgraderTargetingHighway(highwayToUpgrade);
-            Assert.AreEqual(upgradedProfile, upgraderOnHighway.ProfileToInsert,
-                "UpgraderOnHighway has an incorrect ProfileToInsert");
-        }
-
-        [Test]
-        public void OnHasHighwayUpgraderOnHighwayIsCalled_ReturnValueRepresentsInternalState() {
-            //Setup
-            var controlToTest = BuildSimulationControl();
-
-            var mapGraph = controlToTest.MapGraph;
-            var highwayFactory = controlToTest.HighwayFactory;
-            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-
-            var highwayRight = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
-            var highwayLeft = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);
-
-            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(middleNode);
-
-            controlToTest.CreateHighwayUpgraderOnHighway(highwayRight.ID);
-
-            //Execution and Validation
-            Assert.That(controlToTest.HasHighwayUpgraderOnHighway(highwayRight.ID), "SimulationControl does not register an Upgrader on HighwayRight");
-            Assert.IsFalse(controlToTest.HasHighwayUpgraderOnHighway(highwayLeft.ID), "SimulationControl falsey registers an Upgrader on HighwayLeft");
-        }
-
-        [Test]
-        public void OnDestroyHighwayUpgraderOnHighwayIsCalled_AndHighwayHasAnUpgrader_ThatUpgraderIsDestroyed() {
-            //Setup
-            var controlToTest = BuildSimulationControl();
-
-            var mapGraph = controlToTest.MapGraph;
-            var highwayFactory = controlToTest.HighwayFactory;
-            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-
-            var highwayRight = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
-
-            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(middleNode);
-
-            controlToTest.CreateHighwayUpgraderOnHighway(highwayRight.ID);
-
-            //Execution
-            controlToTest.DestroyHighwayUpgraderOnHighway(highwayRight.ID);
-
-            //Validation
-            Assert.IsFalse(upgraderFactory.HasUpgraderTargetingHighway(highwayRight),
-                "HighwayUpgrader still registers an upgrader targeting HighwayRight");
-
-            Assert.IsFalse(controlToTest.HasHighwayUpgraderOnHighway(highwayRight.ID),
-                "SimulationControl still registers an upgrader targeting HighwayRight");
-        }
-
-        [Test]
-        public void OnDestroyHighwayUpgraderOnHighwayIsCalled_AndHighwayDoesNotHaveAnUpgrader_NoExceptionIsThrown() {
-            //Setup
-            var controlToTest = BuildSimulationControl();
-
-            var mapGraph = controlToTest.MapGraph;
-            var highwayFactory = controlToTest.HighwayFactory;
-            var upgraderFactory = controlToTest.HighwayUpgraderFactory;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-
-            var highwayRight = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
-
-            //Execution and Validation
-            Assert.DoesNotThrow(delegate() {
-                controlToTest.DestroyHighwayUpgraderOnHighway(highwayRight.ID);
-            });
-        }
-
-        [Test]
         public void OnTickSimulationIsCalled_AllSimulationTickingIsPerformed() {
             //Setup
             var societyFactory = BuildMockSocietyFactory();
@@ -964,50 +864,6 @@ namespace Assets.Core.Editor {
         }
 
         [Test]
-        public void OnCanCreateHighwayUpgraderOnHighwayIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
-            //Setup
-            var controlToTest = BuildSimulationControl();
-
-            var defaultLogHandler = Debug.logger.logHandler;
-            var insertionHandler = new ListInsertionLogHandler();
-            Debug.logger.logHandler = insertionHandler;
-
-            //Execution
-            Assert.DoesNotThrow(delegate() {
-                controlToTest.CanCreateHighwayUpgraderOnHighway(42);
-            });
-
-            //Validation
-            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
-
-            //Cleanup
-            Debug.logger.logHandler = defaultLogHandler;
-        }
-
-        [Test]
-        public void OnCreateHighwayUpgraderOnHighwayIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
-            //Setup
-            var controlToTest = BuildSimulationControl();
-
-            var defaultLogHandler = Debug.logger.logHandler;
-            var insertionHandler = new ListInsertionLogHandler();
-            Debug.logger.logHandler = insertionHandler;
-
-            //Execution
-            Assert.DoesNotThrow(delegate() {
-                controlToTest.CreateHighwayUpgraderOnHighway(42);
-            });
-
-            //Validation
-            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages[0].LogType, "The message logged is not an error message");
-
-            //Cleanup
-            Debug.logger.logHandler = defaultLogHandler;
-        }
-
-        [Test]
         public void OnDestroyResourceDepotIsCalledOnInvalidID_DisplaysError_ButDoesNotThrow() {
             //Setup
             var controlToTest = BuildSimulationControl();
@@ -1075,8 +931,7 @@ namespace Assets.Core.Editor {
             return newMapGraph;
         }
 
-        private BlobHighwayFactory BuildHighwayFactory(MapGraphBase mapGraph, ResourceBlobFactoryBase blobFactory,
-            HighwayUpgraderFactoryBase upgraderFactory) {
+        private BlobHighwayFactory BuildHighwayFactory(MapGraphBase mapGraph, ResourceBlobFactoryBase blobFactory) {
             var hostingObject = new GameObject();
             var newFactory = hostingObject.AddComponent<BlobHighwayFactory>();
             var newBlobTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
@@ -1088,7 +943,7 @@ namespace Assets.Core.Editor {
             newFactory.MapGraph = mapGraph;
             newFactory.BlobTubeFactory = newBlobTubeFactory;
             newFactory.BlobFactory = blobFactory;
-            newFactory.StartingProfile = upgraderFactory.GetStartingProfile();
+            newFactory.StartingProfile = BuildBlobHighwayProfile(1f, 10, 1f);
 
             return newFactory;
         }
@@ -1122,23 +977,6 @@ namespace Assets.Core.Editor {
             return hostingObject.AddComponent<ResourceDepotFactory>();
         }
 
-        private HighwayUpgraderFactory BuildHighwayUpgraderFactory() {
-            var hostingObject = new GameObject();
-            var newFactory = hostingObject.AddComponent<HighwayUpgraderFactory>();
-            newFactory.ChainOfProfiles = new List<BlobHighwayProfileBase>() {
-                BuildBlobHighwayProfile(1f, 10, ResourceSummary.BuildResourceSummary(
-                    newFactory.gameObject,
-                    new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
-                ), 0.2f),
-                BuildBlobHighwayProfile(2, 20, ResourceSummary.BuildResourceSummary(
-                    new GameObject(),
-                    new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 5)
-                ), 0.2f)
-            };
-            
-            return newFactory;
-        }
-
         private SimulationControl BuildSimulationControl() {
             var hostingObject = new GameObject();
             var newControl = hostingObject.AddComponent<SimulationControl>();
@@ -1146,8 +984,7 @@ namespace Assets.Core.Editor {
             var newDepotFactory = BuildDepotFactory();
 
             newControl.MapGraph = BuildMapGraph(newBlobFactory);
-            newControl.HighwayUpgraderFactory = BuildHighwayUpgraderFactory();
-            newControl.HighwayFactory = BuildHighwayFactory(newControl.MapGraph, newBlobFactory, newControl.HighwayUpgraderFactory);
+            newControl.HighwayFactory = BuildHighwayFactory(newControl.MapGraph, newBlobFactory);
             newControl.SocietyFactory = BuildSocietyFactory(newBlobFactory);
             newControl.ConstructionZoneFactory = BuildConstructionZoneFactory(newDepotFactory);
             newControl.HighwayManagerFactory = BuildHighwayManagerFactory(newControl.MapGraph, newControl.HighwayFactory);
@@ -1250,13 +1087,12 @@ namespace Assets.Core.Editor {
             return hostingObject.AddComponent<MockResourceBlobFactory>();
         }
 
-        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, ResourceSummary cost, float BlobPullCooldownInSeconds) {
+        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float BlobPullCooldownInSeconds) {
             var hostingObject = new GameObject();
             var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
 
             newProfile.SetBlobSpeedPerSecond(blobSpeedPerSecond);
             newProfile.SetCapacity(capacity);
-            newProfile.SetCost(cost);
             newProfile.SetBlobPullCooldownInSeconds(BlobPullCooldownInSeconds);
 
             return newProfile;
@@ -1265,10 +1101,13 @@ namespace Assets.Core.Editor {
         private HighwayManagerFactoryBase BuildHighwayManagerFactory(MapGraphBase mapGraph, BlobHighwayFactoryBase highwayFactory) {
             var hostingObject = new GameObject();
             var newFactory = hostingObject.AddComponent<HighwayManagerFactory>();
+            var newPrivateData = hostingObject.AddComponent<HighwayManagerPrivateData>();
+
+            newPrivateData.SetNeedStockpileCoefficient(1);
+            newPrivateData.SetSecondsToPerformConsumption(10f);
 
             newFactory.ManagementRadius = 2;
-            newFactory.NeedStockpileCoefficient = 1;
-            newFactory.SecondsForManagerToPerformConsumption = 10f;
+            newFactory.ManagerPrivateData = newPrivateData;
             newFactory.MapGraph = mapGraph;
             newFactory.HighwayFactory = highwayFactory;
 

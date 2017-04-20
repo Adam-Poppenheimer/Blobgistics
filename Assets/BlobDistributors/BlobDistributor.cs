@@ -7,7 +7,6 @@ using UnityEngine;
 
 using Assets.Map;
 using Assets.Highways;
-using Assets.HighwayUpgraders;
 using Assets.Blobs;
 using Assets.BlobSites;
 
@@ -40,12 +39,6 @@ namespace Assets.BlobDistributors {
             set { _highwayFactory = value; }
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
-
-        public HighwayUpgraderFactoryBase HighwayUpgraderFactory {
-            get { return _highwayUpgraderFactory; }
-            set { _highwayUpgraderFactory = value; }
-        }
-        [SerializeField] private HighwayUpgraderFactoryBase _highwayUpgraderFactory;
 
         private Dictionary<BlobSiteBase, BlobHighwayBase> LastServedHighwayOnBlobSite = 
             new Dictionary<BlobSiteBase, BlobHighwayBase>();

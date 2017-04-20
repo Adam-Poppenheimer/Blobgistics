@@ -65,21 +65,13 @@ namespace Assets.Highways {
         }
         [SerializeField, HideInInspector] private BlobTubeBase _tubePullingFromSecondEndpoint;
 
-        public override float BlobSpeedEfficiencyCoefficient {
-            get { return _blobSpeedEfficiencyCoefficient; }
+        public override BlobHighwayProfileBase Profile {
+            get { return _profile; }
         }
-        public void SetBlobSpeedEfficiencyCoefficient(float value) {
-            _blobSpeedEfficiencyCoefficient = value;
+        public void SetProfile(BlobHighwayProfileBase value) {
+            _profile = value;
         }
-        [SerializeField] private float _blobSpeedEfficiencyCoefficient;
-
-        public override float MaximumCooldownCoefficientFromEfficiency {
-            get { return _maximumCooldownCoefficientFromEfficiency; }
-        }
-        public void SetMaximumCooldownCoefficientFromEfficiency(float value) {
-            _maximumCooldownCoefficientFromEfficiency = value;
-        }
-        [SerializeField] private float _maximumCooldownCoefficientFromEfficiency;
+        [SerializeField] private BlobHighwayProfileBase _profile;
 
         #endregion
 

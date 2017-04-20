@@ -18,56 +18,20 @@ namespace Assets.Highways {
         #region instance fields and properties
 
         public MapGraphBase MapGraph {
-            get {
-                if(_mapGraph == null) {
-                    throw new InvalidOperationException("MapGraph is uninitialized");
-                } else {
-                    return _mapGraph;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _mapGraph = value;
-                }
-            }
+            get { return _mapGraph; }
+            set { _mapGraph = value; }
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
         public BlobTubeFactoryBase BlobTubeFactory {
-            get {
-                if(_blobTubeFactory == null) {
-                    throw new InvalidOperationException("BlobTubeFactory is uninitialized");
-                } else {
-                    return _blobTubeFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _blobTubeFactory = value;
-                }
-            }
+            get { return _blobTubeFactory; }
+            set { _blobTubeFactory = value; }
         }
         [SerializeField] private BlobTubeFactoryBase _blobTubeFactory;
 
         public ResourceBlobFactoryBase BlobFactory {
-            get {
-                if(_blobFactory == null) {
-                    throw new InvalidOperationException("BlobFactory is uninitialized");
-                } else {
-                    return _blobFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _blobFactory = value;
-                }
-            }
+            get { return _blobFactory; }
+            set { _blobFactory = value; }
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
@@ -82,18 +46,6 @@ namespace Assets.Highways {
             set { _startingProfile = value; }
         }
         [SerializeField] private BlobHighwayProfileBase _startingProfile;
-
-        public float BlobSpeedEfficiencyCoefficient {
-            get { return _blobSpeedEfficiencyCoefficient; }
-            set { _blobSpeedEfficiencyCoefficient = value; }
-        }
-        [SerializeField] private float _blobSpeedEfficiencyCoefficient;
-
-        public float MaximumCooldownCoefficientFromEfficiency {
-            get { return _maximumCooldownCoefficientFromEfficiency; }
-            set { _maximumCooldownCoefficientFromEfficiency = value; }
-        }
-        [SerializeField] private float _maximumCooldownCoefficientFromEfficiency;
 
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
             get { return AllConstructedHighways.AsReadOnly(); }
@@ -186,8 +138,6 @@ namespace Assets.Highways {
             newPrivateData.SetSecondEndpoint(secondEndpoint);
             newPrivateData.SetUIControl(UIControl);
             newPrivateData.SetBlobFactory(BlobFactory);
-            newPrivateData.SetBlobSpeedEfficiencyCoefficient(BlobSpeedEfficiencyCoefficient);
-            newPrivateData.SetMaximumCooldownCoefficientFromEfficiency(MaximumCooldownCoefficientFromEfficiency);
 
             newPrivateData.SetTubePullingFromFirstEndpoint(BlobTubeFactory.ConstructTube(
                 firstEndpoint.transform.position, secondEndpoint.transform.position));
@@ -195,8 +145,9 @@ namespace Assets.Highways {
             newPrivateData.SetTubePullingFromSecondEndpoint(BlobTubeFactory.ConstructTube(
                 secondEndpoint.transform.position, firstEndpoint.transform.position));
 
+            newPrivateData.SetProfile(StartingProfile);
+
             newHighway.PrivateData = newPrivateData;
-            newHighway.Profile = StartingProfile;
 
             AllConstructedHighways.Add(newHighway);
 

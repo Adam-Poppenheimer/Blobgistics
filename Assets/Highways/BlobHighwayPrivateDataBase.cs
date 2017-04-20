@@ -5,7 +5,6 @@ using UnityEngine;
 using Assets.Blobs;
 using Assets.Core;
 using Assets.Map;
-using Assets.HighwayUpgraders;
 
 namespace Assets.Highways {
 
@@ -22,8 +21,7 @@ namespace Assets.Highways {
         public abstract MapNodeBase FirstEndpoint { get; }
         public abstract MapNodeBase SecondEndpoint { get; }
 
-        public abstract float BlobSpeedEfficiencyCoefficient { get; }
-        public abstract float MaximumCooldownCoefficientFromEfficiency { get; }
+        public abstract BlobHighwayProfileBase Profile { get; }
 
         #endregion
 

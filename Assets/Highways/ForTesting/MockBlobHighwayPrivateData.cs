@@ -5,7 +5,6 @@ using System.Text;
 
 using Assets.Map;
 using Assets.Core;
-using Assets.HighwayUpgraders;
 using Assets.Blobs;
 
 namespace Assets.Highways.ForTesting {
@@ -60,17 +59,13 @@ namespace Assets.Highways.ForTesting {
         }
         private MapNodeBase _secondEndpoint;
 
-        public override float BlobSpeedEfficiencyCoefficient {
-            get {
-                throw new NotImplementedException();
-            }
+        public override BlobHighwayProfileBase Profile {
+            get { return _profile; }
         }
-
-        public override float MaximumCooldownCoefficientFromEfficiency {
-            get {
-                throw new NotImplementedException();
-            }
+        public void SetProfile(BlobHighwayProfileBase value) {
+            _profile = value;
         }
+        private BlobHighwayProfileBase _profile;
 
         #endregion
 

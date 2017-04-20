@@ -12,11 +12,9 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.ConstructionZones {
 
-    public abstract class ConstructionPanelBase : MonoBehaviour {
+    public abstract class ConstructionPanelBase : IntelligentPanel {
 
         #region instance fields and properties
-
-        public abstract bool IsActivated { get; }
 
         public abstract MapNodeUISummary LocationToConstruct { get; set; }
 
@@ -25,26 +23,13 @@ namespace Assets.UI.ConstructionZones {
         #region events
 
         public event EventHandler<StringEventArgs> ConstructionRequested;
-
-        public event EventHandler<EventArgs> CloseRequested;
-
-        protected void RaiseEvent<T>(EventHandler<T> handler, T e) where T : EventArgs {
-            if(handler != null) {
-                handler(this, e);
-            }
-        }
+        
 
         protected void RaiseConstructionRequested(string projectName) { RaiseEvent(ConstructionRequested, new StringEventArgs(projectName)); }
-
-        protected void RaiseCloseRequested() { RaiseEvent(CloseRequested, EventArgs.Empty); }
 
         #endregion
 
         #region instance methods
-
-        public abstract void Activate();
-        public abstract void Deactivate();
-        public abstract void Clear();
 
         public abstract void SetPermittedProjects(IEnumerable<ConstructionProjectUISummary> permittedProjects);
 

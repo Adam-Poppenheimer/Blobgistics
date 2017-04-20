@@ -17,31 +17,9 @@ namespace Assets.Core.ForTesting {
 
         #endregion
 
-        public bool IsActive = false;
-
         #endregion
 
         #region instance methods
-
-        #region from HighwayManagerUISummaryDisplayBase
-
-        public override void Activate() {
-            IsActive = true;
-        }
-
-        public override void ClearDisplay() {
-            throw new NotImplementedException();
-        }
-
-        public override void Deactivate() {
-            IsActive = false;
-        }
-
-        public override void UpdateDisplay() {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
         public void RaiseDestructionRequestedEvent() {
             RaiseDestructionRequested();

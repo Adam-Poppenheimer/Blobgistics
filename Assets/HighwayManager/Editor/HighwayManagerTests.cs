@@ -12,6 +12,8 @@ using Assets.Map;
 using Assets.Highways;
 using Assets.HighwayManager.ForTesting;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.HighwayManager.Editor {
 
     public class HighwayManagerTests {
@@ -25,7 +27,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_OnHighwayManagerConstructed_ManagerHasAUniqueID() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -51,7 +56,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_OnHighwayManagerConstructed_GetManagerOfIDReturnsManagerCorrectly() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -73,7 +81,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_OnHighwayManagerConstructed_ManagerHasTheProperLocation() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -95,7 +106,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_OnHighwayManagerConstructed_GetHighwayManagerAtLocationReturnsTheCorrectManager_OrNullIfNoneExists() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -119,7 +133,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_OnDestroyHighwayManagerCalled_HighwayManagerIsDestroyed_AndGetHighwayManagerAtLocationBecomesNull() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -144,7 +161,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_OnUnsubscribeHighwayManagerCalled_GetHighwayManagerAtLocationReturnsNull() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -190,7 +210,10 @@ namespace Assets.HighwayManager.Editor {
             var highwayBetween3And4 = BuildMockBlobHighway(node3, node4);
             var highwayBetween4And5 = BuildMockBlobHighway(node4, node5);
 
-            var managerFactory = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.ManagementRadius = 2;
             managerFactory.MapGraph = mapGraph;
 
@@ -243,7 +266,10 @@ namespace Assets.HighwayManager.Editor {
             var highwayBetween3And4 = BuildMockBlobHighway(node3, node4);
             var highwayBetween4And5 = BuildMockBlobHighway(node4, node5);
 
-            var managerFactory = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.ManagementRadius = 2;
             managerFactory.MapGraph = mapGraph;
 
@@ -295,7 +321,10 @@ namespace Assets.HighwayManager.Editor {
             var highwayBetween3And4 = BuildMockBlobHighway(node3, node4);
             var highwayBetween4And5 = BuildMockBlobHighway(node4, node5);
 
-            var managerFactory = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.ManagementRadius = 2;
             managerFactory.MapGraph = mapGraph;
 
@@ -345,7 +374,10 @@ namespace Assets.HighwayManager.Editor {
 
             var highwayFactory = BuildMockHighwayFactory();
 
-            var managerFactory = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.ManagementRadius = 2;
             managerFactory.MapGraph = mapGraph;
             managerFactory.HighwayFactory = highwayFactory;
@@ -375,7 +407,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_CanConstructHighwayManagerAtLocation_ReturnsFalseIfGetHighwayManagerAtLocationReturnsANonNullValue_AndTrueOtherwise() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -392,7 +427,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_CanConstructManagerAtLocationReturnsFalse_AndConstructManagerCalled_ThrowsHighwayManagerException() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
             var location1 = BuildMockMapNode();
 
             var manager1 = factoryToTest.ConstructHighwayManagerAtLocation(location1);
@@ -406,7 +444,10 @@ namespace Assets.HighwayManager.Editor {
         [Test]
         public void Factory_AnyNullArgumentPassedIntoAnyMethod_ThrowsAppropriateArgumentNullException() {
             //Setup
-            var factoryToTest = BuildHighwayManagerFactory();
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
 
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
@@ -443,7 +484,7 @@ namespace Assets.HighwayManager.Editor {
         #region for HighwayManager
 
         [Test]
-        public void OnTickConsumptionIsCalled_ConsumptionPerformedAtSpecifiedRate_WithHighwaysGottenFromParentFactory_AndLastCalculatedUpkeepIsSetProperly() {
+        public void OnTickConsumptionIsCalled_AndConsumptionPerformed_HighwaysAreGottenFromFactory_WithUpkeepDeterminedByTheirUpkeepRequests() {
             //Setup
             var mapGraph = BuildMockMapGraph();
             var node1 = mapGraph.BuildNode(Vector3.zero);
@@ -451,112 +492,45 @@ namespace Assets.HighwayManager.Editor {
             var node3 = mapGraph.BuildNode(Vector3.right * 8);
             var node4 = mapGraph.BuildNode(Vector3.right * 12);
             var node5 = mapGraph.BuildNode(Vector3.right * 16);
+            
+            node1.name = "Node1";
+            node2.name = "Node2";
+            node3.name = "Node3";
+            node4.name = "Node4";
+            node5.name = "Node5";
 
-            node1.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
-            node1.BlobSite.SetCapacityForResourceType(ResourceType.Food, 100);
-            node1.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
-            node1.BlobSite.SetCapacityForResourceType(ResourceType.Yellow, 100);
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                node1.BlobSite.SetPlacementPermissionForResourceType(resourceType, true);
+                node1.BlobSite.SetCapacityForResourceType(resourceType, 10);
+                node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(resourceType));
+            }
             node1.BlobSite.TotalCapacity = 100;
-            for(int i = 0; i < 3; ++i) {
-                node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Food));
-            }
-            for(int i = 0; i < 4; ++i) {
-                node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Yellow));
-            }
 
             mapGraph.AddUndirectedEdge(node1, node2);
             mapGraph.AddUndirectedEdge(node2, node3);
             mapGraph.AddUndirectedEdge(node3, node4);
+            mapGraph.AddUndirectedEdge(node4, node5);
 
             var highwayFactory = BuildMockHighwayFactory();
+
+            var privateData = BuildManagerPrivateData();
+            privateData.SetSecondsToPerformConsumption(1f);
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var managerFactory = BuildHighwayManagerFactory(privateData);
+            managerFactory.MapGraph = mapGraph;
+            managerFactory.HighwayFactory = highwayFactory;
+            managerFactory.ManagementRadius = 4;
 
             var highwayBetween1And2 = highwayFactory.ConstructHighwayBetween(node1, node2);
             var highwayBetween2And3 = highwayFactory.ConstructHighwayBetween(node2, node3);
             var highwayBetween3And4 = highwayFactory.ConstructHighwayBetween(node3, node4);
+            var highwayBetween4And5 = highwayFactory.ConstructHighwayBetween(node4, node5);
 
-
-            var testProfile = BuildHighwayProfile(ResourceSummary.BuildResourceSummary(
-                highwayBetween1And2.gameObject, 
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1)
-            ));
-
-            highwayBetween1And2.Profile = testProfile;
-            highwayBetween2And3.Profile = testProfile;
-            highwayBetween3And4.Profile = testProfile;
-
-            var managerFactory = BuildHighwayManagerFactory();
-            managerFactory.MapGraph = mapGraph;
-            managerFactory.HighwayFactory = highwayFactory;
-            managerFactory.ManagementRadius = 2;
-            managerFactory.SecondsForManagerToPerformConsumption = 1f;
-            managerFactory.NeedStockpileCoefficient = 5;
-            managerFactory.BlobFactory = BuildMockBlobFactory();
-
-            managerFactory.SubscribeHighway(highwayBetween1And2);
-            managerFactory.SubscribeHighway(highwayBetween2And3);
-            managerFactory.SubscribeHighway(highwayBetween3And4);
-
-            var managerToTest = managerFactory.ConstructHighwayManagerAtLocation(node1);
-
-            //Execution
-            managerToTest.TickConsumption(0.5f);
-            managerToTest.TickConsumption(0.5f);
-            managerToTest.TickConsumption(0.5f);
-
-            //Validation
-            Assert.AreEqual(0, node1.BlobSite.GetCountOfContentsOfType(ResourceType.Food),   "BlobSite was left with an incorrect amount of food");
-            Assert.AreEqual(1, node1.BlobSite.GetCountOfContentsOfType(ResourceType.Yellow), "BlobSite was left with an incorrect amount of yellow");
-
-            Assert.AreEqual(3, managerToTest.LastCalculatedUpkeep[ResourceType.Food],   "LastCalculatedUpkeep has the wrong food value");
-            Assert.AreEqual(3, managerToTest.LastCalculatedUpkeep[ResourceType.Yellow], "LastCalculatedUpkeep has the wrong yellow value");
-        }
-
-        [Test]
-        public void OnTickConsumptionIsCalled_AndConsumptionPerformed_EfficienciesOfAllParticipantsAreSetToThePercentageOfNeedsConsumed() {
-            //Setup
-            var mapGraph = BuildMockMapGraph();
-            var node1 = mapGraph.BuildNode(Vector3.zero);
-            var node2 = mapGraph.BuildNode(Vector3.right * 4);
-            var node3 = mapGraph.BuildNode(Vector3.right * 8);
-            var node4 = mapGraph.BuildNode(Vector3.right * 12);
-            var node5 = mapGraph.BuildNode(Vector3.right * 16);
-
-            node1.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
-            node1.BlobSite.SetCapacityForResourceType(ResourceType.Food, 100);
-            node1.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
-            node1.BlobSite.SetCapacityForResourceType(ResourceType.Yellow, 100);
-            node1.BlobSite.TotalCapacity = 100;
-            node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Food));
-            node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Yellow));
-
-            mapGraph.AddUndirectedEdge(node1, node2);
-            mapGraph.AddUndirectedEdge(node2, node3);
-
-            var highwayFactory = BuildMockHighwayFactory();
-
-            var highwayBetween1And2 = highwayFactory.ConstructHighwayBetween(node1, node2);
-            var highwayBetween2And3 = highwayFactory.ConstructHighwayBetween(node2, node3);
-
-            var testProfile = BuildHighwayProfile(ResourceSummary.BuildResourceSummary(
-                highwayBetween1And2.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1)
-            ));
-
-            highwayBetween1And2.Profile = testProfile;
-            highwayBetween2And3.Profile = testProfile;
-
-            var managerFactory = BuildHighwayManagerFactory();
-            managerFactory.MapGraph = mapGraph;
-            managerFactory.HighwayFactory = highwayFactory;
-            managerFactory.ManagementRadius = 2;
-            managerFactory.SecondsForManagerToPerformConsumption = 1f;
-            managerFactory.NeedStockpileCoefficient = 5;
-            managerFactory.BlobFactory = BuildMockBlobFactory();
-
-            managerFactory.SubscribeHighway(highwayBetween1And2);
-            managerFactory.SubscribeHighway(highwayBetween2And3);
+            highwayBetween1And2.IsRequestingFood   = true;
+            highwayBetween2And3.IsRequestingYellow = true;
+            highwayBetween3And4.IsRequestingWhite  = true;
+            highwayBetween4And5.IsRequestingBlue   = true;
 
             var managerToTest = managerFactory.ConstructHighwayManagerAtLocation(node1);
 
@@ -564,9 +538,154 @@ namespace Assets.HighwayManager.Editor {
             managerToTest.TickConsumption(1f);
 
             //Validation
-            Assert.AreEqual(0.5f, managerToTest.LastCalculatedEfficiency, "The HighwayManager has the wrong LastCalculatedEfficiency");
-            Assert.AreEqual(0.5f, highwayBetween1And2.Efficiency, "The highway between node1 and node2 has the wrong efficiency");
-            Assert.AreEqual(0.5f, highwayBetween2And3.Efficiency, "The highway between node2 and node3 has the wrong efficiency");
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Food],   "Manager records an incorrect food upkeep"  );
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Yellow], "Manager records an incorrect yellow upkeep");
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.White],  "Manager records an incorrect white upkeep" );
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Blue],   "Manager records an incorrect blue upkeep"  );
+        }
+
+        [Test]
+        public void OnTickConsumptionIsCalled_ConsumptionRateDeterminedBySecondsToPerformConsumption() {
+            //Setup
+            var mapGraph = BuildMockMapGraph();
+            var node1 = mapGraph.BuildNode(Vector3.zero);
+            var node2 = mapGraph.BuildNode(Vector3.right * 4);
+            var node3 = mapGraph.BuildNode(Vector3.right * 8);
+            var node4 = mapGraph.BuildNode(Vector3.right * 12);
+            var node5 = mapGraph.BuildNode(Vector3.right * 16);
+
+            node1.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            node1.BlobSite.SetCapacityForResourceType(ResourceType.Food, 100);
+            node1.BlobSite.TotalCapacity = 100;
+
+            node2.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            node2.BlobSite.SetCapacityForResourceType(ResourceType.Food, 100);
+            node2.BlobSite.TotalCapacity = 100;
+
+            for(int i = 0; i < 100; ++i) {
+                node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Food));
+                node5.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Food));
+            }
+            
+            node1.name = "Node1";
+            node2.name = "Node2";
+            node3.name = "Node3";
+            node4.name = "Node4";
+            node5.name = "Node5";
+
+            mapGraph.AddUndirectedEdge(node1, node2);
+            mapGraph.AddUndirectedEdge(node2, node3);
+            mapGraph.AddUndirectedEdge(node3, node4);
+            mapGraph.AddUndirectedEdge(node4, node5);
+
+            var highwayFactory = BuildMockHighwayFactory();
+
+            var privateData = BuildManagerPrivateData();
+            privateData.SetSecondsToPerformConsumption(1f);
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var managerFactory = BuildHighwayManagerFactory(privateData);
+            managerFactory.MapGraph = mapGraph;
+            managerFactory.HighwayFactory = highwayFactory;
+            managerFactory.ManagementRadius = 2;
+
+            var highwayBetween1And2 = highwayFactory.ConstructHighwayBetween(node1, node2);
+            var highwayBetween4And5 = highwayFactory.ConstructHighwayBetween(node4, node5);
+
+            highwayBetween1And2.IsRequestingFood = true;
+            highwayBetween4And5.IsRequestingFood = true;
+
+            var managerAtNode1 = managerFactory.ConstructHighwayManagerAtLocation(node1);
+            var managerAtNode2 = managerFactory.ConstructHighwayManagerAtLocation(node5);
+
+            //Execution
+            managerAtNode1.TickConsumption(10f);
+            privateData.SetSecondsToPerformConsumption(2f);
+            managerAtNode2.TickConsumption(10f);
+
+            //Validation
+            Assert.AreEqual(90, node1.BlobSite.GetCountOfContentsOfType(ResourceType.Food), "Node1 has an incorrect amount of food remaining");
+            Assert.AreEqual(95, node5.BlobSite.GetCountOfContentsOfType(ResourceType.Food), "Node5 has an incorrect amount of food remaining");
+        }
+
+        [Test]
+        public void OnConsumptionPerformed_HighwaysAreGivenEfficienciesBasedOnWhatUpkeepIsConsumed_AndAreAddressedInPriorityOrder() {
+            //Setup
+            var mapGraph = BuildMockMapGraph();
+            var node1 = mapGraph.BuildNode(Vector3.zero);
+            var node2 = mapGraph.BuildNode(Vector3.right * 4);
+            var node3 = mapGraph.BuildNode(Vector3.right * 8);
+            var node4 = mapGraph.BuildNode(Vector3.right * 12);
+            var node5 = mapGraph.BuildNode(Vector3.right * 16);
+            
+            node1.name = "Node1";
+            node2.name = "Node2";
+            node3.name = "Node3";
+            node4.name = "Node4";
+            node5.name = "Node5";
+
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                node1.BlobSite.SetPlacementPermissionForResourceType(resourceType, true);
+                node1.BlobSite.SetCapacityForResourceType(resourceType, 10);
+                node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(resourceType));
+            }
+            node1.BlobSite.TotalCapacity = 100;
+            node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Food));
+
+            mapGraph.AddUndirectedEdge(node1, node2);
+            mapGraph.AddUndirectedEdge(node2, node3);
+            mapGraph.AddUndirectedEdge(node3, node4);
+            mapGraph.AddUndirectedEdge(node4, node5);
+            mapGraph.AddUndirectedEdge(node5, node1);
+
+            var highwayFactory = BuildMockHighwayFactory();
+
+            var privateData = BuildManagerPrivateData();
+            privateData.SetSecondsToPerformConsumption(1f);
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+            privateData.SetEfficiencyGainFromFood(3);
+            privateData.SetEfficiencyGainFromYellow(5);
+            privateData.SetEfficiencyGainFromWhite(8);
+            privateData.SetEfficiencyGainFromBlue(13);
+
+            var managerFactory = BuildHighwayManagerFactory(privateData);
+            managerFactory.MapGraph = mapGraph;
+            managerFactory.HighwayFactory = highwayFactory;
+            managerFactory.ManagementRadius = 4;
+
+            var highway1 = highwayFactory.ConstructHighwayBetween(node1, node2);
+            var highway2 = highwayFactory.ConstructHighwayBetween(node2, node3);
+            var highway3 = highwayFactory.ConstructHighwayBetween(node3, node4);
+            var highway4 = highwayFactory.ConstructHighwayBetween(node4, node5);
+            var highway5 = highwayFactory.ConstructHighwayBetween(node5, node1);
+
+            highway1.IsRequestingFood   = true;
+            highway2.IsRequestingYellow = true;
+            highway3.IsRequestingWhite  = true;
+            highway4.IsRequestingBlue   = true;
+
+            highway5.IsRequestingFood   = true;
+            highway5.IsRequestingYellow = true;
+            highway5.IsRequestingWhite  = true;
+            highway5.IsRequestingBlue   = true;
+
+            highway1.Priority = 0;
+            highway2.Priority = 0;
+            highway3.Priority = 0;
+            highway4.Priority = 0;
+            highway5.Priority = 1;
+
+            var managerToTest = managerFactory.ConstructHighwayManagerAtLocation(node1);
+
+            //Execution
+            managerToTest.TickConsumption(1f);
+
+            //Validation
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromFood,   highway1.Efficiency, "Highway1 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromYellow, highway2.Efficiency, "Highway2 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromWhite,  highway3.Efficiency, "Highway3 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromBlue,   highway4.Efficiency, "Highway4 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromFood,   highway5.Efficiency, "Highway5 has an incorrect efficiency");
         }
 
         #endregion
@@ -575,9 +694,14 @@ namespace Assets.HighwayManager.Editor {
 
         #region utilities
 
-        private HighwayManagerFactory BuildHighwayManagerFactory() {
+        private HighwayManagerFactory BuildHighwayManagerFactory(HighwayManagerPrivateData privateData) {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<HighwayManagerFactory>();
+            var newFactory = hostingObject.AddComponent<HighwayManagerFactory>();
+
+            newFactory.ManagerPrivateData = privateData;
+            privateData.SetParentFactory(newFactory);
+
+            return newFactory;
         }
 
         private HighwayManager BuildHighwayManager() {
@@ -612,11 +736,9 @@ namespace Assets.HighwayManager.Editor {
             return newBlob;
         }
 
-        private BlobHighwayProfile BuildHighwayProfile(ResourceSummary upkeep) {
+        private BlobHighwayProfile BuildHighwayProfile() {
             var hostingObject = new GameObject();
-            var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
-            newProfile.SetUpkeep(upkeep);
-            return newProfile;
+            return hostingObject.AddComponent<BlobHighwayProfile>();
         }
 
         private MockBlobHighwayFactory BuildMockHighwayFactory() {
@@ -627,6 +749,11 @@ namespace Assets.HighwayManager.Editor {
         private MockResourceBlobFactory BuildMockBlobFactory() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockResourceBlobFactory>();
+        }
+
+        private HighwayManagerPrivateData BuildManagerPrivateData() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<HighwayManagerPrivateData>();
         }
 
         #endregion

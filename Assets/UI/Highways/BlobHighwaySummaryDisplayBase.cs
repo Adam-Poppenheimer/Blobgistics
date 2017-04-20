@@ -12,14 +12,11 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Highways {
 
-    public abstract class BlobHighwaySummaryDisplayBase : MonoBehaviour {
+    public abstract class BlobHighwaySummaryDisplayBase : IntelligentPanel {
 
         #region instance fields and properties
 
         public abstract BlobHighwayUISummary CurrentSummary { get; set; }
-
-        public abstract bool CanBeUpgraded { get; set; }
-        public abstract bool IsBeingUpgraded { get; set; }
 
         #endregion
 
@@ -30,8 +27,7 @@ namespace Assets.UI.Highways {
         public event EventHandler<ResourcePermissionEventArgs> FirstEndpointResourcePermissionChanged;
         public event EventHandler<ResourcePermissionEventArgs> SecondEndpointResourcePermissionChanged;
 
-        public event EventHandler<EventArgs> BeginHighwayUpgradeRequested;
-        public event EventHandler<EventArgs> CancelHighwayUpgradeRequested;
+        public event EventHandler<UpkeepRequestEventArgs> ResourceRequestedForUpkeep;
 
         protected void RaisePriorityChanged(int newPriority) { RaiseEvent(PriorityChanged, new IntEventArgs(newPriority)); }
 
@@ -43,24 +39,15 @@ namespace Assets.UI.Highways {
             RaiseEvent(SecondEndpointResourcePermissionChanged, new ResourcePermissionEventArgs(typeChanged, isNowPermitted));
         }
 
-        protected void RaiseBeginHighwayUpgradeRequested() { RaiseEvent(BeginHighwayUpgradeRequested, EventArgs.Empty); }
-        protected void RaiseCancelHighwayUpgradeRequested() { RaiseEvent(CancelHighwayUpgradeRequested, EventArgs.Empty); }
+        protected void RaiseResourceRequestedForUpkeep(ResourceType type, bool isBeingRequested) {
+            RaiseEvent(ResourceRequestedForUpkeep, new UpkeepRequestEventArgs(type, isBeingRequested));
+        }
 
         protected void RaiseEvent<T>(EventHandler<T> handler, T e) where T : EventArgs{
             if(handler != null) {
                 handler(this, e);
             }
         }
-
-        #endregion
-
-        #region instance methods
-
-        public abstract void Activate();
-        public abstract void Deactivate();
-
-        public abstract void UpdateDisplay();
-        public abstract void ClearDisplay();
 
         #endregion
 

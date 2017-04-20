@@ -40,15 +40,6 @@ namespace Assets.Highways {
         }
         [SerializeField] private int _priority = Int32.MaxValue;
 
-        public override BlobHighwayProfileBase Profile {
-            get { return _profile; }
-            set {
-                _profile = value;
-                UpdateTubesFromProfile();
-            }
-        }
-        [SerializeField] private BlobHighwayProfileBase _profile;
-
         public override MapNodeBase FirstEndpoint {
             get { return PrivateData.FirstEndpoint; }
         }
@@ -65,22 +56,27 @@ namespace Assets.Highways {
             get { return PrivateData.TubePullingFromSecondEndpoint.Contents; }
         }
 
+        public override BlobHighwayProfileBase Profile {
+            get { return PrivateData.Profile; }
+        }
+
         public override float Efficiency {
             get { return _efficiency; }
             set {
                 _efficiency = value;
-                var speedForTubes = Profile.BlobSpeedPerSecond * (1 - ((1f - _efficiency) * PrivateData.BlobSpeedEfficiencyCoefficient));
-                PrivateData.TubePullingFromFirstEndpoint.TransportSpeedPerSecond  = speedForTubes;
-                PrivateData.TubePullingFromSecondEndpoint.TransportSpeedPerSecond = speedForTubes;
+                UpdateTubeSpeedAndCapacity();
             }
         }
         private float _efficiency = 1f;
 
         public override float BlobPullCooldownInSeconds {
-            get {
-                return Profile.BlobPullCooldownInSeconds * (1 + (1 - Efficiency) * PrivateData.MaximumCooldownCoefficientFromEfficiency);
-            }
+            get { return Profile.BlobPullCooldownInSeconds / Efficiency; }
         }
+
+        public override bool IsRequestingFood   { get; set; }
+        public override bool IsRequestingYellow { get; set; }
+        public override bool IsRequestingWhite  { get; set; }
+        public override bool IsRequestingBlue   { get; set; }
 
         #endregion
 
@@ -93,6 +89,7 @@ namespace Assets.Highways {
                     _privateData = value;
                     _privateData.TubePullingFromFirstEndpoint.BlobReachedEndOfTube += TubePullingFromFirstEndpoint_BlobReachedEndOfTube;
                     _privateData.TubePullingFromSecondEndpoint.BlobReachedEndOfTube += TubePullingFromSecondEndpoint_BlobReachedEndOfTube;
+                    UpdateTubeSpeedAndCapacity();
                     UpdateTubeEndpoints();
                 }
             }
@@ -106,6 +103,12 @@ namespace Assets.Highways {
 
         #region Unity event methods
 
+        private void Start() {
+            if(PrivateData != null) {
+                UpdateTubeSpeedAndCapacity();
+            }
+        }
+
         private void OnDestroy() {
             if(PrivateData != null && PrivateData.UIControl != null) {
                 PrivateData.UIControl.PushObjectDestroyedEvent(new BlobHighwayUISummary(this));
@@ -114,7 +117,7 @@ namespace Assets.Highways {
 
         private void OnValidate() {
             if(PrivateData != null) {
-                UpdateTubesFromProfile();
+                UpdateTubeSpeedAndCapacity();
             }            
         }
 
@@ -264,12 +267,12 @@ namespace Assets.Highways {
             return retval;
         }
 
-        private void UpdateTubesFromProfile() {
-            PrivateData.TubePullingFromFirstEndpoint.TransportSpeedPerSecond = _profile.BlobSpeedPerSecond;
-            PrivateData.TubePullingFromFirstEndpoint.Capacity = _profile.Capacity;
+        private void UpdateTubeSpeedAndCapacity() {
+            PrivateData.TubePullingFromFirstEndpoint.TransportSpeedPerSecond = Profile.BlobSpeedPerSecond * Efficiency;
+            PrivateData.TubePullingFromFirstEndpoint.Capacity = Profile.Capacity;
 
-            PrivateData.TubePullingFromSecondEndpoint.TransportSpeedPerSecond = _profile.BlobSpeedPerSecond;
-            PrivateData.TubePullingFromSecondEndpoint.Capacity = _profile.Capacity;
+            PrivateData.TubePullingFromSecondEndpoint.TransportSpeedPerSecond = Profile.BlobSpeedPerSecond * Efficiency;
+            PrivateData.TubePullingFromSecondEndpoint.Capacity = Profile.Capacity;
         }
 
         private void UpdateTubeEndpoints() {

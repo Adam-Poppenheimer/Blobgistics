@@ -40,7 +40,7 @@ namespace Assets.UI.ConstructionZones.Editor {
             controlToTest.PushSelectEvent(locationToConstruct, eventData);
 
             //Validation
-            Assert.That(constructionPanel.IsActivated, "ConstructionPanel was not activated");
+            Assert.That(constructionPanel.isActiveAndEnabled, "ConstructionPanel was not activated");
             Assert.AreEqual(locationToConstruct, constructionPanel.LocationToConstruct, "ConstructionPanel has the wrong LocationToConstruct");
         }
 
@@ -103,17 +103,17 @@ namespace Assets.UI.ConstructionZones.Editor {
             //Execution and Validation
             constructionPanel.RaiseConstructionRequest("Resource Depot");
             Assert.AreEqual("Resource Depot", lastConstructionRequested, "Resource Depot construction request did not forward to SimulationControl");
-            Assert.IsFalse(constructionPanel.IsActivated, "ConstructionPanel was not deactivated after the Resource Depot request was sent");
+            Assert.IsFalse(constructionPanel.isActiveAndEnabled, "ConstructionPanel was not deactivated after the Resource Depot request was sent");
 
             constructionPanel.Activate();
             constructionPanel.RaiseConstructionRequest("Farmland");
             Assert.AreEqual("Farmland", lastConstructionRequested, "Farmland construction request did not forward to SimulationControl");
-            Assert.IsFalse(constructionPanel.IsActivated, "ConstructionPanel was not deactivated after the Farmland request was sent");
+            Assert.IsFalse(constructionPanel.isActiveAndEnabled, "ConstructionPanel was not deactivated after the Farmland request was sent");
 
             constructionPanel.Activate();
             constructionPanel.RaiseConstructionRequest("Village");
             Assert.AreEqual("Village", lastConstructionRequested, "Village construction request did not forward to SimulationControl");
-            Assert.IsFalse(constructionPanel.IsActivated, "ConstructionPanel was not deactivated after the Village request was sent");
+            Assert.IsFalse(constructionPanel.isActiveAndEnabled, "ConstructionPanel was not deactivated after the Village request was sent");
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace Assets.UI.ConstructionZones.Editor {
 
             //Validation
             Assert.That(constructionPanel.HasBeenCleared, "ConstructionPanel has not been cleared");
-            Assert.IsFalse(constructionPanel.IsActivated, "ConstructionPanel is still activated");
+            Assert.IsFalse(constructionPanel.isActiveAndEnabled, "ConstructionPanel is still activated");
         }
 
         #endregion

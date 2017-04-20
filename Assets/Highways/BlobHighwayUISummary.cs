@@ -6,7 +6,6 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Blobs;
-using Assets.HighwayUpgraders;
 
 using UnityCustomUtilities.Extensions;
 
@@ -20,6 +19,8 @@ namespace Assets.Highways {
 
         public int Priority { get; set; }
 
+        public float Efficiency { get; set; }
+
         public Transform Transform { get; set; }
 
         public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint1 { get; set; }
@@ -32,6 +33,11 @@ namespace Assets.Highways {
         public Vector3 FirstEndpoint  { get; set; }
         public Vector3 SecondEndpoint { get; set; }
 
+        public bool IsRequestingFoodUpkeep   { get; set; }
+        public bool IsRequestingYellowUpkeep { get; set; }
+        public bool IsRequestingWhiteUpkeep  { get; set; }
+        public bool IsRequestingBlueUpkeep   { get; set; }
+
         #endregion
 
         #region constructors
@@ -41,6 +47,7 @@ namespace Assets.Highways {
         public BlobHighwayUISummary(BlobHighwayBase highwayToSummarize) {
             ID = highwayToSummarize.ID;
             Priority = highwayToSummarize.Priority;
+            Efficiency = highwayToSummarize.Efficiency;
             Transform = highwayToSummarize.transform;
 
             ResourcePermissionsForEndpoint1 = new Dictionary<ResourceType, bool>();
@@ -57,6 +64,11 @@ namespace Assets.Highways {
             highwayToSummarize.GetEndpointPositions(out firstEndpoint, out secondEndpoint);
             FirstEndpoint = firstEndpoint;
             SecondEndpoint = secondEndpoint;
+
+            IsRequestingFoodUpkeep   = highwayToSummarize.IsRequestingFood;
+            IsRequestingYellowUpkeep = highwayToSummarize.IsRequestingYellow;
+            IsRequestingWhiteUpkeep  = highwayToSummarize.IsRequestingWhite;
+            IsRequestingBlueUpkeep   = highwayToSummarize.IsRequestingBlue;
         }
 
         #endregion

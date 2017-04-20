@@ -15,8 +15,6 @@ namespace Assets.HighwayManager {
 
         public int ID { get; set; }
 
-        public float LastEfficiency { get; set; }
-
         public ReadOnlyDictionary<ResourceType, int> LastUpkeep { get; set; }
 
         #endregion
@@ -27,7 +25,6 @@ namespace Assets.HighwayManager {
 
         public HighwayManagerUISummary(HighwayManagerBase manager) {
             ID = manager.ID;
-            LastEfficiency = manager.LastCalculatedEfficiency;
             LastUpkeep = manager.LastCalculatedUpkeep;
         }
 

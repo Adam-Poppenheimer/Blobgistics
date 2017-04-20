@@ -41,7 +41,7 @@ namespace Assets.UI.ConstructionZones.Editor {
             controlToTest.PushSelectEvent(zoneToSelect, eventData);
 
             //Validation
-            Assert.That(zonePanel.IsActivated, "ConstructionZoneDisplay was not activated");
+            Assert.That(zonePanel.isActiveAndEnabled, "ConstructionZoneDisplay was not activated");
             Assert.AreEqual(zoneToSelect, zonePanel.CurrentSummary, "ConstructionZoneDisplay has the wrong SummaryToDisplay");
         }
 
@@ -85,11 +85,11 @@ namespace Assets.UI.ConstructionZones.Editor {
             zonePanel.Activate();
 
             //Execution
-            zonePanel.GenerateCloseRequest();
+            zonePanel.GenerateDeactivationRequest();
 
             //Validation
             Assert.That(zonePanel.HasBeenCleared, "ZonePanel was not cleared");
-            Assert.IsFalse(zonePanel.IsActivated, "ZonePanel is still activated");
+            Assert.IsFalse(zonePanel.isActiveAndEnabled, "ZonePanel is still activated");
         }
 
         #endregion

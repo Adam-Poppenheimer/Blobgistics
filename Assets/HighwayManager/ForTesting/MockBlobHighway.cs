@@ -42,15 +42,7 @@ namespace Assets.HighwayManager.ForTesting {
             }
         }
 
-        public override int Priority {
-            get {
-                throw new NotImplementedException();
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
-        }
+        public override int Priority { get; set; }
 
         public override float BlobPullCooldownInSeconds {
             get {
@@ -58,7 +50,11 @@ namespace Assets.HighwayManager.ForTesting {
             }
         }
 
-        public override BlobHighwayProfileBase Profile { get; set; }
+        public override BlobHighwayProfileBase Profile {
+            get {
+                throw new NotFiniteNumberException();
+            }
+        }
 
         public override MapNodeBase SecondEndpoint {
             get { return _secondEndpoint; }
@@ -69,6 +65,11 @@ namespace Assets.HighwayManager.ForTesting {
         private MapNodeBase _secondEndpoint;
 
         public override float Efficiency { get; set; }
+
+        public override bool IsRequestingFood   { get; set; }
+        public override bool IsRequestingYellow { get; set; }
+        public override bool IsRequestingWhite  { get; set; }
+        public override bool IsRequestingBlue   { get; set; }
 
         #endregion
 

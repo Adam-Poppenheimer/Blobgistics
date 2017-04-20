@@ -29,22 +29,6 @@ namespace Assets.Highways {
         }
         [SerializeField] private int _capacity;
 
-        public override ResourceSummary Cost {
-            get { return _cost; }
-        }
-        public void SetCost(ResourceSummary value) {
-            _cost = value;
-        }
-        [SerializeField] private ResourceSummary _cost;
-
-        public override ResourceSummary Upkeep {
-            get { return _upkeep; }
-        }
-        public void SetUpkeep(ResourceSummary value) {
-            _upkeep = value;
-        }
-        [SerializeField] private ResourceSummary _upkeep;
-
         public override float BlobPullCooldownInSeconds {
             get { return _blobPullCooldownInSeconds; }
         }

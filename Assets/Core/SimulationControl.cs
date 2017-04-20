@@ -11,9 +11,9 @@ using Assets.Blobs;
 using Assets.Societies;
 using Assets.ResourceDepots;
 using Assets.ConstructionZones;
-using Assets.HighwayUpgraders;
 using Assets.BlobDistributors;
 using Assets.HighwayManager;
+using Assets.Generator;
 
 namespace Assets.Core {
 
@@ -24,7 +24,6 @@ namespace Assets.Core {
         private static string HighwayIDErrorMessage = "There exists no Highway with ID {0}";
         private static string SocietyIDErrorMessage = "There exists no Society with ID {0}";
         private static string ConstructionZoneIDErrorMessage = "There exists no ConstructionZone with ID {0}";
-        private static string HighwayUpgraderIDErrorMessage = "The highway with ID {0} has no HighwayUpgrader targeting it";
         private static string MapNodeIDErrorMessage = "There exists no MapNode with ID {0}";
         private static string DepotIDErrorMessage = "There exists no ResourceDepot with ID {0}";
         private static string HighwayManagerIDErrorMessage = "There exists no HighwayManager with ID {0}";
@@ -34,128 +33,38 @@ namespace Assets.Core {
         #region instance fields and properties
 
         public MapGraphBase MapGraph {
-            get {
-                if(_mapGraph == null) {
-                    throw new InvalidOperationException("MapGraph is uninitialized");
-                } else {
-                    return _mapGraph;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _mapGraph = value;
-                }
-            }
+            get { return _mapGraph; }
+            set { _mapGraph = value; }
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
         public BlobHighwayFactoryBase HighwayFactory {
-            get {
-                if(_highwayFactory == null) {
-                    throw new InvalidOperationException("HighwayFactory is uninitialized");
-                } else {
-                    return _highwayFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _highwayFactory = value;
-                }
-            }
+            get { return _highwayFactory; }
+            set { _highwayFactory = value; }
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
         public SocietyFactoryBase SocietyFactory {
-            get {
-                if(_societyFactory == null) {
-                    throw new InvalidOperationException("SocietyFactory is uninitialized");
-                } else {
-                    return _societyFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _societyFactory = value;
-                }
-            }
+            get { return _societyFactory; }
+            set { _societyFactory = value; }
         }
         [SerializeField] private SocietyFactoryBase _societyFactory;
 
         public ConstructionZoneFactoryBase ConstructionZoneFactory {
-            get {
-                if(_constructionZoneFactory == null) {
-                    throw new InvalidOperationException("ConstructionZoneFactory is uninitialized");
-                } else {
-                    return _constructionZoneFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _constructionZoneFactory = value;
-                }
-            }
+            get { return _constructionZoneFactory; }
+            set { _constructionZoneFactory = value; }
         }
         [SerializeField] private ConstructionZoneFactoryBase _constructionZoneFactory;
 
-        public HighwayUpgraderFactoryBase HighwayUpgraderFactory {
-            get {
-                if(_highwayUpgraderFactory == null) {
-                    throw new InvalidOperationException("HighwayUpgraderFactory is uninitialized");
-                } else {
-                    return _highwayUpgraderFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _highwayUpgraderFactory = value;
-                }
-            }
-        }
-        [SerializeField] private HighwayUpgraderFactoryBase _highwayUpgraderFactory;
-
         public ResourceDepotFactoryBase ResourceDepotFactory {
-            get {
-                if(_resourceDepotFactory == null) {
-                    throw new InvalidOperationException("ResourceDepotFactory is uninitialized");
-                } else {
-                    return _resourceDepotFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _resourceDepotFactory = value;
-                }
-            }
+            get { return _resourceDepotFactory; }
+            set { _resourceDepotFactory = value; }
         }
         [SerializeField] private ResourceDepotFactoryBase _resourceDepotFactory;
 
         public ResourceBlobFactoryBase BlobFactory {
-            get {
-                if(_blobFactory == null) {
-                    throw new InvalidOperationException("BlobFactory is uninitialized");
-                } else {
-                    return _blobFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _blobFactory = value;
-                }
-            }
+            get { return _blobFactory; }
+            set { _blobFactory = value; }
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
@@ -170,6 +79,12 @@ namespace Assets.Core {
             set { _blobDistributor = value; }
         }
         [SerializeField] private BlobDistributorBase _blobDistributor;
+
+        public ResourceGeneratorFactory GeneratorFactory {
+            get { return _generatorFactory; }
+            set { _generatorFactory = value; }
+        }
+        [SerializeField] private ResourceGeneratorFactory _generatorFactory;
 
         #endregion
 
@@ -197,20 +112,6 @@ namespace Assets.Core {
                 return false;
             }else {
                 return HighwayFactory.CanConstructHighwayBetween(node1, node2);
-            }
-        }
-
-        public override bool CanCreateHighwayUpgraderOnHighway(int highwayID) {
-            var highway = HighwayFactory.GetHighwayOfID(highwayID);
-
-            if(highway != null) {
-                var hasProfileToUpgradeTo = HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highway.Profile) != null;
-                var hasUpgraderTargetingHighwayAlready = HighwayUpgraderFactory.HasUpgraderTargetingHighway(highway);
-                var hasHighwayManager = HighwayManagerFactory.GetManagerServingHighway(highway) != null;
-                return hasProfileToUpgradeTo && !hasUpgraderTargetingHighwayAlready && hasHighwayManager;
-            }else {
-                Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
-                return false;
             }
         }
 
@@ -294,22 +195,6 @@ namespace Assets.Core {
             }
         }
 
-        public override void CreateHighwayUpgraderOnHighway(int highwayID) {
-            var highway = HighwayFactory.GetHighwayOfID(highwayID);
-
-            if(highway == null) {
-                Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
-            }else{
-                var edgeBlobSite = MapGraph.GetEdge(highway.FirstEndpoint, highway.SecondEndpoint).BlobSite;
-                if(!CanCreateHighwayUpgraderOnHighway(highwayID)) {
-                    Debug.LogErrorFormat("A HighwayUpgrader cannot be built targeting highway {0}", highway);
-                }else {
-                    HighwayUpgraderFactory.BuildHighwayUpgrader(highway, edgeBlobSite,
-                        HighwayUpgraderFactory.GetNextProfileInUpgradeChain(highway.Profile));
-                }
-            }
-        }
-
         public override void DestroyConstructionZone(int zoneID) {
             var zoneToDestroy = ConstructionZoneFactory.GetConstructionZoneOfID(zoneID);
             if(zoneToDestroy != null) {
@@ -325,32 +210,6 @@ namespace Assets.Core {
                 HighwayFactory.DestroyHighway(highwayToDestroy);
             }else {
                 Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
-            }
-        }
-
-        public override bool HasHighwayUpgraderOnHighway(int highwayID) {
-            var chosenHighway = HighwayFactory.GetHighwayOfID(highwayID);
-            if(chosenHighway == null) {
-                Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
-            }
-
-            return HighwayUpgraderFactory.HasUpgraderTargetingHighway(chosenHighway);
-        }
-
-        public override void DestroyHighwayUpgraderOnHighway(int highwayID) {
-            var chosenHighway = HighwayFactory.GetHighwayOfID(highwayID);
-            if(chosenHighway == null) {
-                Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
-            }
-
-            if(!HighwayUpgraderFactory.HasUpgraderTargetingHighway(chosenHighway)) {
-                return;
-            }
-            var upgraderToDestroy = HighwayUpgraderFactory.GetUpgraderTargetingHighway(chosenHighway);
-            if(upgraderToDestroy != null) {
-                HighwayUpgraderFactory.DestroyHighwayUpgrader(upgraderToDestroy);
-            }else {
-                Debug.LogErrorFormat(HighwayUpgraderIDErrorMessage, highwayID);
             }
         }
 
@@ -390,11 +249,26 @@ namespace Assets.Core {
             }
         }
 
+        public override void SetHighwayUpkeepRequest(int highwayID, ResourceType resourceToChange, bool isBeingRequested) {
+            var highwayToChange = HighwayFactory.GetHighwayOfID(highwayID);
+            if(highwayToChange != null) {
+                switch(resourceToChange) {
+                    case ResourceType.Food:   highwayToChange.IsRequestingFood   = isBeingRequested; break;
+                    case ResourceType.Yellow: highwayToChange.IsRequestingYellow = isBeingRequested; break;
+                    case ResourceType.White:  highwayToChange.IsRequestingWhite  = isBeingRequested; break;
+                    case ResourceType.Blue:   highwayToChange.IsRequestingBlue   = isBeingRequested; break;
+                }
+            }else {
+                Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
+            }
+        }
+
         public override void TickSimulation(float secondsPassed) {
             if(SocietyFactory        != null) SocietyFactory.TickSocieties          (secondsPassed);
             if(BlobDistributor       != null) BlobDistributor.Tick                  (secondsPassed);
             if(BlobFactory           != null) BlobFactory.TickAllBlobs              (secondsPassed);
             if(HighwayManagerFactory != null) HighwayManagerFactory.TickAllManangers(secondsPassed);
+            if(GeneratorFactory      != null) GeneratorFactory.TickAllGenerators    (secondsPassed);
         }
 
         public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {

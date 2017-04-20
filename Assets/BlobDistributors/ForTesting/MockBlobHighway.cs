@@ -48,7 +48,11 @@ namespace Assets.BlobDistributors.ForTesting {
 
         public override int Priority { get; set; }
 
-        public override BlobHighwayProfileBase Profile { get; set; }
+        public override BlobHighwayProfileBase Profile {
+            get {
+                throw new NotImplementedException();
+            }
+        }
 
         public override float Efficiency {
             get {
@@ -65,6 +69,11 @@ namespace Assets.BlobDistributors.ForTesting {
                 throw new NotImplementedException();
             }
         }
+
+        public override bool IsRequestingFood   { get; set; }
+        public override bool IsRequestingYellow { get; set; }
+        public override bool IsRequestingWhite  { get; set; }
+        public override bool IsRequestingBlue   { get; set; }
 
         #endregion
 

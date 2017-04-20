@@ -12,11 +12,6 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
         #region from ConstructionZoneSummaryDisplayBase
 
-        public override bool IsActivated {
-            get { return isActivated; }
-        }
-        private bool isActivated = false;
-
         public override ConstructionZoneUISummary CurrentSummary { get; set; }
 
         #endregion
@@ -29,26 +24,14 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
         #region from ConstructionZoneSummaryDisplayBase
 
-        public override void Activate() {
-            isActivated = true;
-        }
-
-        public override void Clear() {
+        public override void ClearDisplay() {
             HasBeenCleared = true;
-        }
-
-        public override void Deactivate() {
-            isActivated = false;
-        }
-
-        public override void UpdateDisplay() {
-            throw new NotImplementedException();
         }
 
         #endregion
 
-        public void GenerateCloseRequest() {
-            RaiseCloseRequested();
+        public void GenerateDeactivationRequest() {
+            RaiseDeactivationRequested();
         }
 
         public void GenerateDestructionRequest() {

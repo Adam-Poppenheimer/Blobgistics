@@ -16,7 +16,7 @@ using UnityCustomUtilities.UI;
 
 namespace Assets.UI.Highways {
 
-    public class BlobHighwaySummaryDisplay : BlobHighwaySummaryDisplayBase, ISelectHandler, IDeselectHandler {
+    public class BlobHighwaySummaryDisplay : BlobHighwaySummaryDisplayBase {
 
         #region instance fields and properties
 
@@ -24,44 +24,14 @@ namespace Assets.UI.Highways {
 
         public override BlobHighwayUISummary CurrentSummary {
             get { return _currentSummary; }
-            set {
-                _currentSummary = value;
-                if(_currentSummary != null) {
-                    FirstEndpointFoodPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food  ];
-                    FirstEndpointYellowPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
-                    FirstEndpointWhitePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.White ];
-                    FirstEndpointBluePermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue  ];
-
-                    SecondEndpointFoodPermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Food  ];
-                    SecondEndpointYellowPermissionToggle.isOn = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
-                    SecondEndpointWhitePermissionToggle.isOn  = _currentSummary.ResourcePermissionsForEndpoint2[ResourceType.White ];
-                    SecondEndpointBluePermissionToggle.isOn   = _currentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue  ];
-                }
-            }
+            set { _currentSummary = value; }
         }
         private BlobHighwayUISummary _currentSummary;
-
-        public override bool CanBeUpgraded {
-            get { return _canBeUpgraded; }
-            set {
-                _canBeUpgraded = value;
-                RefreshUpgradeButtons();
-            }
-        }
-        private bool _canBeUpgraded;
-
-        public override bool IsBeingUpgraded {
-            get { return _isBeingUpgraded; }
-            set {
-                _isBeingUpgraded = value;
-                RefreshUpgradeButtons();
-            }
-        }
-        private bool _isBeingUpgraded;
 
         #endregion
 
         [SerializeField] private InputField PriorityInput;
+        [SerializeField] private Text EfficiencyField;
 
         [SerializeField] private RectTransform CommonActionsPane;
         [SerializeField] private RectTransform FirstEndpointPane;
@@ -77,10 +47,10 @@ namespace Assets.UI.Highways {
         [SerializeField] private Toggle SecondEndpointWhitePermissionToggle;
         [SerializeField] private Toggle SecondEndpointBluePermissionToggle;
 
-        [SerializeField] private Button BeginUpgradeButton;
-        [SerializeField] private Button CancelUpgradeButton;
-
-        private bool DeactivateOnNextUpdate = false;
+        [SerializeField] private Toggle IsRequestingFoodToggle;
+        [SerializeField] private Toggle IsRequestingYellowToggle;
+        [SerializeField] private Toggle IsRequestingWhiteToggle;
+        [SerializeField] private Toggle IsRequestingBlueToggle;
 
         #endregion
 
@@ -88,11 +58,8 @@ namespace Assets.UI.Highways {
 
         #region Unity event methods
 
-        private void Update() {
-            if(DeactivateOnNextUpdate) {
-                Deactivate();
-                DeactivateOnNextUpdate = false;
-            }else if(CurrentSummary != null) {
+        protected override void DoOnUpdate() {
+            if(CurrentSummary != null) {
                 FirstEndpointPane.transform.position  = Camera.main.WorldToScreenPoint(CurrentSummary.FirstEndpoint);
                 SecondEndpointPane.transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.SecondEndpoint);
             }
@@ -100,23 +67,9 @@ namespace Assets.UI.Highways {
 
         #endregion
 
-        #region Unity EventSystem interfaces
+        #region from IntelligentPanel
 
-        public void OnSelect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void OnDeselect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        #endregion
-
-        #region from BlobHighwaySummaryDisplayBase
-
-        public override void Activate() {
-            UpdateDisplay();
-
+        protected override void DoOnActivate() {
             AlignPermissionPanes();
             
             PriorityInput.onEndEdit.AddListener(delegate(string value) {
@@ -154,15 +107,24 @@ namespace Assets.UI.Highways {
                 RaiseSecondEndpointPermissionChanged(ResourceType.Blue, newPermission);
             });
 
-            BeginUpgradeButton.onClick.AddListener (delegate() { RaiseBeginHighwayUpgradeRequested();  });
-            CancelUpgradeButton.onClick.AddListener(delegate() { RaiseCancelHighwayUpgradeRequested(); });
+            IsRequestingFoodToggle.onValueChanged.AddListener(delegate(bool isRequesting){
+                RaiseResourceRequestedForUpkeep(ResourceType.Food, isRequesting);
+            });
 
-            gameObject.SetActive(true);
+            IsRequestingYellowToggle.onValueChanged.AddListener(delegate(bool isRequesting){
+                RaiseResourceRequestedForUpkeep(ResourceType.Yellow, isRequesting);
+            });
 
-            StartCoroutine(ReselectToThis());
+            IsRequestingWhiteToggle.onValueChanged.AddListener(delegate(bool isRequesting){
+                RaiseResourceRequestedForUpkeep(ResourceType.White, isRequesting);
+            });
+
+            IsRequestingBlueToggle.onValueChanged.AddListener(delegate(bool isRequesting){
+                RaiseResourceRequestedForUpkeep(ResourceType.Blue, isRequesting);
+            });
         }
 
-        public override void Deactivate() {
+        protected override void DoOnDeactivate() {
             gameObject.SetActive(false);
 
             PriorityInput.onEndEdit.RemoveAllListeners();
@@ -177,15 +139,16 @@ namespace Assets.UI.Highways {
             SecondEndpointWhitePermissionToggle.onValueChanged.RemoveAllListeners();
             SecondEndpointBluePermissionToggle.onValueChanged.RemoveAllListeners();
 
-            BeginUpgradeButton.onClick.RemoveAllListeners();
-            CancelUpgradeButton.onClick.RemoveAllListeners();
-
-            ClearDisplay();
+            IsRequestingFoodToggle.onValueChanged.RemoveAllListeners();
+            IsRequestingYellowToggle.onValueChanged.RemoveAllListeners();
+            IsRequestingWhiteToggle.onValueChanged.RemoveAllListeners();
+            IsRequestingBlueToggle.onValueChanged.RemoveAllListeners();
         }
 
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
                 PriorityInput.text = CurrentSummary.Priority.ToString();
+                EfficiencyField.text = CurrentSummary.Efficiency.ToString();
 
                 FirstEndpointFoodPermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food];
                 FirstEndpointYellowPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
@@ -196,6 +159,11 @@ namespace Assets.UI.Highways {
                 SecondEndpointYellowPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
                 SecondEndpointWhitePermissionToggle.isOn  = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.White];
                 SecondEndpointBluePermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue];
+
+                IsRequestingFoodToggle.isOn   = CurrentSummary.IsRequestingFoodUpkeep;
+                IsRequestingYellowToggle.isOn = CurrentSummary.IsRequestingYellowUpkeep;
+                IsRequestingWhiteToggle.isOn  = CurrentSummary.IsRequestingWhiteUpkeep;
+                IsRequestingBlueToggle.isOn   = CurrentSummary.IsRequestingBlueUpkeep;
             }
         }
 
@@ -203,6 +171,7 @@ namespace Assets.UI.Highways {
             CurrentSummary = null;
 
             PriorityInput.text = "0";
+            EfficiencyField.text = "0";
 
             FirstEndpointFoodPermissionToggle.isOn   = false;
             FirstEndpointYellowPermissionToggle.isOn = false;
@@ -214,29 +183,13 @@ namespace Assets.UI.Highways {
             SecondEndpointWhitePermissionToggle.isOn  = false;
             SecondEndpointBluePermissionToggle.isOn   = false;
 
-            CanBeUpgraded = false;
-            IsBeingUpgraded = false;
+            IsRequestingFoodToggle.isOn   = false;
+            IsRequestingYellowToggle.isOn = false;
+            IsRequestingWhiteToggle.isOn  = false;
+            IsRequestingBlueToggle.isOn   = false;
         }
 
         #endregion
-
-        public void DoOnChildSelected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void DoOnChildDeselected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        private IEnumerator ReselectToThis() {
-            yield return new WaitForEndOfFrame();
-            EventSystem.current.SetSelectedGameObject(gameObject);
-        }
-
-        private void RefreshUpgradeButtons() {
-            BeginUpgradeButton.gameObject.SetActive(CanBeUpgraded && !IsBeingUpgraded);
-            CancelUpgradeButton.gameObject.SetActive(IsBeingUpgraded);
-        }
 
         private void AlignPermissionPanes() {
             if(CurrentSummary == null) {

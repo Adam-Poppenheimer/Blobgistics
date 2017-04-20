@@ -31,19 +31,11 @@ namespace Assets.UI.ConstructionZones.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool CanCreateHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
-        }
-
         public override bool CanDestroySociety(int societyID) {
             throw new NotImplementedException();
         }
 
         public override void ConnectNodesWithHighway(int node1ID, int node2ID) {
-            throw new NotImplementedException();
-        }
-
-        public override void CreateHighwayUpgraderOnHighway(int highwayID) {
             throw new NotImplementedException();
         }
 
@@ -83,14 +75,6 @@ namespace Assets.UI.ConstructionZones.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool HasHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
-        }
-
-        public override void DestroyHighwayUpgraderOnHighway(int highwayID) {
-            throw new NotImplementedException();
-        }
-
         public override void DestroySociety(int societyID) {
             throw new NotImplementedException();
         }
@@ -104,6 +88,10 @@ namespace Assets.UI.ConstructionZones.ForTesting {
         }
 
         public override void SetHighwayPullingPermissionOnSecondEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetHighwayUpkeepRequest(int highwayID, ResourceType resourceToChange, bool isBeingRequested) {
             throw new NotImplementedException();
         }
 

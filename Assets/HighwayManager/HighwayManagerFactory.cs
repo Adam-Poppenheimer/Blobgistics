@@ -22,18 +22,6 @@ namespace Assets.HighwayManager {
         }
         [SerializeField] private uint _managementRadius;
 
-        public int NeedStockpileCoefficient {
-            get { return _needStockpileCoefficient; }
-            set { _needStockpileCoefficient = value; }
-        }
-        [SerializeField] private int _needStockpileCoefficient;
-
-        public float SecondsForManagerToPerformConsumption {
-            get { return _secondsForManagerToPerformConsumption; }
-            set { _secondsForManagerToPerformConsumption = value; }
-        }
-        [SerializeField] private float _secondsForManagerToPerformConsumption;
-
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
             set { _mapGraph = value; }
@@ -56,17 +44,11 @@ namespace Assets.HighwayManager {
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
-        public UIControlBase UIControl {
-            get { return _uiControl; }
-            set { _uiControl = value; }
+        public HighwayManagerPrivateDataBase ManagerPrivateData {
+            get { return _privateData; }
+            set { _privateData = value; }
         }
-        [SerializeField] private UIControlBase _uiControl;
-
-        public ResourceBlobFactoryBase BlobFactory {
-            get { return _blobFactory; }
-            set { _blobFactory = value; }
-        }
-        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
+        [SerializeField] private HighwayManagerPrivateDataBase _privateData;
 
         [SerializeField] private GameObject ManagerPrefab;
 
@@ -157,13 +139,8 @@ namespace Assets.HighwayManager {
             }
             newManager.transform.SetParent(location.transform, false);
 
-            newManager.SetManagementRadius(ManagementRadius);
             newManager.SetLocation(location);
-            newManager.SetNeedStockpileCoefficient(NeedStockpileCoefficient);
-            newManager.SetSecondsToPerformConsumption(SecondsForManagerToPerformConsumption);
-            newManager.ParentFactory = this;
-            newManager.SetUIControl(UIControl);
-            newManager.SetBlobFactory(BlobFactory);
+            newManager.PrivateData = ManagerPrivateData;
 
             InstantiatedManagers.Add(newManager);
 

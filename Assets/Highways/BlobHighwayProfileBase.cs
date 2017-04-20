@@ -17,10 +17,6 @@ namespace Assets.Highways {
 
         public abstract int Capacity { get; }
 
-        public abstract ResourceSummary Cost { get; }
-
-        public abstract ResourceSummary Upkeep { get; }
-
         public abstract float BlobPullCooldownInSeconds { get; }
 
         #endregion

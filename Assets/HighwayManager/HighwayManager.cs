@@ -34,50 +34,11 @@ namespace Assets.HighwayManager {
         }
         [SerializeField] private MapNodeBase _location;
 
-        public override uint ManagementRadius {
-            get { return _managementRadius; }
+        public HighwayManagerPrivateDataBase PrivateData {
+            get { return _privateData; }
+            set { _privateData = value; }
         }
-        public void SetManagementRadius(uint value) {
-            _managementRadius = value;
-        }
-        [SerializeField] private uint _managementRadius;
-
-        public override int NeedStockpileCoefficient {
-            get { return _needStockpileCoefficient; }
-        }
-        public void SetNeedStockpileCoefficient(int value) {
-            _needStockpileCoefficient = value;
-        }
-        [SerializeField] private int _needStockpileCoefficient;
-
-        public override float SecondsToPerformConsumption {
-            get { return _secondsToPerformConsumption; }
-        }
-        public void SetSecondsToPerformConsumption(float value) {
-            _secondsToPerformConsumption = value;
-        }
-        [SerializeField] private float _secondsToPerformConsumption;
-
-        public override UIControlBase UIControl {
-            get { return _uiControl; }
-        }
-        public void SetUIControl(UIControlBase value) {
-            _uiControl = value;
-        }
-        [SerializeField] private UIControlBase _uiControl;
-
-        public override ResourceBlobFactoryBase BlobFactory {
-            get { return _blobFactory; }
-        }
-        public void SetBlobFactory(ResourceBlobFactoryBase value) {
-            _blobFactory = value;
-        }
-        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
-
-        public override float LastCalculatedEfficiency {
-            get { return lastCalculatedEfficiency; }
-        }
-        private float lastCalculatedEfficiency = 1f;
+        [SerializeField] private HighwayManagerPrivateDataBase _privateData;
 
         public override ReadOnlyDictionary<ResourceType, int> LastCalculatedUpkeep {
             get { return new ReadOnlyDictionary<ResourceType, int>(lastCalculatedUpkeep); }
@@ -86,8 +47,6 @@ namespace Assets.HighwayManager {
             new Dictionary<ResourceType, int>();
 
         #endregion
-
-        public HighwayManagerFactoryBase ParentFactory { get; set; }
 
         private float ConsumptionTimer = 0f;
 
@@ -110,18 +69,18 @@ namespace Assets.HighwayManager {
         #region Unity EventSystem interfaces
 
         public void OnPointerClick(PointerEventData eventData) {
-            UIControl.PushPointerClickEvent(new HighwayManagerUISummary(this), eventData);
+            PrivateData.UIControl.PushPointerClickEvent(new HighwayManagerUISummary(this), eventData);
             if(EventSystem.current != null) {
                 EventSystem.current.SetSelectedGameObject(gameObject);
             }
         }
 
         public void OnSelect(BaseEventData eventData) {
-            UIControl.PushSelectEvent(new HighwayManagerUISummary(this), eventData);
+            PrivateData.UIControl.PushSelectEvent(new HighwayManagerUISummary(this), eventData);
         }
 
         public void OnDeselect(BaseEventData eventData) {
-            UIControl.PushDeselectEvent(new HighwayManagerUISummary(this), eventData);
+            PrivateData.UIControl.PushDeselectEvent(new HighwayManagerUISummary(this), eventData);
         }
 
         #endregion
@@ -138,9 +97,9 @@ namespace Assets.HighwayManager {
 
         public override void TickConsumption(float secondsPassed) {
             ConsumptionTimer += secondsPassed;
-            while(ConsumptionTimer >= SecondsToPerformConsumption) {
+            while(ConsumptionTimer >= PrivateData.SecondsToPerformConsumption) {
                 PerformConsumptionOnce();
-                ConsumptionTimer -= SecondsToPerformConsumption;
+                ConsumptionTimer -= PrivateData.SecondsToPerformConsumption;
             }
         }
 
@@ -149,47 +108,44 @@ namespace Assets.HighwayManager {
         private void PerformConsumptionOnce() {
             int totalNeedCount = 0;
             int runningConsumptionTotal = 0;
-            var resourcesNeededByType = new Dictionary<ResourceType, int>();
+            lastCalculatedUpkeep.Clear();
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                resourcesNeededByType[resourceType] = 0;
+                lastCalculatedUpkeep[resourceType] = 0;
             }
 
-            var highwaysBeingManaged = new List<BlobHighwayBase>(ParentFactory.GetHighwaysServedByManager(this));
+            var highwaysBeingManaged = new List<BlobHighwayBase>(PrivateData.ParentFactory.GetHighwaysServedByManager(this));
+            highwaysBeingManaged.Sort((x, y) => x.Priority - y.Priority);
+
             PrepareBlobSiteForConsumption(highwaysBeingManaged);
 
-            foreach(var highway in new List<BlobHighwayBase>(highwaysBeingManaged)) {
-                int totalUpkeepForHighway = 0;
-                foreach(var resourceType in highway.Profile.Upkeep) {
-                    int upkeepOfResource = highway.Profile.Upkeep[resourceType];
-                    resourcesNeededByType[resourceType] += upkeepOfResource;
-                    totalNeedCount += upkeepOfResource;
-                    totalUpkeepForHighway += upkeepOfResource;
-                }
-                if(totalUpkeepForHighway == 0) {
-                    highwaysBeingManaged.Remove(highway);
-                }
-            }
-            lastCalculatedUpkeep = resourcesNeededByType;
-
             var blobSite = Location.BlobSite;
-            foreach(var resourceType in resourcesNeededByType.Keys) {
-                for(int i = 0; i < resourcesNeededByType[resourceType]; ++i) {
-                    if(blobSite.CanExtractBlobOfType(resourceType)) {
-                        BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(resourceType));
-                        ++runningConsumptionTotal;
-                    }else {
-                        break;
-                    }
-                }
-            }
-            if(totalNeedCount == 0) {
-                lastCalculatedEfficiency = 1f;
-            }else {
-                lastCalculatedEfficiency = ((float)runningConsumptionTotal) / ((float)totalNeedCount);
-            }
 
             foreach(var highway in highwaysBeingManaged) {
-                highway.Efficiency = lastCalculatedEfficiency;
+                highway.Efficiency = 1f;
+
+                if(highway.IsRequestingFood && blobSite.CanExtractBlobOfType(ResourceType.Food)) {
+                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Food));
+                    ++lastCalculatedUpkeep[ResourceType.Food];
+                    highway.Efficiency += PrivateData.EfficiencyGainFromFood;
+                }
+
+                if(highway.IsRequestingYellow && blobSite.CanExtractBlobOfType(ResourceType.Yellow)) {
+                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Yellow));
+                    ++lastCalculatedUpkeep[ResourceType.Yellow];
+                    highway.Efficiency += PrivateData.EfficiencyGainFromYellow;
+                }
+
+                if(highway.IsRequestingWhite && blobSite.CanExtractBlobOfType(ResourceType.White)) {
+                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.White));
+                    ++lastCalculatedUpkeep[ResourceType.White];
+                    highway.Efficiency += PrivateData.EfficiencyGainFromWhite;
+                }
+
+                if(highway.IsRequestingBlue && blobSite.CanExtractBlobOfType(ResourceType.Blue)) {
+                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Blue));
+                    ++lastCalculatedUpkeep[ResourceType.Blue];
+                    highway.Efficiency += PrivateData.EfficiencyGainFromBlue;
+                }
             }
 
             RevertBlobSiteToNormal(highwaysBeingManaged);
@@ -197,10 +153,12 @@ namespace Assets.HighwayManager {
 
         private void PrepareBlobSiteForConsumption(IEnumerable<BlobHighwayBase> highwaysBeingManaged) {
             var blobSite = Location.BlobSite;
+
             foreach(var highway in highwaysBeingManaged) {
-                foreach(var resourceType in highway.Profile.Upkeep) {
-                    blobSite.SetExtractionPermissionForResourceType(resourceType, true);
-                }
+                if(highway.IsRequestingFood)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.Food,   true); }
+                if(highway.IsRequestingYellow) { blobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true); }
+                if(highway.IsRequestingWhite)  { blobSite.SetExtractionPermissionForResourceType(ResourceType.White,  true); }
+                if(highway.IsRequestingBlue)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.Blue,   true); }
             }
         }
 
@@ -212,15 +170,15 @@ namespace Assets.HighwayManager {
             }
 
             foreach(var highway in highwaysBeingManaged) {
-                var highwayUpkeep = highway.Profile.Upkeep;
-                foreach(var resourceType in highwayUpkeep) {
-                    newCapacityDict[resourceType] += highwayUpkeep[resourceType];
-                }
+                if(highway.IsRequestingFood  ) { ++newCapacityDict[ResourceType.Food  ]; }
+                if(highway.IsRequestingYellow) { ++newCapacityDict[ResourceType.Yellow]; }
+                if(highway.IsRequestingWhite ) { ++newCapacityDict[ResourceType.White ]; }
+                if(highway.IsRequestingBlue  ) { ++newCapacityDict[ResourceType.Blue  ]; }
             }
 
             int totalCapacity = 0;
             foreach(var capacityPair in newCapacityDict) {
-                int valueStockpiled = capacityPair.Value * NeedStockpileCoefficient;
+                int valueStockpiled = capacityPair.Value * PrivateData.NeedStockpileCoefficient;
                 blobSite.SetCapacityForResourceType(capacityPair.Key, valueStockpiled);
                 totalCapacity += valueStockpiled;
             }

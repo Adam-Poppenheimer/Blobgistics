@@ -21,19 +21,7 @@ namespace Assets.HighwayManager {
 
         public abstract int ID { get; }
 
-        public abstract uint ManagementRadius { get; }
-
-        public abstract int NeedStockpileCoefficient { get; }
-
-        public abstract float SecondsToPerformConsumption { get; }
-
         public abstract MapNodeBase Location { get; }
-
-        public abstract UIControlBase UIControl { get; }
-
-        public abstract ResourceBlobFactoryBase BlobFactory { get; }
-
-        public abstract float LastCalculatedEfficiency { get; }
 
         public abstract ReadOnlyDictionary<ResourceType, int> LastCalculatedUpkeep { get; }
 

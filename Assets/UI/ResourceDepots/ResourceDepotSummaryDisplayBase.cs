@@ -9,7 +9,7 @@ using Assets.ResourceDepots;
 
 namespace Assets.UI.ResourceDepots {
 
-    public abstract class ResourceDepotSummaryDisplayBase : MonoBehaviour {
+    public abstract class ResourceDepotSummaryDisplayBase : IntelligentPanel {
 
         #region instance fields and properties
 
@@ -26,16 +26,6 @@ namespace Assets.UI.ResourceDepots {
                 DestructionRequested(this, EventArgs.Empty);
             }
         }
-
-        #endregion
-
-        #region instance methods
-
-        public abstract void Activate();
-        public abstract void Deactivate();
-
-        public abstract void UpdateDisplay();
-        public abstract void ClearDisplay();
 
         #endregion
 

@@ -24,11 +24,16 @@ namespace Assets.Highways {
         public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint { get; }
         public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint { get; }
 
-        public abstract BlobHighwayProfileBase Profile { get; set; }
-
         public abstract int Priority { get; set; }
 
+        public abstract BlobHighwayProfileBase Profile { get; }
+
         public abstract float Efficiency { get; set; }
+
+        public abstract bool IsRequestingFood   { get; set; }
+        public abstract bool IsRequestingYellow { get; set; }
+        public abstract bool IsRequestingWhite  { get; set; }
+        public abstract bool IsRequestingBlue   { get; set; }
 
         public abstract float BlobPullCooldownInSeconds { get; }
 

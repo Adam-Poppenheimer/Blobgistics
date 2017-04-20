@@ -172,9 +172,9 @@ namespace Assets.Map {
                 NeighborsOfNode[edge.SecondNode].Remove(edge.FirstNode );
             }
             if(Application.isPlaying) {
-                Destroy(edge.gameObject);
+                Destroy(edge.transform.parent.gameObject);
             }else {
-                DestroyImmediate(edge.gameObject);
+                DestroyImmediate(edge.transform.parent.gameObject);
             }
             return retval;
         }

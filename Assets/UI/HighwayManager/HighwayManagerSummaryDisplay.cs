@@ -13,7 +13,7 @@ using Assets.HighwayManager;
 
 namespace Assets.UI.HighwayManager {
 
-    public class HighwayManagerSummaryDisplay : HighwayManagerSummaryDisplayBase, ISelectHandler, IDeselectHandler {
+    public class HighwayManagerSummaryDisplay : HighwayManagerSummaryDisplayBase {
 
         #region instance fields and properties
 
@@ -22,8 +22,6 @@ namespace Assets.UI.HighwayManager {
         public override HighwayManagerUISummary CurrentSummary { get; set; }
 
         #endregion
-
-        [SerializeField] private Text LastEfficiencyField;
         
         [SerializeField] private Text UpkeepFoodField;
         [SerializeField] private Text UpkeepYellowField;
@@ -32,68 +30,31 @@ namespace Assets.UI.HighwayManager {
 
         [SerializeField] private Button DestroyButton;
 
-        private bool DeactivateOnNextUpdate = false;
-
         #endregion
 
         #region instance methods
 
-        #region Unity event methods
-
-        private void Update() {
-            if(DeactivateOnNextUpdate) {
-                Deactivate();
-                DeactivateOnNextUpdate = false;
-            }
-        }
-
-        #endregion
-
-        #region Unity EventSystem interfaces
-
-        public void OnSelect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void OnDeselect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        #endregion
-
         #region from HighwayManagerSummaryDisplayBase
 
-        public override void Activate() {
-            ClearDisplay();
-            gameObject.SetActive(true);
-            UpdateDisplay();
-
+        protected override void DoOnActivate() {
             DestroyButton.onClick.AddListener(delegate() {
                 RaiseDestructionRequested();
             });
+        }
 
-            StartCoroutine(ReselectToThis());
+        protected override void DoOnDeactivate() {
+            DestroyButton.onClick.RemoveAllListeners();
         }
 
         public override void ClearDisplay() {
-            LastEfficiencyField.text = "0.0";
-
             UpkeepFoodField.text   = "0";
             UpkeepYellowField.text = "0";
             UpkeepWhiteField.text  = "0";
             UpkeepBlueField.text   = "0";
         }
 
-        public override void Deactivate() {
-            gameObject.SetActive(false);
-
-            DestroyButton.onClick.RemoveAllListeners();
-        }
-
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
-                LastEfficiencyField.text = CurrentSummary.LastEfficiency.ToString();
-
                 var upkeep = CurrentSummary.LastUpkeep;
 
                 int foodValue = 0;
@@ -114,19 +75,6 @@ namespace Assets.UI.HighwayManager {
         }
 
         #endregion
-
-        public void DoOnChildSelected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void DoOnChildDeselected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        private IEnumerator ReselectToThis() {
-            yield return new WaitForEndOfFrame();
-            EventSystem.current.SetSelectedGameObject(gameObject);
-        }
 
         #endregion
 

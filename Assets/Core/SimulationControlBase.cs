@@ -20,6 +20,7 @@ namespace Assets.Core {
         public abstract void SetHighwayPullingPermissionOnFirstEndpointForResource (int highwayID, ResourceType resourceType, bool isPermitted);
         public abstract void SetHighwayPullingPermissionOnSecondEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted);
         public abstract void SetHighwayPriority(int highwayID, int newPriority);
+        public abstract void SetHighwayUpkeepRequest(int highwayID, ResourceType resourceToChange, bool isBeingRequested);
 
         public abstract void DestroyHighway(int highwayID);
 
@@ -34,11 +35,6 @@ namespace Assets.Core {
 
         public abstract bool CanDestroySociety(int societyID);
         public abstract void DestroySociety   (int societyID);
-
-        public abstract bool CanCreateHighwayUpgraderOnHighway(int highwayID);
-        public abstract bool HasHighwayUpgraderOnHighway      (int highwayID);
-        public abstract void CreateHighwayUpgraderOnHighway   (int highwayID);
-        public abstract void DestroyHighwayUpgraderOnHighway  (int highwayID);
 
         public abstract void DestroyResourceDepotOfID(int depotID);
 

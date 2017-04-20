@@ -14,11 +14,6 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
         #region from ConstructionPanelBase
 
-        public override bool IsActivated {
-            get { return isActivated; }
-        }
-        private bool isActivated = false;
-
         public override MapNodeUISummary LocationToConstruct { get; set; }
 
         #endregion
@@ -32,22 +27,14 @@ namespace Assets.UI.ConstructionZones.ForTesting {
 
         #region from ConstructionPanelBase
 
-        public override void Activate() {
-            isActivated = true;
-        }
-
-        public override void Clear() {
+        public override void ClearDisplay() {
             HasBeenCleared = true;
-        }
-
-        public override void Deactivate() {
-            isActivated = false;
         }
 
         #endregion
 
         public void RaiseCloseRequestedEvent() {
-            RaiseCloseRequested();
+            RaiseDeactivationRequested();
         }
 
         public void RaiseConstructionRequest(string projectName) {

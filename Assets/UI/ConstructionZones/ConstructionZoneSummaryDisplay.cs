@@ -13,15 +13,11 @@ using Assets.ConstructionZones;
 
 namespace Assets.UI.ConstructionZones {
 
-    public class ConstructionZoneSummaryDisplay : ConstructionZoneSummaryDisplayBase, ISelectHandler, IDeselectHandler {
+    public class ConstructionZoneSummaryDisplay : ConstructionZoneSummaryDisplayBase {
 
         #region instance fields and properties
 
         #region from ConstructionZoneSummaryDisplayBase
-
-        public override bool IsActivated {
-            get { return gameObject.activeInHierarchy; }
-        }
 
         public override ConstructionZoneUISummary CurrentSummary { get; set; }
 
@@ -30,8 +26,6 @@ namespace Assets.UI.ConstructionZones {
         [SerializeField] private Text ProjectNameField;
         [SerializeField] private Text CostField;
         [SerializeField] private Button DestroyButton;
-
-        private bool DeactivateOnNextUpdate = false;
 
         #endregion
 
@@ -47,47 +41,24 @@ namespace Assets.UI.ConstructionZones {
             }
         }
 
-        private void Update() {
-            if(DeactivateOnNextUpdate) {
-                Deactivate();
-                DeactivateOnNextUpdate = false;
-            }else if(CurrentSummary != null) {
-                transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.Transform.position);
-            }
-        }
-
-        #endregion
-
-        #region Unity EventSystem interfaces
-
-        public void OnSelect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void OnDeselect(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        #endregion
-
-        #region from ConstructionZoneSummaryDisplayBase
-
-        public override void Activate() {
-            gameObject.SetActive(true);
+        protected override void DoOnUpdate() {
             if(CurrentSummary != null) {
                 transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.Transform.position);
             }
-            UpdateDisplay();
-            StartCoroutine(ReselectToThis());
         }
 
-        public override void Clear() {
+        #endregion
+
+        #region from IntelligentPanel
+
+        protected override void DoOnActivate() {
+            if(CurrentSummary != null) {
+                transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.Transform.position);
+            }
+        }
+
+        public override void ClearDisplay() {
             CurrentSummary = null;
-        }
-
-        public override void Deactivate() {
-            Clear();
-            gameObject.SetActive(false);
         }
 
         public override void UpdateDisplay() {
@@ -98,19 +69,6 @@ namespace Assets.UI.ConstructionZones {
         }
 
         #endregion
-
-        public void DoOnChildSelected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = false;
-        }
-
-        public void DoOnChildDeselected(BaseEventData eventData) {
-            DeactivateOnNextUpdate = true;
-        }
-
-        private IEnumerator ReselectToThis() {
-            yield return new WaitForEndOfFrame();
-            EventSystem.current.SetSelectedGameObject(gameObject);
-        }
 
         #endregion
 

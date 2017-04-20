@@ -10,6 +10,7 @@ using Assets.Highways;
 using Assets.Map;
 using Assets.Societies;
 using Assets.ResourceDepots;
+using Assets.Generator;
 
 namespace Assets.Editing {
 
@@ -19,58 +20,28 @@ namespace Assets.Editing {
         #region static fields and properties
 
         public static MapGraphBase MapGraph {
-            get {
-                if(_mapGraph == null) {
-                    throw new InvalidOperationException("MapGraph is uninitialized");
-                } else {
-                    return _mapGraph;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _mapGraph = value;
-                }
-            }
+            get { return _mapGraph; }
+            set { _mapGraph = value; }
         }
         private static MapGraphBase _mapGraph;
 
         public static SocietyFactoryBase SocietyFactory {
-            get {
-                if(_societyFactory == null) {
-                    throw new InvalidOperationException("SocietyFactory is uninitialized");
-                } else {
-                    return _societyFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _societyFactory = value;
-                }
-            }
+            get { return _societyFactory; }
+            set { _societyFactory = value; }
         }
         private static SocietyFactoryBase _societyFactory;
 
         public static ResourceDepotFactoryBase ResourceDepotFactory {
-            get {
-                if(_resourceDepotFactory == null) {
-                    throw new InvalidOperationException("ResourceDepotFactory is uninitialized");
-                } else {
-                    return _resourceDepotFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _resourceDepotFactory = value;
-                }
-            }
+            get { return _resourceDepotFactory; }
+            set { _resourceDepotFactory = value; }
         }
         private static ResourceDepotFactoryBase _resourceDepotFactory;
+
+        public static ResourceGeneratorFactory GeneratorFactory {
+            get { return _generatorFactory; }
+            set { _generatorFactory = value; }
+        }
+        private static ResourceGeneratorFactory _generatorFactory;
 
         #endregion
 
@@ -108,6 +79,22 @@ namespace Assets.Editing {
             if(Selection.activeTransform != null) {
                 var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
                 return locationToBuild != null && !ResourceDepotFactory.HasDepotAtLocation(locationToBuild);
+            }else {
+                return false;
+            }
+        }
+
+        [MenuItem("Strategy Blobs/Construct Generator At Location")]
+        private static void ConstructGeneratorAtLocation() {
+            var locationToConstruct = Selection.activeTransform.GetComponent<MapNodeBase>();
+            GeneratorFactory.ConstructGeneratorAtLocation(locationToConstruct);
+        }
+
+        [MenuItem("Strategy Blobs/Construct Generator At Location", true)]
+        private static bool ValidateConstructGeneratorAtLocation() {
+            if(Selection.activeTransform != null) {
+                var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
+                return locationToBuild != null && GeneratorFactory.CanConstructGeneratorAtLocation(locationToBuild);
             }else {
                 return false;
             }

@@ -12,6 +12,7 @@ using Assets.Societies;
 using Assets.Editing;
 using Assets.Map;
 using Assets.ResourceDepots;
+using Assets.Generator;
 
 namespace Assets {
 
@@ -23,6 +24,7 @@ namespace Assets {
         [SerializeField] private MapGraphBase MapGraph;
         [SerializeField] private SocietyFactoryBase SocietyFactory;
         [SerializeField] private ResourceDepotFactoryBase ResourceDepotFactory;
+        [SerializeField] private ResourceGeneratorFactory GeneratorFactory;
 
         #endregion
 
@@ -42,6 +44,7 @@ namespace Assets {
             EditorPrefabBuilder.MapGraph = MapGraph;
             EditorPrefabBuilder.SocietyFactory = SocietyFactory;
             EditorPrefabBuilder.ResourceDepotFactory = ResourceDepotFactory;
+            EditorPrefabBuilder.GeneratorFactory = GeneratorFactory;
         }
 
         #endregion
