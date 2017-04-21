@@ -23,28 +23,16 @@ namespace Assets.BlobSites {
         }
         private List<ResourceBlobBase> contents = new List<ResourceBlobBase>();
 
-        public override Vector3 NorthConnectionPoint {
-            get { return PrivateData.NorthConnectionOffset + transform.position; }
-        }
-
-        public override Vector3 SouthConnectionPoint {
-            get { return PrivateData.SouthConnectionOffset + transform.position; }
-        }
-
-        public override Vector3 EastConnectionPoint {
-            get { return PrivateData.EastConnectionOffset + transform.position; }
-        }
-
-        public override Vector3 WestConnectionPoint {
-            get { return PrivateData.WestConnectionOffset + transform.position; }
-        }
-
         public override int TotalSpaceLeft {
             get { return TotalCapacity - contents.Count; }
         }
 
         public override bool IsAtCapacity {
             get { return TotalSpaceLeft == 0; }
+        }
+
+        public override float ConnectionCircleRadius {
+            get { return PrivateData.ConnectionCircleRadius; }
         }
 
         #endregion
@@ -69,6 +57,11 @@ namespace Assets.BlobSites {
         #region instance methods
 
         #region from BlobSiteBase
+
+        public override Vector3 GetPointOfConnectionFacingPoint(Vector3 point) {
+            var normalizedCenterToPoint = (point - transform.position).normalized;
+            return (normalizedCenterToPoint * ConnectionCircleRadius) + transform.position;
+        }
 
         public override bool CanExtractAnyBlob() {
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {

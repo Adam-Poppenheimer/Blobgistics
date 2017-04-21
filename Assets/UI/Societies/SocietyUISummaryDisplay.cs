@@ -32,20 +32,24 @@ namespace Assets.UI.Societies {
         #endregion
 
         [SerializeField] private Text   LocationIDField;
-        [SerializeField] private Toggle NeedsAreSatisfiedToggle;
+        [SerializeField] private Text   NeedsAreSatisfiedField;
         [SerializeField] private Text   SecondsOfUnsatisfiedNeedsField;
         [SerializeField] private Text   SecondsUntilComplexityDescentField;
         [SerializeField] private Toggle PermitAscensionToggle;
 
         [SerializeField] private Button DestroySocietyButton;
 
+        [SerializeField] private RectTransform DescentComplexitySection;
+        [SerializeField] private Text DescentComplexityNameField;
+
         [SerializeField] private Text CurrentComplexityNameField;
         [SerializeField] private Text CurrentComplexityProductionField;
         [SerializeField] private Text CurrentComplexityNeedsField;
         [SerializeField] private Text CurrentComplexityWantsField;
-        [SerializeField] private Text CurrentComplexityCostOfAscentField;
+        [SerializeField] private Text CurrentComplexityCostToAscendIntoField;
+        [SerializeField] private Text CurrentComplexityCostToAscendFromField;
 
-        [SerializeField] private Text DescentComplexityNameField;
+        [SerializeField] private RectTransform AscentComplexitySection;
         [SerializeField] private Text AscentComplexityNameField;
 
         
@@ -55,6 +59,10 @@ namespace Assets.UI.Societies {
         #region instance methods
 
         #region Unity event methods
+
+        private void Start() {
+            MovePanelWithCamera = true;
+        }
 
         protected override void DoOnUpdate() {
             UpdateDisplay();
@@ -72,6 +80,8 @@ namespace Assets.UI.Societies {
             DestroySocietyButton.onClick.AddListener(delegate() {
                 RaiseDestructionRequested();
             });
+
+            DesiredWorldPosition = CurrentSummary.Transform.position;
         }
 
         protected override void DoOnDeactivate() {
@@ -82,12 +92,8 @@ namespace Assets.UI.Societies {
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
                 LocationIDField.text = CurrentSummary.Location != null ? CurrentSummary.Location.ID.ToString() : "";
-                
-                CurrentComplexityNameField.text = CurrentSummary.CurrentComplexity;
-                DescentComplexityNameField.text = CurrentSummary.DescentComplexity;
-                AscentComplexityNameField.text = CurrentSummary.AscentComplexity;
 
-                NeedsAreSatisfiedToggle.isOn = CurrentSummary.NeedsAreSatisfied;
+                NeedsAreSatisfiedField.text = CurrentSummary.NeedsAreSatisfied.ToString();
                 SecondsOfUnsatisfiedNeedsField.text = CurrentSummary.SecondsOfUnsatisfiedNeeds.ToString("0.#");
                 SecondsUntilComplexityDescentField.text = CurrentSummary.SecondsUntilComplexityDescent.ToString("0.#");
 
@@ -95,7 +101,9 @@ namespace Assets.UI.Societies {
 
                 DestroySocietyButton.interactable = CanBeDestroyed;
 
-                transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.Transform.position);
+                UpdateDescentComplexityDisplay(CurrentSummary.DescentComplexity);
+                UpdateCurrentComplexityDisplay(CurrentSummary.CurrentComplexity);
+                UpdateAscentComplexityDisplay(CurrentSummary.AscentComplexity);
             }
         }
 
@@ -108,7 +116,7 @@ namespace Assets.UI.Societies {
             DescentComplexityNameField.text = "";
             AscentComplexityNameField.text = "";
 
-            NeedsAreSatisfiedToggle.isOn = false;
+            NeedsAreSatisfiedField.text = "false";
             SecondsOfUnsatisfiedNeedsField.text = "";
             SecondsUntilComplexityDescentField.text = "";
 
@@ -116,6 +124,44 @@ namespace Assets.UI.Societies {
         }
 
         #endregion
+
+        private void UpdateDescentComplexityDisplay(ComplexityDefinitionBase descentComplexity) {
+            if(descentComplexity != null) {
+                DescentComplexitySection.gameObject.SetActive(true);
+                DescentComplexityNameField.text = descentComplexity.Name;
+            }else {
+                DescentComplexitySection.gameObject.SetActive(false);
+                DescentComplexityNameField.text = "--";
+            }
+        }
+
+        private void UpdateCurrentComplexityDisplay(ComplexityDefinitionBase currentComplexity) {
+            CurrentComplexityNameField.text = currentComplexity.Name;
+            CurrentComplexityProductionField.text = currentComplexity.Production.GetSummaryString();
+            CurrentComplexityNeedsField.text = currentComplexity.Needs.GetSummaryString();
+
+            CurrentComplexityWantsField.text = "";
+            foreach(var want in currentComplexity.Wants) {
+                if(want == currentComplexity.Wants.Last()) {
+                    CurrentComplexityWantsField.text += want.GetSummaryString();
+                }else {
+                    CurrentComplexityWantsField.text += want.GetSummaryString() + " OR ";
+                }
+            }
+            CurrentComplexityCostToAscendIntoField.text = currentComplexity.CostOfAscent.GetSummaryString();
+        }
+
+        private void UpdateAscentComplexityDisplay(ComplexityDefinitionBase ascentComplexity) {
+            if(ascentComplexity != null) {
+                AscentComplexitySection.gameObject.SetActive(true);
+                AscentComplexityNameField.text = ascentComplexity.Name;
+                CurrentComplexityCostToAscendFromField.text = ascentComplexity.CostOfAscent.GetSummaryString();
+            }else {
+                AscentComplexitySection.gameObject.SetActive(false);
+                AscentComplexityNameField.text = "--";
+                CurrentComplexityCostToAscendFromField.text = "--";
+            }
+        }
 
         #endregion
 

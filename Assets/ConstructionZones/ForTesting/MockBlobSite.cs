@@ -20,25 +20,7 @@ namespace Assets.ConstructionZones.ForTesting {
         }
         private List<ResourceBlobBase> contents = new List<ResourceBlobBase>();
 
-        public override Vector3 EastConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public override bool IsAtCapacity {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override Vector3 NorthConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override Vector3 SouthConnectionPoint {
             get {
                 throw new NotImplementedException();
             }
@@ -50,7 +32,7 @@ namespace Assets.ConstructionZones.ForTesting {
             }
         }
 
-        public override Vector3 WestConnectionPoint {
+        public override float ConnectionCircleRadius {
             get {
                 throw new NotImplementedException();
             }
@@ -78,6 +60,10 @@ namespace Assets.ConstructionZones.ForTesting {
         #region instance methods
 
         #region from BlobSiteBase
+
+        public override Vector3 GetPointOfConnectionFacingPoint(Vector3 point) {
+            throw new NotImplementedException();
+        }
 
         public override bool CanExtractAnyBlob() {
             throw new NotImplementedException();

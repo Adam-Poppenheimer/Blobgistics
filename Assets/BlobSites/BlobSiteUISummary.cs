@@ -15,15 +15,12 @@ namespace Assets.BlobSites {
 
         #region instance fields and properties
 
+        public float ConnectionCircleRadius { get; set; }
+
         public int TotalCapacity { get; set; }
         public int TotalSpaceLeft { get; set; }
 
         public List<ResourceBlobBase> Contents { get; set; }
-
-        public Vector3 NorthConnectionPoint { get; set; }
-        public Vector3 SouthConnectionPoint { get; set; }
-        public Vector3 EastConnectionPoint  { get; set; }
-        public Vector3 WestConnectionPoint  { get; set; }
 
         public Transform Transform { get; set; }
         
@@ -37,26 +34,18 @@ namespace Assets.BlobSites {
 
             Contents = new List<ResourceBlobBase>(siteToSummarize.Contents);
 
-            NorthConnectionPoint = siteToSummarize.NorthConnectionPoint;
-            SouthConnectionPoint = siteToSummarize.SouthConnectionPoint;
-            EastConnectionPoint = siteToSummarize.EastConnectionPoint;
-            WestConnectionPoint = siteToSummarize.WestConnectionPoint;
-
             Transform = siteToSummarize.transform;
+
+            ConnectionCircleRadius = siteToSummarize.ConnectionCircleRadius;
         }
 
         #endregion
 
         #region instance methods
 
-        public Vector3 GetConnectionPointInDirection(ManhattanDirection direction) {
-            switch(direction) {
-                case ManhattanDirection.North: return NorthConnectionPoint;
-                case ManhattanDirection.South: return SouthConnectionPoint;
-                case ManhattanDirection.East:  return EastConnectionPoint;
-                case ManhattanDirection.West:  return WestConnectionPoint;
-                default: return NorthConnectionPoint;
-            }
+        public Vector3 GetPointOfConnectionFacingPoint(Vector3 point) {
+            var normalizedCenterToPoint = (point - Transform.position).normalized;
+            return (normalizedCenterToPoint * ConnectionCircleRadius) + Transform.position;
         }
 
         #endregion

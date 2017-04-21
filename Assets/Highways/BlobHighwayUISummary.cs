@@ -60,10 +60,10 @@ namespace Assets.Highways {
 
             Profile = highwayToSummarize.Profile;
 
-            Vector3 firstEndpoint, secondEndpoint;
-            highwayToSummarize.GetEndpointPositions(out firstEndpoint, out secondEndpoint);
-            FirstEndpoint = firstEndpoint;
-            SecondEndpoint = secondEndpoint;
+            FirstEndpoint = highwayToSummarize.FirstEndpoint.BlobSite.GetPointOfConnectionFacingPoint(
+                highwayToSummarize.SecondEndpoint.transform.position);
+            SecondEndpoint = highwayToSummarize.SecondEndpoint.BlobSite.GetPointOfConnectionFacingPoint(
+                highwayToSummarize.FirstEndpoint.transform.position);;
 
             IsRequestingFoodUpkeep   = highwayToSummarize.IsRequestingFood;
             IsRequestingYellowUpkeep = highwayToSummarize.IsRequestingYellow;

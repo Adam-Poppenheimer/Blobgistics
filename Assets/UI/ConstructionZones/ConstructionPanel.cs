@@ -62,12 +62,7 @@ namespace Assets.UI.ConstructionZones {
                     RaiseConstructionRequested("Highway Manager");
                 });
             }
-        }
-
-        protected override void DoOnUpdate() {
-            if(LocationToConstruct != null){
-                transform.position = Camera.main.WorldToScreenPoint(LocationToConstruct.Transform.position);
-            }
+            MovePanelWithCamera = true;
         }
 
         #endregion
@@ -76,7 +71,7 @@ namespace Assets.UI.ConstructionZones {
 
         protected override void DoOnActivate() {
             if(LocationToConstruct != null) {
-                transform.position = Camera.main.WorldToScreenPoint(LocationToConstruct.Transform.position);
+                DesiredWorldPosition = LocationToConstruct.Transform.position;
             }
         }
 

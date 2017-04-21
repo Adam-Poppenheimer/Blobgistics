@@ -26,10 +26,7 @@ namespace Assets.BlobSites {
 
         public abstract ReadOnlyCollection<ResourceBlobBase> Contents { get; }
 
-        public abstract Vector3 NorthConnectionPoint { get; }
-        public abstract Vector3 SouthConnectionPoint { get; }
-        public abstract Vector3 EastConnectionPoint  { get; }
-        public abstract Vector3 WestConnectionPoint  { get; }
+        public abstract float ConnectionCircleRadius { get; }
 
         #endregion
 
@@ -61,15 +58,7 @@ namespace Assets.BlobSites {
 
         #endregion
 
-        public Vector3 GetConnectionPointInDirection(ManhattanDirection direction) {
-            switch(direction) {
-                case ManhattanDirection.North: return NorthConnectionPoint;
-                case ManhattanDirection.South: return SouthConnectionPoint;
-                case ManhattanDirection.East:  return EastConnectionPoint;
-                case ManhattanDirection.West:  return WestConnectionPoint;
-                default: return NorthConnectionPoint;
-            }
-        }
+        public abstract Vector3 GetPointOfConnectionFacingPoint(Vector3 point);
 
         public abstract bool CanPlaceBlobInto(ResourceBlobBase blob);
         public abstract void PlaceBlobInto   (ResourceBlobBase blob);

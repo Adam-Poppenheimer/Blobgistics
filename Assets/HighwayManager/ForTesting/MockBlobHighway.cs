@@ -91,10 +91,6 @@ namespace Assets.HighwayManager.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void GetEndpointPositions(out Vector3 firstEndpointPosition, out Vector3 secondEndpointPosition) {
-            throw new NotImplementedException();
-        }
-
         public override bool GetPullingPermissionForFirstEndpoint(ResourceType type) {
             throw new NotImplementedException();
         }

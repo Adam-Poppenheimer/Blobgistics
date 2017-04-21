@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using Assets.Blobs;
 
 using UnityCustomUtilities.Extensions;
@@ -17,6 +19,8 @@ namespace Assets.HighwayManager {
 
         public ReadOnlyDictionary<ResourceType, int> LastUpkeep { get; set; }
 
+        public Transform Transform { get; set; }
+
         #endregion
 
         #region constructors
@@ -26,6 +30,7 @@ namespace Assets.HighwayManager {
         public HighwayManagerUISummary(HighwayManagerBase manager) {
             ID = manager.ID;
             LastUpkeep = manager.LastCalculatedUpkeep;
+            Transform = manager.transform;
         }
 
         #endregion

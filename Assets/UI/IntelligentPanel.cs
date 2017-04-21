@@ -8,13 +8,31 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.UI {
 
     public abstract class IntelligentPanel : MonoBehaviour, ISelectHandler, IDeselectHandler {
 
         #region instance fields and properties
 
+        public bool MovePanelWithCamera { get; set; }
+
+        public Vector3 DesiredWorldPosition { get; set; }
+
+        [SerializeField] private float MinimumBufferAroundDesiredPosition;
+
         private bool DeactivateOnNextUpdate = false;
+
+        private RectTransform RectTransform {
+            get {
+                if(_rectTransform == null) {
+                    _rectTransform = GetComponent<RectTransform>();
+                }
+                return _rectTransform;
+            }
+        }
+        private RectTransform _rectTransform;
 
         #endregion
 
@@ -42,6 +60,9 @@ namespace Assets.UI {
                 DeactivateOnNextUpdate = false;
             }else {
                 DoOnUpdate();
+                if(MovePanelWithCamera) {
+                    RepositionInCameraView();
+                }
             }
         }
 
@@ -64,6 +85,9 @@ namespace Assets.UI {
             StartCoroutine(ReselectToThis());
             UpdateDisplay();
             DoOnActivate();
+            if(MovePanelWithCamera) {
+                RepositionInCameraView();
+            }
         }
 
         public void Deactivate() {
@@ -91,6 +115,54 @@ namespace Assets.UI {
         private IEnumerator ReselectToThis() {
             yield return new WaitForEndOfFrame();
             EventSystem.current.SetSelectedGameObject(gameObject);
+        }
+
+        private void RepositionInCameraView() {
+            var desiredWorldInScreen = Camera.main.WorldToScreenPoint(DesiredWorldPosition);
+            var rectOfPanel = RectTransform.rect;
+            var rectOfCamera = Camera.main.pixelRect;
+
+            var minimumScreenX = rectOfPanel.width / 2;
+            var maximumScreenX = rectOfCamera.width - rectOfPanel.width / 2;
+            var minimumScreenY = rectOfPanel.height / 2;
+            var maximumScreenY = rectOfCamera.height - rectOfPanel.height / 2;
+
+            var dominantDirection = desiredWorldInScreen.GetDominantManhattanDirectionTo(rectOfCamera.center);
+
+            float desiredXInScreenGivenOffsets = 0f, desiredYInScreenGivenOffsets = 0f;
+
+            switch(dominantDirection) {
+                case ManhattanDirection.East:
+                    desiredXInScreenGivenOffsets = desiredWorldInScreen.x + rectOfPanel.width / 2f + MinimumBufferAroundDesiredPosition;
+                    desiredYInScreenGivenOffsets = desiredWorldInScreen.y;
+                    break;
+                case ManhattanDirection.West:
+                    desiredXInScreenGivenOffsets = desiredWorldInScreen.x - rectOfPanel.width / 2f - MinimumBufferAroundDesiredPosition;
+                    desiredYInScreenGivenOffsets = desiredWorldInScreen.y;
+                    break;
+                case ManhattanDirection.North:
+                    desiredXInScreenGivenOffsets = desiredWorldInScreen.x;
+                    desiredYInScreenGivenOffsets = desiredWorldInScreen.y + rectOfPanel.height / 2f + MinimumBufferAroundDesiredPosition;
+                    break;
+                case ManhattanDirection.South:
+                    desiredXInScreenGivenOffsets = desiredWorldInScreen.x;
+                    desiredYInScreenGivenOffsets = desiredWorldInScreen.y - rectOfPanel.height / 2f - MinimumBufferAroundDesiredPosition;
+                    break;
+            }
+
+            var desiredPositionInScreenGivenOffsets = new Vector3(
+                desiredXInScreenGivenOffsets,
+                desiredYInScreenGivenOffsets,
+                desiredWorldInScreen.z
+            );
+
+            var actualScreenPosition = new Vector3(
+                Mathf.Clamp(desiredPositionInScreenGivenOffsets.x, minimumScreenX, maximumScreenX),
+                Mathf.Clamp(desiredPositionInScreenGivenOffsets.y, minimumScreenY, maximumScreenY),
+                desiredWorldInScreen.z
+            );
+
+            transform.position = actualScreenPosition;
         }
 
         #endregion

@@ -13,27 +13,9 @@ namespace Assets.BlobSites.ForTesting {
 
         #region from BlobSitePrivateDataBase
 
-        public override Vector3 NorthConnectionOffset {
+        public override float ConnectionCircleRadius {
             get {
-                return new Vector3(0f, 1f, 0f);
-            }
-        }
-
-        public override Vector3 SouthConnectionOffset {
-            get {
-                return new Vector3(0f, -2f, 0f);
-            }
-        }
-
-        public override Vector3 EastConnectionOffset {
-            get {
-                return new Vector3(3f, 0f, 0f);
-            }
-        }
-
-        public override Vector3 WestConnectionOffset {
-            get {
-                return new Vector3(-4f, 0f, 0f);
+                throw new NotImplementedException();
             }
         }
 

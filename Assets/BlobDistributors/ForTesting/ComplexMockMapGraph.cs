@@ -44,10 +44,7 @@ namespace Assets.BlobDistributors.ForTesting {
                 if(_blobSitePrivateData == null) {
                     var hostingObject = new GameObject();
                     _blobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
-                    _blobSitePrivateData.SetNorthConnectionOffset(Vector3.zero);
-                    _blobSitePrivateData.SetSouthConnectionOffset(Vector3.zero);
-                    _blobSitePrivateData.SetEastConnectionOffset(Vector3.zero);
-                    _blobSitePrivateData.SetWestConnectionOffset(Vector3.zero);
+                    _blobSitePrivateData.SetConnectionCircleRadius(2f);
                     _blobSitePrivateData.SetAlignmentStrategy(gameObject.AddComponent<BoxyBlobAlignmentStrategy>());
                 }
                 return _blobSitePrivateData;

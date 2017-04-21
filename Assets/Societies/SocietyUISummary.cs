@@ -21,21 +21,19 @@ namespace Assets.Societies {
             get { return new MapNodeUISummary(SocietyToSummarize.Location); }
         }
 
-        public string CurrentComplexity {
-            get { return SocietyToSummarize.CurrentComplexity.Name; }
+        public ComplexityDefinitionBase CurrentComplexity {
+            get { return SocietyToSummarize.CurrentComplexity; }
         }
 
-        public string AscentComplexity {
+        public ComplexityDefinitionBase AscentComplexity {
             get {
-                var actualAscent = SocietyToSummarize.ActiveComplexityLadder.GetAscentTransition(SocietyToSummarize.CurrentComplexity);
-                return actualAscent  != null ? actualAscent.Name  : "--";
+                return SocietyToSummarize.ActiveComplexityLadder.GetAscentTransition(SocietyToSummarize.CurrentComplexity);
             }
         }
 
-        public string DescentComplexity {
+        public ComplexityDefinitionBase DescentComplexity {
             get {
-                var actualDescent = SocietyToSummarize.ActiveComplexityLadder.GetDescentTransition(SocietyToSummarize.CurrentComplexity);
-                return actualDescent != null ? actualDescent.Name : "--";
+                return SocietyToSummarize.ActiveComplexityLadder.GetDescentTransition(SocietyToSummarize.CurrentComplexity);
             }
         }
 

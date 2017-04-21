@@ -40,35 +40,6 @@ namespace Assets.BlobSites.Editor {
         #region functionality
 
         [Test]
-        public void OnInitialization_ConnectionPointsReturnCurrentPositionPlusValueInPrivateData() {
-            //Setup
-            var factoryToUse = BuildFactory(PrivateData);
-            var hostingObject = new GameObject();
-            hostingObject.transform.position = new Vector3(1f, 1f, 1f);
-
-            //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(hostingObject);
-
-            //Validation
-            Assert.That(Mathf.Approximately(0f, Vector3.Distance(
-                siteToTest.NorthConnectionPoint,
-                new Vector3(1f, 2f, 1f)
-            )), "NorthConnectionPoint is not approximately where it should be");
-            Assert.That(Mathf.Approximately(0f, Vector3.Distance(
-                siteToTest.SouthConnectionPoint,
-                new Vector3(1f, -1f, 1f)
-            )), "SouthConnectionPoint is not approximately where it should be");
-            Assert.That(Mathf.Approximately(0f, Vector3.Distance(
-                siteToTest.EastConnectionPoint,
-                new Vector3(4f, 1f, 1f)
-            )), "EastConnectionPoint is not approximately where it should be");
-            Assert.That(Mathf.Approximately(0f, Vector3.Distance(
-                siteToTest.WestConnectionPoint,
-                new Vector3(-3f, 1f, 1f)
-            )), "WestConnectionPoint is not approximately where it should be");
-        }
-
-        [Test]
         public void OnInitialization_GetPlacementPermissionForResourceTypeIsFalseForAllResourceTypes() {
             //Setup
             var factoryToUse = BuildFactory(PrivateData);
@@ -113,6 +84,11 @@ namespace Assets.BlobSites.Editor {
             }
         }
 
+        [Test]
+        public void OnGetPointOfConnectionFacingPointCalled_ValueReturnedIsWithinCorrectDistanceOfCenter() {
+            throw new NotImplementedException();
+        }
+        
         [Test]
         public void OnPlacementPermissionSetForResourceType_GetPlacementPermissionForResourceTypeReturnsCorrectValue() {
             //Setup

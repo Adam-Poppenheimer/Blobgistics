@@ -247,14 +247,6 @@ namespace Assets.Highways {
             PrivateData.TubePullingFromSecondEndpoint.Clear();
         }
 
-        public override void GetEndpointPositions(out Vector3 firstEndpointPosition, out Vector3 secondEndpointPosition) {
-            var directionFromFirstToSecond = FirstEndpoint.transform.GetDominantManhattanDirectionTo(SecondEndpoint.transform);
-            var directionFromSecondToFirst = SecondEndpoint.transform.GetDominantManhattanDirectionTo(FirstEndpoint.transform);
-
-            firstEndpointPosition = FirstEndpoint.BlobSite.GetConnectionPointInDirection(directionFromFirstToSecond);
-            secondEndpointPosition = SecondEndpoint.BlobSite.GetConnectionPointInDirection(directionFromSecondToFirst);
-        }
-
         #endregion
 
         private List<ResourceType> GetCommonResourceTypes(BlobSiteBase pullSite, BlobSiteBase pushSite) {
@@ -282,8 +274,8 @@ namespace Assets.Highways {
             PrivateData.TubePullingFromFirstEndpoint.transform.Translate(Vector3.up * TubeCenterOffset);
             PrivateData.TubePullingFromSecondEndpoint.transform.Translate(Vector3.down * TubeCenterOffset);
 
-            Vector3 firstConnectionPoint, secondConnectionPoint;
-            GetEndpointPositions(out firstConnectionPoint, out secondConnectionPoint);
+            var firstConnectionPoint = FirstEndpoint.BlobSite.GetPointOfConnectionFacingPoint(SecondEndpoint.transform.position);
+            var secondConnectionPoint = SecondEndpoint.BlobSite.GetPointOfConnectionFacingPoint(FirstEndpoint.transform.position);
 
             EdgeOrientationUtil.AlignTransformWithEndpoints(transform, firstConnectionPoint, secondConnectionPoint, false);
 

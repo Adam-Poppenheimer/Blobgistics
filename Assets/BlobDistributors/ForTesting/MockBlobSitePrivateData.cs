@@ -28,25 +28,7 @@ namespace Assets.BlobDistributors.ForTesting {
             get { return 1f; }
         }
 
-        public override Vector3 EastConnectionOffset {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override Vector3 NorthConnectionOffset {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override Vector3 SouthConnectionOffset {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override Vector3 WestConnectionOffset {
+        public override float ConnectionCircleRadius {
             get {
                 throw new NotImplementedException();
             }

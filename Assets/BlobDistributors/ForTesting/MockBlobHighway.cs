@@ -129,10 +129,6 @@ namespace Assets.BlobDistributors.ForTesting {
             
         }
 
-        public override void GetEndpointPositions(out Vector3 firstEndpointPosition, out Vector3 secondEndpointPosition) {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #endregion

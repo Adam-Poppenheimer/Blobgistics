@@ -15,10 +15,7 @@ namespace Assets.BlobSites {
 
         public abstract ResourceBlobFactoryBase BlobFactory { get; }
 
-        public abstract Vector3 NorthConnectionOffset { get; }
-        public abstract Vector3 SouthConnectionOffset { get; }
-        public abstract Vector3 EastConnectionOffset  { get; }
-        public abstract Vector3 WestConnectionOffset  { get; }
+        public abstract float ConnectionCircleRadius { get; }
 
         public abstract BlobAlignmentStrategyBase AlignmentStrategy { get; }
         public abstract float BlobRealignmentSpeedPerSecond { get; }

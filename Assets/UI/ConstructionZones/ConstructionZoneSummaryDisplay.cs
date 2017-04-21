@@ -39,6 +39,7 @@ namespace Assets.UI.ConstructionZones {
                     RaiseConstructionZoneDestructionRequested();
                 });
             }
+            MovePanelWithCamera = true;
         }
 
         protected override void DoOnUpdate() {
@@ -53,7 +54,7 @@ namespace Assets.UI.ConstructionZones {
 
         protected override void DoOnActivate() {
             if(CurrentSummary != null) {
-                transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.Transform.position);
+               DesiredWorldPosition = CurrentSummary.Transform.position;
             }
         }
 

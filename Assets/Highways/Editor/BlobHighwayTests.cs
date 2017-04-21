@@ -1013,10 +1013,7 @@ namespace Assets.Highways.Editor {
             var hostingObject = new GameObject();
 
             var newBlobSiteData = hostingObject.AddComponent<MockBlobSitePrivateData>();
-            newBlobSiteData.SetNorthConnectionOffset(Vector3.up);
-            newBlobSiteData.SetSouthConnectionOffset(Vector3.down);
-            newBlobSiteData.SetEastConnectionOffset (Vector3.right);
-            newBlobSiteData.SetWestConnectionOffset (Vector3.left);
+            newBlobSiteData.SetConnectionCircleRadius(1f);
 
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
             newBlobSite.PrivateData = newBlobSiteData;

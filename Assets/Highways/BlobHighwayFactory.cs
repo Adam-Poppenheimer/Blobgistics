@@ -50,10 +50,9 @@ namespace Assets.Highways {
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
             get { return AllConstructedHighways.AsReadOnly(); }
         }
+        [SerializeField, HideInInspector] private List<BlobHighwayBase> AllConstructedHighways = new List<BlobHighwayBase>();
 
         [SerializeField] private GameObject HighwayPrefab;
-
-        [SerializeField, HideInInspector] private List<BlobHighwayBase> AllConstructedHighways = new List<BlobHighwayBase>();
 
         #endregion
 

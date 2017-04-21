@@ -28,12 +28,21 @@ namespace Assets.UI.ResourceDepots {
 
         #region instance methods
 
+        #region Unity event methods
+
+        private void Start() {
+            MovePanelWithCamera = true;
+        }
+
+        #endregion
+
         #region from IntelligentPanel
 
         protected override void DoOnActivate() {
             DestroyButton.onClick.AddListener(delegate(){
                 RaiseDestructionRequested();
             });
+            DesiredWorldPosition = CurrentSummary.Transform.position;
         }
 
         protected override void DoOnDeactivate() {

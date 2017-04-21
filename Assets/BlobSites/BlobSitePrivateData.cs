@@ -23,37 +23,13 @@ namespace Assets.BlobSites {
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
-        public override Vector3 NorthConnectionOffset {
-            get { return _northConnectionOffset; }
+        public override float ConnectionCircleRadius {
+            get { return _connectionCircleRadius; }
         }
-        public void SetNorthConnectionOffset(Vector3 value) {
-            _northConnectionOffset = value;
+        public void SetConnectionCircleRadius(float value) {
+            _connectionCircleRadius = value;
         }
-        [SerializeField] private Vector3 _northConnectionOffset = Vector3.zero;
-
-        public override Vector3 SouthConnectionOffset {
-            get { return _southConnectionOffset; }
-        }
-        public void SetSouthConnectionOffset(Vector3 value) {
-            _southConnectionOffset = value;
-        }
-        [SerializeField] private Vector3 _southConnectionOffset = Vector3.zero;
-
-        public override Vector3 EastConnectionOffset {
-            get { return _eastConnectionOffset; }
-        }
-        public void SetEastConnectionOffset(Vector3 value) {
-            _eastConnectionOffset = value;
-        }
-        [SerializeField] private Vector3 _eastConnectionOffset = Vector3.zero;
-
-        public override Vector3 WestConnectionOffset {
-            get { return _westConnectionOffset; }
-        }
-        public void SetWestConnectionOffset(Vector3 value) {
-            _westConnectionOffset = value;
-        }
-        [SerializeField] private Vector3 _westConnectionOffset = Vector3.zero;
+        [SerializeField] private float _connectionCircleRadius;
 
         public override BlobAlignmentStrategyBase AlignmentStrategy {
             get { return _alignmentStrategy; }

@@ -19,30 +19,6 @@ namespace Assets.Highways.ForTesting {
 
         #region from BlobSiteBase
 
-        public override Vector3 NorthConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override Vector3 SouthConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override Vector3 WestConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override Vector3 EastConnectionPoint {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public override ReadOnlyCollection<ResourceBlobBase> Contents {
             get {
                 throw new NotImplementedException();
@@ -56,6 +32,12 @@ namespace Assets.Highways.ForTesting {
         }
 
         public override bool IsAtCapacity {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override float ConnectionCircleRadius {
             get {
                 throw new NotImplementedException();
             }
@@ -75,6 +57,10 @@ namespace Assets.Highways.ForTesting {
         #region instance methods
 
         #region from BlobSiteBase
+
+        public override Vector3 GetPointOfConnectionFacingPoint(Vector3 point) {
+            throw new NotImplementedException();
+        }
 
         public override bool CanExtractAnyBlob() {
             throw new NotImplementedException();
