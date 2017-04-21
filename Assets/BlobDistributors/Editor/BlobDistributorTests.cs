@@ -309,7 +309,50 @@ namespace Assets.BlobDistributors.Editor {
 
         [Test]
         public void OnDistributionIsPerformed_HighwayEfficiencyModifiesPullCooldown() {
-            throw new NotImplementedException();
+            //Setup
+            var mapGraph = BuildMapGraph();
+
+            MapNodeBase centerNode, leftNode, rightNode, upNode;
+            SetUpMapGraph(mapGraph, out centerNode, out leftNode, out rightNode, out upNode);
+
+            var highwayFactory = BuildMockHighwayFactory();
+
+            BlobHighwayBase highwayLeft, highwayRight, highwayUp;
+            SetUpHighwayFactory(highwayFactory, centerNode, leftNode, rightNode, upNode,
+                out highwayLeft, out highwayRight, out highwayUp);
+
+            highwayLeft.Priority = 1;
+
+            highwayRight.SetPullingPermissionForFirstEndpoint (ResourceType.Food, false);
+            highwayRight.SetPullingPermissionForSecondEndpoint(ResourceType.Food, false);
+            highwayUp.SetPullingPermissionForFirstEndpoint    (ResourceType.Food, false);
+            highwayUp.SetPullingPermissionForSecondEndpoint   (ResourceType.Food, false);
+
+            var distributorToTest = BuildBlobDistributor();
+            distributorToTest.MapGraph = mapGraph;
+            distributorToTest.HighwayFactory = highwayFactory;
+
+            //Execution
+            centerNode.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            centerNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 50);
+            centerNode.BlobSite.TotalCapacity = 100;
+            for(int i = 0; i < 50; ++i) {
+                centerNode.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+            }
+
+            distributorToTest.Tick(3f);
+
+            int leftCountAfter3Seconds  = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
+
+            highwayLeft.Efficiency = 10f;
+
+            distributorToTest.Tick(1.01f);
+
+            int leftCountAfter6Seconds = highwayLeft.ContentsPulledFromFirstEndpoint.Count;
+
+            //Validation
+            Assert.AreEqual(3,  leftCountAfter3Seconds, "LeftCountAfter3Seconds is incorrect");
+            Assert.AreEqual(13, leftCountAfter6Seconds, "LeftCountAfter6Seconds is incorrect");
         }
 
         #endregion
@@ -343,7 +386,7 @@ namespace Assets.BlobDistributors.Editor {
         private MockHighwayFactory BuildMockHighwayFactory() {
             var hostingObject = new GameObject();
             var newHighwayFactory = hostingObject.AddComponent<MockHighwayFactory>();
-            newHighwayFactory.StartingProfile = BuildBlobHighwayProfile(1f, 20, ResourceSummary.BuildResourceSummary(new GameObject()), 1f);
+            newHighwayFactory.StartingProfile = BuildBlobHighwayProfile(1f, 20, 1f);
             return newHighwayFactory;
         }
 
@@ -393,8 +436,13 @@ namespace Assets.BlobDistributors.Editor {
             highwayUp.SetPullingPermissionForFirstEndpoint (ResourceType.Food, true);
         }
 
-        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, ResourceSummary cost, float BlobPullCooldownInSeconds) {
-            throw new NotImplementedException();
+        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float blobPullCooldownInSeconds) {
+            var hostingObject = new GameObject();
+            var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
+            newProfile.SetBlobSpeedPerSecond(blobSpeedPerSecond);
+            newProfile.SetCapacity(capacity);
+            newProfile.SetBlobPullCooldownInSeconds(blobPullCooldownInSeconds);
+            return newProfile;
         }
 
         #endregion

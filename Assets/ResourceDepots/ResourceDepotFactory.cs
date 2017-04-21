@@ -72,6 +72,8 @@ namespace Assets.ResourceDepots {
             newDepot.name = "ResourceDepot at " + location.name;
 
             InstantiatedDepots.Add(newDepot);
+
+            newDepot.RefreshBlobSite();
             return newDepot;
         }
 

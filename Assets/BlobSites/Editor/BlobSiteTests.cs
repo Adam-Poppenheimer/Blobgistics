@@ -85,8 +85,44 @@ namespace Assets.BlobSites.Editor {
         }
 
         [Test]
-        public void OnGetPointOfConnectionFacingPointCalled_ValueReturnedIsWithinCorrectDistanceOfCenter() {
-            throw new NotImplementedException();
+        public void OnGetPointOfConnectionFacingPointCalled_ValueReturnedLiesOnTheCorrectConnectionCircle() {
+            //Setup
+            var privateData = BuildBlobSitePrivateData();
+            privateData.SetConnectionCircleRadius(1f);
+
+            var siteToTest = BuildBlobSite(privateData);
+
+            var shortUpVector    = Vector3.up    * 2;
+            var shortDownVector  = Vector3.down  * 2;
+            var shortLeftVector  = Vector3.left  * 2;
+            var shortRightVector = Vector3.right * 2;
+
+            var longUpVector    = Vector3.up    * 6;
+            var longDownVector  = Vector3.down  * 6;
+            var longLeftVector  = Vector3.left  * 6;
+            var longRightVector = Vector3.right * 6;
+
+            //Execution
+            var connectionToShortUp    = siteToTest.GetPointOfConnectionFacingPoint(shortUpVector);
+            var connectionToShortDown  = siteToTest.GetPointOfConnectionFacingPoint(shortDownVector);
+            var connectionToShortLeft  = siteToTest.GetPointOfConnectionFacingPoint(shortLeftVector);
+            var connectionToShortRight = siteToTest.GetPointOfConnectionFacingPoint(shortRightVector);
+
+            var connectionToLongUp    = siteToTest.GetPointOfConnectionFacingPoint(longUpVector);
+            var connectionToLongDown  = siteToTest.GetPointOfConnectionFacingPoint(longDownVector);
+            var connectionToLongLeft  = siteToTest.GetPointOfConnectionFacingPoint(longLeftVector);
+            var connectionToLongRight = siteToTest.GetPointOfConnectionFacingPoint(longRightVector);
+
+            //Validation
+            Assert.That((Vector3.up   ).Equals(connectionToShortUp),    "Incorrect connection point to shortUpVector");
+            Assert.That((Vector3.down ).Equals(connectionToShortDown),  "Incorrect connection point to shortDownVector");
+            Assert.That((Vector3.left ).Equals(connectionToShortLeft),  "Incorrect connection point to shortLeftVector");
+            Assert.That((Vector3.right).Equals(connectionToShortRight), "Incorrect connection point to shortRightVector");
+
+            Assert.That((Vector3.up   ).Equals(connectionToLongUp),    "Incorrect connection point to longUpVector");
+            Assert.That((Vector3.down ).Equals(connectionToLongDown),  "Incorrect connection point to longDownVector");
+            Assert.That((Vector3.left ).Equals(connectionToLongLeft),  "Incorrect connection point to longLeftVector");
+            Assert.That((Vector3.right).Equals(connectionToLongRight), "Incorrect connection point to longRightVector");
         }
         
         [Test]
@@ -1244,6 +1280,11 @@ namespace Assets.BlobSites.Editor {
             var newBlob = hostingObject.AddComponent<ResourceBlob>();
             newBlob.BlobType = type;
             return newBlob;
+        }
+
+        private BlobSitePrivateData BuildBlobSitePrivateData() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<BlobSitePrivateData>();
         }
 
         #endregion

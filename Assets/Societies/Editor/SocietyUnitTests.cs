@@ -855,7 +855,30 @@ namespace Assets.Societies.Editor {
 
         [Test]
         public void WhenCurrentComplexityDoesNotPermitAscension_SocietyWillNeverAscend() {
-            throw new NotImplementedException();
+            //Setup
+            var currentComplexity = BuildComplexityDefinition();
+            var ascentComplexity = BuildComplexityDefinition();
+
+            currentComplexity.SetNeeds(ResourceSummary.BuildResourceSummary(currentComplexity.gameObject));
+            currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
+
+            ascentComplexity.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
+                ascentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
+            ));
+
+            var activeLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode());
+
+            var societyToTest = BuildSociety(privateData, currentComplexity);
+
+            //Execution
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
+            societyToTest.AscensionIsPermitted = false;
+            societyToTest.TickConsumption(100f);
+            
+            //Validation
+            Assert.AreNotEqual(ascentComplexity, societyToTest.CurrentComplexity);
         }
 
         #endregion

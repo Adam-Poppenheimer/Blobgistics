@@ -44,6 +44,8 @@ namespace Assets.BlobDistributors.ForTesting {
             var newHighway = hostingObject.AddComponent<MockBlobHighway>();
             newHighway.SetFirstEndpoint(firstEndpoint);
             newHighway.SetSecondEndpoint(secondEndpoint);
+            newHighway.SetProfile(StartingProfile);
+            newHighway.Efficiency = 1f;
 
             highways.Add(newHighway);
             return newHighway;

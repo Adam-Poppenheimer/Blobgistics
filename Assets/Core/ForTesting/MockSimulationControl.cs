@@ -38,6 +38,10 @@ namespace Assets.Core.ForTesting {
         public List<int> FirstEndpointsChecked = new List<int>();
         public List<int> SecondEndpointsChecked = new List<int>();
 
+        public KeyValuePair<int, bool> LastAscensionPermissionRequest;
+
+        public int LastSocietyDestructionRequest;
+
         #endregion
 
         #region instance methods
@@ -56,7 +60,7 @@ namespace Assets.Core.ForTesting {
         }
 
         public override bool CanDestroySociety(int societyID) {
-            throw new NotImplementedException();
+            return true;
         }
 
         public override void ConnectNodesWithHighway(int node1ID, int node2ID) {
@@ -80,7 +84,7 @@ namespace Assets.Core.ForTesting {
         }
 
         public override void DestroySociety(int societyID) {
-            throw new NotImplementedException();
+            LastSocietyDestructionRequest = societyID;
         }
 
         public override IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
@@ -88,7 +92,7 @@ namespace Assets.Core.ForTesting {
         }
 
         public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
-            throw new NotImplementedException();
+            LastAscensionPermissionRequest = new KeyValuePair<int, bool>(societyID, ascensionPermitted);
         }
 
         public override void SetHighwayPriority(int highwayID, int newPriority) {

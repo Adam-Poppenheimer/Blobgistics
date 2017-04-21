@@ -49,25 +49,17 @@ namespace Assets.BlobDistributors.ForTesting {
         public override int Priority { get; set; }
 
         public override BlobHighwayProfileBase Profile {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return _profile; }
         }
-
-        public override float Efficiency {
-            get {
-                throw new NotImplementedException();
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
+        public void SetProfile(BlobHighwayProfileBase value) {
+            _profile = value;
         }
+        private BlobHighwayProfileBase _profile;
+
+        public override float Efficiency { get; set; }
 
         public override float BlobPullCooldownInSeconds {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return Profile.BlobPullCooldownInSeconds / Efficiency; }
         }
 
         public override bool IsRequestingFood   { get; set; }

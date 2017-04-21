@@ -31,7 +31,25 @@ namespace Assets.ConstructionZones.Editor {
 
         [Test]
         public void OnProjectCompleted_ProjectHasBeenCompletedSetToTrue_AndIsFalseOtherwise() {
-            throw new NotImplementedException();
+            //Setup
+            var factoryToUse = BuildConstructionZoneFactory();
+            var locationToUse = BuildMapNode();
+
+            var easyProjectHost = new GameObject();
+            var easyProject = easyProjectHost.AddComponent<MockConstructionProject>();
+            easyProject.SiteContainsNecessaryResources = true;
+            easyProject.name = "Easy Project";
+
+            factoryToUse.AvailableProjects = new List<ConstructionProjectBase>() { easyProject };
+
+            var siteToTest = factoryToUse.BuildConstructionZone(locationToUse, easyProject);
+
+            //Execution and Validation
+            Assert.IsFalse(siteToTest.ProjectHasBeenCompleted, "Project falsely registers itself as having been completed");
+            locationToUse.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
+
+            //Validation
+            Assert.That(siteToTest.ProjectHasBeenCompleted, "Project fails to indicate that it has been completed");
         }
 
         [Test]

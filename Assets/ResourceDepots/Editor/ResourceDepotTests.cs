@@ -44,6 +44,7 @@ namespace Assets.ResourceDepots.Editor {
             //Validation
             var blobSite = depotToTest.Location.BlobSite;
 
+            int expectedTotalCapacity = 0;
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                 Assert.That(blobSite.GetPlacementPermissionForResourceType(resourceType),
                     "blobSite lacks placement permission for resourceType " + resourceType);
@@ -53,9 +54,11 @@ namespace Assets.ResourceDepots.Editor {
 
                 Assert.AreEqual(0, blobSite.GetCapacityForResourceType(resourceType),
                     "blobSite has incorrect capacity for resourceType " + resourceType);
+
+                expectedTotalCapacity += depotToTest.Profile.PerResourceCapacity;
             }
 
-            Assert.AreEqual(0, blobSite.TotalCapacity, "blobSite has incorrect TotalCapacity");
+            Assert.AreEqual(expectedTotalCapacity, blobSite.TotalCapacity, "blobSite has incorrect TotalCapacity");
         }
 
         [Test]

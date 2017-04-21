@@ -14,12 +14,12 @@ using Assets.HighwayManager;
 using Assets.Highways;
 using Assets.Core.ForTesting;
 using Assets.Map;
+using Assets.Societies;
 
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core.Editor {
 
-    
     public class UIControlTests {
 
         #region instance methods
@@ -29,13 +29,56 @@ namespace Assets.Core.Editor {
         #region functionality
 
         [Test]
-        public void IMPLEMENT_AllUIObjectDestroyedMessages() {
-            throw new NotImplementedException();
+        public void OnSocietyDisplayRaisesAscensionPermissionChangeRequestedEvent_RequestIsSentToSimulationControlProperly() {
+            //Setup
+            var summaryDisplay = BuildMockSocietySummaryDisplay();
+            var simulationControl = BuildMockSimulationControl();
+
+            var uiControl = BuildUIControl();
+            uiControl.SocietySummaryDisplay = summaryDisplay;
+            uiControl.SimulationControl = simulationControl;
+
+            var eventSystem = BuildEventSystem();
+            var eventData = new BaseEventData(eventSystem);
+
+            var mockSociety = BuildMockSociety();
+            mockSociety.SetID(1);
+            var summaryToPush = new SocietyUISummary(mockSociety);
+
+            uiControl.PushSelectEvent(summaryToPush, eventData);
+
+            //Execution
+            summaryDisplay.RaiseAscensionPermissionChangeRequestedEvent(false);
+
+            //Validation
+            Assert.AreEqual(mockSociety.ID, simulationControl.LastAscensionPermissionRequest.Key, "The last request was made on an incorrect society");
+            Assert.AreEqual(false, simulationControl.LastAscensionPermissionRequest.Value, "The last request was made with an incorrect permission");
         }
 
         [Test]
-        public void OnSocietyDisplayRaisesAscensionPermissionChangeRequestedEvent_RequestIsSentToSimulationControlProperly() {
-            Assert.Ignore("This test is unimplemented but not considered critical");
+        public void OnSocietyDisplayRaisesDestructionRequestedevent_RequestIsSentToSimulationControlProperly() {
+            //Setup
+            var summaryDisplay = BuildMockSocietySummaryDisplay();
+            var simulationControl = BuildMockSimulationControl();
+
+            var uiControl = BuildUIControl();
+            uiControl.SocietySummaryDisplay = summaryDisplay;
+            uiControl.SimulationControl = simulationControl;
+
+            var eventSystem = BuildEventSystem();
+            var eventData = new BaseEventData(eventSystem);
+
+            var mockSociety = BuildMockSociety();
+            mockSociety.SetID(42);
+            var summaryToPush = new SocietyUISummary(mockSociety);
+
+            uiControl.PushSelectEvent(summaryToPush, eventData);
+
+            //Execution
+            summaryDisplay.RaiseDestructionRequestedEvent();
+
+            //Validation
+            Assert.AreEqual(mockSociety.ID, simulationControl.LastSocietyDestructionRequest);
         }
 
         [Test]
@@ -603,6 +646,16 @@ namespace Assets.Core.Editor {
         private MockHighwayGhost BuildMockHighwayGhost() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockHighwayGhost>();
+        }
+
+        private MockSocietyUISummaryDisplay BuildMockSocietySummaryDisplay() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockSocietyUISummaryDisplay>();
+        }
+
+        private MockSociety BuildMockSociety() {
+            var hostingObject = new GameObject();
+            return hostingObject.AddComponent<MockSociety>();
         }
 
         #endregion

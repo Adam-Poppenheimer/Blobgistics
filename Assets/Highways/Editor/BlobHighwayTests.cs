@@ -841,8 +841,31 @@ namespace Assets.Highways.Editor {
         }
 
         [Test]
-        public void OnEfficiencyChanged_MovementSpeedOfBlobsIsAffectedMultiplicatively() {
-            throw new NotImplementedException();
+        public void OnEfficiencyChanged_BlobTubeSpeedIsAffectedMultiplicatively() {
+            //Setup
+            var firstEndpoint = BuildMapNode();
+            var secondEndpoint = BuildMapNode();
+
+            var tubePullingFromFirst = BuildBlobTube();
+            var tubePullingFromSecond = BuildBlobTube();
+
+            var highwayData = BuildHighwayPrivateData();
+            highwayData.SetFirstEndpoint(firstEndpoint);
+            highwayData.SetSecondEndpoint(secondEndpoint);
+            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
+            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
+            highwayData.SetProfile(BuildBlobHighwayProfile(2f, 10, 1f));
+
+            var highwayToTest = BuildHighway(highwayData);
+
+            //Execution
+            highwayToTest.Efficiency = 10f;
+
+            //Validation
+            Assert.That(Mathf.Approximately(20f, tubePullingFromFirst.TransportSpeedPerSecond),
+                "TubePullingFromFirst has an incorrect TransportSpeedPerSecond");
+            Assert.That(Mathf.Approximately(20f, tubePullingFromSecond.TransportSpeedPerSecond),
+                "TubePullingFromFirst has an incorrect TransportSpeedPerSecond");
         }
 
         #endregion

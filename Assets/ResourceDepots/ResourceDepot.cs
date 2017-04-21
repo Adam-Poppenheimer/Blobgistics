@@ -36,7 +36,10 @@ namespace Assets.ResourceDepots {
 
         public override ResourceDepotProfile Profile {
             get { return _profile; }
-            set { _profile = value; }
+            set {
+                _profile = value;
+                RefreshBlobSite();
+            }
         }
         [SerializeField] private ResourceDepotProfile _profile;
 
@@ -59,10 +62,6 @@ namespace Assets.ResourceDepots {
         #region instance methods
 
         #region Unity event methods
-
-        private void Start() {
-            RefreshBlobSite();
-        }
 
         private void OnDestroy() {
             if(ParentFactory != null) {

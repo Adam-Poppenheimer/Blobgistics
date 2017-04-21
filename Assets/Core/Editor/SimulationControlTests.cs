@@ -480,10 +480,11 @@ namespace Assets.Core.Editor {
             var middleNode = mapGraph.BuildNode(Vector3.zero);
             var rightNode  = mapGraph.BuildNode(Vector3.right);
 
-            var simpleSociety = societyFactory.ConstructSocietyAt(middleNode, societyFactory.StandardComplexityLadder);
-            var complexifiedSociety = societyFactory.ConstructSocietyAt(rightNode, societyFactory.StandardComplexityLadder);
+            var simpleDefinition = societyFactory.StandardComplexityLadder.GetStartingComplexity();
+            var complexifiedDefinition = societyFactory.StandardComplexityLadder.GetAscentTransition(simpleDefinition);
 
-            CauseSocietyToAscend(complexifiedSociety);
+            var simpleSociety = societyFactory.ConstructSocietyAt(middleNode, societyFactory.StandardComplexityLadder);
+            var complexifiedSociety = societyFactory.ConstructSocietyAt(rightNode, societyFactory.StandardComplexityLadder, complexifiedDefinition);
 
             //Execution
 
@@ -520,7 +521,30 @@ namespace Assets.Core.Editor {
 
         [Test]
         public void OnSetAscensionPermissionForSocietyIsCalled_SpecifiedSocietyHasItsAscensionIsPermittedFieldChanged() {
-            Assert.Ignore("This test is unimplemented but also not considered critical");
+            //Setup
+            var controlToTest = BuildSimulationControl();
+
+            var mapGraph = controlToTest.MapGraph;
+            var societyFactory = controlToTest.SocietyFactory;
+
+            var node1 = mapGraph.BuildNode(Vector3.zero);
+            var node2   = mapGraph.BuildNode(Vector3.zero);
+            var node3  = mapGraph.BuildNode(Vector3.zero);
+
+            var society1 = societyFactory.ConstructSocietyAt(node1, societyFactory.StandardComplexityLadder);
+            var society2 = societyFactory.ConstructSocietyAt(node2, societyFactory.StandardComplexityLadder);
+            var society3 = societyFactory.ConstructSocietyAt(node3, societyFactory.StandardComplexityLadder);
+
+            //Execution
+            controlToTest.SetAscensionPermissionForSociety(society1.ID, false);
+            controlToTest.SetAscensionPermissionForSociety(society2.ID, false);
+            controlToTest.SetAscensionPermissionForSociety(society2.ID, true);
+            controlToTest.SetAscensionPermissionForSociety(society3.ID, true);
+
+            //Validation
+            Assert.IsFalse(society1.AscensionIsPermitted, "Society1 falsely permits ascension");
+            Assert.IsTrue (society2.AscensionIsPermitted, "Society2 does not permit ascension");
+            Assert.IsTrue (society3.AscensionIsPermitted, "Society3 does not permit ascension");
         }
 
         [Test]
