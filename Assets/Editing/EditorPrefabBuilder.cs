@@ -6,8 +6,11 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-using Assets.BlobEngine;
+using Assets.Highways;
 using Assets.Map;
+using Assets.Societies;
+using Assets.ResourceDepots;
+using Assets.Generator;
 
 namespace Assets.Editing {
 
@@ -16,99 +19,86 @@ namespace Assets.Editing {
 
         #region static fields and properties
 
-        public static BuildingPlotFactory PlotFactory {
-            get {
-                if(_plotFactory == null) {
-                    throw new InvalidOperationException("PlotFactory is uninitialized");
-                } else {
-                    return _plotFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _plotFactory = value;
-                }
-            }
+        public static MapGraphBase MapGraph {
+            get { return _mapGraph; }
+            set { _mapGraph = value; }
         }
-        private static BuildingPlotFactory _plotFactory;
+        private static MapGraphBase _mapGraph;
 
-        public static ResourcePoolFactory PoolFactory {
-            get {
-                if(_poolFactory == null) {
-                    throw new InvalidOperationException("PoolFactory is uninitialized");
-                } else {
-                    return _poolFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _poolFactory = value;
-                }
-            }
+        public static SocietyFactoryBase SocietyFactory {
+            get { return _societyFactory; }
+            set { _societyFactory = value; }
         }
-        private static ResourcePoolFactory _poolFactory;
+        private static SocietyFactoryBase _societyFactory;
 
-        public static BlobTubeFactory TubeFactory {
-            get {
-                if(_tubeFactory == null) {
-                    throw new InvalidOperationException("TubeFactory is uninitialized");
-                } else {
-                    return _tubeFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _tubeFactory = value;
-                }
-            }
+        public static ResourceDepotFactoryBase ResourceDepotFactory {
+            get { return _resourceDepotFactory; }
+            set { _resourceDepotFactory = value; }
         }
-        private static BlobTubeFactory _tubeFactory;
+        private static ResourceDepotFactoryBase _resourceDepotFactory;
 
-        public static BlobGeneratorFactory GeneratorFactory {
-            get {
-                if(_generatorFactory == null) {
-                    throw new InvalidOperationException("GeneratorFactory is uninitialized");
-                } else {
-                    return _generatorFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _generatorFactory = value;
-                }
-            }
+        public static ResourceGeneratorFactory GeneratorFactory {
+            get { return _generatorFactory; }
+            set { _generatorFactory = value; }
         }
-        private static BlobGeneratorFactory _generatorFactory;
-
-        public static MapGraph MapGraph {
-            get {
-                if(_mapGraph == null) {
-                    throw new InvalidOperationException("MapGraph is uninitialized");
-                } else {
-                    return _mapGraph;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _mapGraph = value;
-                }
-            }
-        }
-        private static MapGraph _mapGraph;
+        private static ResourceGeneratorFactory _generatorFactory;
 
         #endregion
 
         #region static methods
+
+        [MenuItem("Strategy Blobs/Construct Society At Location")]
+        private static void ConstructSocietyAtLocation() {
+            var locationToConstruct = Selection.activeTransform.GetComponent<MapNodeBase>();
+            if(SocietyFactory.CanConstructSocietyAt(locationToConstruct)) {
+                var newSociety = SocietyFactory.ConstructSocietyAt(locationToConstruct, SocietyFactory.StandardComplexityLadder);
+            }else {
+                Debug.LogErrorFormat("Attempted to build a Society on Location {0}, but its construction was not permitted",
+                    locationToConstruct.name);
+            }
+        }
+
+        [MenuItem("Strategy Blobs/Construct Society At Location", true)]
+        private static bool ValidateConstructSocietyAtLocation() {
+            if(Selection.activeTransform != null) {
+                var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
+                return locationToBuild != null && SocietyFactory.CanConstructSocietyAt(locationToBuild);
+            }else {
+                return false;
+            }
+        }
+
+        [MenuItem("Strategy Blobs/Construct Resource Depot At Location")]
+        private static void ConstructResourceDepotAtLocation() {
+            var locationToConstruct = Selection.activeTransform.GetComponent<MapNodeBase>();
+            ResourceDepotFactory.ConstructDepotAt(locationToConstruct);
+        }
+
+        [MenuItem("Strategy Blobs/Construct Resource Depot At Location", true)]
+        private static bool ValidateConstructResourceDepotAtLocation() {
+            if(Selection.activeTransform != null) {
+                var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
+                return locationToBuild != null && !ResourceDepotFactory.HasDepotAtLocation(locationToBuild);
+            }else {
+                return false;
+            }
+        }
+
+        [MenuItem("Strategy Blobs/Construct Generator At Location")]
+        private static void ConstructGeneratorAtLocation() {
+            var locationToConstruct = Selection.activeTransform.GetComponent<MapNodeBase>();
+            GeneratorFactory.ConstructGeneratorAtLocation(locationToConstruct);
+        }
+
+        [MenuItem("Strategy Blobs/Construct Generator At Location", true)]
+        private static bool ValidateConstructGeneratorAtLocation() {
+            if(Selection.activeTransform != null) {
+                var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
+                return locationToBuild != null && GeneratorFactory.CanConstructGeneratorAtLocation(locationToBuild);
+            }else {
+                return false;
+            }
+        }
 
         [MenuItem("GameObject/Strategy Blobs/Map Node", false, 10)]
         private static void CreateMapNode(MenuCommand command) {

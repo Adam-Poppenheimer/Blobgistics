@@ -5,10 +5,10 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.BlobSites;
+
 using UnityCustomUtilities.Meshes;
 using UnityCustomUtilities.Extensions;
-
-using Assets.BlobEngine;
 
 namespace Assets.Util {
 
@@ -28,7 +28,7 @@ namespace Assets.Util {
         }
 
         public static void RealignToDimensions(GameObject resizedObject, Tuple<uint, uint, uint> newDimensions,
-            out IBlobAlignmentStrategy alignmentStrategy) {
+            out BlobAlignmentStrategyBase alignmentStrategy) {
             RealignToDimensions(resizedObject, newDimensions);
             alignmentStrategy = new BoxyBlobAlignmentStrategy(newDimensions.Item1, newDimensions.Item2, 5, 5);
         }

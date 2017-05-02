@@ -1,0 +1,116 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Assets.Blobs;
+using Assets.Core;
+using Assets.ConstructionZones;
+
+using UnityCustomUtilities.Extensions;
+
+namespace Assets.UI.ConstructionZones.ForTesting {
+
+    public class MockZoneConstructionSimulationControl : SimulationControlBase {
+
+        #region events
+
+        public event EventHandler<StringEventArgs> ConstructionRequested;
+
+        #endregion
+
+        #region instance methods
+
+        #region from SimulationControlBase
+
+        public override void DestroyResourceDepotOfID(int depotID) {
+            throw new NotImplementedException();
+        }
+
+        public override bool CanConnectNodesWithHighway(int node1ID, int node2ID) {
+            throw new NotImplementedException();
+        }
+
+        public override bool CanDestroySociety(int societyID) {
+            throw new NotImplementedException();
+        }
+
+        public override void ConnectNodesWithHighway(int node1ID, int node2ID) {
+            throw new NotImplementedException();
+        }
+
+        public override bool CanCreateConstructionSiteOnNode(int nodeID, string buildingName) {
+            return true;
+        }
+
+        public override void CreateConstructionSiteOnNode(int nodeID, string buildingName) {
+            if(ConstructionRequested != null) {
+                ConstructionRequested(this, new StringEventArgs(buildingName));
+            }
+        }
+
+        public override IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
+            var depotProject = new ConstructionProjectUISummary();
+            depotProject.Name = "Resource Depot";
+            depotProject.CostSummaryString = "Cost";
+
+            var villageProject = new ConstructionProjectUISummary();
+            villageProject.Name = "Village";
+            villageProject.CostSummaryString = "Cost";
+
+            var farmlandProject = new ConstructionProjectUISummary();
+            farmlandProject.Name = "Farmland";
+            farmlandProject.CostSummaryString = "Cost";
+
+            return new List<ConstructionProjectUISummary>() {
+                depotProject, villageProject, farmlandProject
+            };
+        }
+
+        public override void DestroyConstructionZone(int zoneID) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroyHighway(int highwayID) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroySociety(int societyID) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetHighwayPriority(int highwayID, int newPriority) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetHighwayPullingPermissionOnFirstEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetHighwayPullingPermissionOnSecondEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetHighwayUpkeepRequest(int highwayID, ResourceType resourceToChange, bool isBeingRequested) {
+            throw new NotImplementedException();
+        }
+
+        public override void TickSimulation(float secondsPassed) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroyHighwayManagerOfID(int managerID) {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #endregion
+
+    }
+
+}

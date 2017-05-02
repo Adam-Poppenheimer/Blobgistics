@@ -8,10 +8,11 @@ using UnityEngine;
 using UnityCustomUtilities.UI;
 using UnityCustomUtilities.Misc;
 
-using Assets.BlobEngine;
+using Assets.Societies;
 using Assets.Editing;
 using Assets.Map;
-using Assets.Mobs;
+using Assets.ResourceDepots;
+using Assets.Generator;
 
 namespace Assets {
 
@@ -20,23 +21,10 @@ namespace Assets {
 
         #region instance fields and properties
 
-        [SerializeField] private UIFSM TopLevelUIFSM;
-
-        [SerializeField] private GameObject BuildingPlotPrefab;
-        [SerializeField] private GameObject ResourcePoolPrefab;
-        [SerializeField] private GameObject BlobTubePrefab;
-
-        [SerializeField] private Transform CanvasRoot;
-        [SerializeField] private MapGraph  MapGraph;
-
-        [SerializeField] private BuildingPlotFactory    BuildingPlotFactory    = null;
-        [SerializeField] private ResourcePoolFactory    ResourcePoolFactory    = null;
-        [SerializeField] private BlobTubeFactory        BlobTubeFactory        = null;
-        [SerializeField] private BlobGeneratorFactory   GeneratorFactory       = null;
-        [SerializeField] private BlobletFactory         BlobletFactory         = null;
-        [SerializeField] private BlobletBarracksFactory BlobletBarracksFactory = null;
-
-        [SerializeField] private SchematicRepository BuildingSchematicRepository;
+        [SerializeField] private MapGraphBase MapGraph;
+        [SerializeField] private SocietyFactoryBase SocietyFactory;
+        [SerializeField] private ResourceDepotFactoryBase ResourceDepotFactory;
+        [SerializeField] private ResourceGeneratorFactory GeneratorFactory;
 
         #endregion
 
@@ -53,23 +41,10 @@ namespace Assets {
         }
 
         private void PushData() {
-            ObjectGraphDependencyInjector.InjectDependency<BuildingPlotFactoryBase    >(BuildingPlotFactory,
-                "BuildingPlotFactory"       , CanvasRoot, MapGraph.transform);
-            ObjectGraphDependencyInjector.InjectDependency<ResourcePoolFactoryBase    >(ResourcePoolFactory,
-                "ResourcePoolFactory"       , CanvasRoot, MapGraph.transform);
-            ObjectGraphDependencyInjector.InjectDependency<BlobTubeFactoryBase        >(BlobTubeFactory,
-                "BlobTubeFactory"           , CanvasRoot, MapGraph.transform);
-            ObjectGraphDependencyInjector.InjectDependency<BlobGeneratorFactoryBase   >(GeneratorFactory,
-                "GeneratorFactory"          , CanvasRoot, MapGraph.transform);
-            ObjectGraphDependencyInjector.InjectDependency<SchematicRepository>(BuildingSchematicRepository,
-                "BuildingSchematiRepository", CanvasRoot, MapGraph.transform);
-            
-
-            EditorPrefabBuilder.PlotFactory      = BuildingPlotFactory;
-            EditorPrefabBuilder.PoolFactory      = ResourcePoolFactory;
-            EditorPrefabBuilder.TubeFactory      = BlobTubeFactory;
+            EditorPrefabBuilder.MapGraph = MapGraph;
+            EditorPrefabBuilder.SocietyFactory = SocietyFactory;
+            EditorPrefabBuilder.ResourceDepotFactory = ResourceDepotFactory;
             EditorPrefabBuilder.GeneratorFactory = GeneratorFactory;
-            EditorPrefabBuilder.MapGraph         = MapGraph;
         }
 
         #endregion
