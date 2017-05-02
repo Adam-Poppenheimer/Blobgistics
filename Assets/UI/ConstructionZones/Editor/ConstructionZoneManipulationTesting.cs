@@ -24,13 +24,14 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void OnSelectEventPushedIntoUIControl_ConstructionZoneSummaryDisplayIsActivated_AndGivenTheClickedZone() {
+            throw new NotImplementedException();
             //Setup
             var zonePanel = BuildMockConstructionZonePanel();
-            var simulationControl = BuildMockSimulationControl();
+            //var simulationControl = BuildMockSimulationControl();
 
             var controlToTest = BuildUIControl();
-            controlToTest.ConstructionZoneSummaryDisplay = zonePanel;
-            controlToTest.SimulationControl = simulationControl;
+            //controlToTest.ConstructionZoneSummaryDisplay = zonePanel;
+            //controlToTest.SimulationControl = simulationControl;
 
             var eventSystem = BuildEventSystem();
             var eventData = new BaseEventData(eventSystem);
@@ -47,17 +48,18 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void OnDestructionRequestedEventRaised_SimulationControlReceivesRequestToDestroyTheZone() {
+            throw new NotImplementedException();
             //Setup
             var zonePanel = BuildMockConstructionZonePanel();
-            var simulationControl = BuildMockSimulationControl();
+            //var simulationControl = BuildMockSimulationControl();
             int IDOfDestroyedZone = -1;
-            simulationControl.OnConstructionZoneDestructionRequested += delegate(object sender, IntEventArgs e) {
+            /*simulationControl.OnConstructionZoneDestructionRequested += delegate(object sender, IntEventArgs e) {
                 IDOfDestroyedZone = e.Value;
-            };
+            };*/
 
             var controlToTest = BuildUIControl();
-            controlToTest.ConstructionZoneSummaryDisplay = zonePanel;
-            controlToTest.SimulationControl = simulationControl;
+            //controlToTest.ConstructionZoneSummaryDisplay = zonePanel;
+            //controlToTest.SimulationControl = simulationControl;
 
             var zoneToDestroy = new ConstructionZoneUISummary();
             zoneToDestroy.ID = 1000;
@@ -74,13 +76,14 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void OnCloseRequestedEventRaised_SummaryDisplayIsCleared_AndDeactivated() {
+            throw new NotImplementedException();
             //Setup
             var zonePanel = BuildMockConstructionZonePanel();
-            var simulationControl = BuildMockSimulationControl();
+            //var simulationControl = BuildMockSimulationControl();
 
             var controlToTest = BuildUIControl();
-            controlToTest.ConstructionZoneSummaryDisplay = zonePanel;
-            controlToTest.SimulationControl = simulationControl;
+            //controlToTest.ConstructionZoneSummaryDisplay = zonePanel;
+            //controlToTest.SimulationControl = simulationControl;
 
             zonePanel.Activate();
 
@@ -104,11 +107,6 @@ namespace Assets.UI.ConstructionZones.Editor {
         private UIControl BuildUIControl() {
             var hostedObject = new GameObject();
             return hostedObject.AddComponent<UIControl>();
-        }
-
-        private MockZoneManipulationSimulationControl BuildMockSimulationControl() {
-            var hostedObject = new GameObject();
-            return hostedObject.AddComponent<MockZoneManipulationSimulationControl>();
         }
 
         private MockConstructionZoneDisplaySummary BuildMockConstructionZonePanel() {

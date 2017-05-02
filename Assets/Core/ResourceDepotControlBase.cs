@@ -5,16 +5,13 @@ using System.Text;
 
 using UnityEngine;
 
-using Assets.ConstructionZones;
-using Assets.Blobs;
-
 namespace Assets.Core {
 
-    public abstract class SimulationControlBase : MonoBehaviour {
+    public abstract class ResourceDepotControlBase : MonoBehaviour {
 
         #region instance methods
 
-        public abstract void TickSimulation(float secondsPassed);
+        public abstract void DestroyResourceDepotOfID(int depotID);
 
         #endregion
 

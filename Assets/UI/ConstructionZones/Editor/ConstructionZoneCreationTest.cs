@@ -23,13 +23,14 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void OnSelectEventPushedIntoUIControl_ConstructionPanelIsActivated_AndGivenTheClickedMapNodeAsItsLocation() {
+            throw new NotImplementedException();
             //Setup
             var constructionPanel = BuildMockConstructionPanel();
-            var simulationControl = BuildMockSimulationControl();
+            //var simulationControl = BuildMockSimulationControl();
 
             var controlToTest = BuildUIControl();
-            controlToTest.ConstructionPanel = constructionPanel;
-            controlToTest.SimulationControl = simulationControl;
+            //controlToTest.ConstructionPanel = constructionPanel;
+            //controlToTest.SimulationControl = simulationControl;
 
             var eventSystem = BuildEventSystem();
             var eventData = new BaseEventData(eventSystem);
@@ -46,13 +47,14 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void OnSelectEventPushedIntoUIControl_ConstructionPanelBuildingPermissionsAreSetProperly() {
+            throw new NotImplementedException();
             //Setup
             var constructionPanel = BuildMockConstructionPanel();
-            var simulationControl = BuildMockSimulationControl();
+            //var simulationControl = BuildMockSimulationControl();
 
             var controlToTest = BuildUIControl();
-            controlToTest.ConstructionPanel = constructionPanel;
-            controlToTest.SimulationControl = simulationControl;
+            //controlToTest.ConstructionPanel = constructionPanel;
+            //controlToTest.SimulationControl = simulationControl;
 
             var eventSystem = BuildEventSystem();
             var eventData = new BaseEventData(eventSystem);
@@ -84,18 +86,19 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void ConstructionPanelRaisesConstructionRequest_ProperRequestIsForwardedToSimulationControl_AndConstructionPanelIsDeactivated() {
+            throw new NotImplementedException();
             //Setup
             var constructionPanel = BuildMockConstructionPanel();
-            var simulationControl = BuildMockSimulationControl();
+            //var simulationControl = BuildMockSimulationControl();
 
             string lastConstructionRequested = null;
-            simulationControl.ConstructionRequested += delegate(object sender, StringEventArgs e) {
+            /*simulationControl.ConstructionRequested += delegate(object sender, StringEventArgs e) {
                 lastConstructionRequested = e.Value;
-            };
+            };*/
 
             var controlToTest = BuildUIControl();
-            controlToTest.ConstructionPanel = constructionPanel;
-            controlToTest.SimulationControl = simulationControl;
+            //controlToTest.ConstructionPanel = constructionPanel;
+            //controlToTest.SimulationControl = simulationControl;
 
             var locationToConstruct = new MapNodeUISummary();
             constructionPanel.LocationToConstruct = locationToConstruct;
@@ -118,13 +121,14 @@ namespace Assets.UI.ConstructionZones.Editor {
 
         [Test]
         public void ConstructionPanelRaisesCloseRequestedEvent_ConstructionPanelIsClearedAndDeactivated() {
+            throw new NotImplementedException();
             //Setup
             var constructionPanel = BuildMockConstructionPanel();
-            var simulationControl = BuildMockSimulationControl();
+            //var simulationControl = BuildMockSimulationControl();
 
             var controlToTest = BuildUIControl();
-            controlToTest.ConstructionPanel = constructionPanel;
-            controlToTest.SimulationControl = simulationControl;
+            //controlToTest.ConstructionPanel = constructionPanel;
+            //controlToTest.SimulationControl = simulationControl;
 
             //Execution
             constructionPanel.Activate();
@@ -147,11 +151,6 @@ namespace Assets.UI.ConstructionZones.Editor {
         private UIControl BuildUIControl() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<UIControl>();
-        }
-
-        private MockZoneConstructionSimulationControl BuildMockSimulationControl() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockZoneConstructionSimulationControl>();
         }
 
         private MockConstructionPanel BuildMockConstructionPanel() {
