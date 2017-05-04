@@ -51,7 +51,7 @@ namespace Assets.Core {
                 Debug.LogErrorFormat(MapNodeIDErrorMessage, node2ID);
                 return false;
             }else {
-                return HighwayFactory.CanConstructHighwayBetween(node1, node2);
+                return MapGraph.HasEdge(node1, node2) && HighwayFactory.CanConstructHighwayBetween(node1, node2);
             }
         }
 

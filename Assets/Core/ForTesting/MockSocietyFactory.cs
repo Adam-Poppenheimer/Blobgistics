@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using Assets.Map;
 using Assets.Societies;
 
@@ -18,11 +20,17 @@ namespace Assets.Core.ForTesting {
 
         public override ComplexityLadderBase StandardComplexityLadder {
             get {
-                throw new NotImplementedException();
+                if(_standardComplexityLadder == null) {
+                    _standardComplexityLadder = gameObject.AddComponent<MockComplexityLadder>();
+                }
+                return _standardComplexityLadder;
             }
         }
+        private ComplexityLadderBase _standardComplexityLadder;
 
         #endregion
+
+        private List<SocietyBase> Societies = new List<SocietyBase>();
 
         #endregion
 
@@ -37,11 +45,11 @@ namespace Assets.Core.ForTesting {
         #region from SocietyFactoryBase
 
         public override SocietyBase GetSocietyAtLocation(MapNodeBase location) {
-            throw new NotImplementedException();
+            return Societies.Where(society => society.Location == location).FirstOrDefault();
         }
 
         public override bool HasSocietyAtLocation(MapNodeBase location) {
-            throw new NotImplementedException();
+            return GetSocietyAtLocation(location) != null;
         }
 
         public override bool CanConstructSocietyAt(MapNodeBase location) {
@@ -49,15 +57,22 @@ namespace Assets.Core.ForTesting {
         }
 
         public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder) {
-            throw new NotImplementedException();
+            return ConstructSocietyAt(location, ladder, ladder.GetStartingComplexity());
         }
 
         public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity) {
-            throw new NotImplementedException();
+            var newSociety = (new GameObject()).AddComponent<MockSociety>();
+
+            newSociety.location = location;
+            newSociety.activeComplexityLadder = ladder;
+            newSociety.currentComplexity = startingComplexity;
+
+            Societies.Add(newSociety);
+            return newSociety;
         }
 
         public override void DestroySociety(SocietyBase society) {
-            throw new NotImplementedException();
+            DestroyImmediate(society.gameObject);
         }
 
         public override void UnsubscribeSociety(SocietyBase societyBeingDestroyed) {
@@ -65,7 +80,7 @@ namespace Assets.Core.ForTesting {
         }
 
         public override SocietyBase GetSocietyOfID(int id) {
-            throw new NotImplementedException();
+            return Societies.Where(society => society.ID == id).FirstOrDefault();
         }
 
         public override void TickSocieties(float secondsPassed) {

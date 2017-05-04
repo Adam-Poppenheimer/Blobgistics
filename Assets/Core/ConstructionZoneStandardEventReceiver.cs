@@ -13,7 +13,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core {
 
-    public class ConstructionZoneEventReceiver : TargetedEventReceiverBase<ConstructionZoneUISummary> {
+    public class ConstructionZoneStandardEventReceiver : TargetedEventReceiverBase<ConstructionZoneUISummary> {
 
         #region instance fields and properties
 

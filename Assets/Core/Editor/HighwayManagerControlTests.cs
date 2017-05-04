@@ -41,7 +41,24 @@ namespace Assets.Core.Editor {
 
         [Test]
         public void OnMethodsAreCalledWithInvalidIDs_AllMethodsDisplayAnError_ButDoNotThrow() {
-            throw new NotImplementedException();
+            //Setup
+            var controlToTest = BuildHighwayManagerControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution and Validation
+            DebugMessageData lastMessage;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyHighwayManagerOfID(42);
+            }, "DestroyHighwayManagerOfID threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "DestroyHighwayManagerOfID did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
         }
 
         #endregion
@@ -49,11 +66,13 @@ namespace Assets.Core.Editor {
         #region utilities
 
         private HighwayManagerControl BuildHighwayManagerControl() {
-            throw new NotImplementedException();
+            var newControl = (new GameObject()).AddComponent<HighwayManagerControl>();
+            newControl.HighwayManagerFactory = newControl.gameObject.AddComponent<MockHighwayManagerFactory>();
+            return newControl;
         }
 
         private MockMapNode BuildMockMapNode() {
-            throw new NotImplementedException();
+            return (new GameObject()).AddComponent<MockMapNode>();
         }
 
         #endregion

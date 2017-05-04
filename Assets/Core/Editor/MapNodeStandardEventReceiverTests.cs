@@ -9,6 +9,7 @@ using UnityEngine.EventSystems;
 using NUnit.Framework;
 
 using Assets.Map;
+using Assets.ConstructionZones;
 using Assets.Highways;
 using Assets.Core.ForTesting;
 
@@ -244,6 +245,137 @@ namespace Assets.Core.Editor {
             //Validation
             Assert.IsNull(highwayGhost.SecondEndpoint, "highwayGhost.SecondEndpoint is not null");
             Assert.IsFalse(highwayGhost.GhostIsBuildable, "highwayGhost falsely represents its endpoints as a buildable highway");
+        }
+
+        [Test]
+        public void OnSelectionEventPushed_ConstructionPanelIsGivenTheCorrectLocation_AndActivated() {
+            //Setup
+            var highwayGhost = BuildMockHighwayGhost();
+            var highwayControl = BuildMockHighwayControl();
+            var constructionZoneControl = BuildMockConstructionZoneControl();
+            var constructionPanel = BuildMockConstructionPanel();
+
+            var receiverToTest = BuildMapNodeReceiver();
+            receiverToTest.HighwayGhost = highwayGhost;
+            receiverToTest.HighwayControl = highwayControl;
+            receiverToTest.ConstructionZoneControl = constructionZoneControl;
+            receiverToTest.ConstructionPanel = constructionPanel;
+
+            var locationToConstruct = new MapNodeUISummary();
+
+            //Execution
+            receiverToTest.PushSelectEvent(locationToConstruct, null);
+
+            //Validation
+            Assert.That(constructionPanel.isActiveAndEnabled, "ConstructionPanel was not activated");
+            Assert.AreEqual(locationToConstruct, constructionPanel.LocationToConstruct, "ConstructionPanel has the wrong LocationToConstruct");
+        }
+
+        [Test]
+        public void OnSelectionEventPushed_ConstructionPanelBuildingPermissionsAreSetProperly() {
+            //Setup
+            var highwayGhost = BuildMockHighwayGhost();
+            var highwayControl = BuildMockHighwayControl();
+            var constructionZoneControl = BuildMockConstructionZoneControl();
+            var constructionPanel = BuildMockConstructionPanel();
+
+            constructionZoneControl.PermittedProjects = new List<ConstructionProjectUISummary>() { 
+                new ConstructionProjectUISummary("Resource Depot", ""),
+                new ConstructionProjectUISummary("Village", ""),
+                new ConstructionProjectUISummary("Farmland", "")
+            };
+
+            var receiverToTest = BuildMapNodeReceiver();
+            receiverToTest.HighwayGhost = highwayGhost;
+            receiverToTest.HighwayControl = highwayControl;
+            receiverToTest.ConstructionZoneControl = constructionZoneControl;
+            receiverToTest.ConstructionPanel = constructionPanel;
+
+            var locationToConstruct = new MapNodeUISummary();
+
+            //Execution
+            receiverToTest.PushSelectEvent(locationToConstruct, null);
+
+            //Validation
+            Assert.NotNull(constructionPanel.LastPermissionsSet, "ConstructionPanel received no permissions");
+
+            var hasResourceDepot = constructionPanel.LastPermissionsSet.Where(
+                summary => summary.Name.Equals("Resource Depot", StringComparison.InvariantCultureIgnoreCase)
+            ).Count() == 1;
+
+            var hasVillage = constructionPanel.LastPermissionsSet.Where(
+                summary => summary.Name.Equals("Village", StringComparison.InvariantCultureIgnoreCase)
+            ).Count() == 1;
+
+            var hasFarmland = constructionPanel.LastPermissionsSet.Where(
+                summary => summary.Name.Equals("Farmland", StringComparison.InvariantCultureIgnoreCase)
+            ).Count() == 1;
+
+            Assert.That(hasResourceDepot, "ConstructionPanel was not given permissions for Resource Depot");
+            Assert.That(hasVillage, "ConstructionPanel was not given permissions for Farmland");
+            Assert.That(hasFarmland, "ConstructionPanel was not given permissions for Village");
+        }
+
+        [Test]
+        public void ConstructionPanelRaisesConstructionRequest_ProperRequestIsForwardedToConstructionZoneControl_AndConstructionPanelIsDeactivated() {
+            //Setup
+            var highwayGhost = BuildMockHighwayGhost();
+            var highwayControl = BuildMockHighwayControl();
+            var constructionZoneControl = BuildMockConstructionZoneControl();
+            var constructionPanel = BuildMockConstructionPanel();
+
+            int lastIDRequested = -1;
+            string lastProjectNameRequested = "";
+            constructionZoneControl.CreateConstructionZoneOnNodeCalled += delegate(int id, string projectName) {
+                lastIDRequested = id;
+                lastProjectNameRequested = projectName;
+            };
+
+            var receiverToTest = BuildMapNodeReceiver();
+            receiverToTest.HighwayGhost = highwayGhost;
+            receiverToTest.HighwayControl = highwayControl;
+            receiverToTest.ConstructionZoneControl = constructionZoneControl;
+            receiverToTest.ConstructionPanel = constructionPanel;
+
+            var locationToConstruct = new MapNodeUISummary();
+            constructionPanel.LocationToConstruct = locationToConstruct;
+
+            //Execution and Validation
+            constructionPanel.RaiseDeactivationRequestedEvent("Resource Depot");
+            Assert.AreEqual("Resource Depot", lastProjectNameRequested, "Resource Depot construction request did not forward to SimulationControl");
+            Assert.IsFalse(constructionPanel.isActiveAndEnabled, "ConstructionPanel was not deactivated after the Resource Depot request was sent");
+
+            constructionPanel.Activate();
+            constructionPanel.RaiseDeactivationRequestedEvent("Farmland");
+            Assert.AreEqual("Farmland", lastProjectNameRequested, "Farmland construction request did not forward to SimulationControl");
+            Assert.IsFalse(constructionPanel.isActiveAndEnabled, "ConstructionPanel was not deactivated after the Farmland request was sent");
+
+            constructionPanel.Activate();
+            constructionPanel.RaiseDeactivationRequestedEvent("Village");
+            Assert.AreEqual("Village", lastProjectNameRequested, "Village construction request did not forward to SimulationControl");
+            Assert.IsFalse(constructionPanel.isActiveAndEnabled, "ConstructionPanel was not deactivated after the Village request was sent");
+        }
+
+        [Test]
+        public void ConstructionPanelRaisesCloseRequestedEvent_ConstructionPanelIsDeactivated() {
+            //Setup
+            var highwayGhost = BuildMockHighwayGhost();
+            var highwayControl = BuildMockHighwayControl();
+            var constructionZoneControl = BuildMockConstructionZoneControl();
+            var constructionPanel = BuildMockConstructionPanel();
+
+            var receiverToTest = BuildMapNodeReceiver();
+            receiverToTest.HighwayGhost = highwayGhost;
+            receiverToTest.HighwayControl = highwayControl;
+            receiverToTest.ConstructionZoneControl = constructionZoneControl;
+            receiverToTest.ConstructionPanel = constructionPanel;
+
+            //Execution
+            constructionPanel.Activate();
+            constructionPanel.RaiseCloseRequestedEvent();
+
+            //Validation
+            Assert.IsFalse(constructionPanel.isActiveAndEnabled, "ConstructionPanel is still activated");
         }
 
         #endregion

@@ -4,8 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using Assets.Highways;
 using Assets.Map;
+
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core.ForTesting {
@@ -17,10 +20,9 @@ namespace Assets.Core.ForTesting {
         #region from BlobHighwayFactoryBase
 
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return highways.AsReadOnly(); }
         }
+        private List<BlobHighwayBase> highways = new List<BlobHighwayBase>();
 
         #endregion
 
@@ -37,27 +39,37 @@ namespace Assets.Core.ForTesting {
         #region from BlobHighwayFactoryBase
 
         public override bool CanConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
-            throw new NotImplementedException();
+            return GetHighwayBetween(firstEndpoint, secondEndpoint) == null;
         }
 
         public override BlobHighwayBase ConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
-            throw new NotImplementedException();
+            var newHighway = (new GameObject()).AddComponent<MockBlobHighway>();
+            newHighway.firstEndpoint = firstEndpoint;
+            newHighway.secondEndpoint = secondEndpoint;
+
+            highways.Add(newHighway);
+            return newHighway;
         }
 
         public override BlobHighwayBase GetHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
-            throw new NotImplementedException();
+            return highways.Where(delegate(BlobHighwayBase highway) {
+                return (
+                    (highway.FirstEndpoint == firstEndpoint && highway.SecondEndpoint == secondEndpoint) ||
+                    (highway.SecondEndpoint == firstEndpoint && highway.FirstEndpoint == secondEndpoint)
+                );
+            }).FirstOrDefault();
         }
 
         public override BlobHighwayBase GetHighwayOfID(int highwayID) {
-            throw new NotImplementedException();
+            return highways.Where(highway => highway.ID == highwayID).FirstOrDefault();
         }
 
         public override bool HasHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
-            throw new NotImplementedException();
+            return GetHighwayBetween(firstEndpoint, secondEndpoint) != null;
         }
 
         public override void DestroyHighway(BlobHighwayBase highway) {
-            throw new NotImplementedException();
+            DestroyImmediate(highway.gameObject);
         }
 
         #endregion

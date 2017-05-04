@@ -16,40 +16,25 @@ namespace Assets.Core.ForTesting {
         #region from SocietyBase
 
         public override int ID {
-            get { return _id; }
+            get { return GetInstanceID(); }
         }
-        public void SetID(int value) {
-            _id = value;
-        }
-        private int _id;
 
         public override ComplexityLadderBase ActiveComplexityLadder {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return activeComplexityLadder; }
         }
+        public ComplexityLadderBase activeComplexityLadder;
 
-        public override bool AscensionIsPermitted {
-            get {
-                throw new NotImplementedException();
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
-        }
+        public override bool AscensionIsPermitted { get; set; }
 
         public override ComplexityDefinitionBase CurrentComplexity {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return currentComplexity; }
         }
+        public ComplexityDefinitionBase currentComplexity;
 
         public override MapNodeBase Location {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return location; }
         }
+        public MapNodeBase location;
 
         public override bool NeedsAreSatisfied {
             get {

@@ -23,18 +23,91 @@ namespace Assets.Core.Editor {
         #region tests
 
         [Test]
-        public void OnGetAllPermittedConstructionZoneProjectsOnNodeCalled_AllProjectsCanBeCreatedUponTheGivenNode() {
-            throw new NotImplementedException();
+        public void OnCanCreateConstructionZoneOnNodeIsCalled_ReturnsFalseIfAnyOtherFeatureExistsOnTheNode_AndTrueOtherwise() {
+            //Setup
+            var controlToTest = BuildConstructionZoneControl();
+
+            var mapGraph = controlToTest.MapGraph;
+
+            var nodeWithConstructionZone = mapGraph.BuildNode(Vector3.zero);
+            var nodeWithResourceDepot    = mapGraph.BuildNode(Vector3.zero);
+            var nodeWithSociety          = mapGraph.BuildNode(Vector3.zero);
+            var nodeWithHighwayManager   = mapGraph.BuildNode(Vector3.zero);
+            var emptyNode = mapGraph.BuildNode(Vector3.zero);
+            
+            controlToTest.ConstructionZoneFactory.BuildConstructionZone(nodeWithConstructionZone,
+                controlToTest.ConstructionZoneFactory.GetAvailableProjects().First());
+            controlToTest.ResourceDepotFactory.ConstructDepotAt(nodeWithResourceDepot);
+            controlToTest.SocietyFactory.ConstructSocietyAt(nodeWithSociety, controlToTest.SocietyFactory.StandardComplexityLadder);
+            controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(nodeWithHighwayManager);
+
+            //Execution and validation
+            Assert.IsFalse(controlToTest.CanCreateConstructionZoneOnNode(nodeWithConstructionZone.ID, "Village"),
+                "ConstructionZoneControl falsely permits the creation of a ConstructionZone on a MapNode with a ConstructionZone");
+            Assert.IsFalse(controlToTest.CanCreateConstructionZoneOnNode(nodeWithResourceDepot.ID, "Village"),
+                "ConstructionZoneControl falsely permits the creation of a ConstructionZone on a MapNode with a ResourceDepot");
+            Assert.IsFalse(controlToTest.CanCreateConstructionZoneOnNode(nodeWithSociety.ID, "Village"),
+                "ConstructionZoneControl falsely permits the creation of a ConstructionZone on a MapNode with a Society");
+            Assert.IsFalse(controlToTest.CanCreateConstructionZoneOnNode(nodeWithHighwayManager.ID, "Village"),
+                "ConstructionZoneControl falsely permits the creation of a ConstructionZone on a MapNode with a HighwayManager");
+            Assert.IsTrue(controlToTest.CanCreateConstructionZoneOnNode(emptyNode.ID, "Village"),
+                "ConstructionZoneControl does not permit the creation of a ConstructionZone on a MapNode with nothing on it");
         }
 
         [Test]
-        public void OnCanCreateConstructionZoneOnNodeIsCalled_ReturnsFalseIfAnyOtherFeatureExistsOnTheNode() {
-            throw new NotImplementedException();
+        public void OnCreateConstructionZoneOnNodeIsCalled_AndCanCreateConstructionZoneOnNodeReturnsTrue_ProperRequestSentToConstructionZoneFactory() {
+            //Setup
+            var controlToTest = BuildConstructionZoneControl();
+            var mockZoneFactory = controlToTest.ConstructionZoneFactory as MockConstructionZoneFactory;
+
+            MapNodeBase locationRequestedForZone = null;
+            ConstructionProjectBase projectRequestedForZone = null;
+            mockZoneFactory.BuildConstructionZoneCalled += delegate(MapNodeBase location, ConstructionProjectBase project) {
+                locationRequestedForZone = location;
+                projectRequestedForZone = project;
+            };
+
+            var emptyNode = controlToTest.MapGraph.BuildNode(Vector3.zero);
+
+            //Execution
+            controlToTest.CreateConstructionZoneOnNode(emptyNode.ID, "Village");
+
+            //Validation
+            Assert.AreEqual(emptyNode, locationRequestedForZone, "ConstructionZoneFactory was given an incorrect location");
+            Assert.AreEqual(mockZoneFactory.VillageProject, projectRequestedForZone, "ConstructionZoneFactory was given an incorrect project");
         }
 
         [Test]
-        public void OnCreateConstructionZoneOnNodeIsCalled_ProperConstructionZoneIsCreatedOnTheProperNode() {
-            throw new NotImplementedException();
+        public void OnCreateConstructionZoneOnNodeIsCalled_AndCanCreateConstructionZoneOnNodeReturnsFalse_DisplaysError_ButDoesNotThrow() {
+            //Setup
+            var controlToTest = BuildConstructionZoneControl();
+            var zoneFactory = controlToTest.ConstructionZoneFactory;
+
+            var mapGraph = controlToTest.MapGraph;
+
+            var nodeWithConstructionZone = mapGraph.BuildNode(Vector3.zero);
+            ConstructionProjectBase project;
+            zoneFactory.TryGetProjectOfName("Village", out project);
+            zoneFactory.BuildConstructionZone(nodeWithConstructionZone, project);
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution and Validation
+            DebugMessageData lastMessage;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CreateConstructionZoneOnNode(nodeWithConstructionZone.ID, "Village");
+            }, "CreateConstructionZoneOnNode threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "CreateConstructionZoneOnNode did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
         }
 
         [Test]
@@ -65,7 +138,54 @@ namespace Assets.Core.Editor {
 
         [Test]
         public void OnMethodsCalledWithInvalidID_AllMethodsDisplayErrorMessage_ButDoNotThrow() {
-            throw new NotImplementedException();
+            //Setup
+            var controlToTest = BuildConstructionZoneControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution and Validation
+            DebugMessageData lastMessage;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.GetAllPermittedConstructionZoneProjectsOnNode(42);
+            }, "GetAllPermittedConstructionZoneProjectsOnNode threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "GetAllPermittedConstructionZoneProjectsOnNode did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CanCreateConstructionZoneOnNode(42, "Village");
+            }, "CanCreateConstructionZoneOnNode threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "CanCreateConstructionZoneOnNode did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CreateConstructionZoneOnNode(42, "Village");
+            }, "CreateConstructionZoneOnNode threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "CreateConstructionZoneOnNode did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyConstructionZone(42);
+            }, "DestroyConstructionZone threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "DestroyConstructionZone did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
         }
 
         #endregion

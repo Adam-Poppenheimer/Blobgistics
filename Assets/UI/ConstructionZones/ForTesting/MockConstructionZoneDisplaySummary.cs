@@ -35,7 +35,7 @@ namespace Assets.UI.ConstructionZones.ForTesting {
         }
 
         public void GenerateDestructionRequest() {
-            RaiseConstructionZoneDestructionRequested();
+            RaiseDestructionRequested();
         }
 
         #endregion

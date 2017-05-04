@@ -63,31 +63,6 @@ namespace Assets.Core.Editor {
         }
 
         [Test]
-        public void OnSetHighwayUpkeepRequestCalled_AndHighwayIDIsInvalid_DisplaysErrorMessage_ButDoesNotThrow() {
-            //Setup
-            var controlToTest = BuildHighwayControl();
-
-            var mapGraph = controlToTest.MapGraph;
-
-            var defaultLogHandler = Debug.logger.logHandler;
-            var insertionHandler = new ListInsertionLogHandler();
-            Debug.logger.logHandler = insertionHandler;
-
-            //Execution
-            Assert.DoesNotThrow(delegate() {
-                controlToTest.SetHighwayUpkeepRequest(42, ResourceType.Food, true);
-            });
-
-            //Validation
-
-            Assert.AreEqual(1, insertionHandler.StoredMessages.Count, "There was not just one message received");
-            Assert.AreEqual(LogType.Error, insertionHandler.StoredMessages.Last().LogType, "The message received was not an error message");
-
-            //Cleanup
-            Debug.logger.logHandler = defaultLogHandler;
-        }
-
-        [Test]
         public void OnCanConnectNodesWithHighwayIsCalled_ReturnValueProperlyRepresentsInternalState() {
             //Setup
             var controlToTest = BuildHighwayControl();
@@ -370,7 +345,81 @@ namespace Assets.Core.Editor {
 
         [Test]
         public void OnMethodsCalledWithInvalidID_AllMethodsDisplayErrorMessage_ButDoNotThrow() {
-            throw new NotImplementedException();
+            //Setup
+            var controlToTest = BuildHighwayControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution and Validation
+            DebugMessageData lastMessage;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CanConnectNodesWithHighway(42, 42);
+            }, "CanConnectNodesWithHighway threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "CanConnectNodesWithHighway did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.ConnectNodesWithHighway(42, 42);
+            }, "ConnectNodesWithHighway threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "ConnectNodesWithHighway did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(42, ResourceType.Food, true);
+            }, "SetHighwayPullingPermissionOnFirstEndpointForResource threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "SetHighwayPullingPermissionOnFirstEndpointForResource did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(42, ResourceType.Food, true);
+            }, "SetHighwayPullingPermissionOnSecondEndpointForResource threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "SetHighwayPullingPermissionOnSecondEndpointForResource did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.SetHighwayPriority(42, 5);
+            }, "SetHighwayPriority threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "SetHighwayPriority did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.SetHighwayUpkeepRequest(42, ResourceType.Food, true);
+            }, "SetHighwayUpkeepRequest threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "SetHighwayUpkeepRequest did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroyHighway(42);
+            }, "DestroyHighway threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "DestroyHighway did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
         }
 
         #endregion

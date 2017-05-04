@@ -21,7 +21,7 @@ namespace Assets.UI.ConstructionZones {
 
         public event EventHandler<EventArgs> ConstructionZoneDestructionRequested;
 
-        protected void RaiseConstructionZoneDestructionRequested() { RaiseEvent(ConstructionZoneDestructionRequested, EventArgs.Empty); }
+        protected void RaiseDestructionRequested() { RaiseEvent(ConstructionZoneDestructionRequested, EventArgs.Empty); }
 
         #endregion
 

@@ -2,34 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.BlobSites;
+
+using Assets.ConstructionZones;
 using Assets.Map;
 
 namespace Assets.Core.ForTesting {
 
-    public class MockMapNode : MapNodeBase {
+    public class MockConstructionZone : ConstructionZoneBase {
 
         #region instance fields and properties
 
-        #region from MapNodeBase
+        #region from ConstructionZoneBase
 
-        public override BlobSiteBase BlobSite {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public override ConstructionProjectBase CurrentProject { get; set; }
 
         public override int ID {
             get { return GetInstanceID(); }
         }
 
-        public override MapGraphBase ManagingGraph {
-            get {
-                throw new NotImplementedException();
-            }
+        public override MapNodeBase Location {
+            get { return location; }
         }
+        public MapNodeBase location;
 
-        public override IEnumerable<MapNodeBase> Neighbors {
+        public override bool ProjectHasBeenCompleted {
             get {
                 throw new NotImplementedException();
             }

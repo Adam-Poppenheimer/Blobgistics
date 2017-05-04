@@ -38,7 +38,7 @@ namespace Assets.Core {
         }
         [SerializeField] private BlobHighwaySummaryDisplayBase _highwayDisplay;
 
-        public HighwayControlBase HighwayCOntrol {
+        public HighwayControlBase HighwayControl {
             get { return _highwayControl; }
             set { _highwayControl = value; }
         }
@@ -100,21 +100,21 @@ namespace Assets.Core {
         #endregion
 
         private void HighwaySummaryDisplay_PriorityChanged(object sender, IntEventArgs e) {
-            HighwayCOntrol.SetHighwayPriority(HighwaySummaryDisplay.CurrentSummary.ID, e.Value);
+            HighwayControl.SetHighwayPriority(HighwaySummaryDisplay.CurrentSummary.ID, e.Value);
         }
 
         private void HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged(object sender, ResourcePermissionEventArgs e) {
-            HighwayCOntrol.SetHighwayPullingPermissionOnFirstEndpointForResource(
+            HighwayControl.SetHighwayPullingPermissionOnFirstEndpointForResource(
                 HighwaySummaryDisplay.CurrentSummary.ID, e.TypeChanged, e.IsNowPermitted);
         }
 
         private void HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged(object sender, ResourcePermissionEventArgs e) {
-            HighwayCOntrol.SetHighwayPullingPermissionOnSecondEndpointForResource(
+            HighwayControl.SetHighwayPullingPermissionOnSecondEndpointForResource(
                 HighwaySummaryDisplay.CurrentSummary.ID, e.TypeChanged, e.IsNowPermitted);
         }
 
         private void HighwayDisplay_ResourceRequestedForUpkeep(object sender, UpkeepRequestEventArgs e) {
-            HighwayCOntrol.SetHighwayUpkeepRequest(HighwaySummaryDisplay.CurrentSummary.ID, e.Type, e.IsBeingRequested);
+            HighwayControl.SetHighwayUpkeepRequest(HighwaySummaryDisplay.CurrentSummary.ID, e.Type, e.IsBeingRequested);
         }
 
         #endregion

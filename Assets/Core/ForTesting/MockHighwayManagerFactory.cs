@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using Assets.HighwayManager;
 using Assets.Highways;
 using Assets.Map;
@@ -11,28 +13,38 @@ namespace Assets.Core.ForTesting {
 
     public class MockHighwayManagerFactory : HighwayManagerFactoryBase {
 
+        #region instance fields and properties
+
+        private List<HighwayManagerBase> Managers = new List<HighwayManagerBase>();
+
+        #endregion
+
         #region instance methods
 
         #region from HighwayManagerFactoryBase
 
         public override bool CanConstructHighwayManagerAtLocation(MapNodeBase location) {
-            throw new NotImplementedException();
+            return GetHighwayManagerAtLocation(location) == null;
         }
 
         public override HighwayManagerBase ConstructHighwayManagerAtLocation(MapNodeBase location) {
-            throw new NotImplementedException();
+            var newManager = (new GameObject()).AddComponent<MockHighwayManager>();
+            newManager.location = location;
+            Managers.Add(newManager);
+            return newManager;
         }
 
         public override void DestroyHighwayManager(HighwayManagerBase manager) {
-            throw new NotImplementedException();
+            Managers.Remove(manager);
+            DestroyImmediate(manager.gameObject);
         }
 
         public override HighwayManagerBase GetHighwayManagerAtLocation(MapNodeBase location) {
-            throw new NotImplementedException();
+            return Managers.Where(manager => manager.Location == location).FirstOrDefault();
         }
 
         public override HighwayManagerBase GetHighwayManagerOfID(int id) {
-            throw new NotImplementedException();
+            return Managers.Where(manager => manager.ID == id).FirstOrDefault();
         }
 
         public override IEnumerable<BlobHighwayBase> GetHighwaysServedByManager(HighwayManagerBase manager) {

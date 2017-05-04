@@ -18,6 +18,11 @@ namespace Assets.ConstructionZones {
 
         public ConstructionProjectUISummary() { }
 
+        public ConstructionProjectUISummary(string name, string costSummaryString) {
+            Name = name;
+            CostSummaryString = costSummaryString;
+        }
+
         public ConstructionProjectUISummary(ConstructionProjectBase projectToSummarize) {
             Name = projectToSummarize.name;
             CostSummaryString = projectToSummarize.GetCostSummaryString();

@@ -26,219 +26,61 @@ namespace Assets.Core.Editor {
 
         #region tests
 
-        #region functionality
-
         [Test]
-        public void OnSelectEventPushedWithResourceDepotUISummary_DepotDisplayIsGivenTheSummary_AndActivated() {
-            throw new NotImplementedException();
-            //Setup
-            var summaryDisplay = BuildMockDepotDisplay();
-            //var simulationControl = BuildMockSimulationControl();
-
-            var uiControl = BuildUIControl();
-            //uiControl.DepotSummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
-
-            var eventSystem = BuildEventSystem();
-            var eventData = new BaseEventData(eventSystem);
-
-            var summaryToPush = new ResourceDepotUISummary();
-            summaryToPush.ID = 1;
-
-            //Execution
-            uiControl.PushSelectEvent(summaryToPush, eventData);
-
-            //Validation
-            Assert.AreEqual(summaryToPush, summaryDisplay.CurrentSummary, "The wrong summary is in the display");
-            Assert.That(summaryDisplay.isActiveAndEnabled, "The display was not activated");
+        public void OnPushBeginDragEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
         }
 
         [Test]
-        public void OnResourceDepotDisplayRaisesDestructionRequestedEvent_RequestIsSentToSimulationControlProperly() {
-            throw new NotImplementedException();
-            //Setup
-            var summaryDisplay = BuildMockDepotDisplay();
-            //var simulationControl = BuildMockSimulationControl();
-
-            var uiControl = BuildUIControl();
-            //uiControl.DepotSummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
-
-            var eventSystem = BuildEventSystem();
-            var eventData = new BaseEventData(eventSystem);
-
-            var summaryToPush = new ResourceDepotUISummary();
-            summaryToPush.ID = 1;
-
-            uiControl.PushSelectEvent(summaryToPush, eventData);
-
-            //Execution
-            summaryDisplay.RaiseDestructionRequestedEvent();
-
-            //Validation
-            //Assert.AreEqual(summaryToPush.ID, simulationControl.IDOfRequestedDepot, "SimulationControl did not receive the proper ID");
+        public void OnPushDragEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
         }
 
         [Test]
-        public void OnResourceDepotDisplayRaisesDestructionRequestedEvent_DepotDisplayIsDeactivated() {
-            throw new NotImplementedException();
-            //Setup
-            var summaryDisplay = BuildMockDepotDisplay();
-            //var simulationControl = BuildMockSimulationControl();
-
-            var uiControl = BuildUIControl();
-            //uiControl.DepotSummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
-
-            var eventSystem = BuildEventSystem();
-            var eventData = new BaseEventData(eventSystem);
-
-            var summaryToPush = new ResourceDepotUISummary();
-            summaryToPush.ID = 1;
-
-            uiControl.PushSelectEvent(summaryToPush, eventData);
-
-            //Execution
-            summaryDisplay.RaiseDestructionRequestedEvent();
-
-            //Validation
-            Assert.IsFalse(summaryDisplay.isActiveAndEnabled, "SummaryDisplay is still active");
+        public void OnPushEndDragEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
         }
 
         [Test]
-        public void OnSelectEventPushedWithHighwayManagerUISummary_HighwayManagerDisplayIsGivenTheSummary_AndActivated() {
-            throw new NotImplementedException();
-            //Setup
-            var summaryDisplay = BuildMockManagerDisplay();
-            //var simulationControl = BuildMockSimulationControl();
-
-            var uiControl = BuildUIControl();
-            //uiControl.HighwayManagerSummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
-
-            var eventSystem = BuildEventSystem();
-            var eventData = new BaseEventData(eventSystem);
-
-            var summaryToPush = new HighwayManagerUISummary();
-            summaryToPush.ID = 1;
-
-            //Execution
-            uiControl.PushSelectEvent(summaryToPush, eventData);
-
-            //Validation
-            Assert.AreEqual(summaryToPush, summaryDisplay.CurrentSummary, "The wrong summary is in the display");
-            Assert.That(summaryDisplay.isActiveAndEnabled, "The display was not activated");
+        public void OnPushPointerClickEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
         }
 
         [Test]
-        public void OnHighwayManagerDisplayRaisesDestructionRequestedEvent_RequestIsSentToSimulationControlProperly() {
-            throw new NotImplementedException();
-            //Setup
-            var summaryDisplay = BuildMockManagerDisplay();
-            //var simulationControl = BuildMockSimulationControl();
-
-            var uiControl = BuildUIControl();
-            //uiControl.HighwayManagerSummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
-
-            var eventSystem = BuildEventSystem();
-            var eventData = new BaseEventData(eventSystem);
-
-            var summaryToPush = new HighwayManagerUISummary();
-            summaryToPush.ID = 1;
-
-            uiControl.PushSelectEvent(summaryToPush, eventData);
-
-            //Execution
-            summaryDisplay.RaiseDestructionRequestedEvent();
-
-            //Validation
-            //Assert.AreEqual(summaryToPush.ID, simulationControl.IDOfRequestedManager, "SimulationControl did not receive the proper ID");
+        public void OnPushPointerEnterEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
         }
 
         [Test]
-        public void OnHighwayManagerDisplayRaisesDestructionRequestedEvent_HighwayManagerDisplayIsDeactivated() {
-            throw new NotImplementedException();
-            //Setup
-            var summaryDisplay = BuildMockManagerDisplay();
-            //var simulationControl = BuildMockSimulationControl();
-
-            var uiControl = BuildUIControl();
-            //uiControl.HighwayManagerSummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
-
-            var eventSystem = BuildEventSystem();
-            var eventData = new BaseEventData(eventSystem);
-
-            var summaryToPush = new HighwayManagerUISummary();
-            summaryToPush.ID = 1;
-
-            uiControl.PushSelectEvent(summaryToPush, eventData);
-
-            summaryDisplay.Activate();
-
-            //Execution
-            summaryDisplay.RaiseDestructionRequestedEvent();
-
-            //Validation
-            Assert.IsFalse(summaryDisplay.isActiveAndEnabled, "SummaryDisplay is still active");
+        public void OnPushPointerExitEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
         }
 
-        
+        [Test]
+        public void OnPushSelectEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
+        }
 
-        
+        [Test]
+        public void OnPushUpdateSelectedEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
+        }
 
-        
+        [Test]
+        public void OnPushDeselectEventCalled_SourceAndEventDataArePushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
+        }
 
-        
-
-        
-
-        #endregion
+        [Test]
+        public void OnPushObjectDestroyedEventCalled_SourceIsPushedIntoAllAppropriateReceivers() {
+            Assert.Ignore("This test is unimplemented, but the opportunity cost of implementing it is deemed too high at this time");
+        }
 
         #endregion
 
         #region utilities
 
-        private UIControl BuildUIControl() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<UIControl>();
-        }
-
-        private MockResourceDepotSummaryDisplay BuildMockDepotDisplay() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockResourceDepotSummaryDisplay>();
-        }
-
-        private EventSystem BuildEventSystem() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<EventSystem>();
-        }
-
-        private MockHighwayManagerUISummaryDisplay BuildMockManagerDisplay() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockHighwayManagerUISummaryDisplay>();
-        }
-
-        private MockHighwaySummaryDisplay BuildMockHighwaySummaryDisplay() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockHighwaySummaryDisplay>();
-        }
-
-        private MockHighwayGhost BuildMockHighwayGhost() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockHighwayGhost>();
-        }
-
-        private MockSocietyUISummaryDisplay BuildMockSocietySummaryDisplay() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockSocietyUISummaryDisplay>();
-        }
-
-        private MockSociety BuildMockSociety() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockSociety>();
-        }
+        
 
         #endregion
 

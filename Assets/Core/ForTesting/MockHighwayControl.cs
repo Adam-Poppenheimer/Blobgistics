@@ -18,6 +18,10 @@ namespace Assets.Core.ForTesting {
 
         public event Action<int, int> CanConnectNodesWithHighwayCalled;
         public event Action<int, int> ConnectNodesWithHighwayCalled;
+        public event Action<int, int> SetHighwayPriorityCalled;
+        public event Action<int, ResourceType, bool> SetHighwayPullingPermissionOnFirstEndpointForResourceCalled;
+        public event Action<int, ResourceType, bool> SetHighwayPullingPermissionOnSecondEndpointForResourceCalled;
+        public event Action<int, ResourceType, bool> SetHighwayUpkeepRequestCalled;
 
         #endregion
 
@@ -43,19 +47,27 @@ namespace Assets.Core.ForTesting {
         }
 
         public override void SetHighwayPriority(int highwayID, int newPriority) {
-            throw new NotImplementedException();
+            if(SetHighwayPriorityCalled != null) {
+                SetHighwayPriorityCalled(highwayID, newPriority);
+            }
         }
 
         public override void SetHighwayPullingPermissionOnFirstEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
-            throw new NotImplementedException();
+            if(SetHighwayPullingPermissionOnFirstEndpointForResourceCalled != null) {
+                SetHighwayPullingPermissionOnFirstEndpointForResourceCalled(highwayID, resourceType, isPermitted);
+            }
         }
 
         public override void SetHighwayPullingPermissionOnSecondEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
-            throw new NotImplementedException();
+            if(SetHighwayPullingPermissionOnSecondEndpointForResourceCalled != null) {
+                SetHighwayPullingPermissionOnSecondEndpointForResourceCalled(highwayID, resourceType, isPermitted);
+            }
         }
 
         public override void SetHighwayUpkeepRequest(int highwayID, ResourceType resourceToChange, bool isBeingRequested) {
-            throw new NotImplementedException();
+            if(SetHighwayUpkeepRequestCalled != null) {
+                SetHighwayUpkeepRequestCalled(highwayID, resourceToChange, isBeingRequested);
+            }
         }
 
         #endregion

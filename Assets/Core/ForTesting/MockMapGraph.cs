@@ -16,16 +16,14 @@ namespace Assets.Core.ForTesting {
         #region from MapGraphBase
 
         public override ReadOnlyCollection<MapEdgeBase> Edges {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return edges.AsReadOnly(); }
         }
+        private List<MapEdgeBase> edges = new List<MapEdgeBase>();
 
         public override ReadOnlyCollection<MapNodeBase> Nodes {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return nodes.AsReadOnly(); }
         }
+        private List<MapNodeBase> nodes = new List<MapNodeBase>();
 
         #endregion
 
@@ -36,11 +34,17 @@ namespace Assets.Core.ForTesting {
         #region from MapGraphBase
 
         public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
-            throw new NotImplementedException();
+            var newEdge = (new GameObject()).AddComponent<MockMapEdge>();
+            newEdge.firstNode = first;
+            newEdge.secondNode = second;
+
+            edges.Add(newEdge);
         }
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
-            throw new NotImplementedException();
+            var newNode = (new GameObject()).AddComponent<MockMapNode>();
+            nodes.Add(newNode);
+            return newNode;
         }
 
         public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
@@ -48,7 +52,12 @@ namespace Assets.Core.ForTesting {
         }
 
         public override MapEdgeBase GetEdge(MapNodeBase first, MapNodeBase second) {
-            throw new NotImplementedException();
+            return edges.Where(delegate(MapEdgeBase edge) {
+                return (
+                    (edge.FirstNode  == first && edge.SecondNode == second) ||
+                    (edge.SecondNode == first && edge.FirstNode  == second)
+                );
+            }).FirstOrDefault();
         }
 
         public override IEnumerable<MapEdgeBase> GetEdgesAttachedToNode(MapNodeBase node) {
@@ -60,7 +69,7 @@ namespace Assets.Core.ForTesting {
         }
 
         public override MapNodeBase GetNodeOfID(int id) {
-            throw new NotImplementedException();
+            return nodes.Where(node => node.ID == id).FirstOrDefault();
         }
 
         public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
@@ -72,7 +81,7 @@ namespace Assets.Core.ForTesting {
         }
 
         public override bool HasEdge(MapNodeBase first, MapNodeBase second) {
-            throw new NotImplementedException();
+            return GetEdge(first, second) != null;
         }
 
         public override bool RemoveNode(MapNodeBase nodeToRemove) {

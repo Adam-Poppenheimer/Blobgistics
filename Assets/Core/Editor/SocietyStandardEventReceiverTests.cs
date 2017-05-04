@@ -37,7 +37,6 @@ namespace Assets.Core.Editor {
             receiverToTest.SocietyControl = societyControl;
 
             var mockSociety = BuildMockSociety();
-            mockSociety.SetID(42);
             var currentSummary = new SocietyUISummary(mockSociety);
 
             societyDisplay.CurrentSummary = currentSummary;
@@ -66,7 +65,6 @@ namespace Assets.Core.Editor {
             receiverToTest.SocietyControl = societyControl;
 
             var mockSociety = BuildMockSociety();
-            mockSociety.SetID(42);
             var currentSummary = new SocietyUISummary(mockSociety);
 
             societyDisplay.CurrentSummary = currentSummary;
@@ -89,7 +87,6 @@ namespace Assets.Core.Editor {
             receiverToTest.SocietyControl = societyControl;
 
             var mockSociety = BuildMockSociety();
-            mockSociety.SetID(42);
             var currentSummary = new SocietyUISummary(mockSociety);
 
             societyDisplay.Deactivate();
@@ -113,7 +110,6 @@ namespace Assets.Core.Editor {
             receiverToTest.SocietyControl = societyControl;
 
             var mockSociety = BuildMockSociety();
-            mockSociety.SetID(42);
             var currentSummary = new SocietyUISummary(mockSociety);
 
             societyDisplay.CurrentSummary = currentSummary;

@@ -36,7 +36,7 @@ namespace Assets.UI.ConstructionZones {
         private void Awake() {
             if(DestroyButton != null) {
                 DestroyButton.onClick.AddListener(delegate() {
-                    RaiseConstructionZoneDestructionRequested();
+                    RaiseDestructionRequested();
                 });
             }
             MovePanelWithCamera = true;

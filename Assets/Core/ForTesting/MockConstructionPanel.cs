@@ -18,6 +18,8 @@ namespace Assets.Core.ForTesting {
 
         #endregion
 
+        public IEnumerable<ConstructionProjectUISummary> LastPermissionsSet;
+
         #endregion
 
         #region events
@@ -31,10 +33,18 @@ namespace Assets.Core.ForTesting {
         #region from ConstructionPanelBase
 
         public override void SetPermittedProjects(IEnumerable<ConstructionProjectUISummary> permittedProjects) {
-            throw new NotImplementedException();
+            LastPermissionsSet = permittedProjects;
         }
 
         #endregion
+
+        public void RaiseDeactivationRequestedEvent(string projectName) {
+            RaiseConstructionRequested(projectName);
+        }
+
+        public void RaiseCloseRequestedEvent() {
+            RaiseDeactivationRequested();
+        }
 
         #endregion
 

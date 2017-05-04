@@ -12,6 +12,8 @@ using Assets.Blobs;
 using Assets.Highways;
 using Assets.Core.ForTesting;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.Core.Editor {
 
     public class BlobHighwayStandardEventReceiverTests {
@@ -21,184 +23,188 @@ namespace Assets.Core.Editor {
         #region tests
 
         [Test]
-        public void OnSelectEventPushedIntoUIControl_SummaryDisplayIsActivated_AndGivenTheProperSummary() {
-            throw new NotImplementedException();
+        public void OnSelectEventPushedIntoUIControl_DisplayIsActivated_AndGivenTheProperSummary() {
             //Setup
-            var summaryDisplay = BuildMockHighwaySummaryDisplay();
+            var highwayDisplay = BuildMockHighwaySummaryDisplay();
             //var simulationControl = BuildMockSimulationControl();
             
-            var uiControl = BuildUIControl();
-            //uiControl.HighwaySummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
-
-            var eventSystem = BuildEventSystem();
-            var eventData = new BaseEventData(eventSystem);
+            var receiverToTest = BuildHighwayReceiver();
+            receiverToTest.HighwaySummaryDisplay = highwayDisplay;
+            receiverToTest.HighwayControl = BuildMockHighwayControl();
 
             var summaryToPush = new BlobHighwayUISummary();
             summaryToPush.ID = 1;
             summaryToPush.Priority = 15;
 
             //Execution
-            uiControl.PushSelectEvent(summaryToPush, eventData);
+            receiverToTest.PushSelectEvent(summaryToPush, null);
 
             //Validation
-            Assert.AreEqual(summaryToPush, summaryDisplay.CurrentSummary, "The wrong summary is in the display");
-            Assert.That(summaryDisplay.isActiveAndEnabled, "The display was not activated");
+            Assert.AreEqual(summaryToPush, highwayDisplay.CurrentSummary, "The wrong summary is in the display");
+            Assert.That(highwayDisplay.isActiveAndEnabled, "The display was not activated");
         }
 
         [Test]
         public void OnSummaryRaisesPriorityChangedEvent_ProperPriorityChangeRequestIsSentToSimulationControl() {
-            throw new NotImplementedException();
             //Setup
             var summaryWithin = new BlobHighwayUISummary();
             summaryWithin.ID = 14;
             summaryWithin.Priority = 15;
 
-            var summaryDisplay = BuildMockHighwaySummaryDisplay();
-            summaryDisplay.CurrentSummary = summaryWithin;
+            var highwayDisplay = BuildMockHighwaySummaryDisplay();
+            highwayDisplay.CurrentSummary = summaryWithin;
 
-            //var simulationControl = BuildMockSimulationControl();
+            var highwayControl = BuildMockHighwayControl();
 
-            var uiControl = BuildUIControl();
-            //uiControl.HighwaySummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
+            int idOfChangeRequest = -1;
+            int priorityOfChangeRequest = -1;
+            highwayControl.SetHighwayPriorityCalled += delegate(int id, int newPriority) {
+                idOfChangeRequest = id;
+                priorityOfChangeRequest = newPriority;
+            };
+
+            var receiverToTest = BuildHighwayReceiver();
+            receiverToTest.HighwaySummaryDisplay = highwayDisplay;
+            receiverToTest.HighwayControl = highwayControl;
 
             //Execution
-            summaryDisplay.ChangePriority(30);
+            highwayDisplay.ChangePriority(30);
 
             //Validation
-            /*Assert.AreEqual(1, simulationControl.PriorityChangeRequestsPassed, "The SimulationControl was never passed a changeRequest");
-            Assert.AreEqual(summaryWithin.ID, simulationControl.LastHighwayIDRequested, "The SimulationControl was passed the incorrect ID");
-            Assert.AreEqual(30, simulationControl.LastHighwayPriorityRequested, "The SimulationControl was passed the incorrect Priority");*/
+            Assert.AreEqual(summaryWithin.ID, idOfChangeRequest, "HighwayControl was passed an incorrect ID or none at all");
+            Assert.AreEqual(30, priorityOfChangeRequest, "HighwayControl was passed an incorrect priority or none at all");
         }
 
         [Test]
         public void OnSummaryDisplayRaisesFirstEndpointPermissionChangedEvent_ProperPermissionChangeRequestSentToSimulationControl() {
-            throw new NotImplementedException();
             //Setup
             var summaryWithin = new BlobHighwayUISummary();
             summaryWithin.ID = 14;
             summaryWithin.Priority = 15;
 
-            var summaryDisplay = BuildMockHighwaySummaryDisplay();
-            summaryDisplay.CurrentSummary = summaryWithin;
+            var highwayDisplay = BuildMockHighwaySummaryDisplay();
+            highwayDisplay.CurrentSummary = summaryWithin;
 
-            //var simulationControl = BuildMockSimulationControl();
+            var highwayControl = BuildMockHighwayControl();
 
-            var uiControl = BuildUIControl();
-            //uiControl.HighwaySummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
+            int lastIDPassed = -1;
+            ResourceType lastResourceTypeChanged = ResourceType.Blue;
+            bool lastPermissionGiven = false;
+            highwayControl.SetHighwayPullingPermissionOnFirstEndpointForResourceCalled += delegate (int id, ResourceType typeChanged, bool newPermission) {
+                lastIDPassed = id;
+                lastResourceTypeChanged = typeChanged;
+                lastPermissionGiven = newPermission;
+            };
+
+            var receiverToTest = BuildHighwayReceiver();
+            receiverToTest.HighwaySummaryDisplay = highwayDisplay;
+            receiverToTest.HighwayControl = highwayControl;
 
             //Execution and Validation
-            int totalChangeRequestCount = 0;
-            /*foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                summaryDisplay.ChangeFirstEndpointPermission(resourceType, true);
-                ++totalChangeRequestCount;
-                Assert.AreEqual(totalChangeRequestCount, simulationControl.FirstEndpointPermissionRequestsPassed,
-                    "The SimulationControl failed to receive change request " + totalChangeRequestCount);
-                Assert.AreEqual(summaryWithin.ID, simulationControl.LastHighwayIDRequested,
-                    "The SimulationControl was passed the incorrect ID");
-                Assert.AreEqual(resourceType, simulationControl.FirstEndpointResourceModified,
-                    "The SimulationControl was passed the incorrect ResourceType");
-                Assert.IsTrue(simulationControl.FirstEndpointPermissionRequested,
-                    "The SimulationControl was passed the incorrect isPermitted");
-            }
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                summaryDisplay.ChangeFirstEndpointPermission(resourceType, false);
-                ++totalChangeRequestCount;
-                Assert.AreEqual(totalChangeRequestCount, simulationControl.FirstEndpointPermissionRequestsPassed,
-                    "The SimulationControl failed to receive change request " + totalChangeRequestCount);
-                Assert.AreEqual(summaryWithin.ID, simulationControl.LastHighwayIDRequested,
-                    "The SimulationControl was passed the incorrect ID");
-                Assert.AreEqual(resourceType, simulationControl.FirstEndpointResourceModified,
-                    "The SimulationControl was passed the incorrect ResourceType");
-                Assert.IsFalse(simulationControl.FirstEndpointPermissionRequested,
-                    "The SimulationControl was passed the incorrect isPermitted");
-            }*/
+                highwayDisplay.ChangeFirstEndpointPermission(resourceType, true);
+                Assert.AreEqual(summaryWithin.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
+                Assert.AreEqual(resourceType, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+                Assert.That(lastPermissionGiven, "HighwayControl was passed an incorrect permission");
+
+                highwayDisplay.ChangeFirstEndpointPermission(resourceType, false);
+                Assert.AreEqual(summaryWithin.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
+                Assert.AreEqual(resourceType, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+                Assert.IsFalse(lastPermissionGiven, "HighwayControl was passed an incorrect permission");
+            }
         }
 
         [Test]
         public void OnSummaryDisplayRaisesSecondEndpointPermissionChangedEvent_ProperPermissionChangeRequestSentToSimulationControl() {
-            throw new NotImplementedException();
             //Setup
             var summaryWithin = new BlobHighwayUISummary();
             summaryWithin.ID = 14;
             summaryWithin.Priority = 15;
 
-            var summaryDisplay = BuildMockHighwaySummaryDisplay();
-            summaryDisplay.CurrentSummary = summaryWithin;
+            var highwayDisplay = BuildMockHighwaySummaryDisplay();
+            highwayDisplay.CurrentSummary = summaryWithin;
 
-            //var simulationControl = BuildMockSimulationControl();
+            var highwayControl = BuildMockHighwayControl();
 
-            var uiControl = BuildUIControl();
-            //uiControl.HighwaySummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
+            int lastIDPassed = -1;
+            ResourceType lastResourceTypeChanged = ResourceType.Blue;
+            bool lastPermissionGiven = false;
+            highwayControl.SetHighwayPullingPermissionOnSecondEndpointForResourceCalled += delegate (int id, ResourceType typeChanged, bool newPermission) {
+                lastIDPassed = id;
+                lastResourceTypeChanged = typeChanged;
+                lastPermissionGiven = newPermission;
+            };
+
+            var receiverToTest = BuildHighwayReceiver();
+            receiverToTest.HighwaySummaryDisplay = highwayDisplay;
+            receiverToTest.HighwayControl = highwayControl;
 
             //Execution and Validation
-            int totalChangeRequestCount = 0;
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                summaryDisplay.ChangeSecondEndpointPermission(resourceType, true);
-                ++totalChangeRequestCount;
-                /*Assert.AreEqual(totalChangeRequestCount, simulationControl.SecondEndpointPermissionRequestsPassed,
-                    "The SimulationControl failed to receive change request " + totalChangeRequestCount);
-                Assert.AreEqual(summaryWithin.ID, simulationControl.LastHighwayIDRequested,
-                    "The SimulationControl was passed the incorrect ID");
-                Assert.AreEqual(resourceType, simulationControl.SecondEndpointResourceModified,
-                    "The SimulationControl was passed the incorrect ResourceType");
-                Assert.IsTrue(simulationControl.SecondEndpointPermissionRequested,
-                    "The SimulationControl was passed the incorrect isPermitted");*/
-            }
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                summaryDisplay.ChangeSecondEndpointPermission(resourceType, false);
-                ++totalChangeRequestCount;
-                /*Assert.AreEqual(totalChangeRequestCount, simulationControl.SecondEndpointPermissionRequestsPassed,
-                    "The SimulationControl failed to receive change request " + totalChangeRequestCount);
-                Assert.AreEqual(summaryWithin.ID, simulationControl.LastHighwayIDRequested,
-                    "The SimulationControl was passed the incorrect ID");
-                Assert.AreEqual(resourceType, simulationControl.SecondEndpointResourceModified,
-                    "The SimulationControl was passed the incorrect ResourceType");
-                Assert.IsFalse(simulationControl.SecondEndpointPermissionRequested,
-                    "The SimulationControl was passed the incorrect isPermitted");*/
+                highwayDisplay.ChangeSecondEndpointPermission(resourceType, true);
+                Assert.AreEqual(summaryWithin.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
+                Assert.AreEqual(resourceType, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+                Assert.That(lastPermissionGiven, "HighwayControl was passed an incorrect permission");
+
+                highwayDisplay.ChangeSecondEndpointPermission(resourceType, false);
+                Assert.AreEqual(summaryWithin.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
+                Assert.AreEqual(resourceType, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+                Assert.IsFalse(lastPermissionGiven, "HighwayControl was passed an incorrect permission");
             }
         }
 
         [Test]
         public void OnHighwayDisplayRaisesUpkeepRequestedEvent_ProperCommandIsSentToSimulationControl() {
-            throw new NotImplementedException();
             //Setup
-            var summaryDisplay = BuildMockHighwaySummaryDisplay();
-            //var simulationControl = BuildMockSimulationControl();
+            var highwayDisplay = BuildMockHighwaySummaryDisplay();
+            var highwayControl = BuildMockHighwayControl();
 
-            var uiControl = BuildUIControl();
-            //uiControl.HighwaySummaryDisplay = summaryDisplay;
-            //uiControl.SimulationControl = simulationControl;
+            int lastIDPassed = -1;
+            ResourceType lastResourceTypeChanged = ResourceType.Blue;
+            bool lastRequestMade = false;
+            highwayControl.SetHighwayUpkeepRequestCalled += delegate(int id, ResourceType type, bool isRequested) {
+                lastIDPassed = id;
+                lastResourceTypeChanged = type;
+                lastRequestMade = isRequested;
+            };
 
-            var eventSystem = BuildEventSystem();
-            var eventData = new BaseEventData(eventSystem);
+            var receiverToTest = BuildHighwayReceiver();
+            receiverToTest.HighwaySummaryDisplay = highwayDisplay;
+            receiverToTest.HighwayControl = highwayControl;
 
             var summaryToPush = new BlobHighwayUISummary();
             summaryToPush.ID = 1;
 
-            uiControl.PushSelectEvent(summaryToPush, eventData);
+            highwayDisplay.CurrentSummary = summaryToPush;
+            highwayDisplay.Activate();
 
-            //Execution
-            summaryDisplay.RaiseUpkeepRequestedEvent(ResourceType.Food, true);
-            summaryDisplay.RaiseUpkeepRequestedEvent(ResourceType.Yellow, false);
-            summaryDisplay.RaiseUpkeepRequestedEvent(ResourceType.White, true);
-            summaryDisplay.RaiseUpkeepRequestedEvent(ResourceType.Blue, false);
+            //Execution and Validation
+            highwayDisplay.RaiseUpkeepRequestedEvent(ResourceType.Food, true);
 
-            //Validation
-            /*Assert.IsTrue (simulationControl.UpkeepRequestForResourceByID[summaryToPush.ID][ResourceType.Food],   
-                "simulationControl was not given the proper upkeep request for food"  );
+            Assert.AreEqual(summaryToPush.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
+            Assert.AreEqual(ResourceType.Food, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+            Assert.IsTrue(lastRequestMade, "HighwayControl was passed an incorrect isBeingRequested");
 
-            Assert.IsFalse(simulationControl.UpkeepRequestForResourceByID[summaryToPush.ID][ResourceType.Yellow], 
-                "simulationControl was not given the proper upkeep request for yellow");
+            lastIDPassed = -1;
+            lastResourceTypeChanged = ResourceType.Blue;
 
-            Assert.IsTrue (simulationControl.UpkeepRequestForResourceByID[summaryToPush.ID][ResourceType.White],  
-                "simulationControl was not given the proper upkeep request for white" );
+            highwayDisplay.RaiseUpkeepRequestedEvent(ResourceType.Yellow, false);
 
-            Assert.IsFalse(simulationControl.UpkeepRequestForResourceByID[summaryToPush.ID][ResourceType.Blue],   
-                "simulationControl was not given the proper upkeep request for blue"  );*/
+            Assert.AreEqual(summaryToPush.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
+            Assert.AreEqual(ResourceType.Yellow, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+            Assert.IsFalse(lastRequestMade, "HighwayControl was passed an incorrect isBeingRequested");
+
+            lastIDPassed = -1;
+            lastResourceTypeChanged = ResourceType.Blue;
+
+            highwayDisplay.RaiseUpkeepRequestedEvent(ResourceType.White, true);
+
+            Assert.AreEqual(summaryToPush.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
+            Assert.AreEqual(ResourceType.White, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+            Assert.IsTrue(lastRequestMade, "HighwayControl was passed an incorrect isBeingRequested");
+
+            lastIDPassed = -1;
+            lastResourceTypeChanged = ResourceType.Blue;
         }
 
         #endregion
@@ -215,6 +221,10 @@ namespace Assets.Core.Editor {
 
         private MockHighwaySummaryDisplay BuildMockHighwaySummaryDisplay() {
             return (new GameObject()).AddComponent<MockHighwaySummaryDisplay>();
+        }
+
+        private MockHighwayControl BuildMockHighwayControl() {
+            return (new GameObject()).AddComponent<MockHighwayControl>();
         }
 
         #endregion

@@ -98,8 +98,46 @@ namespace Assets.Core.Editor {
         }
 
         [Test]
-        public void OnMethodsCalledWithInvalidID_AllMethodsDisplayAnError_ButDoNoThrow() {
-            throw new NotImplementedException();
+        public void OnMethodsCalledWithInvalidID_AllMethodsDisplayAnError_ButDoNotThrow() {
+            //Setup
+            var controlToTest = BuildSocietyControl();
+
+            var defaultLogHandler = Debug.logger.logHandler;
+            var insertionHandler = new ListInsertionLogHandler();
+            Debug.logger.logHandler = insertionHandler;
+
+            //Execution and Validation
+            DebugMessageData lastMessage;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.CanDestroySociety(42);
+            }, "CanDestroySociety threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "CanDestroySociety did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.DestroySociety(42);
+            }, "DestroySociety threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "DestroySociety did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            Assert.DoesNotThrow(delegate() {
+                controlToTest.SetAscensionPermissionForSociety(42, false);
+            }, "SetAscensionPermissionForSociety threw an exception");
+
+            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
+            Assert.NotNull(lastMessage, "SetAscensionPermissionForSociety did not display an error");
+            insertionHandler.StoredMessages.Clear();
+            lastMessage = null;
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
         }
 
         #endregion
@@ -107,7 +145,10 @@ namespace Assets.Core.Editor {
         #region utilities
 
         private SocietyControl BuildSocietyControl() {
-            throw new NotImplementedException();
+            var newControl = (new GameObject()).AddComponent<SocietyControl>();
+            newControl.SocietyFactory = (new GameObject()).AddComponent<MockSocietyFactory>();
+            newControl.MapGraph = (new GameObject()).AddComponent<MockMapGraph>();
+            return newControl;
         }
 
         private void CauseSocietyToAscend(SocietyBase society) {
