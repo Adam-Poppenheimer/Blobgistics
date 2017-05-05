@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Assets.Blobs;
+using Assets.Map;
 using Assets.Societies;
 using UnityEngine;
 
@@ -20,13 +22,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override ResourceSummary CostOfAscent {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override bool IsPermittedToAscend {
+        public override IntResourceSummary CostToAscendInto {
             get {
                 throw new NotImplementedException();
             }
@@ -44,7 +40,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override ResourceSummary Needs {
+        public override IntResourceSummary Needs {
             get {
                 throw new NotImplementedException();
             }
@@ -56,7 +52,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override ResourceSummary Production {
+        public override IntResourceSummary Production {
             get {
                 throw new NotImplementedException();
             }
@@ -80,7 +76,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override IEnumerable<ResourceSummary> Wants {
+        public override IEnumerable<IntResourceSummary> Wants {
             get {
                 throw new NotImplementedException();
             }
@@ -92,10 +88,16 @@ namespace Assets.Core.ForTesting {
             }
         }
 
+        public override ReadOnlyCollection<TerrainType> PermittedTerrains {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

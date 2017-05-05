@@ -39,6 +39,8 @@ namespace Assets.Societies.ForTesting {
             }
         }
 
+        public override TerrainType CurrentTerrain { get; set; }
+
         #endregion
 
         #endregion

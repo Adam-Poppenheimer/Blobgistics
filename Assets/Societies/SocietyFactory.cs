@@ -27,6 +27,14 @@ namespace Assets.Societies {
         }
         [SerializeField] private ComplexityLadderBase _standardComplexityLadder;
 
+        public override ComplexityDefinitionBase DefaultComplexityDefinition {
+            get { return _defaultComplexityDefinition; }
+        }
+        public void SetDefaultComplexityDefinition(ComplexityDefinitionBase value) {
+            _defaultComplexityDefinition = value;
+        }
+        [SerializeField] private ComplexityDefinitionBase _defaultComplexityDefinition;
+
         #endregion
 
         public ResourceBlobFactoryBase BlobFactory {
@@ -74,21 +82,16 @@ namespace Assets.Societies {
             return InstantiatedSocieties.Exists(society => society.Location == location);
         }
 
-        public override bool CanConstructSocietyAt(MapNodeBase location) {
-            if(location == null) {
-                throw new ArgumentNullException("location");
-            }
-            return !HasSocietyAtLocation(location);
-        }
-
-        public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder) {
+        public override bool CanConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder,
+            ComplexityDefinitionBase startingComplexity) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }else if(ladder == null) {
                 throw new ArgumentNullException("ladder");
+            }else if(startingComplexity == null) {
+                throw new ArgumentNullException("startingComplexity");
             }
-
-            return ConstructSocietyAt(location, ladder, ladder.GetStartingComplexity());
+            return !HasSocietyAtLocation(location) && startingComplexity.PermittedTerrains.Contains(location.CurrentTerrain);
         }
 
         public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity) {
@@ -96,9 +99,11 @@ namespace Assets.Societies {
                 throw new ArgumentNullException("location");
             }else if(ladder == null) {
                 throw new ArgumentNullException("ladder");
+            }else if(startingComplexity == null) {
+                throw new ArgumentNullException("startingComplexity");
             }else if(!ladder.ContainsComplexity(startingComplexity)) {
                 throw new SocietyException("The starting complexity of a society must be contained within its ActiveComplexityLadder");
-            }else if(!CanConstructSocietyAt(location)) {
+            }else if(!CanConstructSocietyAt(location, ladder, startingComplexity)) {
                 throw new SocietyException("Cannot construct a society at this location");
             }
 

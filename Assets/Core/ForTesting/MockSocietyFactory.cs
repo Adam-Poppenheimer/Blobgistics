@@ -28,6 +28,16 @@ namespace Assets.Core.ForTesting {
         }
         private ComplexityLadderBase _standardComplexityLadder;
 
+        public override ComplexityDefinitionBase DefaultComplexityDefinition {
+            get {
+                if(_defaultComplexityDefinition == null) {
+                    _defaultComplexityDefinition = gameObject.AddComponent<MockComplexityDefinition>();
+                }
+                return _defaultComplexityDefinition;
+            }
+        }
+        private ComplexityDefinitionBase _defaultComplexityDefinition;
+
         #endregion
 
         private List<SocietyBase> Societies = new List<SocietyBase>();
@@ -52,12 +62,8 @@ namespace Assets.Core.ForTesting {
             return GetSocietyAtLocation(location) != null;
         }
 
-        public override bool CanConstructSocietyAt(MapNodeBase location) {
-            throw new NotImplementedException();
-        }
-
-        public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder) {
-            return ConstructSocietyAt(location, ladder, ladder.GetStartingComplexity());
+        public override bool CanConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity) {
+            return true;
         }
 
         public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity) {

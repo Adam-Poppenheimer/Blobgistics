@@ -20,7 +20,7 @@ namespace Assets.BlobSites {
         private Dictionary<ResourceType, int> Capacities =
             new Dictionary<ResourceType, int>();
 
-        private int TotalCapacity;
+        public int TotalCapacity { get; set; }
 
         #endregion
 

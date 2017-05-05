@@ -20,10 +20,6 @@ namespace Assets.Core.ForTesting {
 
         #region from SocietyControlBase
 
-        public override bool CanDestroySociety(int societyID) {
-            return true;
-        }
-
         public override void DestroySociety(int societyID) {
             if(OnSocietyDestructionRequested != null) {
                 OnSocietyDestructionRequested(societyID);

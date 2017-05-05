@@ -67,146 +67,13 @@ namespace Assets.Core.Editor {
 
         #region utilities
 
-        private MapGraph BuildMapGraph(ResourceBlobFactoryBase blobFactory) {
-            var hostingObject = new GameObject();
-
-            var newMapGraph = hostingObject.AddComponent<MapGraph>();
-            var newBlobSiteFactory = hostingObject.AddComponent<BlobSiteFactory>();
-            var newBlobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
-
-            newBlobSitePrivateData.SetBlobRealignmentSpeedPerSecond(1f);
-            newBlobSitePrivateData.SetAlignmentStrategy(hostingObject.AddComponent<BoxyBlobAlignmentStrategy>());
-            newBlobSitePrivateData.SetBlobFactory(blobFactory);
-
-            newBlobSiteFactory.BlobSitePrivateData = newBlobSitePrivateData;
-
-            newMapGraph.BlobSiteFactory = newBlobSiteFactory;
-
-            return newMapGraph;
-        }
-
-        private BlobHighwayFactory BuildHighwayFactory(MapGraphBase mapGraph, ResourceBlobFactoryBase blobFactory) {
-            var hostingObject = new GameObject();
-            var newFactory = hostingObject.AddComponent<BlobHighwayFactory>();
-            var newBlobTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
-
-            var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
-            newTubePrivateData.SetBlobFactory(blobFactory);
-            newBlobTubeFactory.TubePrivateData = newTubePrivateData;
-
-            newFactory.MapGraph = mapGraph;
-            newFactory.BlobTubeFactory = newBlobTubeFactory;
-            newFactory.BlobFactory = blobFactory;
-            newFactory.StartingProfile = BuildBlobHighwayProfile(1f, 10, 1f);
-
-            return newFactory;
-        }
-
-        private ConstructionZoneFactory BuildConstructionZoneFactory(ResourceDepotFactoryBase depotFactory) {
-            var hostingObject = new GameObject();
-            var newFactory = hostingObject.AddComponent<ConstructionZoneFactory>();
-
-            var resourceDepotProject = hostingObject.AddComponent<ResourceDepotConstructionProject>();
-            resourceDepotProject.Cost = ResourceSummary.BuildResourceSummary(hostingObject);
-            resourceDepotProject.name = "Resource Depot";
-
-            newFactory.AvailableProjects = new List<ConstructionProjectBase>() {
-                resourceDepotProject
-            };
-            return newFactory;
-        }
-
-        private SocietyFactory BuildSocietyFactory(ResourceBlobFactoryBase blobFactory) {
-            var hostingObject = new GameObject();
-            var newFactory = hostingObject.AddComponent<SocietyFactory>();
-            
-            newFactory.BlobFactory = blobFactory;
-            newFactory.SetStandardComplexityLadder(BuildComplexityLadder());
-
-            return newFactory;
-        }
-
-        private ResourceDepotFactory BuildDepotFactory() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<ResourceDepotFactory>();
-        }
-
         private SimulationControl BuildSimulationControl() {
-            var hostingObject = new GameObject();
-            var newControl = hostingObject.AddComponent<SimulationControl>();
-            var newBlobFactory = BuildResourceBlobFactory();
-            var newMapGraph = BuildMapGraph(newBlobFactory);
-
-            newControl.SocietyFactory = BuildSocietyFactory(newBlobFactory);
-            newControl.HighwayManagerFactory = BuildHighwayManagerFactory(newMapGraph, BuildHighwayFactory(newMapGraph, newBlobFactory));
-
-            return newControl;
-        }
-
-        
-
-        private ResourceBlobFactoryBase BuildResourceBlobFactory() {
-            var hostingObject = new GameObject();
-            var newFactory = hostingObject.AddComponent<ResourceBlobFactory>();
-            return newFactory;
-        }
-
-        private ComplexityLadderBase BuildComplexityLadder() {
-            var hostingObject = new GameObject();
-
-            var newLadder = hostingObject.AddComponent<ComplexityLadder>();
-            var complexity1 = hostingObject.AddComponent<ComplexityDefinition>();
-            var complexity2 = hostingObject.AddComponent<ComplexityDefinition>();
-
-            complexity1.SetName("Complexity1");
-            complexity1.SetProduction(ResourceSummary.BuildResourceSummary(
-                complexity1.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 2)
-            ));
-
-            complexity1.SetWants(new List<ResourceSummary>() {
-                ResourceSummary.BuildResourceSummary(complexity1.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1)),
-                ResourceSummary.BuildResourceSummary(complexity1.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.White, 1))
-            });
-            complexity1.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
-                complexity1.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
-            ));
-
-            complexity2.SetName("Complexity2");
-            complexity2.SetProduction(ResourceSummary.BuildResourceSummary(
-                complexity2.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 2)
-            ));
-            complexity2.SetWants(new List<ResourceSummary>() {
-                ResourceSummary.BuildResourceSummary(complexity2.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.White, 1))
-            });
-            complexity2.SetCostOfAscent(ResourceSummary.BuildResourceSummary(
-                complexity2.gameObject,
-                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
-            ));
-
-            newLadder.ComplexityHierarchy = new List<ComplexityDefinitionBase>() {
-                complexity1, 
-                complexity2
-            };
-
-            return newLadder;
+            return (new GameObject()).AddComponent<SimulationControl>();
         }
 
         private MockSocietyFactory BuildMockSocietyFactory() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockSocietyFactory>();
-        }
-
-        private MockHighwayFactory BuildMockHighwayFactory() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<MockHighwayFactory>();
-        }
-
-        private ResourceBlobBase BuildResourceBlob(ResourceType type) {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<ResourceBlob>();
         }
 
         private MockBlobDistributor BuildMockBlobDistributor() {
@@ -217,33 +84,6 @@ namespace Assets.Core.Editor {
         private MockResourceBlobFactory BuildMockBlobFactory() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockResourceBlobFactory>();
-        }
-
-        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float BlobPullCooldownInSeconds) {
-            var hostingObject = new GameObject();
-            var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
-
-            newProfile.SetBlobSpeedPerSecond(blobSpeedPerSecond);
-            newProfile.SetCapacity(capacity);
-            newProfile.SetBlobPullCooldownInSeconds(BlobPullCooldownInSeconds);
-
-            return newProfile;
-        }
-
-        private HighwayManagerFactoryBase BuildHighwayManagerFactory(MapGraphBase mapGraph, BlobHighwayFactoryBase highwayFactory) {
-            var hostingObject = new GameObject();
-            var newFactory = hostingObject.AddComponent<HighwayManagerFactory>();
-            var newPrivateData = hostingObject.AddComponent<HighwayManagerPrivateData>();
-
-            newPrivateData.SetNeedStockpileCoefficient(1);
-            newPrivateData.SetSecondsToPerformConsumption(10f);
-
-            newFactory.ManagementRadius = 2;
-            newFactory.ManagerPrivateData = newPrivateData;
-            newFactory.MapGraph = mapGraph;
-            newFactory.HighwayFactory = highwayFactory;
-
-            return newFactory;
         }
 
         #endregion

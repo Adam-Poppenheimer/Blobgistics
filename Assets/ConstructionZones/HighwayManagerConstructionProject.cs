@@ -16,7 +16,7 @@ namespace Assets.ConstructionZones {
 
         #region instance fields and properties
 
-        [SerializeField] private ResourceSummary Cost;
+        [SerializeField] private IntResourceSummary Cost;
 
         [SerializeField] private HighwayManagerFactoryBase HighwayManagerFactory;
 

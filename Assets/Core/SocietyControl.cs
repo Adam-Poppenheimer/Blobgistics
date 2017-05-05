@@ -38,16 +38,6 @@ namespace Assets.Core {
 
         #region from SocietyControlBase
 
-        public override bool CanDestroySociety(int societyID) {
-            var society = SocietyFactory.GetSocietyOfID(societyID);
-            if(society != null) {
-                return society.CurrentComplexity == society.ActiveComplexityLadder.GetStartingComplexity();
-            }else {
-                Debug.LogErrorFormat(SocietyIDErrorMessage, societyID);
-                return false;
-            }
-        }
-
         public override void DestroySociety(int societyID) {
             var societyToDestroy = SocietyFactory.GetSocietyOfID(societyID);
             if(societyToDestroy != null) {

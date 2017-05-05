@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,24 +42,20 @@ namespace Assets.Core.ForTesting {
             return complexity == StartingComplexity || complexity == AscensionComplexity;
         }
 
-        public override ComplexityDefinitionBase GetAscentTransition(ComplexityDefinitionBase currentComplexity) {
+        public override ReadOnlyCollection<ComplexityDefinitionBase> GetAscentTransitions(ComplexityDefinitionBase currentComplexity) {
             if(currentComplexity == StartingComplexity) {
-                return AscensionComplexity;
+                return new List<ComplexityDefinitionBase>() { AscensionComplexity }.AsReadOnly();
             }else {
                 return null;
             }
         }
 
-        public override ComplexityDefinitionBase GetDescentTransition(ComplexityDefinitionBase currentComplexity) {
+        public override ReadOnlyCollection<ComplexityDefinitionBase> GetDescentTransitions(ComplexityDefinitionBase currentComplexity) {
             if(currentComplexity == AscensionComplexity) {
-                return StartingComplexity;
+                return new List<ComplexityDefinitionBase>() { StartingComplexity }.AsReadOnly();
             }else {
                 return null;
             }
-        }
-
-        public override ComplexityDefinitionBase GetStartingComplexity() {
-            return StartingComplexity;
         }
 
         #endregion

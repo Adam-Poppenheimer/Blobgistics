@@ -155,7 +155,7 @@ namespace Assets.ResourceDepots.ForTesting {
             PlacementPermissions[type] = isPermitted;
         }
 
-        public override void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary) {
+        public override void SetPlacementPermissionsAndCapacity(IntResourceSummary placementSummary) {
             throw new NotImplementedException();
         }
 

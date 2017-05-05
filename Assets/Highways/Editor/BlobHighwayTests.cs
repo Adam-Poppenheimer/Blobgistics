@@ -319,20 +319,20 @@ namespace Assets.Highways.Editor {
 
             //Execution
             highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Textiles, true);
 
             highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Food, false);
-            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Yellow, true);
-            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.White, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Textiles, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.ServiceGoods, true);
 
             //Validation
             Assert.That(highwayToTest.GetPullingPermissionForFirstEndpoint(ResourceType.Food),   "For FirstEndpoint, Food is not permitted");
-            Assert.That(highwayToTest.GetPullingPermissionForFirstEndpoint(ResourceType.Yellow), "For FirstEndpoint, Yellow is not permitted");
-            Assert.That(!highwayToTest.GetPullingPermissionForFirstEndpoint(ResourceType.White), "For FirstEndpoint, White is falsely permitted");
+            Assert.That(highwayToTest.GetPullingPermissionForFirstEndpoint(ResourceType.Textiles), "For FirstEndpoint, Textiles is not permitted");
+            Assert.That(!highwayToTest.GetPullingPermissionForFirstEndpoint(ResourceType.ServiceGoods), "For FirstEndpoint, ServiceGoods is falsely permitted");
 
             Assert.That(!highwayToTest.GetPullingPermissionForSecondEndpoint(ResourceType.Food),  "For SecondEndpoint, Food is falsely permitted");
-            Assert.That(highwayToTest.GetPullingPermissionForSecondEndpoint(ResourceType.Yellow), "For SecondEndpoint, Yellow is not permitted");
-            Assert.That(highwayToTest.GetPullingPermissionForSecondEndpoint(ResourceType.White),  "For SecondEndpoint, White is not permitted");
+            Assert.That(highwayToTest.GetPullingPermissionForSecondEndpoint(ResourceType.Textiles), "For SecondEndpoint, Textiles is not permitted");
+            Assert.That(highwayToTest.GetPullingPermissionForSecondEndpoint(ResourceType.ServiceGoods),  "For SecondEndpoint, ServiceGoods is not permitted");
         }
 
         [Test]
@@ -354,13 +354,13 @@ namespace Assets.Highways.Editor {
 
             //Execution
             highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Yellow, false);
-            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.White, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Textiles, false);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.ServiceGoods, true);
 
             //Validation
             Assert.That(tubePullingFromFirst.GetPermissionForResourceType(ResourceType.Food),    "Tube does not give Food permission");
-            Assert.That(!tubePullingFromFirst.GetPermissionForResourceType(ResourceType.Yellow), "Tube does falsely gives Yellow permission");
-            Assert.That(tubePullingFromFirst.GetPermissionForResourceType(ResourceType.White),   "Tube does not give White permission");
+            Assert.That(!tubePullingFromFirst.GetPermissionForResourceType(ResourceType.Textiles), "Tube does falsely gives Textiles permission");
+            Assert.That(tubePullingFromFirst.GetPermissionForResourceType(ResourceType.ServiceGoods),   "Tube does not give ServiceGoods permission");
         }
 
         [Test]
@@ -379,13 +379,13 @@ namespace Assets.Highways.Editor {
 
             //Execution
             highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Yellow, false);
-            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.White, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Textiles, false);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.ServiceGoods, true);
 
             //Validation
             Assert.That(tubePullingFromSecond.GetPermissionForResourceType(ResourceType.Food),    "Tube does not give Food permission");
-            Assert.That(!tubePullingFromSecond.GetPermissionForResourceType(ResourceType.Yellow), "Tube does falsely gives Yellow permission");
-            Assert.That(tubePullingFromSecond.GetPermissionForResourceType(ResourceType.White),   "Tube does not give White permission");
+            Assert.That(!tubePullingFromSecond.GetPermissionForResourceType(ResourceType.Textiles), "Tube does falsely gives Textiles permission");
+            Assert.That(tubePullingFromSecond.GetPermissionForResourceType(ResourceType.ServiceGoods),   "Tube does not give ServiceGoods permission");
         }
 
         [Test]
@@ -436,15 +436,15 @@ namespace Assets.Highways.Editor {
             firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
             firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
 
-            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
-            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
-            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
 
             secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
-            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, false);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, false);
 
             highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Textiles, true);
 
             //Validation
             Assert.That(highwayToTest.CanPullFromFirstEndpoint());
@@ -501,15 +501,15 @@ namespace Assets.Highways.Editor {
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
             firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
-            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
-            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
 
             secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, false);
-            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, false);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, false);
 
             highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Textiles, true);
 
             //Validation
             Assert.IsFalse(highwayToTest.CanPullFromFirstEndpoint());
@@ -560,18 +560,18 @@ namespace Assets.Highways.Editor {
             
             //Execution
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, false);
-            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
 
             secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
             secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
 
-            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
-            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
-            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
 
             highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Textiles, true);
 
             //Validation
             Assert.That(highwayToTest.CanPullFromSecondEndpoint());
@@ -626,17 +626,17 @@ namespace Assets.Highways.Editor {
             
             //Execution
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, false);
-            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, false);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, false);
 
             secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
             secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
-            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
-            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
 
             highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Textiles, true);
 
             //Validation
             Assert.IsFalse(highwayToTest.CanPullFromSecondEndpoint());
@@ -660,27 +660,27 @@ namespace Assets.Highways.Editor {
             var highwayToTest = BuildHighway(highwayData);
 
             var redBlob = BuildBlob(ResourceType.Food);
-            var greenBlob = BuildBlob(ResourceType.Yellow);
+            var greenBlob = BuildBlob(ResourceType.Textiles);
 
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
             firstEndpoint.BlobSite.PlaceBlobInto(redBlob);
-            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
-            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
             firstEndpoint.BlobSite.PlaceBlobInto(greenBlob);
 
             secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, false);
-            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
 
             highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Textiles, true);
 
             //Execution
             highwayToTest.PullFromFirstEndpoint();
 
             //Validation
             Assert.That(firstEndpoint.BlobSite.Contents.Contains(redBlob),    "Food blob has been removed from FirstEndpoint");
-            Assert.That(!firstEndpoint.BlobSite.Contents.Contains(greenBlob), "Yellow blob has not been removed from FirstEndpoint");
+            Assert.That(!firstEndpoint.BlobSite.Contents.Contains(greenBlob), "Textiles blob has not been removed from FirstEndpoint");
         }
 
         [Test]
@@ -698,27 +698,27 @@ namespace Assets.Highways.Editor {
             var highwayToTest = BuildHighway(highwayData);
 
             var redBlob = BuildBlob(ResourceType.Food);
-            var greenBlob = BuildBlob(ResourceType.Yellow);
+            var greenBlob = BuildBlob(ResourceType.Textiles);
 
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, false);
-            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
 
             secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
             secondEndpoint.BlobSite.PlaceBlobInto(redBlob);
-            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
-            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
             secondEndpoint.BlobSite.PlaceBlobInto(greenBlob);
 
             highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Textiles, true);
 
             //Execution
             highwayToTest.PullFromSecondEndpoint();
 
             //Validation
             Assert.That(secondEndpoint.BlobSite.Contents.Contains(redBlob),    "Food blob has been removed from SecondEndpoint");
-            Assert.That(!secondEndpoint.BlobSite.Contents.Contains(greenBlob), "Yellow blob has not been removed from SecondEndpoint");
+            Assert.That(!secondEndpoint.BlobSite.Contents.Contains(greenBlob), "Textiles blob has not been removed from SecondEndpoint");
         }
 
         [Test]
@@ -807,24 +807,24 @@ namespace Assets.Highways.Editor {
             var highwayToTest = BuildHighway(highwayData);
 
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
-            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
+            firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
             firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
-            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
+            firstEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
             firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+            firstEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
 
             secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
-            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
+            secondEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
             secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
-            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
+            secondEndpoint.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
             secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+            secondEndpoint.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
 
             highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Textiles, true);
 
             highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Food, true);
-            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Yellow, true);
+            highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Textiles, true);
 
             highwayToTest.PullFromFirstEndpoint();
             highwayToTest.PullFromFirstEndpoint();

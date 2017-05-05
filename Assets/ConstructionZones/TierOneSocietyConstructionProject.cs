@@ -12,18 +12,16 @@ using Assets.BlobSites;
 
 namespace Assets.ConstructionZones {
 
-    public class FarmlandConstructionProject : ConstructionProjectBase {
+    public class TierOneSocietyConstructionProject : ConstructionProjectBase {
 
         #region instance fields and properties
-
-        #region from ConstructionProjectBase
 
         [SerializeField] private int NumberOfResourcesRequired;
         [SerializeField] private List<ResourceType> ResourceTypesAccepted = new List<ResourceType>();
 
-        #endregion
-
         [SerializeField] private SocietyFactoryBase SocietyFactory;
+        [SerializeField] private ComplexityDefinitionBase ComplexityToBuild;
+        [SerializeField] private ComplexityLadderBase LadderOfComplexity;
 
         #endregion
 
@@ -32,8 +30,8 @@ namespace Assets.ConstructionZones {
         #region from ConstructionProjectBase
 
         public override void ExecuteBuild(MapNodeBase location) {
-            if(SocietyFactory.CanConstructSocietyAt(location)) {
-                SocietyFactory.ConstructSocietyAt(location, SocietyFactory.StandardComplexityLadder);
+            if(SocietyFactory.CanConstructSocietyAt(location, LadderOfComplexity, ComplexityToBuild)) {
+                SocietyFactory.ConstructSocietyAt(location, LadderOfComplexity, ComplexityToBuild);
             }
         }
 

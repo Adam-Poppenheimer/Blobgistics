@@ -60,6 +60,10 @@ namespace Assets.HighwayManager.ForTesting {
             return newNode;
         }
 
+        public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
+            throw new NotImplementedException();
+        }
+
         public override MapEdgeBase GetEdge(MapNodeBase first, MapNodeBase second) {
             return edges.Find(delegate(MapEdgeBase edge) {
                 return (edge.FirstNode == first  && edge.SecondNode == second) ||

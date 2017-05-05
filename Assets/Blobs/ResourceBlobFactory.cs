@@ -13,13 +13,7 @@ namespace Assets.Blobs {
 
         #region instance fields and properties
 
-        [SerializeField] private Material MaterialForFood   = null;
-        [SerializeField] private Material MaterialForYellow = null;
-        [SerializeField] private Material MaterialForWhite  = null;
-        [SerializeField] private Material MaterialForBlue   = null;
-
-        private Dictionary<ResourceType, Material> MaterialDict =
-            new Dictionary<ResourceType, Material>();
+        [SerializeField] private MaterialResourceSummary MaterialsForResourceTypes;
 
         [SerializeField] private GameObject BlobPrefab = null;
 
@@ -29,17 +23,6 @@ namespace Assets.Blobs {
         #endregion
 
         #region instance methods
-
-        #region Unity event methods
-
-        private void Awake() {
-            MaterialDict[ResourceType.Food  ] = MaterialForFood;
-            MaterialDict[ResourceType.Yellow] = MaterialForYellow;
-            MaterialDict[ResourceType.White ] = MaterialForWhite;
-            MaterialDict[ResourceType.Blue  ] = MaterialForBlue;
-        }
-
-        #endregion
 
         public override ResourceBlobBase BuildBlob(ResourceType typeOfResource) {
             return BuildBlob(typeOfResource, Vector2.zero);
@@ -55,7 +38,7 @@ namespace Assets.Blobs {
 
             var blobRenderer = prefabClone.GetComponent<MeshRenderer>();
             if(blobRenderer != null) {
-                blobRenderer.material = MaterialDict[typeOfResource];
+                blobRenderer.material = MaterialsForResourceTypes[typeOfResource];
             }
             newBlob.BlobType = typeOfResource;
             newBlob.gameObject.name = string.Format("Blob ({0})", typeOfResource);

@@ -539,9 +539,9 @@ namespace Assets.HighwayManager.Editor {
 
             //Validation
             Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Food],   "Manager records an incorrect food upkeep"  );
-            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Yellow], "Manager records an incorrect yellow upkeep");
-            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.White],  "Manager records an incorrect white upkeep" );
-            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Blue],   "Manager records an incorrect blue upkeep"  );
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Textiles], "Manager records an incorrect yellow upkeep");
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.ServiceGoods],  "Manager records an incorrect white upkeep" );
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.HiTechGoods],   "Manager records an incorrect blue upkeep"  );
         }
 
         [Test]

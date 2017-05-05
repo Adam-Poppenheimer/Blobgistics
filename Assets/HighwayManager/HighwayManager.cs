@@ -129,21 +129,21 @@ namespace Assets.HighwayManager {
                     highway.Efficiency += PrivateData.EfficiencyGainFromFood;
                 }
 
-                if(highway.IsRequestingYellow && blobSite.CanExtractBlobOfType(ResourceType.Yellow)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Yellow));
-                    ++lastCalculatedUpkeep[ResourceType.Yellow];
+                if(highway.IsRequestingYellow && blobSite.CanExtractBlobOfType(ResourceType.Textiles)) {
+                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Textiles));
+                    ++lastCalculatedUpkeep[ResourceType.Textiles];
                     highway.Efficiency += PrivateData.EfficiencyGainFromYellow;
                 }
 
-                if(highway.IsRequestingWhite && blobSite.CanExtractBlobOfType(ResourceType.White)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.White));
-                    ++lastCalculatedUpkeep[ResourceType.White];
+                if(highway.IsRequestingWhite && blobSite.CanExtractBlobOfType(ResourceType.ServiceGoods)) {
+                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.ServiceGoods));
+                    ++lastCalculatedUpkeep[ResourceType.ServiceGoods];
                     highway.Efficiency += PrivateData.EfficiencyGainFromWhite;
                 }
 
-                if(highway.IsRequestingBlue && blobSite.CanExtractBlobOfType(ResourceType.Blue)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Blue));
-                    ++lastCalculatedUpkeep[ResourceType.Blue];
+                if(highway.IsRequestingBlue && blobSite.CanExtractBlobOfType(ResourceType.HiTechGoods)) {
+                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.HiTechGoods));
+                    ++lastCalculatedUpkeep[ResourceType.HiTechGoods];
                     highway.Efficiency += PrivateData.EfficiencyGainFromBlue;
                 }
             }
@@ -156,9 +156,9 @@ namespace Assets.HighwayManager {
 
             foreach(var highway in highwaysBeingManaged) {
                 if(highway.IsRequestingFood)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.Food,   true); }
-                if(highway.IsRequestingYellow) { blobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true); }
-                if(highway.IsRequestingWhite)  { blobSite.SetExtractionPermissionForResourceType(ResourceType.White,  true); }
-                if(highway.IsRequestingBlue)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.Blue,   true); }
+                if(highway.IsRequestingYellow) { blobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true); }
+                if(highway.IsRequestingWhite)  { blobSite.SetExtractionPermissionForResourceType(ResourceType.ServiceGoods,  true); }
+                if(highway.IsRequestingBlue)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.HiTechGoods,   true); }
             }
         }
 
@@ -171,9 +171,9 @@ namespace Assets.HighwayManager {
 
             foreach(var highway in highwaysBeingManaged) {
                 if(highway.IsRequestingFood  ) { ++newCapacityDict[ResourceType.Food  ]; }
-                if(highway.IsRequestingYellow) { ++newCapacityDict[ResourceType.Yellow]; }
-                if(highway.IsRequestingWhite ) { ++newCapacityDict[ResourceType.White ]; }
-                if(highway.IsRequestingBlue  ) { ++newCapacityDict[ResourceType.Blue  ]; }
+                if(highway.IsRequestingYellow) { ++newCapacityDict[ResourceType.Textiles]; }
+                if(highway.IsRequestingWhite ) { ++newCapacityDict[ResourceType.ServiceGoods ]; }
+                if(highway.IsRequestingBlue  ) { ++newCapacityDict[ResourceType.HiTechGoods  ]; }
             }
 
             int totalCapacity = 0;

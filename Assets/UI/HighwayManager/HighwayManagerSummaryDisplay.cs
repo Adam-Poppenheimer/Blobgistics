@@ -72,9 +72,9 @@ namespace Assets.UI.HighwayManager {
                 int blueValue = 0;
 
                 upkeep.TryGetValue(ResourceType.Food,   out foodValue  );
-                upkeep.TryGetValue(ResourceType.Yellow, out yellowValue);
-                upkeep.TryGetValue(ResourceType.White,  out whiteValue );
-                upkeep.TryGetValue(ResourceType.Blue,   out blueValue  );
+                upkeep.TryGetValue(ResourceType.Textiles, out yellowValue);
+                upkeep.TryGetValue(ResourceType.ServiceGoods,  out whiteValue );
+                upkeep.TryGetValue(ResourceType.HiTechGoods,   out blueValue  );
 
                 UpkeepFoodField.text   = foodValue.ToString();
                 UpkeepYellowField.text = yellowValue.ToString();

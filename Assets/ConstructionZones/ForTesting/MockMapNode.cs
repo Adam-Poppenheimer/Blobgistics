@@ -40,6 +40,16 @@ namespace Assets.ConstructionZones.ForTesting {
             }
         }
 
+        public override TerrainType CurrentTerrain {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

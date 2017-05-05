@@ -13,8 +13,6 @@ namespace Assets.Core.ForTesting {
 
         #region from SocietyUISummaryDisplayBase
 
-        public override bool CanBeDestroyed { get; set; }
-
         public override SocietyUISummary CurrentSummary { get; set; }
 
         #endregion

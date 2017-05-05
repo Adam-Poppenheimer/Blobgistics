@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,56 +12,67 @@ namespace Assets.Societies {
 
         #region instance fields and properties
 
-        public List<ComplexityDefinitionBase> ComplexityHierarchy {
-            get {
-                if(_complexityHierarchy == null) {
-                    throw new InvalidOperationException("ComplexityHierarchy is uninitialized");
-                } else {
-                    return _complexityHierarchy;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _complexityHierarchy = value;
-                }
-            }
+        public List<ComplexityDefinitionBase> TierOneComplexities {
+            get { return _tierOneComplexities; }
+            set { _tierOneComplexities = value; }
         }
-        [SerializeField] private List<ComplexityDefinitionBase> _complexityHierarchy = new List<ComplexityDefinitionBase>();
+        [SerializeField] private List<ComplexityDefinitionBase> _tierOneComplexities;
+
+        public List<ComplexityDefinitionBase> TierTwoComplexities {
+            get { return _tierTwoComplexities; }
+            set { _tierTwoComplexities = value; }
+        }
+        [SerializeField] private List<ComplexityDefinitionBase> _tierTwoComplexities;
+
+        public List<ComplexityDefinitionBase> TierThreeComplexities {
+            get { return _tierThreeComplexities; }
+            set { _tierThreeComplexities = value; }
+        }
+        [SerializeField] private List<ComplexityDefinitionBase> _tierThreeComplexities;
+
+        public List<ComplexityDefinitionBase> TierFourComplexities {
+            get { return _tierFourComplexities; }
+            set { _tierFourComplexities = value; }
+        }
+        [SerializeField] private List<ComplexityDefinitionBase> _tierFourComplexities;
+
+        private List<ComplexityDefinitionBase> EmptyComplexityList = new List<ComplexityDefinitionBase>();
 
         #endregion
 
         #region instance methods
 
-        public override ComplexityDefinitionBase GetStartingComplexity() {
-            if(ComplexityHierarchy.Count > 0) {
-                return ComplexityHierarchy[0];
+        public override ReadOnlyCollection<ComplexityDefinitionBase> GetAscentTransitions(ComplexityDefinitionBase currentComplexity) {
+            if(TierOneComplexities.Contains(currentComplexity)){
+                return TierTwoComplexities.AsReadOnly();
+            }else if(TierTwoComplexities.Contains(currentComplexity)) {
+                return TierThreeComplexities.AsReadOnly();
+            }else if(TierThreeComplexities.Contains(currentComplexity)) {
+                return TierFourComplexities.AsReadOnly();
             }else {
-                return null;
+                return EmptyComplexityList.AsReadOnly();
             }
         }
 
-        public override ComplexityDefinitionBase GetAscentTransition(ComplexityDefinitionBase currentComplexity) {
-            int indexOfCurrent = ComplexityHierarchy.IndexOf(currentComplexity);
-            if(indexOfCurrent < 0 || indexOfCurrent == ComplexityHierarchy.Count - 1) {
-                return null;
+        public override ReadOnlyCollection<ComplexityDefinitionBase> GetDescentTransitions(ComplexityDefinitionBase currentComplexity) {
+            if(TierFourComplexities.Contains(currentComplexity)) {
+                return TierThreeComplexities.AsReadOnly();
+            }else if(TierThreeComplexities.Contains(currentComplexity)) {
+                return TierTwoComplexities.AsReadOnly();
+            }else if(TierTwoComplexities.Contains(currentComplexity)) {
+                return TierOneComplexities.AsReadOnly();
             }else {
-                return ComplexityHierarchy[indexOfCurrent + 1];
-            }
-        }
-
-        public override ComplexityDefinitionBase GetDescentTransition(ComplexityDefinitionBase currentComplexity) {
-            int indexOfCurrent = ComplexityHierarchy.IndexOf(currentComplexity);
-            if(indexOfCurrent <= 0) {
-                return null;
-            }else {
-                return ComplexityHierarchy[indexOfCurrent - 1];
+                return EmptyComplexityList.AsReadOnly();
             }
         }
 
         public override bool ContainsComplexity(ComplexityDefinitionBase complexity) {
-            return ComplexityHierarchy.Contains(complexity);
+            return (
+                TierOneComplexities.Contains  (complexity) || 
+                TierTwoComplexities.Contains  (complexity) ||
+                TierThreeComplexities.Contains(complexity) || 
+                TierFourComplexities.Contains (complexity)
+            );
         }
 
         #endregion

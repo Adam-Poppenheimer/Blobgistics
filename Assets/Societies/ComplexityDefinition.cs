@@ -6,6 +6,8 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Blobs;
+using Assets.Map;
+using System.Collections.ObjectModel;
 
 namespace Assets.Societies {
 
@@ -16,67 +18,55 @@ namespace Assets.Societies {
         #region from ComplexityDefinitionBase
 
         public override string Name {
-            get { return _name; }
+            get { return name; }
         }
-        public void SetName(string value) {
-            _name = value;
-        }
-        [SerializeField] private string _name = "Default Complexity";
 
-        public override ResourceSummary Production {
+        public override IntResourceSummary Production {
             get {
                 if(_production == null) {
-                    _production = ResourceSummary.BuildResourceSummary(gameObject);
+                    _production = IntResourceSummary.BuildSummary(gameObject);
                 }
                 return _production;
             }
         }
-        public void SetProduction(ResourceSummary value) {
+        public void SetProduction(IntResourceSummary value) {
             _production = value;
         }
-        [SerializeField] private ResourceSummary _production;
+        [SerializeField] private IntResourceSummary _production;
 
-        public override ResourceSummary Needs {
+        public override IntResourceSummary Needs {
             get {
                 if(_needs == null) {
-                    _needs = ResourceSummary.BuildResourceSummary(gameObject);
+                    _needs = IntResourceSummary.BuildSummary(gameObject);
                 }
                 return _needs;
             }
         }
-        public void SetNeeds(ResourceSummary value) {
+        public void SetNeeds(IntResourceSummary value) {
             _needs = value;
         }
-        [SerializeField] private ResourceSummary _needs;
+        [SerializeField] private IntResourceSummary _needs;
 
-        public override IEnumerable<ResourceSummary> Wants {
+        public override IEnumerable<IntResourceSummary> Wants {
             get { return _wants; }
         }
-        public void SetWants(List<ResourceSummary> value) {
+        public void SetWants(List<IntResourceSummary> value) {
             _wants = value;
         }
-        [SerializeField] private List<ResourceSummary> _wants= new List<ResourceSummary>();
+        [SerializeField] private List<IntResourceSummary> _wants= new List<IntResourceSummary>();
 
-        public override ResourceSummary CostOfAscent {
+        public override IntResourceSummary CostToAscendInto {
             get {
-                if(_costOfAscent == null) {
-                    _costOfAscent = ResourceSummary.BuildResourceSummary(gameObject);
+                if(_costToAscendInto == null) {
+                    _costToAscendInto = IntResourceSummary.BuildSummary(gameObject);
                 }
-                return _costOfAscent;
+                return _costToAscendInto;
             }
         }
-        public void SetCostOfAscent(ResourceSummary value) {
-            _costOfAscent = value;
+        public void SetCostOfAscent(IntResourceSummary value) {
+            _costToAscendInto = value;
         }
-        [SerializeField] private ResourceSummary _costOfAscent;
-
-        public override bool IsPermittedToAscend {
-            get { return _isPermittedToAscend; }
-        }
-        public void SetIsPermittedToAscend(bool value) {
-            _isPermittedToAscend = value;
-        }
-        [SerializeField] private bool _isPermittedToAscend;
+        [SerializeField] private IntResourceSummary _costToAscendInto;
 
         public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }
@@ -134,10 +124,18 @@ namespace Assets.Societies {
         }
         [SerializeField] private Material _materialForSociety;
 
+        public override ReadOnlyCollection<TerrainType> PermittedTerrains {
+            get { return _permittedTerrains.AsReadOnly(); }
+        }
+        public void SetPermittedTerrains(List<TerrainType> value) {
+            _permittedTerrains = value;
+        }
+        [SerializeField] private List<TerrainType> _permittedTerrains;
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

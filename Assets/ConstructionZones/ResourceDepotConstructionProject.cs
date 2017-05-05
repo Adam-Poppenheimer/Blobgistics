@@ -14,7 +14,7 @@ namespace Assets.ConstructionZones {
 
         #region instance fields and properties
 
-        public ResourceSummary Cost {
+        public IntResourceSummary Cost {
             get {
                 if(_cost == null) {
                     throw new InvalidOperationException("Cost is uninitialized");
@@ -30,7 +30,7 @@ namespace Assets.ConstructionZones {
                 }
             }
         }
-        [SerializeField]private ResourceSummary _cost;
+        [SerializeField]private IntResourceSummary _cost;
 
         [SerializeField] private ResourceDepotFactoryBase DepotFactory;
 

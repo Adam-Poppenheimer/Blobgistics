@@ -56,6 +56,12 @@ namespace Assets.Map {
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        public TerrainMaterialRegistry TerrainMaterialRegistry {
+            get { return _terrainMaterialRegistry; }
+            set { _terrainMaterialRegistry = value; }
+        }
+        [SerializeField] private TerrainMaterialRegistry _terrainMaterialRegistry;
+
         [SerializeField] private GameObject NodePrefab;
         [SerializeField] private GameObject EdgePrefab;
 
@@ -82,6 +88,10 @@ namespace Assets.Map {
         #region from MapGraphBase
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
+            return BuildNode(localPosition, TerrainType.Grassland);
+        }
+
+        public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
             MapNode newNode = null;
             if(NodePrefab != null) {
                 var nodeObject = Instantiate(NodePrefab, this.transform, false) as GameObject;
@@ -99,6 +109,9 @@ namespace Assets.Map {
             newNode.SetManagingGraph(this);
             newNode.SetBlobSite(BlobSiteFactory.ConstructBlobSite(newNode.gameObject));
             newNode.UIControl = UIControl;
+
+            newNode.TerrainMaterialRegistry = TerrainMaterialRegistry;
+            newNode.CurrentTerrain = startingTerrain;
 
             SubscribeNode(newNode);
             return newNode;

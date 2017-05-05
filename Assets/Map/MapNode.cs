@@ -44,6 +44,15 @@ namespace Assets.Map {
             get { return ManagingGraph.GetNeighborsOfNode(this); }
         }
 
+        public override TerrainType CurrentTerrain {
+            get { return _terrainType; }
+            set {
+                _terrainType = value;
+                RefreshAppearance();
+            }
+        }
+        [SerializeField] private TerrainType _terrainType;
+
         #endregion
 
         public UIControlBase UIControl {
@@ -51,6 +60,22 @@ namespace Assets.Map {
             set { _uiControl = value; }
         }
         [SerializeField] private UIControlBase _uiControl;
+
+        public TerrainMaterialRegistry TerrainMaterialRegistry {
+            get { return _terrainMaterialRegistry; }
+            set {
+                if(_terrainMaterialRegistry != null) {
+                    _terrainMaterialRegistry.TerrainMaterialChanged -= TerrainMaterialRegistry_TerrainMaterialChanged;
+                }
+                _terrainMaterialRegistry = value;
+                if(_terrainMaterialRegistry != null) {
+                    _terrainMaterialRegistry.TerrainMaterialChanged += TerrainMaterialRegistry_TerrainMaterialChanged;
+                }
+            }
+        }
+        [SerializeField] private TerrainMaterialRegistry _terrainMaterialRegistry;
+
+        [SerializeField] private MeshRenderer TerrainSlateRenderer;
 
         #endregion
 
@@ -68,6 +93,10 @@ namespace Assets.Map {
             if(ManagingGraph != null) {
                 ManagingGraph.RemoveNode(this);
             }
+        }
+
+        private void OnValidate() {
+            RefreshAppearance();
         }
 
         #endregion
@@ -108,6 +137,16 @@ namespace Assets.Map {
         }
 
         #endregion
+
+        private void RefreshAppearance() {
+            if(TerrainSlateRenderer != null && TerrainMaterialRegistry != null) {
+                TerrainSlateRenderer.sharedMaterial = TerrainMaterialRegistry.GetMaterialForTerrain(CurrentTerrain);
+            }
+        }
+
+        private void TerrainMaterialRegistry_TerrainMaterialChanged(object sender, EventArgs e) {
+            RefreshAppearance();
+        }
 
         #endregion
 

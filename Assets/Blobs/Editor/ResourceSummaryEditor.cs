@@ -8,10 +8,9 @@ using UnityEditor;
 
 using UnityCustomUtilities.Extensions;
 
-namespace Assets.Blobs {
+namespace Assets.Blobs.Editor {
 
-    [CustomEditor(typeof(ResourceSummary))]
-    public class ResourceSummaryEditor : Editor {
+    public abstract class ResourceSummaryEditorBase : UnityEditor.Editor {
 
         #region instance fields and properties
 
@@ -24,7 +23,7 @@ namespace Assets.Blobs {
         #region Unity event methods
 
         private void OnEnable() {
-            CountListProperty = serializedObject.FindProperty("CountList");
+            CountListProperty = serializedObject.FindProperty("ValueList");
         }
 
         #endregion

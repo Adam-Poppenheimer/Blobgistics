@@ -24,6 +24,7 @@ namespace Assets.Core.Editor {
 
         [Test]
         public void OnCanCreateConstructionZoneOnNodeIsCalled_ReturnsFalseIfAnyOtherFeatureExistsOnTheNode_AndTrueOtherwise() {
+            throw new NotImplementedException();
             //Setup
             var controlToTest = BuildConstructionZoneControl();
 
@@ -38,7 +39,7 @@ namespace Assets.Core.Editor {
             controlToTest.ConstructionZoneFactory.BuildConstructionZone(nodeWithConstructionZone,
                 controlToTest.ConstructionZoneFactory.GetAvailableProjects().First());
             controlToTest.ResourceDepotFactory.ConstructDepotAt(nodeWithResourceDepot);
-            controlToTest.SocietyFactory.ConstructSocietyAt(nodeWithSociety, controlToTest.SocietyFactory.StandardComplexityLadder);
+            //controlToTest.SocietyFactory.ConstructSocietyAt(nodeWithSociety, controlToTest.SocietyFactory.StandardComplexityLadder);
             controlToTest.HighwayManagerFactory.ConstructHighwayManagerAtLocation(nodeWithHighwayManager);
 
             //Execution and validation

@@ -47,6 +47,10 @@ namespace Assets.Core.ForTesting {
             return newNode;
         }
 
+        public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
+            throw new NotImplementedException();
+        }
+
         public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
             throw new NotImplementedException();
         }

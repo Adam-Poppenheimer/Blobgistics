@@ -90,7 +90,7 @@ namespace Assets.BlobSites {
 
         public abstract bool GetIsAtCapacityForResource(ResourceType type);
 
-        public abstract void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary);
+        public abstract void SetPlacementPermissionsAndCapacity(IntResourceSummary placementSummary);
 
         public abstract void ClearPermissionsAndCapacity();
 

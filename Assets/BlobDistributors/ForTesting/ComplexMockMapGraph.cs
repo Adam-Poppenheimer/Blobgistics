@@ -82,6 +82,10 @@ namespace Assets.BlobDistributors.ForTesting {
             return newNode;
         }
 
+        public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
+            throw new NotImplementedException();
+        }
+
         public override void SubscribeNode(MapNodeBase node) {
             throw new NotImplementedException();
         }

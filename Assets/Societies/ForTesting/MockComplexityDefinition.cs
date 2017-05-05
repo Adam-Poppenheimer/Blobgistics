@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Assets.Blobs;
+using Assets.Map;
 using UnityCustomUtilities.Extensions;
 using UnityEngine;
 
@@ -30,39 +32,39 @@ namespace Assets.Societies.ForTesting {
         }
         private string _name = "DEFAULT";
 
-        public override ResourceSummary Needs {
+        public override IntResourceSummary Needs {
             get {
                 if(_needs == null) {
-                    _needs = ResourceSummary.BuildResourceSummary(gameObject);
+                    _needs = IntResourceSummary.BuildSummary(gameObject);
                 }
                 return _needs;
             }
         }
-        public void SetNeeds(ResourceSummary value) {
+        public void SetNeeds(IntResourceSummary value) {
             _needs = value;
         }
-        private ResourceSummary _needs = null;
+        private IntResourceSummary _needs = null;
 
-        public override ResourceSummary Production {
+        public override IntResourceSummary Production {
             get {
                 if(_production == null) {
-                    _production = ResourceSummary.BuildResourceSummary(gameObject);
+                    _production = IntResourceSummary.BuildSummary(gameObject);
                 }
                 return _production;
             }
         }
-        public void SetProduction(ResourceSummary value) {
+        public void SetProduction(IntResourceSummary value) {
             _production = value;
         }
-        private ResourceSummary _production = null;
+        private IntResourceSummary _production = null;
 
-        public override IEnumerable<ResourceSummary> Wants {
+        public override IEnumerable<IntResourceSummary> Wants {
             get { return _wants; }
         }
-        public void SetWants(IEnumerable<ResourceSummary> value) {
+        public void SetWants(IEnumerable<IntResourceSummary> value) {
             _wants = value;
         }
-        private IEnumerable<ResourceSummary> _wants = new List<ResourceSummary>();
+        private IEnumerable<IntResourceSummary> _wants = new List<IntResourceSummary>();
 
         public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }
@@ -104,32 +106,32 @@ namespace Assets.Societies.ForTesting {
         }
         private float _secondsToFullyConsumeNeeds = 1f;
 
-        public override ResourceSummary CostOfAscent {
+        public override IntResourceSummary CostToAscendInto {
             get {
                 if(_costOfAscent == null) {
-                    _costOfAscent = ResourceSummary.BuildResourceSummary(gameObject);
+                    _costOfAscent = IntResourceSummary.BuildSummary(gameObject);
                 }
                 return _costOfAscent;
             }
         }
-        public void SetCostOfAscent(ResourceSummary value) {
+        public void SetCostOfAscent(IntResourceSummary value) {
             _costOfAscent = value;
         }
-        private ResourceSummary _costOfAscent = null;
-
-        public override bool IsPermittedToAscend {
-            get { return _isPermittedToAscend; }
-        }
-        public void SetIsPermittedToAscend(bool value) {
-            _isPermittedToAscend = value;
-        }
-        private bool _isPermittedToAscend = true;
+        private IntResourceSummary _costOfAscent = null;
 
         public override Material MaterialForSociety {
             get {
                 throw new NotImplementedException();
             }
         }
+
+        public override ReadOnlyCollection<TerrainType> PermittedTerrains {
+            get { return _permittedTerrains.AsReadOnly(); }
+        }
+        public void SetPermittedTerrains(List<TerrainType> value) {
+            _permittedTerrains = value;
+        }
+        private List<TerrainType> _permittedTerrains = new List<TerrainType>();
 
         #endregion
 

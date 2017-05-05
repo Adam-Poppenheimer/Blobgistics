@@ -111,9 +111,9 @@ namespace Assets.Core {
             if(highwayToChange != null) {
                 switch(resourceToChange) {
                     case ResourceType.Food:   highwayToChange.IsRequestingFood   = isBeingRequested; break;
-                    case ResourceType.Yellow: highwayToChange.IsRequestingYellow = isBeingRequested; break;
-                    case ResourceType.White:  highwayToChange.IsRequestingWhite  = isBeingRequested; break;
-                    case ResourceType.Blue:   highwayToChange.IsRequestingBlue   = isBeingRequested; break;
+                    case ResourceType.Textiles: highwayToChange.IsRequestingYellow = isBeingRequested; break;
+                    case ResourceType.ServiceGoods:  highwayToChange.IsRequestingWhite  = isBeingRequested; break;
+                    case ResourceType.HiTechGoods:   highwayToChange.IsRequestingBlue   = isBeingRequested; break;
                 }
             }else {
                 Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);

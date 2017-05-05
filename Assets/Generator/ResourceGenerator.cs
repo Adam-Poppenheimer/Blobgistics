@@ -36,7 +36,7 @@ namespace Assets.Generator {
         }
         [SerializeField, HideInInspector] private ResourceGeneratorFactory _parentFactory;
 
-        [SerializeField] private ResourceSummary Production;
+        [SerializeField] private IntResourceSummary Production;
         [SerializeField] private int             StockpileCoefficient;
         [SerializeField] private float           IntervalOfProductionInSeconds;
 

@@ -15,7 +15,6 @@ namespace Assets.Core {
 
         public abstract void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted);
 
-        public abstract bool CanDestroySociety(int societyID);
         public abstract void DestroySociety   (int societyID);
 
         #endregion

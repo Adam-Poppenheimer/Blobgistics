@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,15 +20,6 @@ namespace Assets.UI.Societies {
         #region from SocietyUISummaryDisplayBase
 
         public override SocietyUISummary CurrentSummary { get; set; }
-
-        public override bool CanBeDestroyed {
-            get { return _canBeDestroyed; }
-            set {
-                _canBeDestroyed = value;
-                DestroySocietyButton.interactable = _canBeDestroyed;
-            }
-        }
-        private bool _canBeDestroyed = false;
 
         #endregion
 
@@ -99,11 +91,9 @@ namespace Assets.UI.Societies {
 
                 PermitAscensionToggle.isOn = CurrentSummary.AscensionIsPermitted;
 
-                DestroySocietyButton.interactable = CanBeDestroyed;
-
-                UpdateDescentComplexityDisplay(CurrentSummary.DescentComplexity);
+                UpdateDescentDisplay(CurrentSummary.DescentComplexities);
                 UpdateCurrentComplexityDisplay(CurrentSummary.CurrentComplexity);
-                UpdateAscentComplexityDisplay(CurrentSummary.AscentComplexity);
+                UpdateAscentDisplay (CurrentSummary.AscentComplexities);
             }
         }
 
@@ -125,14 +115,8 @@ namespace Assets.UI.Societies {
 
         #endregion
 
-        private void UpdateDescentComplexityDisplay(ComplexityDefinitionBase descentComplexity) {
-            if(descentComplexity != null) {
-                DescentComplexitySection.gameObject.SetActive(true);
-                DescentComplexityNameField.text = descentComplexity.Name;
-            }else {
-                DescentComplexitySection.gameObject.SetActive(false);
-                DescentComplexityNameField.text = "--";
-            }
+        private void UpdateDescentDisplay(ReadOnlyCollection<ComplexityDefinitionBase> descentComplexity) {
+            throw new NotImplementedException();
         }
 
         private void UpdateCurrentComplexityDisplay(ComplexityDefinitionBase currentComplexity) {
@@ -148,19 +132,11 @@ namespace Assets.UI.Societies {
                     CurrentComplexityWantsField.text += want.GetSummaryString() + " OR ";
                 }
             }
-            CurrentComplexityCostToAscendIntoField.text = currentComplexity.CostOfAscent.GetSummaryString();
+            CurrentComplexityCostToAscendIntoField.text = currentComplexity.CostToAscendInto.GetSummaryString();
         }
 
-        private void UpdateAscentComplexityDisplay(ComplexityDefinitionBase ascentComplexity) {
-            if(ascentComplexity != null) {
-                AscentComplexitySection.gameObject.SetActive(true);
-                AscentComplexityNameField.text = ascentComplexity.Name;
-                CurrentComplexityCostToAscendFromField.text = ascentComplexity.CostOfAscent.GetSummaryString();
-            }else {
-                AscentComplexitySection.gameObject.SetActive(false);
-                AscentComplexityNameField.text = "--";
-                CurrentComplexityCostToAscendFromField.text = "--";
-            }
+        private void UpdateAscentDisplay(ReadOnlyCollection<ComplexityDefinitionBase> ascentComplexity) {
+            throw new NotImplementedException();
         }
 
         #endregion

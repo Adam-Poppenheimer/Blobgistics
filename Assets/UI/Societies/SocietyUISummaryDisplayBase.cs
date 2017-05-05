@@ -16,7 +16,6 @@ namespace Assets.UI.Societies {
         #region instance fields and properties
 
         public abstract SocietyUISummary CurrentSummary { get; set; }
-        public abstract bool CanBeDestroyed { get; set; }
 
         #endregion
 

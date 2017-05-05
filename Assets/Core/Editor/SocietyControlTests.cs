@@ -20,33 +20,6 @@ namespace Assets.Core.Editor {
         #region tests
 
         [Test]
-        public void OnCanDestroySocietyIsCalled_ReturnValueProperlyRepresentsInternalState() {
-            //Setup
-            var controlToTest = BuildSocietyControl();
-
-            var mapGraph = controlToTest.MapGraph;
-            var societyFactory = controlToTest.SocietyFactory;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-
-            var simpleDefinition = societyFactory.StandardComplexityLadder.GetStartingComplexity();
-            var complexifiedDefinition = societyFactory.StandardComplexityLadder.GetAscentTransition(simpleDefinition);
-
-            var simpleSociety = societyFactory.ConstructSocietyAt(middleNode, societyFactory.StandardComplexityLadder);
-            var complexifiedSociety = societyFactory.ConstructSocietyAt(rightNode, societyFactory.StandardComplexityLadder, complexifiedDefinition);
-
-            //Execution
-
-            //Validation
-            Assert.IsTrue(controlToTest.CanDestroySociety(simpleSociety.ID),
-                "Is not permitted to destroy the simple society");
-
-            Assert.IsFalse(controlToTest.CanDestroySociety(complexifiedSociety.ID), 
-                "Is falsely permitted to destroy the complexified society");
-        }
-
-        [Test]
         public void OnDestroySocietyIsCalled_SpecifiedSocietyObjectIsRemovedFromHierarchyAndAllRecords() {
             //Setup
             var controlToTest = BuildSocietyControl();
@@ -56,7 +29,8 @@ namespace Assets.Core.Editor {
 
             var middleNode = mapGraph.BuildNode(Vector3.zero);
 
-            var societyToRemove = societyFactory.ConstructSocietyAt(middleNode, societyFactory.StandardComplexityLadder);
+            var societyToRemove = societyFactory.ConstructSocietyAt(middleNode,
+                societyFactory.StandardComplexityLadder, societyFactory.DefaultComplexityDefinition);
             societyToRemove.name = "SimulationControl Integration Tests' Society";
 
             //Execution
@@ -81,9 +55,9 @@ namespace Assets.Core.Editor {
             var node2   = mapGraph.BuildNode(Vector3.zero);
             var node3  = mapGraph.BuildNode(Vector3.zero);
 
-            var society1 = societyFactory.ConstructSocietyAt(node1, societyFactory.StandardComplexityLadder);
-            var society2 = societyFactory.ConstructSocietyAt(node2, societyFactory.StandardComplexityLadder);
-            var society3 = societyFactory.ConstructSocietyAt(node3, societyFactory.StandardComplexityLadder);
+            var society1 = societyFactory.ConstructSocietyAt(node1, societyFactory.StandardComplexityLadder, societyFactory.DefaultComplexityDefinition);
+            var society2 = societyFactory.ConstructSocietyAt(node2, societyFactory.StandardComplexityLadder, societyFactory.DefaultComplexityDefinition);
+            var society3 = societyFactory.ConstructSocietyAt(node3, societyFactory.StandardComplexityLadder, societyFactory.DefaultComplexityDefinition);
 
             //Execution
             controlToTest.SetAscensionPermissionForSociety(society1.ID, false);
@@ -108,15 +82,6 @@ namespace Assets.Core.Editor {
 
             //Execution and Validation
             DebugMessageData lastMessage;
-
-            Assert.DoesNotThrow(delegate() {
-                controlToTest.CanDestroySociety(42);
-            }, "CanDestroySociety threw an exception");
-
-            lastMessage = insertionHandler.StoredMessages.LastOrDefault();
-            Assert.NotNull(lastMessage, "CanDestroySociety did not display an error");
-            insertionHandler.StoredMessages.Clear();
-            lastMessage = null;
 
             Assert.DoesNotThrow(delegate() {
                 controlToTest.DestroySociety(42);
@@ -160,8 +125,8 @@ namespace Assets.Core.Editor {
                 }
             }
 
-            foreach(var ascentType in currentComplexity.CostOfAscent) {
-                for(int i = 0; i < currentComplexity.CostOfAscent[ascentType]; ++i) {
+            foreach(var ascentType in currentComplexity.CostToAscendInto) {
+                for(int i = 0; i < currentComplexity.CostToAscendInto[ascentType]; ++i) {
                     if(society.Location.BlobSite.CanPlaceBlobOfTypeInto(ascentType)) {
                         society.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ascentType));
                     }

@@ -14,6 +14,7 @@ namespace Assets.Societies {
         #region instance fields and properties
 
         public abstract ComplexityLadderBase StandardComplexityLadder { get; }
+        public abstract ComplexityDefinitionBase DefaultComplexityDefinition { get; }
 
         #endregion
 
@@ -24,8 +25,7 @@ namespace Assets.Societies {
         public abstract bool HasSocietyAtLocation(MapNodeBase location);
         public abstract SocietyBase GetSocietyAtLocation(MapNodeBase location);
 
-        public abstract bool        CanConstructSocietyAt(MapNodeBase location);
-        public abstract SocietyBase ConstructSocietyAt   (MapNodeBase location, ComplexityLadderBase ladder);
+        public abstract bool        CanConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity);
         public abstract SocietyBase ConstructSocietyAt   (MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity);
 
         public abstract void DestroySociety(SocietyBase society);
