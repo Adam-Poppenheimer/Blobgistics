@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -10,29 +11,13 @@ using Assets.BlobSites;
 
 namespace Assets.ConstructionZones {
 
-    public class ResourceDepotConstructionProject : ConstructionProjectBase {
+    public class ResourceDepotConstructionProject : FlexibleCostConstructionProjectBase {
 
         #region instance fields and properties
 
-        public IntResourceSummary Cost {
-            get {
-                if(_cost == null) {
-                    throw new InvalidOperationException("Cost is uninitialized");
-                } else {
-                    return _cost;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _cost = value;
-                }
-            }
-        }
-        [SerializeField]private IntResourceSummary _cost;
-
         [SerializeField] private ResourceDepotFactoryBase DepotFactory;
+
+        [SerializeField] private List<TerrainType> PermittedTerrains;
 
         #endregion
 
@@ -40,20 +25,12 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionProjectBase
 
+        public override bool IsValidAtLocation(MapNodeBase location) {
+            return PermittedTerrains.Contains(location.Terrain);
+        }
+
         public override void ExecuteBuild(MapNodeBase location) {
             DepotFactory.ConstructDepotAt(location);
-        }
-
-        public override void SetSiteForProject(BlobSiteBase site) {
-            site.SetPlacementPermissionsAndCapacity(Cost);
-        }
-
-        public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
-            return Cost.IsContainedWithinBlobSite(site);
-        }
-
-        public override string GetCostSummaryString() {
-            return Cost.GetSummaryString();
         }
 
         #endregion

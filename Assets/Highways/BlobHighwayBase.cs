@@ -30,11 +30,6 @@ namespace Assets.Highways {
 
         public abstract float Efficiency { get; set; }
 
-        public abstract bool IsRequestingFood   { get; set; }
-        public abstract bool IsRequestingYellow { get; set; }
-        public abstract bool IsRequestingWhite  { get; set; }
-        public abstract bool IsRequestingBlue   { get; set; }
-
         public abstract float BlobPullCooldownInSeconds { get; }
 
         #endregion
@@ -60,6 +55,9 @@ namespace Assets.Highways {
 
         public abstract bool CanPullFromSecondEndpoint();
         public abstract void PullFromSecondEndpoint();
+
+        public abstract bool GetUpkeepRequestedForResource(ResourceType type);
+        public abstract void SetUpkeepRequestedForResource(ResourceType type, bool isBeingRequested);
 
         public abstract void Clear();
 

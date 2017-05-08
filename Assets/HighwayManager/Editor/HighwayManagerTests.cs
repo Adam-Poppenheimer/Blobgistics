@@ -516,6 +516,7 @@ namespace Assets.HighwayManager.Editor {
             var privateData = BuildManagerPrivateData();
             privateData.SetSecondsToPerformConsumption(1f);
             privateData.SetBlobFactory(BuildMockBlobFactory());
+            privateData.SetEfficiencyGainFromResource(IntResourceSummary.BuildSummary(new GameObject()));
 
             var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.MapGraph = mapGraph;
@@ -527,10 +528,10 @@ namespace Assets.HighwayManager.Editor {
             var highwayBetween3And4 = highwayFactory.ConstructHighwayBetween(node3, node4);
             var highwayBetween4And5 = highwayFactory.ConstructHighwayBetween(node4, node5);
 
-            highwayBetween1And2.IsRequestingFood   = true;
-            highwayBetween2And3.IsRequestingYellow = true;
-            highwayBetween3And4.IsRequestingWhite  = true;
-            highwayBetween4And5.IsRequestingBlue   = true;
+            highwayBetween1And2.SetUpkeepRequestedForResource(ResourceType.Food,         true);
+            highwayBetween2And3.SetUpkeepRequestedForResource(ResourceType.Textiles,     true);
+            highwayBetween3And4.SetUpkeepRequestedForResource(ResourceType.ServiceGoods, true);
+            highwayBetween4And5.SetUpkeepRequestedForResource(ResourceType.HiTechGoods,  true);
 
             var managerToTest = managerFactory.ConstructHighwayManagerAtLocation(node1);
 
@@ -538,10 +539,10 @@ namespace Assets.HighwayManager.Editor {
             managerToTest.TickConsumption(1f);
 
             //Validation
-            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Food],   "Manager records an incorrect food upkeep"  );
-            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Textiles], "Manager records an incorrect yellow upkeep");
-            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.ServiceGoods],  "Manager records an incorrect white upkeep" );
-            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.HiTechGoods],   "Manager records an incorrect blue upkeep"  );
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Food        ], "Manager records an incorrect Food upkeep"        );
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Textiles    ], "Manager records an incorrect Textiles upkeep"    );
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.ServiceGoods], "Manager records an incorrect ServiceGoods upkeep");
+            Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.HiTechGoods ], "Manager records an incorrect HiTechGoods upkeep" );
         }
 
         [Test]
@@ -583,6 +584,7 @@ namespace Assets.HighwayManager.Editor {
             var privateData = BuildManagerPrivateData();
             privateData.SetSecondsToPerformConsumption(1f);
             privateData.SetBlobFactory(BuildMockBlobFactory());
+            privateData.SetEfficiencyGainFromResource(IntResourceSummary.BuildSummary(new GameObject()));
 
             var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.MapGraph = mapGraph;
@@ -592,8 +594,8 @@ namespace Assets.HighwayManager.Editor {
             var highwayBetween1And2 = highwayFactory.ConstructHighwayBetween(node1, node2);
             var highwayBetween4And5 = highwayFactory.ConstructHighwayBetween(node4, node5);
 
-            highwayBetween1And2.IsRequestingFood = true;
-            highwayBetween4And5.IsRequestingFood = true;
+            highwayBetween1And2.SetUpkeepRequestedForResource(ResourceType.Food, true);
+            highwayBetween4And5.SetUpkeepRequestedForResource(ResourceType.Food, true);
 
             var managerAtNode1 = managerFactory.ConstructHighwayManagerAtLocation(node1);
             var managerAtNode2 = managerFactory.ConstructHighwayManagerAtLocation(node5);
@@ -643,10 +645,12 @@ namespace Assets.HighwayManager.Editor {
             var privateData = BuildManagerPrivateData();
             privateData.SetSecondsToPerformConsumption(1f);
             privateData.SetBlobFactory(BuildMockBlobFactory());
-            privateData.SetEfficiencyGainFromFood(3);
-            privateData.SetEfficiencyGainFromYellow(5);
-            privateData.SetEfficiencyGainFromWhite(8);
-            privateData.SetEfficiencyGainFromBlue(13);
+            privateData.SetEfficiencyGainFromResource(IntResourceSummary.BuildSummary(new GameObject(), new Dictionary<ResourceType, int>() {
+                { ResourceType.Food,         3  },
+                { ResourceType.Textiles,     5  },
+                { ResourceType.ServiceGoods, 8  },
+                { ResourceType.HiTechGoods,  13 },
+            }));
 
             var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.MapGraph = mapGraph;
@@ -659,15 +663,15 @@ namespace Assets.HighwayManager.Editor {
             var highway4 = highwayFactory.ConstructHighwayBetween(node4, node5);
             var highway5 = highwayFactory.ConstructHighwayBetween(node5, node1);
 
-            highway1.IsRequestingFood   = true;
-            highway2.IsRequestingYellow = true;
-            highway3.IsRequestingWhite  = true;
-            highway4.IsRequestingBlue   = true;
+            highway1.SetUpkeepRequestedForResource(ResourceType.Food,         true);
+            highway2.SetUpkeepRequestedForResource(ResourceType.Textiles,     true);
+            highway3.SetUpkeepRequestedForResource(ResourceType.ServiceGoods, true);
+            highway4.SetUpkeepRequestedForResource(ResourceType.HiTechGoods,  true);
 
-            highway5.IsRequestingFood   = true;
-            highway5.IsRequestingYellow = true;
-            highway5.IsRequestingWhite  = true;
-            highway5.IsRequestingBlue   = true;
+            highway5.SetUpkeepRequestedForResource(ResourceType.Food,         true);
+            highway5.SetUpkeepRequestedForResource(ResourceType.Textiles,     true);
+            highway5.SetUpkeepRequestedForResource(ResourceType.ServiceGoods, true);
+            highway5.SetUpkeepRequestedForResource(ResourceType.HiTechGoods,  true); 
 
             highway1.Priority = 0;
             highway2.Priority = 0;
@@ -681,11 +685,11 @@ namespace Assets.HighwayManager.Editor {
             managerToTest.TickConsumption(1f);
 
             //Validation
-            Assert.AreEqual(1 + privateData.EfficiencyGainFromFood,   highway1.Efficiency, "Highway1 has an incorrect efficiency");
-            Assert.AreEqual(1 + privateData.EfficiencyGainFromYellow, highway2.Efficiency, "Highway2 has an incorrect efficiency");
-            Assert.AreEqual(1 + privateData.EfficiencyGainFromWhite,  highway3.Efficiency, "Highway3 has an incorrect efficiency");
-            Assert.AreEqual(1 + privateData.EfficiencyGainFromBlue,   highway4.Efficiency, "Highway4 has an incorrect efficiency");
-            Assert.AreEqual(1 + privateData.EfficiencyGainFromFood,   highway5.Efficiency, "Highway5 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromResource[ResourceType.Food        ], highway1.Efficiency, "Highway1 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromResource[ResourceType.Textiles    ], highway2.Efficiency, "Highway2 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromResource[ResourceType.ServiceGoods], highway3.Efficiency, "Highway3 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromResource[ResourceType.HiTechGoods ], highway4.Efficiency, "Highway4 has an incorrect efficiency");
+            Assert.AreEqual(1 + privateData.EfficiencyGainFromResource[ResourceType.Food        ], highway5.Efficiency, "Highway5 has an incorrect efficiency");
         }
 
         #endregion

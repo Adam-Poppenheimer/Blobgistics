@@ -107,12 +107,13 @@ namespace Assets.UI.Highways {
             });
 
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                var cachedResourceType = resourceType;
                 var materialForResource = MaterialsForResourceTypes[resourceType];
 
                 var firstEndpointToggle = FirstEndpointTogglesForResourceTypes[resourceType];
                 if(firstEndpointToggle != null) {
                     firstEndpointToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                        RaiseFirstEndpointPermissionChanged(resourceType, newPermission);
+                        RaiseFirstEndpointPermissionChanged(cachedResourceType, newPermission);
                     });
                     var endpointColors = firstEndpointToggle.colors;
                     endpointColors.normalColor = materialForResource != null ? materialForResource.color : Color.white;
@@ -121,7 +122,7 @@ namespace Assets.UI.Highways {
                 var secondEndpointToggle = SecondEndpointTogglesForResourceTypes[resourceType];
                 if(secondEndpointToggle != null) {
                     secondEndpointToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                        RaiseSecondEndpointPermissionChanged(resourceType, newPermission);
+                        RaiseSecondEndpointPermissionChanged(cachedResourceType, newPermission);
                     });
                     var endpointColors = secondEndpointToggle.colors;
                     endpointColors.normalColor = materialForResource != null ? materialForResource.color : Color.white;
@@ -130,7 +131,7 @@ namespace Assets.UI.Highways {
                 var upkeepRequestToggle = UpkeepRequestTogglesForResourceTypes[resourceType];
                 if(upkeepRequestToggle != null) {
                     upkeepRequestToggle.onValueChanged.AddListener(delegate(bool isBeingRequested) {
-                        RaiseResourceRequestedForUpkeep(resourceType, isBeingRequested);
+                        RaiseResourceRequestedForUpkeep(cachedResourceType, isBeingRequested);
                     });
                     var upkeepColors = upkeepRequestToggle.colors;
                     upkeepColors.normalColor = materialForResource != null ? materialForResource.color : Color.white;

@@ -44,14 +44,14 @@ namespace Assets.Map {
             get { return ManagingGraph.GetNeighborsOfNode(this); }
         }
 
-        public override TerrainType CurrentTerrain {
-            get { return _terrainType; }
+        public override TerrainType Terrain {
+            get { return _terrain; }
             set {
-                _terrainType = value;
+                _terrain = value;
                 RefreshAppearance();
             }
         }
-        [SerializeField] private TerrainType _terrainType;
+        [SerializeField] private TerrainType _terrain;
 
         #endregion
 
@@ -140,7 +140,7 @@ namespace Assets.Map {
 
         private void RefreshAppearance() {
             if(TerrainSlateRenderer != null && TerrainMaterialRegistry != null) {
-                TerrainSlateRenderer.sharedMaterial = TerrainMaterialRegistry.GetMaterialForTerrain(CurrentTerrain);
+                TerrainSlateRenderer.sharedMaterial = TerrainMaterialRegistry.GetMaterialForTerrain(Terrain);
             }
         }
 

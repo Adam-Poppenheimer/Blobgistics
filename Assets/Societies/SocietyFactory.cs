@@ -91,7 +91,7 @@ namespace Assets.Societies {
             }else if(startingComplexity == null) {
                 throw new ArgumentNullException("startingComplexity");
             }
-            return !HasSocietyAtLocation(location) && startingComplexity.PermittedTerrains.Contains(location.CurrentTerrain);
+            return !HasSocietyAtLocation(location) && startingComplexity.PermittedTerrains.Contains(location.Terrain);
         }
 
         public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity) {

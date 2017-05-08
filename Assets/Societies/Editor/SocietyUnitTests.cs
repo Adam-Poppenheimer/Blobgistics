@@ -75,8 +75,6 @@ namespace Assets.Societies.Editor {
 
         #region tests
 
-        #region functionality
-
         [Test]
         public void OnPrivateDataInitialized_NewComplexityIsStartingComplexityDefinedInPrivateData() {
             //Setup
@@ -98,7 +96,7 @@ namespace Assets.Societies.Editor {
             //Setup
             var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
             var locationToPlace = BuildMapNode();
-            locationToPlace.CurrentTerrain = TerrainType.Forest;
+            locationToPlace.Terrain = TerrainType.Forest;
 
             var startingComplexity = BuildComplexityDefinition();
             startingComplexity.SetPermittedTerrains(new List<TerrainType>() { TerrainType.Grassland });
@@ -1061,10 +1059,6 @@ namespace Assets.Societies.Editor {
             Assert.AreNotEqual(ascentComplexity, societyToTest.CurrentComplexity);
         }
 
-        #endregion
-
-        #region error handling
-
         [Test]
         public void Factory_OnHasSocietyAtLocationReturnsFalse_AndGetSocietyAtLocationIsCalled_ThrowsSocietyException() {
             //Setup
@@ -1152,8 +1146,6 @@ namespace Assets.Societies.Editor {
                 factoryToTest.DestroySociety(null);
             });
         }
-
-        #endregion
 
         #endregion
 
@@ -1250,7 +1242,7 @@ namespace Assets.Societies.Editor {
             var hostingObject = new GameObject();
             var newLocation = hostingObject.AddComponent<MockMapNode>();
             newLocation.SetBlobSite(BuildBlobSite());
-            newLocation.CurrentTerrain = TerrainType.Grassland;
+            newLocation.Terrain = TerrainType.Grassland;
             return newLocation;
         }
 

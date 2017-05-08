@@ -62,11 +62,6 @@ namespace Assets.BlobDistributors.ForTesting {
             get { return Profile.BlobPullCooldownInSeconds / Efficiency; }
         }
 
-        public override bool IsRequestingFood   { get; set; }
-        public override bool IsRequestingYellow { get; set; }
-        public override bool IsRequestingWhite  { get; set; }
-        public override bool IsRequestingBlue   { get; set; }
-
         #endregion
 
         #endregion
@@ -119,6 +114,14 @@ namespace Assets.BlobDistributors.ForTesting {
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
             
+        }
+
+        public override bool GetUpkeepRequestedForResource(ResourceType type) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetUpkeepRequestedForResource(ResourceType type, bool isBeingRequested) {
+            throw new NotImplementedException();
         }
 
         #endregion

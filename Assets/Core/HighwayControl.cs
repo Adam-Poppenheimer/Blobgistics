@@ -109,12 +109,7 @@ namespace Assets.Core {
         public override void SetHighwayUpkeepRequest(int highwayID, ResourceType resourceToChange, bool isBeingRequested) {
             var highwayToChange = HighwayFactory.GetHighwayOfID(highwayID);
             if(highwayToChange != null) {
-                switch(resourceToChange) {
-                    case ResourceType.Food:   highwayToChange.IsRequestingFood   = isBeingRequested; break;
-                    case ResourceType.Textiles: highwayToChange.IsRequestingYellow = isBeingRequested; break;
-                    case ResourceType.ServiceGoods:  highwayToChange.IsRequestingWhite  = isBeingRequested; break;
-                    case ResourceType.HiTechGoods:   highwayToChange.IsRequestingBlue   = isBeingRequested; break;
-                }
+                highwayToChange.SetUpkeepRequestedForResource(resourceToChange, isBeingRequested);
             }else {
                 Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
             }

@@ -123,28 +123,13 @@ namespace Assets.HighwayManager {
             foreach(var highway in highwaysBeingManaged) {
                 highway.Efficiency = 1f;
 
-                if(highway.IsRequestingFood && blobSite.CanExtractBlobOfType(ResourceType.Food)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Food));
-                    ++lastCalculatedUpkeep[ResourceType.Food];
-                    highway.Efficiency += PrivateData.EfficiencyGainFromFood;
-                }
-
-                if(highway.IsRequestingYellow && blobSite.CanExtractBlobOfType(ResourceType.Textiles)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Textiles));
-                    ++lastCalculatedUpkeep[ResourceType.Textiles];
-                    highway.Efficiency += PrivateData.EfficiencyGainFromYellow;
-                }
-
-                if(highway.IsRequestingWhite && blobSite.CanExtractBlobOfType(ResourceType.ServiceGoods)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.ServiceGoods));
-                    ++lastCalculatedUpkeep[ResourceType.ServiceGoods];
-                    highway.Efficiency += PrivateData.EfficiencyGainFromWhite;
-                }
-
-                if(highway.IsRequestingBlue && blobSite.CanExtractBlobOfType(ResourceType.HiTechGoods)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.HiTechGoods));
-                    ++lastCalculatedUpkeep[ResourceType.HiTechGoods];
-                    highway.Efficiency += PrivateData.EfficiencyGainFromBlue;
+                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                    if(highway.GetUpkeepRequestedForResource(resourceType) && blobSite.CanExtractBlobOfType(resourceType)) {
+                        var blobToDestroy = blobSite.ExtractBlobOfType(resourceType);
+                        PrivateData.BlobFactory.DestroyBlob(blobToDestroy);
+                        ++lastCalculatedUpkeep[resourceType];
+                        highway.Efficiency += PrivateData.EfficiencyGainFromResource[resourceType];
+                    }
                 }
             }
 
@@ -155,10 +140,11 @@ namespace Assets.HighwayManager {
             var blobSite = Location.BlobSite;
 
             foreach(var highway in highwaysBeingManaged) {
-                if(highway.IsRequestingFood)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.Food,   true); }
-                if(highway.IsRequestingYellow) { blobSite.SetExtractionPermissionForResourceType(ResourceType.Textiles, true); }
-                if(highway.IsRequestingWhite)  { blobSite.SetExtractionPermissionForResourceType(ResourceType.ServiceGoods,  true); }
-                if(highway.IsRequestingBlue)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.HiTechGoods,   true); }
+                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                    if(highway.GetUpkeepRequestedForResource(resourceType)) {
+                        blobSite.SetExtractionPermissionForResourceType(resourceType, true);
+                    }
+                }
             }
         }
 
@@ -170,10 +156,11 @@ namespace Assets.HighwayManager {
             }
 
             foreach(var highway in highwaysBeingManaged) {
-                if(highway.IsRequestingFood  ) { ++newCapacityDict[ResourceType.Food  ]; }
-                if(highway.IsRequestingYellow) { ++newCapacityDict[ResourceType.Textiles]; }
-                if(highway.IsRequestingWhite ) { ++newCapacityDict[ResourceType.ServiceGoods ]; }
-                if(highway.IsRequestingBlue  ) { ++newCapacityDict[ResourceType.HiTechGoods  ]; }
+                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                    if(highway.GetUpkeepRequestedForResource(resourceType)) {
+                        ++newCapacityDict[resourceType];
+                    }
+                }
             }
 
             int totalCapacity = 0;

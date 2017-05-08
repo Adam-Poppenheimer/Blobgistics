@@ -51,15 +51,15 @@ namespace Assets.Core.Editor {
             controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.HiTechGoods,   true);
 
             //Validation
-            Assert.That   (highway1.IsRequestingFood,   "Highway1 is not requesting food");
-            Assert.That   (highway1.IsRequestingYellow, "Highway1 is not requesting yellow");
-            Assert.IsFalse(highway1.IsRequestingWhite,  "Highway1 is falsely requesting white");
-            Assert.IsFalse(highway1.IsRequestingBlue,   "Highway1 is falsely requesting blue");
+            Assert.That   (highway1.GetUpkeepRequestedForResource(ResourceType.Food        ), "Highway1 is not requesting food"            );
+            Assert.That   (highway1.GetUpkeepRequestedForResource(ResourceType.Textiles    ), "Highway1 is not requesting Textiles"        );
+            Assert.IsFalse(highway1.GetUpkeepRequestedForResource(ResourceType.ServiceGoods), "Highway1 is falsely requesting ServiceGoods");
+            Assert.IsFalse(highway1.GetUpkeepRequestedForResource(ResourceType.HiTechGoods ), "Highway1 is falsely requesting HiTechGoods" );
 
-            Assert.IsFalse(highway2.IsRequestingFood,   "Highway2 is falsely requesting food");
-            Assert.IsFalse(highway2.IsRequestingYellow, "Highway2 is falsely requesting yellow");
-            Assert.That   (highway2.IsRequestingWhite,  "Highway2 is not requesting white");
-            Assert.That   (highway2.IsRequestingBlue,   "Highway2 is not requesting blue");
+            Assert.IsFalse(highway2.GetUpkeepRequestedForResource(ResourceType.Food        ), "Highway2 is falsely requesting food"    );
+            Assert.IsFalse(highway2.GetUpkeepRequestedForResource(ResourceType.Textiles    ), "Highway2 is falsely requesting Textiles");
+            Assert.That   (highway2.GetUpkeepRequestedForResource(ResourceType.ServiceGoods), "Highway2 is not requesting ServiceGoods");
+            Assert.That   (highway2.GetUpkeepRequestedForResource(ResourceType.HiTechGoods ), "Highway2 is not requesting HiTechGoods" );
         }
 
         [Test]

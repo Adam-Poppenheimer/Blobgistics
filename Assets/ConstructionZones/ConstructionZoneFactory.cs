@@ -75,7 +75,7 @@ namespace Assets.ConstructionZones {
             }else if(HasConstructionZoneAtLocation(location)) {
                 return false;
             }else {
-                return true;
+                return project.IsValidAtLocation(location);
             }
         }
 

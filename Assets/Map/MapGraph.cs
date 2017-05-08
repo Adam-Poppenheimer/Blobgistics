@@ -111,7 +111,7 @@ namespace Assets.Map {
             newNode.UIControl = UIControl;
 
             newNode.TerrainMaterialRegistry = TerrainMaterialRegistry;
-            newNode.CurrentTerrain = startingTerrain;
+            newNode.Terrain = startingTerrain;
 
             SubscribeNode(newNode);
             return newNode;

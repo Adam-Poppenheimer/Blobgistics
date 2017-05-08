@@ -15,6 +15,8 @@ namespace Assets.ConstructionZones {
 
         #region instance methods
 
+        public abstract bool IsValidAtLocation(MapNodeBase location);
+
         public abstract void ExecuteBuild(MapNodeBase location);
         public abstract void SetSiteForProject(BlobSiteBase site);
         public abstract bool BlobSiteContainsNecessaryResources(BlobSiteBase site);

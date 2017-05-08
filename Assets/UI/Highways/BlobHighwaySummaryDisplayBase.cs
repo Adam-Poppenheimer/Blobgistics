@@ -43,12 +43,6 @@ namespace Assets.UI.Highways {
             RaiseEvent(ResourceRequestedForUpkeep, new UpkeepRequestEventArgs(type, isBeingRequested));
         }
 
-        protected void RaiseEvent<T>(EventHandler<T> handler, T e) where T : EventArgs{
-            if(handler != null) {
-                handler(this, e);
-            }
-        }
-
         #endregion
 
     }

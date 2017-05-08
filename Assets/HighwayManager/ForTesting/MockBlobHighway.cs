@@ -66,12 +66,10 @@ namespace Assets.HighwayManager.ForTesting {
 
         public override float Efficiency { get; set; }
 
-        public override bool IsRequestingFood   { get; set; }
-        public override bool IsRequestingYellow { get; set; }
-        public override bool IsRequestingWhite  { get; set; }
-        public override bool IsRequestingBlue   { get; set; }
-
         #endregion
+
+        private Dictionary<ResourceType, bool> UpkeepRequestedForResource =
+            new Dictionary<ResourceType, bool>();
 
         #endregion
 
@@ -113,6 +111,16 @@ namespace Assets.HighwayManager.ForTesting {
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
             throw new NotImplementedException();
+        }
+
+        public override bool GetUpkeepRequestedForResource(ResourceType type) {
+            bool retval;
+            UpkeepRequestedForResource.TryGetValue(type, out retval);
+            return retval;
+        }
+
+        public override void SetUpkeepRequestedForResource(ResourceType type, bool isBeingRequested) {
+            UpkeepRequestedForResource[type] = isBeingRequested;
         }
 
         #endregion

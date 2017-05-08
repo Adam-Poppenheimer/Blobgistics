@@ -48,9 +48,7 @@ namespace Assets.Societies.ForTesting {
         private MapNodeBase _location;
 
         public override UIControlBase UIControl {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return null; }
         }
 
         public override SocietyFactoryBase ParentFactory {

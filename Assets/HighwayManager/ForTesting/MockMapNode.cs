@@ -40,7 +40,7 @@ namespace Assets.HighwayManager.ForTesting {
             get { return managingGraph.GetNeighborsOfNode(this); }
         }
 
-        public override TerrainType CurrentTerrain {
+        public override TerrainType Terrain {
             get {
                 throw new NotImplementedException();
             }

@@ -39,7 +39,7 @@ namespace Assets.ResourceDepots.ForTesting {
             }
         }
 
-        public override TerrainType CurrentTerrain {
+        public override TerrainType Terrain {
             get {
                 throw new NotImplementedException();
             }

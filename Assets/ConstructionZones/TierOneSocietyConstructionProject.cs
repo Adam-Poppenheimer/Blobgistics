@@ -12,12 +12,9 @@ using Assets.BlobSites;
 
 namespace Assets.ConstructionZones {
 
-    public class TierOneSocietyConstructionProject : ConstructionProjectBase {
+    public class TierOneSocietyConstructionProject : FlexibleCostConstructionProjectBase {
 
         #region instance fields and properties
-
-        [SerializeField] private int NumberOfResourcesRequired;
-        [SerializeField] private List<ResourceType> ResourceTypesAccepted = new List<ResourceType>();
 
         [SerializeField] private SocietyFactoryBase SocietyFactory;
         [SerializeField] private ComplexityDefinitionBase ComplexityToBuild;
@@ -29,39 +26,14 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionProjectBase
 
+        public override bool IsValidAtLocation(MapNodeBase location) {
+            return ComplexityToBuild.PermittedTerrains.Contains(location.Terrain);
+        }
+
         public override void ExecuteBuild(MapNodeBase location) {
             if(SocietyFactory.CanConstructSocietyAt(location, LadderOfComplexity, ComplexityToBuild)) {
                 SocietyFactory.ConstructSocietyAt(location, LadderOfComplexity, ComplexityToBuild);
             }
-        }
-
-        public override void SetSiteForProject(BlobSiteBase site) {
-            site.ClearContents();
-            site.ClearPermissionsAndCapacity();
-            foreach(var resourceType in ResourceTypesAccepted) {
-                site.SetPlacementPermissionForResourceType(resourceType, true);
-                site.SetCapacityForResourceType(resourceType, NumberOfResourcesRequired);
-            }
-            site.TotalCapacity = NumberOfResourcesRequired;
-        }
-
-        public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
-            return site.Contents.Count >= NumberOfResourcesRequired;
-        }
-
-        public override string GetCostSummaryString() {
-            var resourceCandidateString = "";
-            foreach(var resourceType in ResourceTypesAccepted) {
-                if(ResourceTypesAccepted.Last() == resourceType) {
-                    resourceCandidateString += ", or " + resourceType;
-                }else if(ResourceTypesAccepted.First() == resourceType) {
-                    resourceCandidateString += resourceType;
-                }else {
-                    resourceCandidateString += ", " + resourceType;
-                }
-            }
-
-            return string.Format("{0} of some combination of {1}", NumberOfResourcesRequired, resourceCandidateString);
         }
 
         #endregion

@@ -73,11 +73,6 @@ namespace Assets.Highways {
             get { return Profile.BlobPullCooldownInSeconds / Efficiency; }
         }
 
-        public override bool IsRequestingFood   { get; set; }
-        public override bool IsRequestingYellow { get; set; }
-        public override bool IsRequestingWhite  { get; set; }
-        public override bool IsRequestingBlue   { get; set; }
-
         #endregion
 
         public BlobHighwayPrivateDataBase PrivateData {
@@ -94,8 +89,10 @@ namespace Assets.Highways {
                 }
             }
         }
-
         [SerializeField, HideInInspector] private BlobHighwayPrivateDataBase _privateData;
+
+        private Dictionary<ResourceType, bool> UpkeepRequestedForResource =
+            new Dictionary<ResourceType, bool>();
 
         #endregion
 
@@ -240,6 +237,16 @@ namespace Assets.Highways {
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
             PrivateData.TubePullingFromSecondEndpoint.SetPermissionForResourceType(type, isPermitted);
+        }
+
+        public override bool GetUpkeepRequestedForResource(ResourceType type) {
+            bool retval;
+            UpkeepRequestedForResource.TryGetValue(type, out retval);
+            return retval;
+        }
+
+        public override void SetUpkeepRequestedForResource(ResourceType type, bool isBeingRequested) {
+            UpkeepRequestedForResource[type] = isBeingRequested;
         }
 
         public override void Clear() {

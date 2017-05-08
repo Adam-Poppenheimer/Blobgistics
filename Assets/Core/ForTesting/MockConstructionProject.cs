@@ -14,6 +14,10 @@ namespace Assets.Core.ForTesting {
 
         #region from ConstructionProjectBase
 
+        public override bool IsValidAtLocation(MapNodeBase location) {
+            throw new NotImplementedException();
+        }
+
         public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
             throw new NotImplementedException();
         }

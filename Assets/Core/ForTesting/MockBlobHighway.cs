@@ -44,14 +44,6 @@ namespace Assets.Core.ForTesting {
             get { return GetInstanceID(); }
         }
 
-        public override bool IsRequestingBlue { get; set; }
-
-        public override bool IsRequestingFood { get; set; }
-
-        public override bool IsRequestingWhite { get; set; }
-
-        public override bool IsRequestingYellow { get; set; }
-
         public override int Priority { get; set; }
 
         public override BlobHighwayProfileBase Profile {
@@ -119,10 +111,18 @@ namespace Assets.Core.ForTesting {
             SecondEndpointPermissions[type] = isPermitted;
         }
 
+        public override bool GetUpkeepRequestedForResource(ResourceType type) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetUpkeepRequestedForResource(ResourceType type, bool isBeingRequested) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

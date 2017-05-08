@@ -285,7 +285,7 @@ namespace Assets.Societies {
 
         private ComplexityDefinitionBase GetBestAscentCandidate() {
             foreach(var complexity in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
-                if( complexity.PermittedTerrains.Contains(Location.CurrentTerrain) &&
+                if( complexity.PermittedTerrains.Contains(Location.Terrain) &&
                     complexity.CostToAscendInto.IsContainedWithinBlobSite(PrivateData.Location.BlobSite)
                 ){
                     return complexity;
@@ -296,7 +296,7 @@ namespace Assets.Societies {
 
         private ComplexityDefinitionBase GetBestDescentCandidate() {
             foreach(var complexity in ActiveComplexityLadder.GetDescentTransitions(CurrentComplexity)) {
-                if(complexity.PermittedTerrains.Contains(PrivateData.Location.CurrentTerrain)) {
+                if(complexity.PermittedTerrains.Contains(PrivateData.Location.Terrain)) {
                     return complexity;
                 }
             }
@@ -356,11 +356,13 @@ namespace Assets.Societies {
 
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
 
-                if(AscensionIsPermitted && DoesSomeAscensionRequireResource(resourceType)) {
+                ProductionProfile.SetPlacementPermission(resourceType, true);
+                ProductionProfile.SetExtractionPermission(resourceType, true);
+                ConsumptionProfile.SetExtractionPermission(resourceType, true);
+
+                if(AscensionIsPermitted && DoesSomeValidAscensionRequireResource(resourceType)) {
                     DefaultProfile.SetPlacementPermission(resourceType, true);
                     DefaultProfile.SetExtractionPermission(resourceType, false);
-
-                    ProductionProfile.SetPlacementPermission(resourceType, true);
 
                     int capacityForResource = GetGreatestAscensionStockpileOfResource(resourceType);
 
@@ -373,10 +375,6 @@ namespace Assets.Societies {
                     DefaultProfile.SetPlacementPermission(resourceType, true);
                     DefaultProfile.SetExtractionPermission(resourceType, false);
 
-                    ConsumptionProfile.SetExtractionPermission(resourceType, true);
-                    ProductionProfile.SetExtractionPermission(resourceType, true);
-                    ProductionProfile.SetPlacementPermission(resourceType, true);
-
                     int capacityForResource = GetGreatestNeedOrWantStockpileOfResource(resourceType);
 
                     DefaultProfile.SetCapacity(resourceType, capacityForResource);
@@ -387,8 +385,6 @@ namespace Assets.Societies {
                 }else if(CurrentComplexity.Production[resourceType] > 0) {
                     DefaultProfile.SetPlacementPermission(resourceType, false);
                     DefaultProfile.SetExtractionPermission(resourceType, true);
-
-                    ProductionProfile.SetPlacementPermission(resourceType, true);
 
                     int capacityForResource = CurrentComplexity.Production[resourceType] * (int)CurrentComplexity.ProductionCapacityCoefficient;
 
@@ -404,9 +400,9 @@ namespace Assets.Societies {
             DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
         }
 
-        private bool DoesSomeAscensionRequireResource(ResourceType resourceType) {
+        private bool DoesSomeValidAscensionRequireResource(ResourceType resourceType) {
             foreach(var ascension in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
-                if(ascension.CostToAscendInto[resourceType] > 0) {
+                if(ascension.PermittedTerrains.Contains(Location.Terrain) && ascension.CostToAscendInto[resourceType] > 0) {
                     return true;
                 }
             }
@@ -417,7 +413,9 @@ namespace Assets.Societies {
             int retval = 0;
 
             foreach(var ascension in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
-                retval = Math.Max(retval, ascension.CostToAscendInto[resourceType]);
+                if(ascension.PermittedTerrains.Contains(Location.Terrain)) {
+                    retval = Math.Max(retval, ascension.CostToAscendInto[resourceType]);
+                }
             }
 
             return retval;

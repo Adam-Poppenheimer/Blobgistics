@@ -34,8 +34,9 @@ namespace Assets.UI.ConstructionZones {
         private void Awake() {
             foreach(var projectButton in ConstructionProjectButtons) {
                 if(projectButton != null) {
+                    var cachedButtonName = projectButton.name;
                     projectButton.onClick.AddListener(delegate() {
-                        RaiseConstructionRequested(projectButton.name);
+                        RaiseConstructionRequested(cachedButtonName);
                     });
                 }
             }

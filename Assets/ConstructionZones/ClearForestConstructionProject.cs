@@ -8,17 +8,14 @@ using UnityEngine;
 using Assets.Blobs;
 using Assets.BlobSites;
 using Assets.Map;
-using Assets.HighwayManager;
 
 namespace Assets.ConstructionZones {
 
-    public class HighwayManagerConstructionProject : ConstructionProjectBase {
+    public class ClearForestConstructionProject : ConstructionProjectBase {
 
         #region instance fields and properties
 
         [SerializeField] private IntResourceSummary Cost;
-
-        [SerializeField] private HighwayManagerFactoryBase HighwayManagerFactory;
 
         #endregion
 
@@ -27,7 +24,7 @@ namespace Assets.ConstructionZones {
         #region from ConstructionProjectBase
 
         public override bool IsValidAtLocation(MapNodeBase location) {
-            return location.Terrain != TerrainType.Mountains;
+            return location.Terrain == TerrainType.Forest;
         }
 
         public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
@@ -35,9 +32,7 @@ namespace Assets.ConstructionZones {
         }
 
         public override void ExecuteBuild(MapNodeBase location) {
-            if(HighwayManagerFactory.CanConstructHighwayManagerAtLocation(location)) {
-                HighwayManagerFactory.ConstructHighwayManagerAtLocation(location);
-            }
+            location.Terrain = TerrainType.Grassland;
         }
 
         public override void SetSiteForProject(BlobSiteBase site) {

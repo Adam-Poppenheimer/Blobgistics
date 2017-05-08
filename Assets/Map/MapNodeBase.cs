@@ -21,7 +21,7 @@ namespace Assets.Map {
 
         public abstract IEnumerable<MapNodeBase> Neighbors { get; }
 
-        public abstract TerrainType CurrentTerrain { get; set; }
+        public abstract TerrainType Terrain { get; set; }
 
         #endregion
 
