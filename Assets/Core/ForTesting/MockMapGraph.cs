@@ -100,6 +100,10 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override bool UnsubscribeDirectedEdge(MapEdgeBase edge) {
+            throw new NotImplementedException();
+        }
+
         public override void SubscribeNode(MapNodeBase node) {
             throw new NotImplementedException();
         }

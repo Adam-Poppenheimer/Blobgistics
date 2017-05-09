@@ -14,6 +14,7 @@ using Assets.Highways;
 
 namespace Assets.Map {
 
+    [ExecuteInEditMode]
     public class MapGraph : MapGraphBase {
 
         #region instance fields and properties
@@ -153,6 +154,7 @@ namespace Assets.Map {
             newEdge.SetFirstNode(first);
             newEdge.SetSecondNode(second);
             newEdge.SetBlobSite(BlobSiteFactory.ConstructBlobSite(outerHost.gameObject));
+            newEdge.SetParentGraph(this);
             outerHost.gameObject.name = string.Format("Edge [{0}]", newEdge.ID);
             newEdge.gameObject.name = string.Format("Edge [{0}]", newEdge.ID);
 
@@ -177,17 +179,22 @@ namespace Assets.Map {
         }
 
         public override bool RemoveUndirectedEdge(MapEdgeBase edge) {
+            var retval = UnsubscribeDirectedEdge(edge);
+            if(Application.isPlaying) {
+                Destroy(edge.transform.parent.gameObject);
+            }else {
+                DestroyImmediate(edge.transform.parent.gameObject);
+            }
+            return retval;
+        }
+
+        public override bool UnsubscribeDirectedEdge(MapEdgeBase edge) {
             var retval = EdgeSet.Remove(edge);
             if(NeighborsOfNode.ContainsKey(edge.FirstNode)) {
                 NeighborsOfNode[edge.FirstNode ].Remove(edge.SecondNode);
             }
             if(NeighborsOfNode.ContainsKey(edge.SecondNode)) {
                 NeighborsOfNode[edge.SecondNode].Remove(edge.FirstNode );
-            }
-            if(Application.isPlaying) {
-                Destroy(edge.transform.parent.gameObject);
-            }else {
-                DestroyImmediate(edge.transform.parent.gameObject);
             }
             return retval;
         }
@@ -205,7 +212,7 @@ namespace Assets.Map {
                     RemoveUndirectedEdge(edge);
                 }
             }
-            
+
             return existedInGraph;
         }
 

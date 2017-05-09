@@ -27,6 +27,8 @@ namespace Assets.Map {
         public abstract bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second);
         public abstract bool RemoveUndirectedEdge(MapEdgeBase edge);
 
+        public abstract bool UnsubscribeDirectedEdge(MapEdgeBase edge);
+
         public abstract bool RemoveNode(MapNodeBase nodeToRemove);
 
         public abstract MapNodeBase GetNodeOfID(int id);

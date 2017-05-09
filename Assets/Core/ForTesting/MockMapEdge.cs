@@ -33,6 +33,12 @@ namespace Assets.Core.ForTesting {
         }
         public MapNodeBase secondNode;
 
+        public override MapGraphBase ParentGraph {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

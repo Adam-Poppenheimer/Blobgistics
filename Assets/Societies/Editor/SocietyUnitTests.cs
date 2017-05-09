@@ -370,6 +370,7 @@ namespace Assets.Societies.Editor {
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Wood, 10)
             ));
+            ascentComplexity.SetPermittedTerrains(new List<TerrainType>() { TerrainType.Grassland });
 
             var complexityLadder = BuildComplexityLadder(0, startingComplexity, ascentComplexity);
             var privateData = BuildPrivateData(complexityLadder, StandardBlobFactory, BuildMapNode(),
@@ -689,6 +690,9 @@ namespace Assets.Societies.Editor {
             var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Execution
+            societyToTest.Location.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            societyToTest.Location.BlobSite.SetCapacityForResourceType(ResourceType.Food, 10);
+            societyToTest.Location.BlobSite.TotalCapacity += 1;
             societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
             societyToTest.TickConsumption(1f);
             
@@ -1051,6 +1055,9 @@ namespace Assets.Societies.Editor {
             var societyToTest = BuildSociety(privateData, currentComplexity);
 
             //Execution
+            societyToTest.Location.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
+            societyToTest.Location.BlobSite.SetCapacityForResourceType(ResourceType.Food, 10);
+            societyToTest.Location.BlobSite.TotalCapacity += 10;
             societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
             societyToTest.AscensionIsPermitted = false;
             societyToTest.TickConsumption(100f);
@@ -1190,8 +1197,11 @@ namespace Assets.Societies.Editor {
         private Society BuildSociety(SocietyPrivateDataBase privateData, ComplexityDefinitionBase startingComplexity) {
             var hostingObject = new GameObject();
             var newSociety = hostingObject.AddComponent<Society>();
+
             newSociety.PrivateData = privateData;
             newSociety.SetCurrentComplexity(startingComplexity);
+            newSociety.AscensionIsPermitted = true;
+
             return newSociety;
         }
 

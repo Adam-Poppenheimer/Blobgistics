@@ -72,7 +72,7 @@ namespace Assets.Societies {
                 RefreshBlobSitePermissionsAndCapacities();
             }
         }
-        private bool _ascensionIsPermitted = true;
+        private bool _ascensionIsPermitted = false;
 
         public override MapNodeBase Location {
             get { return PrivateData.Location; }

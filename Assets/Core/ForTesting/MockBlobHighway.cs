@@ -65,6 +65,9 @@ namespace Assets.Core.ForTesting {
         private Dictionary<ResourceType, bool> SecondEndpointPermissions =
             new Dictionary<ResourceType, bool>();
 
+        private Dictionary<ResourceType, bool> UpkeepsRequested =
+            new Dictionary<ResourceType, bool>();
+
         #endregion
 
         #region instance methods
@@ -112,11 +115,13 @@ namespace Assets.Core.ForTesting {
         }
 
         public override bool GetUpkeepRequestedForResource(ResourceType type) {
-            throw new NotImplementedException();
+            bool retval;
+            UpkeepsRequested.TryGetValue(type, out retval);
+            return retval;
         }
 
         public override void SetUpkeepRequestedForResource(ResourceType type, bool isBeingRequested) {
-            throw new NotImplementedException();
+            UpkeepsRequested[type] = isBeingRequested;
         }
 
         #endregion

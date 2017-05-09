@@ -92,6 +92,10 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override bool UnsubscribeDirectedEdge(MapEdgeBase edge) {
+            throw new NotImplementedException();
+        }
+
         public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
             throw new NotImplementedException();
         }

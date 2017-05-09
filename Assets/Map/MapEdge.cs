@@ -12,6 +12,7 @@ using Assets.Core;
 namespace Assets.Map {
 
     [Serializable]
+    [ExecuteInEditMode]
     public class MapEdge : MapEdgeBase {
 
         #region instance fields and properties
@@ -45,6 +46,28 @@ namespace Assets.Map {
             _blobSite = value;
         }
         [SerializeField] private BlobSiteBase _blobSite;
+
+        public override MapGraphBase ParentGraph {
+            get { return _parentGraph; }
+        }
+        public void SetParentGraph(MapGraphBase value) {
+            _parentGraph = value;
+        }
+        [SerializeField] private MapGraphBase _parentGraph;
+
+        #endregion
+
+        #endregion
+
+        #region instance methods
+
+        #region Unity event methods
+
+        private void OnDestroy() {
+            if(ParentGraph != null) {
+                ParentGraph.UnsubscribeDirectedEdge(this);
+            }
+        }
 
         #endregion
 

@@ -131,7 +131,7 @@ namespace Assets.Societies {
             newSociety.SetCurrentComplexity(startingComplexity);
             newSociety.transform.SetParent(location.transform, false);
             newSociety.name = "Society at " + location.name;
-            newSociety.AscensionIsPermitted = true;
+            newSociety.AscensionIsPermitted = false;
 
             InstantiatedSocieties.Add(newSociety);
             return newSociety;

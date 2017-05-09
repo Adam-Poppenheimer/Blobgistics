@@ -28,7 +28,7 @@ namespace Assets.ConstructionZones.ForTesting {
         #region from ConstructionProjectBase
 
         public override bool IsValidAtLocation(MapNodeBase location) {
-            throw new NotImplementedException();
+            return true;
         }
 
         public override void ExecuteBuild(MapNodeBase location) {
