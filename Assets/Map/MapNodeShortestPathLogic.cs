@@ -96,10 +96,49 @@ namespace Assets.Map {
             return path;
         }
 
-        #endregion
+        public override NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin, Predicate<MapNodeBase> condition, int maxDistance) {
+            
+            var closestFromFirstEndpoint = GetNearestNodeWhere(edgeOfOrigin.FirstNode, condition, maxDistance);
+            var closestFromSecondEndpoint = GetNearestNodeWhere(edgeOfOrigin.SecondNode, condition, maxDistance);
+
+            if(closestFromFirstEndpoint == null && closestFromSecondEndpoint == null) {
+                return null;
+            }else if(closestFromFirstEndpoint == null) {
+                return closestFromSecondEndpoint;
+            }else if(closestFromSecondEndpoint == null || closestFromFirstEndpoint.Distance <= closestFromSecondEndpoint.Distance) {
+                return closestFromFirstEndpoint;
+            }else {
+                return closestFromSecondEndpoint;
+            }
+        }
 
         #endregion
-        
+
+        private NodeDistanceSummary GetNearestNodeWhere(MapNodeBase rootNode, Predicate<MapNodeBase> condition, int maxDistance) {
+            var distanceSummariesToConsider = new Queue<NodeDistanceSummary>();
+            var nodesAlreadyConsidered = new HashSet<MapNodeBase>();
+
+            nodesAlreadyConsidered.Add(rootNode);
+            distanceSummariesToConsider.Enqueue(new NodeDistanceSummary(rootNode, 0));
+
+            while(distanceSummariesToConsider.Count > 0) {
+                var currentSummary = distanceSummariesToConsider.Dequeue();
+                if(condition(currentSummary.Node) && currentSummary.Distance <= maxDistance) {
+                    return currentSummary;
+                }
+                foreach(var neighbor in currentSummary.Node.Neighbors) {
+                    if(!nodesAlreadyConsidered.Contains(neighbor)) {
+                        nodesAlreadyConsidered.Add(neighbor);
+                        distanceSummariesToConsider.Enqueue(new NodeDistanceSummary(neighbor, currentSummary.Distance + 1));
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
     }
 
 }

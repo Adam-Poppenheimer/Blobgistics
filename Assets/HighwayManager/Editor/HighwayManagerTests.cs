@@ -31,6 +31,7 @@ namespace Assets.HighwayManager.Editor {
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -60,6 +61,7 @@ namespace Assets.HighwayManager.Editor {
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -85,6 +87,7 @@ namespace Assets.HighwayManager.Editor {
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -110,6 +113,7 @@ namespace Assets.HighwayManager.Editor {
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -137,6 +141,8 @@ namespace Assets.HighwayManager.Editor {
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
+
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -165,6 +171,7 @@ namespace Assets.HighwayManager.Editor {
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -205,15 +212,18 @@ namespace Assets.HighwayManager.Editor {
             mapGraph.AddUndirectedEdge(node3, node4);
             mapGraph.AddUndirectedEdge(node4, node5);
 
-            var highwayBetween1And2 = BuildMockBlobHighway(node1, node2);
-            var highwayBetween2And3 = BuildMockBlobHighway(node2, node3);
-            var highwayBetween3And4 = BuildMockBlobHighway(node3, node4);
-            var highwayBetween4And5 = BuildMockBlobHighway(node4, node5);
+            var highwayFactory = BuildMockHighwayFactory();
+
+            var highwayBetween1And2 = highwayFactory.ConstructHighwayBetween(node1, node2);
+            var highwayBetween2And3 = highwayFactory.ConstructHighwayBetween(node2, node3);
+            var highwayBetween3And4 = highwayFactory.ConstructHighwayBetween(node3, node4);
+            var highwayBetween4And5 = highwayFactory.ConstructHighwayBetween(node4, node5);
 
             var privateData = BuildManagerPrivateData();
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var managerFactory = BuildHighwayManagerFactory(privateData);
+            managerFactory.HighwayFactory = highwayFactory;
             managerFactory.ManagementRadius = 2;
             managerFactory.MapGraph = mapGraph;
 
@@ -241,118 +251,7 @@ namespace Assets.HighwayManager.Editor {
         }
 
         [Test]
-        public void Factory_SubscribeHighwayIsCalled_GetHighwaysServedByManagerReflectsNewlySubscribedHighway() {
-            //Setup
-            var mapGraph = BuildMockMapGraph();
-            var node1 = mapGraph.BuildNode(Vector3.zero);
-            var node2 = mapGraph.BuildNode(Vector3.right * 4);
-            var node3 = mapGraph.BuildNode(Vector3.right * 8);
-            var node4 = mapGraph.BuildNode(Vector3.right * 12);
-            var node5 = mapGraph.BuildNode(Vector3.right * 16);
-            
-            node1.name = "Node1";
-            node2.name = "Node2";
-            node3.name = "Node3";
-            node4.name = "Node4";
-            node5.name = "Node5";
-
-            mapGraph.AddUndirectedEdge(node1, node2);
-            mapGraph.AddUndirectedEdge(node2, node3);
-            mapGraph.AddUndirectedEdge(node3, node4);
-            mapGraph.AddUndirectedEdge(node4, node5);
-
-            var highwayBetween1And2 = BuildMockBlobHighway(node1, node2);
-            var highwayBetween2And3 = BuildMockBlobHighway(node2, node3);
-            var highwayBetween3And4 = BuildMockBlobHighway(node3, node4);
-            var highwayBetween4And5 = BuildMockBlobHighway(node4, node5);
-
-            var privateData = BuildManagerPrivateData();
-            privateData.SetBlobFactory(BuildMockBlobFactory());
-
-            var managerFactory = BuildHighwayManagerFactory(privateData);
-            managerFactory.ManagementRadius = 2;
-            managerFactory.MapGraph = mapGraph;
-
-            var managerAtNodeOne = managerFactory.ConstructHighwayManagerAtLocation(node1);
-            var managerAtNodeTwo = managerFactory.ConstructHighwayManagerAtLocation(node5);
-
-            //Execution
-            managerFactory.SubscribeHighway(highwayBetween1And2);
-            managerFactory.SubscribeHighway(highwayBetween2And3);
-            managerFactory.SubscribeHighway(highwayBetween3And4);
-            managerFactory.SubscribeHighway(highwayBetween4And5);
-
-            var highwaysForManagerOne = managerFactory.GetHighwaysServedByManager(managerAtNodeOne);
-            var highwaysForManagerTwo = managerFactory.GetHighwaysServedByManager(managerAtNodeTwo);
-
-            //Validation
-            Assert.AreEqual(2, highwaysForManagerOne.Count(), "ManagerOne is managing the wrong number of highways");
-            Assert.That(highwaysForManagerOne.Contains(highwayBetween1And2), "ManagerOne is not managing highway between node1 and node2");
-            Assert.That(highwaysForManagerOne.Contains(highwayBetween2And3), "ManagerOne is not managing highway between node2 and node3");
-
-            Assert.AreEqual(2, highwaysForManagerTwo.Count(), "ManagerTwo is managing the wrong number of highways");
-            Assert.That(highwaysForManagerTwo.Contains(highwayBetween3And4), "ManagerTwo is not managing highway between node3 and node4");
-            Assert.That(highwaysForManagerTwo.Contains(highwayBetween4And5), "ManagerTwo is not managing highway between node4 and node5");
-        }
-
-        [Test]
-        public void Factory_UnsubscribeHighwayIsCalled_GetHighwaysServedByManagerReflectsNewlyUnsubscribedHighway() {
-            //Setup
-            var mapGraph = BuildMockMapGraph();
-            var node1 = mapGraph.BuildNode(Vector3.zero);
-            var node2 = mapGraph.BuildNode(Vector3.right * 4);
-            var node3 = mapGraph.BuildNode(Vector3.right * 8);
-            var node4 = mapGraph.BuildNode(Vector3.right * 12);
-            var node5 = mapGraph.BuildNode(Vector3.right * 16);
-            
-            node1.name = "Node1";
-            node2.name = "Node2";
-            node3.name = "Node3";
-            node4.name = "Node4";
-            node5.name = "Node5";
-
-            mapGraph.AddUndirectedEdge(node1, node2);
-            mapGraph.AddUndirectedEdge(node2, node3);
-            mapGraph.AddUndirectedEdge(node3, node4);
-            mapGraph.AddUndirectedEdge(node4, node5);
-
-            var highwayBetween1And2 = BuildMockBlobHighway(node1, node2);
-            var highwayBetween2And3 = BuildMockBlobHighway(node2, node3);
-            var highwayBetween3And4 = BuildMockBlobHighway(node3, node4);
-            var highwayBetween4And5 = BuildMockBlobHighway(node4, node5);
-
-            var privateData = BuildManagerPrivateData();
-            privateData.SetBlobFactory(BuildMockBlobFactory());
-
-            var managerFactory = BuildHighwayManagerFactory(privateData);
-            managerFactory.ManagementRadius = 2;
-            managerFactory.MapGraph = mapGraph;
-
-            var managerAtNodeOne = managerFactory.ConstructHighwayManagerAtLocation(node1);
-            var managerAtNodeTwo = managerFactory.ConstructHighwayManagerAtLocation(node5);
-
-            //Execution
-            managerFactory.SubscribeHighway(highwayBetween1And2);
-            managerFactory.SubscribeHighway(highwayBetween2And3);
-            managerFactory.SubscribeHighway(highwayBetween3And4);
-            managerFactory.SubscribeHighway(highwayBetween4And5);
-
-            managerFactory.UnsubscribeHighway(highwayBetween1And2);
-            managerFactory.UnsubscribeHighway(highwayBetween2And3);
-            managerFactory.UnsubscribeHighway(highwayBetween3And4);
-
-            var highwaysForManagerOne = managerFactory.GetHighwaysServedByManager(managerAtNodeOne);
-            var highwaysForManagerTwo = managerFactory.GetHighwaysServedByManager(managerAtNodeTwo);
-
-            //Validation
-            Assert.AreEqual(0, highwaysForManagerOne.Count(), "ManagerOne is managing the wrong number of highways");
-
-            Assert.AreEqual(1, highwaysForManagerTwo.Count(), "ManagerTwo is managing the wrong number of highways");
-            Assert.That(highwaysForManagerTwo.Contains(highwayBetween4And5), "ManagerTwo is not managing highway between node4 and node5");
-        }
-
-        [Test]
-        public void Factory_WhenANewHighwayIsConstructed_ItIsAutomaticallySubscribed() {
+        public void Factory_OnHighwayFactoryConstructsNewHighways_GetHighwaysServedByManagerReflectsNewlySubscribedHighway() {
             //Setup
             var mapGraph = BuildMockMapGraph();
             var node1 = mapGraph.BuildNode(Vector3.zero);
@@ -405,12 +304,67 @@ namespace Assets.HighwayManager.Editor {
         }
 
         [Test]
+        public void Factory_OnHighwayFactoryDestroysExistingHighways_GetHighwaysServedByManagerReflectsNewlyDestroyedHighway() {
+            //Setup
+            var mapGraph = BuildMockMapGraph();
+            var node1 = mapGraph.BuildNode(Vector3.zero);
+            var node2 = mapGraph.BuildNode(Vector3.right * 4);
+            var node3 = mapGraph.BuildNode(Vector3.right * 8);
+            var node4 = mapGraph.BuildNode(Vector3.right * 12);
+            var node5 = mapGraph.BuildNode(Vector3.right * 16);
+            
+            node1.name = "Node1";
+            node2.name = "Node2";
+            node3.name = "Node3";
+            node4.name = "Node4";
+            node5.name = "Node5";
+
+            mapGraph.AddUndirectedEdge(node1, node2);
+            mapGraph.AddUndirectedEdge(node2, node3);
+            mapGraph.AddUndirectedEdge(node3, node4);
+            mapGraph.AddUndirectedEdge(node4, node5);
+
+            var highwayFactory = BuildMockHighwayFactory();
+
+            var highwayBetween1And2 = highwayFactory.ConstructHighwayBetween(node1, node2);
+            var highwayBetween2And3 = highwayFactory.ConstructHighwayBetween(node2, node3);
+            var highwayBetween3And4 = highwayFactory.ConstructHighwayBetween(node3, node4);
+            var highwayBetween4And5 = highwayFactory.ConstructHighwayBetween(node4, node5);
+
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var managerFactory = BuildHighwayManagerFactory(privateData);
+            managerFactory.ManagementRadius = 2;
+            managerFactory.MapGraph = mapGraph;
+            managerFactory.HighwayFactory = highwayFactory;
+
+            var managerAtNodeOne = managerFactory.ConstructHighwayManagerAtLocation(node1);
+            var managerAtNodeTwo = managerFactory.ConstructHighwayManagerAtLocation(node5);
+
+            //Execution
+            highwayFactory.DestroyHighway(highwayBetween1And2);
+            highwayFactory.DestroyHighway(highwayBetween2And3);
+            highwayFactory.DestroyHighway(highwayBetween3And4);
+
+            var highwaysForManagerOne = managerFactory.GetHighwaysServedByManager(managerAtNodeOne);
+            var highwaysForManagerTwo = managerFactory.GetHighwaysServedByManager(managerAtNodeTwo);
+
+            //Validation
+            Assert.AreEqual(0, highwaysForManagerOne.Count(), "ManagerOne is managing the wrong number of highways");
+
+            Assert.AreEqual(1, highwaysForManagerTwo.Count(), "ManagerTwo is managing the wrong number of highways");
+            Assert.That(highwaysForManagerTwo.Contains(highwayBetween4And5), "ManagerTwo is not managing highway between node4 and node5");
+        }
+
+        [Test]
         public void Factory_CanConstructHighwayManagerAtLocation_ReturnsFalseIfGetHighwayManagerAtLocationReturnsANonNullValue_AndTrueOtherwise() {
             //Setup
             var privateData = BuildManagerPrivateData();
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
             var location1 = BuildMockMapNode();
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
@@ -431,6 +385,8 @@ namespace Assets.HighwayManager.Editor {
             privateData.SetBlobFactory(BuildMockBlobFactory());
 
             var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
+
             var location1 = BuildMockMapNode();
 
             var manager1 = factoryToTest.ConstructHighwayManagerAtLocation(location1);

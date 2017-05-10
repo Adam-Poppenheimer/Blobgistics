@@ -76,7 +76,7 @@ namespace Assets.Core.ForTesting {
             return nodes.Where(node => node.ID == id).FirstOrDefault();
         }
 
-        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
+        public override List<NodeDistanceSummary> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
             throw new NotImplementedException();
         }
 
@@ -108,10 +108,15 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin,
+            Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

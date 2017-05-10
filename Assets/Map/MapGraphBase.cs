@@ -39,11 +39,14 @@ namespace Assets.Map {
         public abstract IEnumerable<MapNodeBase> GetNeighborsOfNode(MapNodeBase node);
         public abstract IEnumerable<MapEdgeBase> GetEdgesAttachedToNode(MapNodeBase node);
 
-        public abstract List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges);
+        public abstract List<NodeDistanceSummary> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges);
 
         public abstract int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2);
 
         public abstract List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase node1, MapNodeBase node2);
+
+        public abstract NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin,
+            Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue);
 
         #endregion
 

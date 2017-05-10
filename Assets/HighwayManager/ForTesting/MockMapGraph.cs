@@ -107,13 +107,13 @@ namespace Assets.HighwayManager.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
-            var retval = new List<NodeDistanceSearchResults>();
+        public override List<NodeDistanceSummary> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
+            var retval = new List<NodeDistanceSummary>();
             foreach(var nodeToCheck in nodes) {
                 int distanceFromFirst = GetDistanceBetweenNodes(edge.FirstNode, nodeToCheck);
                 int distanceFromSecond = GetDistanceBetweenNodes(edge.SecondNode, nodeToCheck);
                 if(distanceFromFirst <= distanceInEdges || distanceFromSecond <= distanceInEdges) {
-                    retval.Add(new NodeDistanceSearchResults(nodeToCheck, Math.Min(distanceFromFirst, distanceFromSecond)));
+                    retval.Add(new NodeDistanceSummary(nodeToCheck, Math.Min(distanceFromFirst, distanceFromSecond)));
                 }
             }
             return retval;
@@ -125,6 +125,12 @@ namespace Assets.HighwayManager.ForTesting {
 
         public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
             return MapNodeShortestPathLogic.Instance.GetShortestPathBetweenNodes(node1, node2, nodes);
+        }
+
+        public override NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin,
+            Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
+
+            return MapNodeShortestPathLogic.Instance.GetNearestNodeWhere(edgeOfOrigin, condition, maxDistance);
         }
 
         #endregion

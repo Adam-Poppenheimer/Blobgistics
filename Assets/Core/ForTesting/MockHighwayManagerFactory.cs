@@ -55,15 +55,7 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void SubscribeHighway(BlobHighwayBase highway) {
-            throw new NotImplementedException();
-        }
-
         public override void TickAllManangers(float secondsPassed) {
-            throw new NotImplementedException();
-        }
-
-        public override void UnsubscribeHighway(BlobHighwayBase highway) {
             throw new NotImplementedException();
         }
 

@@ -18,10 +18,10 @@ namespace Assets.HighwayManager.ForTesting {
         #region from BlobHighwayFactoryBase
 
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return highways.AsReadOnly(); }
         }
+
+        private List<BlobHighwayBase> highways = new List<BlobHighwayBase>();
 
         #endregion
 
@@ -40,11 +40,15 @@ namespace Assets.HighwayManager.ForTesting {
             var newHighway = hostingObject.AddComponent<MockBlobHighway>();
             newHighway.SetFirstEndpoint(firstEndpoint);
             newHighway.SetSecondEndpoint(secondEndpoint);
+
+            highways.Add(newHighway);
+
             RaiseHighwayConstructed(newHighway);
             return newHighway;
         }
 
         public override void DestroyHighway(BlobHighwayBase highway) {
+            highways.Remove(highway);
             RaiseHighwayBeingDestroyed(highway);
             DestroyImmediate(highway.gameObject);
         }

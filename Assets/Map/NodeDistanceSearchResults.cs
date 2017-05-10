@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.Map {
 
-    public struct NodeDistanceSearchResults {
+    public class NodeDistanceSummary {
 
         #region instance fields and properties
 
@@ -16,7 +16,7 @@ namespace Assets.Map {
 
         #region constructors
 
-        public NodeDistanceSearchResults(MapNodeBase node, int distance) {
+        public NodeDistanceSummary(MapNodeBase node, int distance) {
             Node = node;
             Distance = distance;
         }

@@ -259,13 +259,13 @@ namespace Assets.Map {
             return retval;
         }
 
-        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
-            var retval = new List<NodeDistanceSearchResults>();
+        public override List<NodeDistanceSummary> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
+            var retval = new List<NodeDistanceSummary>();
             foreach(var nodeToCheck in Nodes) {
                 int distanceFromFirst = GetDistanceBetweenNodes(edge.FirstNode, nodeToCheck);
                 int distanceFromSecond = GetDistanceBetweenNodes(edge.SecondNode, nodeToCheck);
                 if(distanceFromFirst <= distanceInEdges || distanceFromSecond <= distanceInEdges) {
-                    retval.Add(new NodeDistanceSearchResults(nodeToCheck, Math.Min(distanceFromFirst, distanceFromSecond)));
+                    retval.Add(new NodeDistanceSummary(nodeToCheck, Math.Min(distanceFromFirst, distanceFromSecond)));
                 }
             }
             return retval;
@@ -279,19 +279,13 @@ namespace Assets.Map {
             return ShortestPathLogic.GetShortestPathBetweenNodes(start, end, Nodes);
         }
 
-        #endregion
+        public override NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin,
+            Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
 
-        private void GetNodesWithinDistanceOfNode(MapNodeBase node, uint distanceInEdges, ref HashSet<MapNodeBase> results) {
-            if(results.Contains(node) || distanceInEdges == 0) {
-                return;
-            }
-            results.Add(node);
-            foreach(var neighbor in GetNeighborsOfNode(node)) {
-                if(!results.Contains(neighbor)) {
-                    GetNodesWithinDistanceOfNode(neighbor, --distanceInEdges, ref results);
-                }
-            }
+            return ShortestPathLogic.GetNearestNodeWhere(edgeOfOrigin, condition, maxDistance);
         }
+
+        #endregion
 
         private Func<MapEdgeBase, bool> ConstructEdgeExistsTest(MapNodeBase first, MapNodeBase second) {
             return delegate(MapEdgeBase edge) {

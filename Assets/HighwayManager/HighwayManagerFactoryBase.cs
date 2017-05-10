@@ -28,9 +28,6 @@ namespace Assets.HighwayManager {
         public abstract void DestroyHighwayManager    (HighwayManagerBase manager);
         public abstract void UnsubscribeHighwayManager(HighwayManagerBase manager);
 
-        public abstract void SubscribeHighway  (BlobHighwayBase highway);
-        public abstract void UnsubscribeHighway(BlobHighwayBase highway);
-
         public abstract void TickAllManangers(float secondsPassed);
 
         #endregion
