@@ -36,13 +36,15 @@ namespace Assets.HighwayManager.ForTesting {
 
         #endregion
 
+        public MapGraphAlgorithmSetBase AlgorithmSet { get; set; }
+
         #endregion
 
         #region instance methods
 
         #region from MapGraphBase
 
-        public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override MapEdgeBase BuildUndirectedEdge(MapNodeBase first, MapNodeBase second) {
             var hostingObject = new GameObject();
             var newEdge = hostingObject.AddComponent<MockMapEdge>();
             newEdge.firstNode = first;
@@ -50,6 +52,8 @@ namespace Assets.HighwayManager.ForTesting {
             edges.Add(newEdge);
             Neighbors.AddElementToList(first, second);
             Neighbors.AddElementToList(second, first);
+
+            return newEdge;
         }
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
@@ -83,23 +87,19 @@ namespace Assets.HighwayManager.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool HasEdge(MapNodeBase first, MapNodeBase second) {
+        public override void UnsubscribeNode(MapNodeBase nodeToRemove) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveNode(MapNodeBase nodeToRemove) {
+        public override void DestroyUndirectedEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveUndirectedEdge(MapEdgeBase edge) {
+        public override void DestroyUndirectedEdge(MapNodeBase first, MapNodeBase second) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second) {
-            throw new NotImplementedException();
-        }
-
-        public override bool UnsubscribeDirectedEdge(MapEdgeBase edge) {
+        public override void UnsubscribeDirectedEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
@@ -107,30 +107,26 @@ namespace Assets.HighwayManager.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override List<NodeDistanceSummary> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
-            var retval = new List<NodeDistanceSummary>();
-            foreach(var nodeToCheck in nodes) {
-                int distanceFromFirst = GetDistanceBetweenNodes(edge.FirstNode, nodeToCheck);
-                int distanceFromSecond = GetDistanceBetweenNodes(edge.SecondNode, nodeToCheck);
-                if(distanceFromFirst <= distanceInEdges || distanceFromSecond <= distanceInEdges) {
-                    retval.Add(new NodeDistanceSummary(nodeToCheck, Math.Min(distanceFromFirst, distanceFromSecond)));
-                }
-            }
-            return retval;
-        }
-
         public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
-            return MapNodeShortestPathLogic.Instance.GetDistanceBetweenNodes(node1, node2, nodes);
+            return AlgorithmSet.GetDistanceBetweenNodes(node1, node2, nodes);
         }
 
         public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
-            return MapNodeShortestPathLogic.Instance.GetShortestPathBetweenNodes(node1, node2, nodes);
+            return AlgorithmSet.GetShortestPathBetweenNodes(node1, node2, nodes);
         }
 
-        public override NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin,
+        public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
             Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
 
-            return MapNodeShortestPathLogic.Instance.GetNearestNodeWhere(edgeOfOrigin, condition, maxDistance);
+            return AlgorithmSet.GetNearestNodeToEdgeWhere(edgeOfOrigin, condition, maxDistance);
+        }
+
+        public override void DestroyNode(MapNodeBase node) {
+            throw new NotImplementedException();
+        }
+
+        public override void SubscribeUndirectedEdge(MapEdgeBase edge) {
+            throw new NotImplementedException();
         }
 
         #endregion

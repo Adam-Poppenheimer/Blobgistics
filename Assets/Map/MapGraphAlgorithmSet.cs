@@ -5,31 +5,11 @@ using System.Text;
 
 namespace Assets.Map {
 
-    public class MapNodeShortestPathLogic : MapNodeShortestPathLogicBase {
-
-        #region static fields and properties
-
-        public static MapNodeShortestPathLogic Instance {
-            get {
-                if(_instance == null) {
-                    _instance = new MapNodeShortestPathLogic();
-                }
-                return _instance;
-            }
-        }
-        private static MapNodeShortestPathLogic _instance;
-
-        #endregion
-
-        #region constructors
-
-
-
-        #endregion
+    public class MapGraphAlgorithmSet : MapGraphAlgorithmSetBase {
 
         #region instance methods
 
-        #region from MapNodeShortestPathLogicBase
+        #region from MapGraphAlgorithmsBase
 
         public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2, IEnumerable<MapNodeBase> allNodes) {
             if(node1 == null) {
@@ -38,7 +18,7 @@ namespace Assets.Map {
                 throw new ArgumentNullException("node2");
             }
             var shortestPath = GetShortestPathBetweenNodes(node1, node2, allNodes);
-            return shortestPath != null ? shortestPath.Count : int.MaxValue;
+            return shortestPath != null ? shortestPath.Count - 1 : int.MaxValue;
         }
 
         public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase start, MapNodeBase end, IEnumerable<MapNodeBase> allNodes) {
@@ -93,13 +73,15 @@ namespace Assets.Map {
                 }
             }
 
+            path.Add(start);
+            path.Reverse();
             return path;
         }
 
-        public override NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin, Predicate<MapNodeBase> condition, int maxDistance) {
+        public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin, Predicate<MapNodeBase> condition, int maxDistance) {
             
-            var closestFromFirstEndpoint = GetNearestNodeWhere(edgeOfOrigin.FirstNode, condition, maxDistance);
-            var closestFromSecondEndpoint = GetNearestNodeWhere(edgeOfOrigin.SecondNode, condition, maxDistance);
+            var closestFromFirstEndpoint = GetNearestNodeToNodeWhere(edgeOfOrigin.FirstNode, condition, maxDistance);
+            var closestFromSecondEndpoint = GetNearestNodeToNodeWhere(edgeOfOrigin.SecondNode, condition, maxDistance);
 
             if(closestFromFirstEndpoint == null && closestFromSecondEndpoint == null) {
                 return null;
@@ -112,9 +94,7 @@ namespace Assets.Map {
             }
         }
 
-        #endregion
-
-        private NodeDistanceSummary GetNearestNodeWhere(MapNodeBase rootNode, Predicate<MapNodeBase> condition, int maxDistance) {
+        public override NodeDistanceSummary GetNearestNodeToNodeWhere(MapNodeBase rootNode, Predicate<MapNodeBase> condition, int maxDistance) {
             var distanceSummariesToConsider = new Queue<NodeDistanceSummary>();
             var nodesAlreadyConsidered = new HashSet<MapNodeBase>();
 
@@ -136,6 +116,8 @@ namespace Assets.Map {
 
             return null;
         }
+
+        #endregion
 
         #endregion
 

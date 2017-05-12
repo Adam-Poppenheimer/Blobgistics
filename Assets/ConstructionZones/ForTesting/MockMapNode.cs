@@ -28,7 +28,7 @@ namespace Assets.ConstructionZones.ForTesting {
             }
         }
 
-        public override MapGraphBase ManagingGraph {
+        public override MapGraphBase ParentGraph {
             get {
                 throw new NotImplementedException();
             }

@@ -133,7 +133,7 @@ namespace Assets.Highways.Editor {
             for(int nodeIndex = 0; nodeIndex < 60; ++nodeIndex) {
                 var firstNode = mapGraph.BuildNode(Vector3.zero);
                 var secondNode = mapGraph.BuildNode(Vector3.left);
-                mapGraph.AddUndirectedEdge(firstNode, secondNode);
+                mapGraph.BuildUndirectedEdge(firstNode, secondNode);
                 nodeList.Add(new KeyValuePair<MapNodeBase, MapNodeBase>(firstNode, secondNode));
             }
 
@@ -179,9 +179,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
+            mapGraph.BuildUndirectedEdge(middleNode, upNode);
 
             var highways = new List<BlobHighwayBase>() {
                 factoryToTest.ConstructHighwayBetween(middleNode, leftNode),
@@ -210,9 +210,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
+            mapGraph.BuildUndirectedEdge(middleNode, upNode);
 
             factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
             factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
@@ -237,9 +237,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
+            mapGraph.BuildUndirectedEdge(middleNode, upNode);
 
             var highwayToLeft = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
             var highwayToRight = factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
@@ -265,9 +265,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
+            mapGraph.BuildUndirectedEdge(middleNode, upNode);
 
             factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
 
@@ -289,9 +289,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
+            mapGraph.BuildUndirectedEdge(middleNode, upNode);
 
             //Execution
             var highwayToLeft = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
@@ -978,7 +978,7 @@ namespace Assets.Highways.Editor {
             var firstEndpoint = mapGraph.BuildNode(Vector3.zero);
             var secondEndpoint = mapGraph.BuildNode(Vector3.left);
 
-            mapGraph.AddUndirectedEdge(firstEndpoint, secondEndpoint);
+            mapGraph.BuildUndirectedEdge(firstEndpoint, secondEndpoint);
 
             factoryToTest.ConstructHighwayBetween(firstEndpoint, secondEndpoint);
 

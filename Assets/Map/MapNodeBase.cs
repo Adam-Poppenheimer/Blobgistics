@@ -15,7 +15,7 @@ namespace Assets.Map {
 
         public abstract int ID { get; }
 
-        public abstract MapGraphBase ManagingGraph { get; }
+        public abstract MapGraphBase ParentGraph { get; }
 
         public abstract BlobSiteBase BlobSite { get; }
 

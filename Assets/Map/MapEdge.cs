@@ -11,7 +11,6 @@ using Assets.Core;
 
 namespace Assets.Map {
 
-    [Serializable]
     [ExecuteInEditMode]
     public class MapEdge : MapEdgeBase {
 
@@ -49,9 +48,7 @@ namespace Assets.Map {
 
         public override MapGraphBase ParentGraph {
             get { return _parentGraph; }
-        }
-        public void SetParentGraph(MapGraphBase value) {
-            _parentGraph = value;
+            set { _parentGraph = value; }
         }
         [SerializeField] private MapGraphBase _parentGraph;
 

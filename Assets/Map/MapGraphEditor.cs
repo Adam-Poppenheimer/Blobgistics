@@ -81,8 +81,8 @@ namespace Assets.Map {
 
         private void HandleMouseUp(Event evnt, MapNode candidateNode) {
             if(FromNode != null && ToNode != null) {
-                if(!TargetedGraph.HasEdge(FromNode, ToNode)) {
-                    TargetedGraph.AddUndirectedEdge(FromNode, ToNode);
+                if(TargetedGraph.GetEdge(FromNode, ToNode) == null) {
+                    TargetedGraph.BuildUndirectedEdge(FromNode, ToNode);
                 }
                 evnt.Use();
             }
@@ -113,7 +113,7 @@ namespace Assets.Map {
                 var midpoint = (edge.FirstNode.transform.position + edge.SecondNode.transform.position ) / 2f;
                 Handles.color = Color.red;
                 if(Handles.Button(midpoint, Quaternion.identity, 0.25f, 0.25f, Handles.SphereCap)) {
-                    TargetedGraph.RemoveUndirectedEdge(edge);
+                    TargetedGraph.DestroyUndirectedEdge(edge);
                     break;
                 }
             }

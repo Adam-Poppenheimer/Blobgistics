@@ -58,7 +58,7 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #region from MapGraphBase
 
-        public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override MapEdgeBase BuildUndirectedEdge(MapNodeBase first, MapNodeBase second) {
             var hostingObject = new GameObject();
             var newEdge = hostingObject.AddComponent<MapEdge>();
             newEdge.SetFirstNode(first);
@@ -68,6 +68,8 @@ namespace Assets.BlobDistributors.ForTesting {
             newBlobSite.PrivateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
             newEdge.SetBlobSite(newBlobSite);
             edges.Add(newEdge);
+
+            return newEdge;
         }
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
@@ -120,29 +122,20 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool HasEdge(MapNodeBase first, MapNodeBase second) {
-            throw new NotImplementedException();
-        }
-
-        public override bool RemoveNode(MapNodeBase nodeToRemove) {
-            var retval = nodes.Remove(nodeToRemove);
+        public override void UnsubscribeNode(MapNodeBase nodeToRemove) {
+            nodes.Remove(nodeToRemove);
             DestroyImmediate(nodeToRemove.gameObject);
-            return retval;
         }
 
-        public override bool RemoveUndirectedEdge(MapEdgeBase edge) {
+        public override void DestroyUndirectedEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override void DestroyUndirectedEdge(MapNodeBase first, MapNodeBase second) {
             throw new NotImplementedException();
         }
 
-        public override bool UnsubscribeDirectedEdge(MapEdgeBase edge) {
-            throw new NotImplementedException();
-        }
-
-        public override List<NodeDistanceSummary> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
+        public override void UnsubscribeDirectedEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
@@ -154,8 +147,16 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin,
+        public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
             Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroyNode(MapNodeBase node) {
+            throw new NotImplementedException();
+        }
+
+        public override void SubscribeUndirectedEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 

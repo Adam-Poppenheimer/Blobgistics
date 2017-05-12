@@ -20,7 +20,7 @@ namespace Assets.Map {
 
         public abstract BlobSiteBase BlobSite { get; }
 
-        public abstract MapGraphBase ParentGraph { get; }
+        public abstract MapGraphBase ParentGraph { get; set; }
 
         #endregion
 

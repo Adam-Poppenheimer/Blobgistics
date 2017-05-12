@@ -27,7 +27,7 @@ namespace Assets.Societies.ForTesting {
             }
         }
 
-        public override MapGraphBase ManagingGraph {
+        public override MapGraphBase ParentGraph {
             get {
                 throw new NotImplementedException();
             }

@@ -104,7 +104,7 @@ namespace Assets.Highways {
                 throw new ArgumentNullException("secondEndpoint");
             }
 
-            return !HasHighwayBetween(firstEndpoint, secondEndpoint) && MapGraph.HasEdge(firstEndpoint, secondEndpoint);
+            return !HasHighwayBetween(firstEndpoint, secondEndpoint) && MapGraph.GetEdge(firstEndpoint, secondEndpoint) != null;
         }
 
         public override BlobHighwayBase ConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {

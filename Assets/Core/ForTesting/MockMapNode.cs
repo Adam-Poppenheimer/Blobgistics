@@ -23,7 +23,7 @@ namespace Assets.Core.ForTesting {
             get { return GetInstanceID(); }
         }
 
-        public override MapGraphBase ManagingGraph {
+        public override MapGraphBase ParentGraph {
             get {
                 throw new NotImplementedException();
             }

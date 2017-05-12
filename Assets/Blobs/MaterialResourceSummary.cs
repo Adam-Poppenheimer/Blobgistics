@@ -31,9 +31,11 @@ namespace Assets.Blobs {
             var newSummary = objectToAddTo.AddComponent<MaterialResourceSummary>();
             if(newSummary.ValueList.Count != EnumUtil.GetValues<ResourceType>().Count()) {
                 newSummary.ValueList.Clear();
+                #pragma warning disable 0168
                 foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                     newSummary.ValueList.Add(null);
                 }
+                #pragma warning restore 0168
             }
             return newSummary;
         }

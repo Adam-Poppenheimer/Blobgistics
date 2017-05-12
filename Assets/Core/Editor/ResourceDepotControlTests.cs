@@ -57,6 +57,9 @@ namespace Assets.Core.Editor {
             Assert.NotNull(lastMessage, "DestroyResourceDepotOfID did not display an error");
             insertionHandler.StoredMessages.Clear();
             lastMessage = null;
+
+            //Cleanup
+            Debug.logger.logHandler = defaultLogHandler;
         }
 
         #endregion

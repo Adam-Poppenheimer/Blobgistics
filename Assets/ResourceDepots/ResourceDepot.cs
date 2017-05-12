@@ -63,6 +63,10 @@ namespace Assets.ResourceDepots {
 
         #region Unity event methods
 
+        private void Start() {
+            RefreshBlobSite();
+        }
+
         private void OnDestroy() {
             if(ParentFactory != null) {
                 ParentFactory.UnsubscribeDepot(this);

@@ -29,7 +29,7 @@ namespace Assets.HighwayManager.ForTesting {
             }
         }
 
-        public override MapGraphBase ManagingGraph {
+        public override MapGraphBase ParentGraph {
             get {
                 throw new NotImplementedException();
             }

@@ -16,6 +16,12 @@ namespace Assets.Map {
     public class MapNode : MapNodeBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler {
 
+        #region static fields and properties
+
+        private static List<MapNodeBase> EmptyNeighborList = new List<MapNodeBase>();
+
+        #endregion
+
         #region instance fields and properties
 
         #region from MapNodeBase
@@ -24,13 +30,13 @@ namespace Assets.Map {
             get { return GetInstanceID(); }
         }
 
-        public override MapGraphBase ManagingGraph {
-            get { return _managingGraph; }
+        public override MapGraphBase ParentGraph {
+            get { return _parentGraph; }
         }
-        public void SetManagingGraph(MapGraphBase value) {
-            _managingGraph = value;
+        public void SetParentGraph(MapGraphBase value) {
+            _parentGraph = value;
         }
-        [SerializeField, HideInInspector] private MapGraphBase _managingGraph;
+        [SerializeField, HideInInspector] private MapGraphBase _parentGraph;
 
         public override BlobSiteBase BlobSite {
             get { return _blobSite; }
@@ -41,7 +47,13 @@ namespace Assets.Map {
         [SerializeField, HideInInspector] private BlobSiteBase _blobSite;
 
         public override IEnumerable<MapNodeBase> Neighbors {
-            get { return ManagingGraph.GetNeighborsOfNode(this); }
+            get {
+                if(ParentGraph != null) {
+                    return ParentGraph.GetNeighborsOfNode(this);
+                }else {
+                    return EmptyNeighborList;
+                }
+            }
         }
 
         public override TerrainType Terrain {
@@ -84,14 +96,14 @@ namespace Assets.Map {
         #region Unity event methods
 
         private void Awake() {
-            if(ManagingGraph != null && ManagingGraph.GetNodeOfID(ID) == null) {
-                ManagingGraph.SubscribeNode(this);
+            if(ParentGraph != null && ParentGraph.GetNodeOfID(ID) == null) {
+                ParentGraph.SubscribeNode(this);
             }
         }
 
         private void OnDestroy() {
-            if(ManagingGraph != null) {
-                ManagingGraph.RemoveNode(this);
+            if(ParentGraph != null) {
+                ParentGraph.UnsubscribeNode(this);
             }
         }
 

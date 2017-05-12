@@ -191,7 +191,7 @@ namespace Assets.HighwayManager {
             foreach(var highway in HighwayFactory.Highways) {
                 var edgeOfHighway = MapGraph.GetEdge(highway.FirstEndpoint, highway.SecondEndpoint);
 
-                var summaryOfClosestNodeWithManager = MapGraph.GetNearestNodeWhere(edgeOfHighway, delegate(MapNodeBase node) {
+                var summaryOfClosestNodeWithManager = MapGraph.GetNearestNodeToEdgeWhere(edgeOfHighway, delegate(MapNodeBase node) {
                     return GetHighwayManagerAtLocation(node) != null;
                 }, (int)ManagementRadius);
 

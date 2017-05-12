@@ -21,31 +21,32 @@ namespace Assets.Map {
 
         public abstract MapNodeBase BuildNode(Vector3 localPosition);
         public abstract MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain);
-        public abstract void SubscribeNode(MapNodeBase node);
 
-        public abstract void AddUndirectedEdge(MapNodeBase first, MapNodeBase second);
-        public abstract bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second);
-        public abstract bool RemoveUndirectedEdge(MapEdgeBase edge);
+        public abstract void DestroyNode(MapNodeBase node);
 
-        public abstract bool UnsubscribeDirectedEdge(MapEdgeBase edge);
+        public abstract void SubscribeNode  (MapNodeBase node);
+        public abstract void UnsubscribeNode(MapNodeBase node);
 
-        public abstract bool RemoveNode(MapNodeBase nodeToRemove);
+        public abstract MapEdgeBase BuildUndirectedEdge(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
+
+        public abstract void DestroyUndirectedEdge(MapNodeBase first, MapNodeBase second);
+        public abstract void DestroyUndirectedEdge(MapEdgeBase edge);
+
+        public abstract void SubscribeUndirectedEdge  (MapEdgeBase edge);
+        public abstract void UnsubscribeDirectedEdge(MapEdgeBase edge);
 
         public abstract MapNodeBase GetNodeOfID(int id);
 
-        public abstract bool        HasEdge(MapNodeBase first, MapNodeBase second);
-        public abstract MapEdgeBase GetEdge(MapNodeBase first, MapNodeBase second);
+        public abstract MapEdgeBase GetEdge(MapNodeBase endpointOne, MapNodeBase endpointTwo);
 
         public abstract IEnumerable<MapNodeBase> GetNeighborsOfNode(MapNodeBase node);
         public abstract IEnumerable<MapEdgeBase> GetEdgesAttachedToNode(MapNodeBase node);
 
-        public abstract List<NodeDistanceSummary> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges);
+        public abstract int GetDistanceBetweenNodes(MapNodeBase nodeOne, MapNodeBase nodeTwo);
 
-        public abstract int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2);
+        public abstract List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase nodeOne, MapNodeBase nodeTwo);
 
-        public abstract List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase node1, MapNodeBase node2);
-
-        public abstract NodeDistanceSummary GetNearestNodeWhere(MapEdgeBase edgeOfOrigin,
+        public abstract NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
             Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue);
 
         #endregion
