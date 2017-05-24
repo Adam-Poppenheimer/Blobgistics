@@ -1221,7 +1221,7 @@ namespace Assets.Societies.Editor {
             var privateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
             privateData.SetBlobFactory(hostingObject.AddComponent<MockResourceBlobFactory>());
 
-            newBlobSite.PrivateData = privateData;
+            newBlobSite.Configuration = privateData;
             return newBlobSite;
         }
 

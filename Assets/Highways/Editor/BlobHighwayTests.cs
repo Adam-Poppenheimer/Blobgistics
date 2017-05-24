@@ -133,7 +133,7 @@ namespace Assets.Highways.Editor {
             for(int nodeIndex = 0; nodeIndex < 60; ++nodeIndex) {
                 var firstNode = mapGraph.BuildNode(Vector3.zero);
                 var secondNode = mapGraph.BuildNode(Vector3.left);
-                mapGraph.BuildUndirectedEdge(firstNode, secondNode);
+                mapGraph.BuildMapEdge(firstNode, secondNode);
                 nodeList.Add(new KeyValuePair<MapNodeBase, MapNodeBase>(firstNode, secondNode));
             }
 
@@ -179,9 +179,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             var highways = new List<BlobHighwayBase>() {
                 factoryToTest.ConstructHighwayBetween(middleNode, leftNode),
@@ -210,9 +210,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
             factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
@@ -237,9 +237,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             var highwayToLeft = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
             var highwayToRight = factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
@@ -265,9 +265,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
 
@@ -289,9 +289,9 @@ namespace Assets.Highways.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             //Execution
             var highwayToLeft = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
@@ -978,7 +978,7 @@ namespace Assets.Highways.Editor {
             var firstEndpoint = mapGraph.BuildNode(Vector3.zero);
             var secondEndpoint = mapGraph.BuildNode(Vector3.left);
 
-            mapGraph.BuildUndirectedEdge(firstEndpoint, secondEndpoint);
+            mapGraph.BuildMapEdge(firstEndpoint, secondEndpoint);
 
             factoryToTest.ConstructHighwayBetween(firstEndpoint, secondEndpoint);
 
@@ -1035,11 +1035,11 @@ namespace Assets.Highways.Editor {
         private MockMapNode BuildMapNode() {
             var hostingObject = new GameObject();
 
-            var newBlobSiteData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+            var newBlobSiteData = hostingObject.AddComponent<MockBlobSiteConfiguration>();
             newBlobSiteData.SetConnectionCircleRadius(1f);
 
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
-            newBlobSite.PrivateData = newBlobSiteData;
+            newBlobSite.Configuration = newBlobSiteData;
             newBlobSite.TotalCapacity = Int32.MaxValue;
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                 newBlobSite.SetCapacityForResourceType(resourceType, Int32.MaxValue);
@@ -1082,11 +1082,8 @@ namespace Assets.Highways.Editor {
 
             var newBlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
 
-            var newBlobSiteFactory = hostingObject.AddComponent<BlobSiteFactory>();
-            newBlobSiteFactory.BlobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
-
             var newMapGraph = hostingObject.AddComponent<MapGraph>();
-            newMapGraph.BlobSiteFactory = newBlobSiteFactory;
+            newMapGraph.BlobSiteConfiguration = hostingObject.AddComponent<MockBlobSiteConfiguration>();
 
             var newTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
             var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();

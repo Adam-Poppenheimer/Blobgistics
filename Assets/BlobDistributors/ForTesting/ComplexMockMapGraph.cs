@@ -39,18 +39,18 @@ namespace Assets.BlobDistributors.ForTesting {
         }
         private ResourceBlobFactoryBase _blobFactory;
 
-        private BlobSitePrivateData BlobSitePrivateData {
+        private BlobSiteConfiguration BlobSitePrivateData {
             get {
                 if(_blobSitePrivateData == null) {
                     var hostingObject = new GameObject();
-                    _blobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
+                    _blobSitePrivateData = hostingObject.AddComponent<BlobSiteConfiguration>();
                     _blobSitePrivateData.SetConnectionCircleRadius(2f);
                     _blobSitePrivateData.SetAlignmentStrategy(gameObject.AddComponent<BoxyBlobAlignmentStrategy>());
                 }
                 return _blobSitePrivateData;
             }
         }
-        private BlobSitePrivateData _blobSitePrivateData = null;
+        private BlobSiteConfiguration _blobSitePrivateData = null;
 
         #endregion
 
@@ -58,14 +58,15 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #region from MapGraphBase
 
-        public override MapEdgeBase BuildUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override MapEdgeBase BuildMapEdge(MapNodeBase first, MapNodeBase second) {
             var hostingObject = new GameObject();
             var newEdge = hostingObject.AddComponent<MapEdge>();
-            newEdge.SetFirstNode(first);
-            newEdge.SetSecondNode(second);
+
+            newEdge.DisplayComponent = new GameObject().transform;
+            newEdge.SetNodes(first, second);
 
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
-            newBlobSite.PrivateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+            newBlobSite.Configuration = hostingObject.AddComponent<MockBlobSitePrivateData>();
             newEdge.SetBlobSite(newBlobSite);
             edges.Add(newEdge);
 
@@ -76,7 +77,7 @@ namespace Assets.BlobDistributors.ForTesting {
             var hostingObject = new GameObject();
             var newNode = hostingObject.AddComponent<MockMapNode>();
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
-            newBlobSite.PrivateData = BlobSitePrivateData;
+            newBlobSite.Configuration = BlobSitePrivateData;
 
             newNode.SetBlobSite(newBlobSite);
 
@@ -127,15 +128,19 @@ namespace Assets.BlobDistributors.ForTesting {
             DestroyImmediate(nodeToRemove.gameObject);
         }
 
-        public override void DestroyUndirectedEdge(MapEdgeBase edge) {
+        public override void DestroyMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
-        public override void DestroyUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override void DestroyMapEdge(MapNodeBase first, MapNodeBase second) {
             throw new NotImplementedException();
         }
 
-        public override void UnsubscribeDirectedEdge(MapEdgeBase edge) {
+        public override void UnsubscribeMapEdge(MapEdgeBase edge) {
+            throw new NotImplementedException();
+        }
+
+        public override void LoadFromMapAsset(MapAsset asset) {
             throw new NotImplementedException();
         }
 
@@ -156,7 +161,7 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void SubscribeUndirectedEdge(MapEdgeBase edge) {
+        public override void SubscribeMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 

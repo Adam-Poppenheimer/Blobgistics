@@ -23,7 +23,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             //Execution
             var newNode = graphToTest.BuildNode(Vector3.zero);
@@ -40,7 +39,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var nodeToDestroy = graphToTest.BuildNode(Vector3.zero);
             nodeToDestroy.name = "Test Node To Destroy";
@@ -59,7 +57,7 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
+            graphToTest.BlobSiteConfiguration = BuildMockBlobSiteConfiguration();
 
             //Execution
             var newNode = BuildMapNode();
@@ -75,7 +73,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var newNode = graphToTest.BuildNode(Vector3.zero);
 
@@ -94,13 +91,12 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
 
             //Execution
-            var edgeToBuild = graphToTest.BuildUndirectedEdge(nodeOne, nodeTwo);
+            var edgeToBuild = graphToTest.BuildMapEdge(nodeOne, nodeTwo);
 
             //Validation
             Assert.AreEqual(nodeOne, edgeToBuild.FirstNode,  "Edge has an incorrect FirstNode");
@@ -112,18 +108,17 @@ namespace Assets.Map.Editor {
         public void OnBuildUndirectedEdgeCalled_ButAnEdgeAlreadyExistsBetweenTheSpecifiedEndpoints_ThrowsMapGraphException() {
             //Setup
             var graphToTest = BuildMapGraph();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
             graphToTest.UIControl = BuildMockUIControl();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
 
-            graphToTest.BuildUndirectedEdge(nodeOne, nodeTwo);
+            graphToTest.BuildMapEdge(nodeOne, nodeTwo);
 
             //Execution and validation
             Assert.Throws<MapGraphException>(delegate() {
-                graphToTest.BuildUndirectedEdge(nodeOne, nodeTwo);
+                graphToTest.BuildMapEdge(nodeOne, nodeTwo);
             });
         }
 
@@ -133,16 +128,15 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
 
-            var edgeToDestroy = graphToTest.BuildUndirectedEdge(nodeOne, nodeTwo);
+            var edgeToDestroy = graphToTest.BuildMapEdge(nodeOne, nodeTwo);
             edgeToDestroy.name = "Test Edge To Destroy";
 
             //Execution
-            graphToTest.DestroyUndirectedEdge(edgeToDestroy);
+            graphToTest.DestroyMapEdge(edgeToDestroy);
 
             //Validation
             Assert.Null(edgeToDestroy.ParentGraph, "Edge.ParentGraph has not been reset to null");
@@ -156,23 +150,22 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
             var nodeThree = graphToTest.BuildNode(Vector3.up);
 
-            var edgeBetweenOneAndTwo   = graphToTest.BuildUndirectedEdge(nodeOne, nodeTwo  );
-            var edgeBetweenTwoAndThree = graphToTest.BuildUndirectedEdge(nodeTwo, nodeThree);
+            var edgeBetweenOneAndTwo   = graphToTest.BuildMapEdge(nodeOne, nodeTwo  );
+            var edgeBetweenTwoAndThree = graphToTest.BuildMapEdge(nodeTwo, nodeThree);
 
             //Execution
-            graphToTest.DestroyUndirectedEdge(nodeOne, nodeTwo);
+            graphToTest.DestroyMapEdge(nodeOne, nodeTwo);
 
             //Validation
             Assert.Null(graphToTest.GetEdge(nodeOne, nodeTwo), "MapGraph still recognizes an edge between node1 and node2");
             Assert.NotNull(graphToTest.GetEdge(nodeTwo, nodeThree), "MapGraph fails to recognize an edge between node2 and node3");
             Assert.DoesNotThrow(delegate() {
-                graphToTest.DestroyUndirectedEdge(nodeOne, nodeTwo);
+                graphToTest.DestroyMapEdge(nodeOne, nodeTwo);
             }, "Attempting to remove a non-existent edge between nodeOne and nodeTwo throws an exception");
         }
 
@@ -182,7 +175,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
@@ -190,7 +182,7 @@ namespace Assets.Map.Editor {
             var edgeToSubscribe = BuildMapEdge(nodeOne, nodeTwo);
 
             //Execution
-            graphToTest.SubscribeUndirectedEdge(edgeToSubscribe);
+            graphToTest.SubscribeMapEdge(edgeToSubscribe);
 
             //Validation
             Assert.Contains(edgeToSubscribe, graphToTest.Edges, "Subscribed edge fails to appear in MapGraph's Edges collection");
@@ -203,7 +195,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
@@ -215,7 +206,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
@@ -234,14 +224,13 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
             var nodeThree = graphToTest.BuildNode(Vector3.up);
 
-            var edgeBetweenOneAndTwo   = graphToTest.BuildUndirectedEdge(nodeOne, nodeTwo  );
-            var edgeBetweenTwoAndThree = graphToTest.BuildUndirectedEdge(nodeTwo, nodeThree);
+            var edgeBetweenOneAndTwo   = graphToTest.BuildMapEdge(nodeOne, nodeTwo  );
+            var edgeBetweenTwoAndThree = graphToTest.BuildMapEdge(nodeTwo, nodeThree);
 
             //Execution and validation
             Assert.AreEqual(edgeBetweenOneAndTwo, graphToTest.GetEdge(nodeOne, nodeTwo),
@@ -257,7 +246,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
             var leftNode   = graphToTest.BuildNode(Vector3.left);
@@ -271,10 +259,10 @@ namespace Assets.Map.Editor {
             upNode.name     = "upNode";
             downNode.name   = "downNode";
 
-            graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
-            graphToTest.BuildUndirectedEdge(centerNode, upNode);
-            graphToTest.BuildUndirectedEdge(centerNode, downNode);
+            graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, upNode);
+            graphToTest.BuildMapEdge(centerNode, downNode);
             
             //Execution
             var neighborsOfCenter = graphToTest.GetNeighborsOfNode(centerNode);
@@ -296,7 +284,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
             var leftNode   = graphToTest.BuildNode(Vector3.left);
@@ -310,8 +297,8 @@ namespace Assets.Map.Editor {
             upNode.name     = "upNode";
             downNode.name   = "downNode";
 
-            graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
 
             //Execution and validation
             foreach(var outerNode in graphToTest.Nodes) {
@@ -332,7 +319,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
             var leftNode   = graphToTest.BuildNode(Vector3.left);
@@ -346,10 +332,10 @@ namespace Assets.Map.Editor {
             upNode.name     = "upNode";
             downNode.name   = "downNode";
 
-            graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
-            graphToTest.BuildUndirectedEdge(centerNode, upNode);
-            graphToTest.BuildUndirectedEdge(centerNode, downNode);
+            graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, upNode);
+            graphToTest.BuildMapEdge(centerNode, downNode);
             
             //Execution
             var neighborsOfCenter = graphToTest.GetNeighborsOfNode(centerNode);
@@ -367,7 +353,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
             var leftNode   = graphToTest.BuildNode(Vector3.left);
@@ -381,8 +366,8 @@ namespace Assets.Map.Editor {
             upNode.name     = "upNode";
             downNode.name   = "downNode";
 
-            graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
 
             //Execution
             var neighborsOfCenter = graphToTest.GetNeighborsOfNode(centerNode);
@@ -400,7 +385,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
             var leftNode   = graphToTest.BuildNode(Vector3.left);
@@ -414,12 +398,12 @@ namespace Assets.Map.Editor {
             upNode.name     = "upNode";
             downNode.name   = "downNode";
 
-            graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
-            graphToTest.BuildUndirectedEdge(centerNode, upNode);
-            graphToTest.BuildUndirectedEdge(centerNode, downNode);
-            graphToTest.BuildUndirectedEdge(leftNode, upNode);
-            graphToTest.BuildUndirectedEdge(rightNode, downNode);
+            graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, upNode);
+            graphToTest.BuildMapEdge(centerNode, downNode);
+            graphToTest.BuildMapEdge(leftNode, upNode);
+            graphToTest.BuildMapEdge(rightNode, downNode);
 
             //Execution
             var edgesAttachedToCenter = graphToTest.GetEdgesAttachedToNode(centerNode);
@@ -437,7 +421,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
             var leftNode   = graphToTest.BuildNode(Vector3.left);
@@ -451,12 +434,12 @@ namespace Assets.Map.Editor {
             upNode.name     = "upNode";
             downNode.name   = "downNode";
 
-            graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
-            graphToTest.BuildUndirectedEdge(centerNode, upNode);
-            graphToTest.BuildUndirectedEdge(centerNode, downNode);
-            graphToTest.BuildUndirectedEdge(leftNode, upNode);
-            graphToTest.BuildUndirectedEdge(rightNode, downNode);
+            graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, upNode);
+            graphToTest.BuildMapEdge(centerNode, downNode);
+            graphToTest.BuildMapEdge(leftNode, upNode);
+            graphToTest.BuildMapEdge(rightNode, downNode);
 
             //Execution
             var edgesAttachedToCenter = graphToTest.GetEdgesAttachedToNode(centerNode);
@@ -485,7 +468,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
             graphToTest.AlgorithmSet = mockAlgorithmSet;
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
@@ -494,10 +476,10 @@ namespace Assets.Map.Editor {
             var upNode     = graphToTest.BuildNode(Vector3.up);
             var downNode   = graphToTest.BuildNode(Vector3.down);
 
-            graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
-            graphToTest.BuildUndirectedEdge(centerNode, upNode);
-            graphToTest.BuildUndirectedEdge(centerNode, downNode);
+            graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, upNode);
+            graphToTest.BuildMapEdge(centerNode, downNode);
 
             //Execution
             graphToTest.GetDistanceBetweenNodes(centerNode, leftNode);
@@ -525,7 +507,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
             graphToTest.AlgorithmSet = mockAlgorithmSet;
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
@@ -534,10 +515,10 @@ namespace Assets.Map.Editor {
             var upNode     = graphToTest.BuildNode(Vector3.up);
             var downNode   = graphToTest.BuildNode(Vector3.down);
 
-            graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
-            graphToTest.BuildUndirectedEdge(centerNode, upNode);
-            graphToTest.BuildUndirectedEdge(centerNode, downNode);
+            graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, upNode);
+            graphToTest.BuildMapEdge(centerNode, downNode);
 
             //Execution
             graphToTest.GetShortestPathBetweenNodes(centerNode, leftNode);
@@ -567,7 +548,6 @@ namespace Assets.Map.Editor {
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
             graphToTest.UIControl = BuildMockUIControl();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
             graphToTest.AlgorithmSet = mockAlgorithmSet;
 
             var centerNode = graphToTest.BuildNode(Vector3.zero);
@@ -576,10 +556,10 @@ namespace Assets.Map.Editor {
             var upNode     = graphToTest.BuildNode(Vector3.up);
             var downNode   = graphToTest.BuildNode(Vector3.down);
 
-            var edgeToTest = graphToTest.BuildUndirectedEdge(centerNode, leftNode);
-            graphToTest.BuildUndirectedEdge(centerNode, rightNode);
-            graphToTest.BuildUndirectedEdge(centerNode, upNode);
-            graphToTest.BuildUndirectedEdge(centerNode, downNode);
+            var edgeToTest = graphToTest.BuildMapEdge(centerNode, leftNode);
+            graphToTest.BuildMapEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, upNode);
+            graphToTest.BuildMapEdge(centerNode, downNode);
 
             //Execution
             graphToTest.GetNearestNodeToEdgeWhere(edgeToTest, MapNodeMockPredicate, 42);
@@ -591,17 +571,21 @@ namespace Assets.Map.Editor {
         }
 
         [Test]
+        public void OnLoadFromMapAssetCalled_MapGraphGeneratesTheCorrectNodesAndEdges() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
         public void OnAnyMethodCalledWithNullArguments_ThrowsArgumentNullException() {
             //Setup
             var graphToTest = BuildMapGraph();
-            graphToTest.BlobSiteFactory = BuildMockBlobSiteFactory();
             graphToTest.UIControl = BuildMockUIControl();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
 
             var node1 = graphToTest.BuildNode(Vector3.zero);
             var node2 = graphToTest.BuildNode(Vector3.one);
 
-            var edge1 = graphToTest.BuildUndirectedEdge(node1, node2);
+            var edge1 = graphToTest.BuildMapEdge(node1, node2);
 
             //Execution and Validation
             Assert.Throws<ArgumentNullException>(delegate() {
@@ -617,31 +601,31 @@ namespace Assets.Map.Editor {
             }, "UnubscribeNode() fails to throw on a null 'node' argument");
 
             Assert.Throws<ArgumentNullException>(delegate() {
-                graphToTest.BuildUndirectedEdge(null, node2);
+                graphToTest.BuildMapEdge(null, node2);
             }, "BuildUndirectedEdge() fails to throw on a null 'firstEndpoint' argument");
 
             Assert.Throws<ArgumentNullException>(delegate() {
-                graphToTest.BuildUndirectedEdge(node1, null);
+                graphToTest.BuildMapEdge(node1, null);
             }, "BuildUndirectedEdge() fails to throw on a null 'secondEndpoint' argument");
 
             Assert.Throws<ArgumentNullException>(delegate() {
-                graphToTest.DestroyUndirectedEdge(null, node2);
+                graphToTest.DestroyMapEdge(null, node2);
             }, "DestroyUndirectedEdge() fails to throw on a null 'firstEndpoint' argument");
 
             Assert.Throws<ArgumentNullException>(delegate() {
-                graphToTest.DestroyUndirectedEdge(node1, null);
+                graphToTest.DestroyMapEdge(node1, null);
             }, "DestroyUndirectedEdge() fails to throw on a null 'secondEndpoint' argument");
 
             Assert.Throws<ArgumentNullException>(delegate() {
-                graphToTest.DestroyUndirectedEdge(null);
+                graphToTest.DestroyMapEdge(null);
             }, "DestroyUndirectedEdge() fails to throw on a null 'edge' argument");
 
             Assert.Throws<ArgumentNullException>(delegate() {
-                graphToTest.SubscribeUndirectedEdge(null);
+                graphToTest.SubscribeMapEdge(null);
             }, "SubscribeDirectedEdge() fails to throw on a null 'edge' argument");
 
             Assert.Throws<ArgumentNullException>(delegate() {
-                graphToTest.UnsubscribeDirectedEdge(null);
+                graphToTest.UnsubscribeMapEdge(null);
             }, "UnsubscribeDirectedEdge() fails to throw on a null 'edge' argument");
 
             Assert.Throws<ArgumentNullException>(delegate() {
@@ -697,10 +681,6 @@ namespace Assets.Map.Editor {
             return true;
         }
 
-        private MockBlobSiteFactory BuildMockBlobSiteFactory() {
-            return (new GameObject()).AddComponent<MockBlobSiteFactory>();
-        }
-
         private MockUIControl BuildMockUIControl() {
             return (new GameObject()).AddComponent<MockUIControl>();
         }
@@ -709,15 +689,21 @@ namespace Assets.Map.Editor {
             return (new GameObject()).AddComponent<TerrainMaterialRegistry>();
         }
 
+        private MockBlobSiteConfiguration BuildMockBlobSiteConfiguration() {
+            return (new GameObject()).AddComponent<MockBlobSiteConfiguration>();
+        }
+
         private MapNode BuildMapNode() {
-            return (new GameObject()).AddComponent<MapNode>();
+            var newNode = (new GameObject()).AddComponent<MapNode>();
+            newNode.SetBlobSite(newNode.gameObject.AddComponent<MockBlobSite>());
+            return newNode;
         }
 
         private MapEdge BuildMapEdge(MapNodeBase firstNode, MapNodeBase secondNode) {
             var newEdge = (new GameObject()).AddComponent<MapEdge>();
 
-            newEdge.SetFirstNode(firstNode);
-            newEdge.SetSecondNode(secondNode);
+            newEdge.DisplayComponent = new GameObject().transform;
+            newEdge.SetNodes(firstNode, secondNode);
 
             return newEdge;
         }

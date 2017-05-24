@@ -32,11 +32,9 @@ namespace Assets.Map {
 
         public override MapGraphBase ParentGraph {
             get { return _parentGraph; }
+            set { _parentGraph = value; }
         }
-        public void SetParentGraph(MapGraphBase value) {
-            _parentGraph = value;
-        }
-        [SerializeField, HideInInspector] private MapGraphBase _parentGraph;
+        [SerializeField] private MapGraphBase _parentGraph;
 
         public override BlobSiteBase BlobSite {
             get { return _blobSite; }
@@ -44,7 +42,7 @@ namespace Assets.Map {
         public void SetBlobSite(BlobSiteBase value) {
             _blobSite = value;
         }
-        [SerializeField, HideInInspector] private BlobSiteBase _blobSite;
+        [SerializeField] private BlobSiteBase _blobSite;
 
         public override IEnumerable<MapNodeBase> Neighbors {
             get {
@@ -65,15 +63,13 @@ namespace Assets.Map {
         }
         [SerializeField] private TerrainType _terrain;
 
-        #endregion
-
-        public UIControlBase UIControl {
+        public override UIControlBase UIControl {
             get { return _uiControl; }
             set { _uiControl = value; }
         }
         [SerializeField] private UIControlBase _uiControl;
 
-        public TerrainMaterialRegistry TerrainMaterialRegistry {
+        public override TerrainMaterialRegistry TerrainMaterialRegistry {
             get { return _terrainMaterialRegistry; }
             set {
                 if(_terrainMaterialRegistry != null) {
@@ -81,11 +77,14 @@ namespace Assets.Map {
                 }
                 _terrainMaterialRegistry = value;
                 if(_terrainMaterialRegistry != null) {
+                    RefreshAppearance();
                     _terrainMaterialRegistry.TerrainMaterialChanged += TerrainMaterialRegistry_TerrainMaterialChanged;
                 }
             }
         }
         [SerializeField] private TerrainMaterialRegistry _terrainMaterialRegistry;
+
+        #endregion
 
         [SerializeField] private MeshRenderer TerrainSlateRenderer;
 
@@ -95,9 +94,23 @@ namespace Assets.Map {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
+            var graphAbove = GetComponentInParent<MapGraphBase>();
+            if(graphAbove != null) {
+                graphAbove.SubscribeNode(this);
+            }
+        }
+
+        private void OnValidate() {
+            RefreshAppearance();
             if(ParentGraph != null && ParentGraph.GetNodeOfID(ID) == null) {
                 ParentGraph.SubscribeNode(this);
+            }
+        }
+
+        private void Update() {
+            if(transform.hasChanged) {
+                RaiseTransformChanged();
             }
         }
 
@@ -105,10 +118,6 @@ namespace Assets.Map {
             if(ParentGraph != null) {
                 ParentGraph.UnsubscribeNode(this);
             }
-        }
-
-        private void OnValidate() {
-            RefreshAppearance();
         }
 
         #endregion

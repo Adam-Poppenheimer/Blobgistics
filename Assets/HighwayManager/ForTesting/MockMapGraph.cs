@@ -44,7 +44,7 @@ namespace Assets.HighwayManager.ForTesting {
 
         #region from MapGraphBase
 
-        public override MapEdgeBase BuildUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override MapEdgeBase BuildMapEdge(MapNodeBase first, MapNodeBase second) {
             var hostingObject = new GameObject();
             var newEdge = hostingObject.AddComponent<MockMapEdge>();
             newEdge.firstNode = first;
@@ -91,19 +91,23 @@ namespace Assets.HighwayManager.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void DestroyUndirectedEdge(MapEdgeBase edge) {
+        public override void DestroyMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
-        public override void DestroyUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override void DestroyMapEdge(MapNodeBase first, MapNodeBase second) {
             throw new NotImplementedException();
         }
 
-        public override void UnsubscribeDirectedEdge(MapEdgeBase edge) {
+        public override void UnsubscribeMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
         public override void SubscribeNode(MapNodeBase node) {
+            throw new NotImplementedException();
+        }
+
+        public override void LoadFromMapAsset(MapAsset asset) {
             throw new NotImplementedException();
         }
 
@@ -125,7 +129,7 @@ namespace Assets.HighwayManager.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void SubscribeUndirectedEdge(MapEdgeBase edge) {
+        public override void SubscribeMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 

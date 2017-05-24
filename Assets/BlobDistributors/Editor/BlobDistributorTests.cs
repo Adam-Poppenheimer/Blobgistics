@@ -418,9 +418,9 @@ namespace Assets.BlobDistributors.Editor {
             upNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             upNode.BlobSite.TotalCapacity = 100;
 
-            mapGraph.BuildUndirectedEdge(centerNode, leftNode);
-            mapGraph.BuildUndirectedEdge(centerNode, rightNode);
-            mapGraph.BuildUndirectedEdge(centerNode, upNode);
+            mapGraph.BuildMapEdge(centerNode, leftNode);
+            mapGraph.BuildMapEdge(centerNode, rightNode);
+            mapGraph.BuildMapEdge(centerNode, upNode);
         }
 
         private void SetUpHighwayFactory(BlobHighwayFactoryBase highwayFactory,

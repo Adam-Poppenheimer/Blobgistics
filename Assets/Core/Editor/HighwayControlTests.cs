@@ -33,8 +33,8 @@ namespace Assets.Core.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var leftNode   = mapGraph.BuildNode(Vector3.left);
 
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
 
             var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
@@ -74,9 +74,9 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             //Execution
 
@@ -120,9 +120,9 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             //Execution
             controlToTest.ConnectNodesWithHighway(middleNode.ID, rightNode.ID);
@@ -150,8 +150,8 @@ namespace Assets.Core.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var leftNode   = mapGraph.BuildNode(Vector3.left);
 
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
 
             var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
@@ -281,9 +281,9 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
@@ -313,9 +313,9 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.BuildUndirectedEdge(middleNode, rightNode);
-            mapGraph.BuildUndirectedEdge(middleNode, leftNode);
-            mapGraph.BuildUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             var highway1 = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEditor;
 
 using Assets.BlobSites;
 using Assets.Core;
@@ -12,6 +12,7 @@ using Assets.Core;
 namespace Assets.Map {
 
     [ExecuteInEditMode]
+    [SelectionBase]
     public class MapEdge : MapEdgeBase {
 
         #region instance fields and properties
@@ -23,20 +24,14 @@ namespace Assets.Map {
         }
 
         public override MapNodeBase FirstNode {
-            get { return _firstNode; }
+            get { return firstNode; }
         }
-        public void SetFirstNode(MapNodeBase value) {
-            _firstNode = value;
-        }
-        [SerializeField] private MapNodeBase _firstNode;
+        [SerializeField] private MapNodeBase firstNode;
 
         public override MapNodeBase SecondNode {
-            get { return _secondNode; }
+            get { return secondNode; }
         }
-        public void SetSecondNode(MapNodeBase value) {
-            _secondNode = value;
-        }
-        [SerializeField] private MapNodeBase _secondNode;
+        [SerializeField] private MapNodeBase secondNode;
 
         public override BlobSiteBase BlobSite {
             get { return _blobSite; }
@@ -48,11 +43,26 @@ namespace Assets.Map {
 
         public override MapGraphBase ParentGraph {
             get { return _parentGraph; }
-            set { _parentGraph = value; }
+            set {
+                _parentGraph = value;
+                if(_parentGraph == null) {
+                    DestroyOnNextUpdate = true;
+                }else {
+                    DestroyOnNextUpdate = false;
+                }
+            }
         }
         [SerializeField] private MapGraphBase _parentGraph;
 
         #endregion
+
+        public Transform DisplayComponent {
+            get { return _displayComponent; }
+            set { _displayComponent = value; }
+        }
+        [SerializeField] private Transform _displayComponent;
+
+        private bool DestroyOnNextUpdate = false;
 
         #endregion
 
@@ -60,13 +70,73 @@ namespace Assets.Map {
 
         #region Unity event methods
 
+        private void Awake() {
+            if(firstNode != null) {
+                firstNode.TransformChanged += OnEndpointTransformChanged;
+            }
+            if(secondNode != null) {
+                secondNode.TransformChanged += OnEndpointTransformChanged;
+            }
+        }
+
+        private void Start() {
+            var graphAbove = GetComponentInParent<MapGraphBase>();
+            if(graphAbove != null) {
+                graphAbove.SubscribeMapEdge(this);
+            }
+        }
+
+        private void Update() {
+            if(DestroyOnNextUpdate) {
+                DestroyImmediate(gameObject);
+            }
+        }
+
         private void OnDestroy() {
+            if(firstNode != null) {
+                firstNode.TransformChanged -= OnEndpointTransformChanged;
+            }
+            if(secondNode != null) {
+                secondNode.TransformChanged -= OnEndpointTransformChanged;
+            }
             if(ParentGraph != null) {
-                ParentGraph.UnsubscribeDirectedEdge(this);
+                ParentGraph.UnsubscribeMapEdge(this);
             }
         }
 
         #endregion
+
+        public void SetNodes(MapNodeBase firstNode, MapNodeBase secondNode) {
+            if(this.firstNode != null) {
+                this.firstNode.TransformChanged -= OnEndpointTransformChanged;
+            }
+            this.firstNode = firstNode;
+            if(this.firstNode != null) {
+                this.firstNode.TransformChanged += OnEndpointTransformChanged;
+            }
+
+            if(this.secondNode != null) {
+                this.secondNode.TransformChanged -= OnEndpointTransformChanged;
+            }
+            this.secondNode = secondNode;
+            if(this.secondNode != null) {
+                this.secondNode.TransformChanged += OnEndpointTransformChanged;
+            }
+
+            RefreshOrientation();
+        }
+
+        private void RefreshOrientation() {
+            if(firstNode != null && secondNode != null) {
+                EdgeOrientationUtil.AlignTransformWithEndpoints(transform, firstNode.transform.position, secondNode.transform.position, false);
+                EdgeOrientationUtil.AlignTransformWithEndpoints(DisplayComponent, firstNode.transform.position, secondNode.transform.position, true);
+                RaiseOrientationRefreshed();
+            }
+        }
+
+        private void OnEndpointTransformChanged(object sender, EventArgs e) {
+            RefreshOrientation();
+        }
 
         #endregion
 

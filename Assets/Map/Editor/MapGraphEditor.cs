@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,17 +7,23 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 
+using Assets.Map;
+
 using UnityCustomUtilities.Extensions;
 
-namespace Assets.Map {
+namespace Assets.Map.Editor {
 
     [CustomEditor(typeof(MapGraph))]
-    public class MapGraphEditor : Editor {
+    public class MapGraphEditor : UnityEditor.Editor {
 
         #region instance fields and properties
 
         private MapNode FromNode = null;
         private MapNode ToNode = null;
+
+        private string NewAssetName = "";
+
+        private MapAsset MapAssetToLoad;
 
         private MapGraph TargetedGraph {
             get { return target as MapGraph; }
@@ -27,6 +34,38 @@ namespace Assets.Map {
         #region instance methods
 
         #region Unity event methods
+
+        public override void OnInspectorGUI() {
+            DrawDefaultInspector();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+
+            NewAssetName = GUILayout.TextField(NewAssetName);
+            if(GUILayout.Button("Save Configuration to Asset")) {
+                if(string.IsNullOrEmpty(NewAssetName) || NewAssetName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
+                    Debug.LogErrorFormat("Failed to save configuration: '{0}' is not a valid asset name", NewAssetName);
+                }else {
+                    var newMapAsset = CreateInstance<MapAsset>();
+                    newMapAsset.LoadMapGraphInto(TargetedGraph);
+                    AssetDatabase.CreateAsset(newMapAsset, "Assets/Map/Configurations/" + NewAssetName + ".asset");
+                }
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+
+            MapAssetToLoad = EditorGUILayout.ObjectField("Asset to load", MapAssetToLoad, typeof(MapAsset), true) as MapAsset;
+            if(GUILayout.Button("Load Configuration From Asset")) {
+                if(MapAssetToLoad == null){
+                    Debug.LogError("");
+                }else {
+                    TargetedGraph.LoadFromMapAsset(MapAssetToLoad);
+                    MapAssetToLoad = null;
+                }
+            }
+        }
 
         private void OnSceneGUI() {
             DrawAllEdges();
@@ -82,7 +121,7 @@ namespace Assets.Map {
         private void HandleMouseUp(Event evnt, MapNode candidateNode) {
             if(FromNode != null && ToNode != null) {
                 if(TargetedGraph.GetEdge(FromNode, ToNode) == null) {
-                    TargetedGraph.BuildUndirectedEdge(FromNode, ToNode);
+                    TargetedGraph.BuildMapEdge(FromNode, ToNode);
                 }
                 evnt.Use();
             }
@@ -108,14 +147,17 @@ namespace Assets.Map {
                 return;
             }
             foreach(var edge in TargetedGraph.Edges) {
-                Handles.color = Color.white;
-                Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);
-                var midpoint = (edge.FirstNode.transform.position + edge.SecondNode.transform.position ) / 2f;
-                Handles.color = Color.red;
-                if(Handles.Button(midpoint, Quaternion.identity, 0.25f, 0.25f, Handles.SphereCap)) {
-                    TargetedGraph.DestroyUndirectedEdge(edge);
-                    break;
+                if(edge != null && edge.FirstNode != null && edge.SecondNode != null) {
+                    Handles.color = Color.white;
+                    Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);
+                    var midpoint = (edge.FirstNode.transform.position + edge.SecondNode.transform.position ) / 2f;
+                    Handles.color = Color.red;
+                    if(Handles.Button(midpoint, Quaternion.identity, 0.25f, 0.25f, Handles.SphereCap)) {
+                        TargetedGraph.DestroyMapEdge(edge);
+                        break;
+                    }
                 }
+                
             }
         }
 

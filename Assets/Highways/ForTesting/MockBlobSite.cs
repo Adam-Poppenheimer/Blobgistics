@@ -37,8 +37,12 @@ namespace Assets.Highways.ForTesting {
             }
         }
 
-        public override float ConnectionCircleRadius {
+        public override BlobSiteConfigurationBase Configuration {
             get {
+                throw new NotImplementedException();
+            }
+
+            set {
                 throw new NotImplementedException();
             }
         }

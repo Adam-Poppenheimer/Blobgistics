@@ -9,7 +9,7 @@ using Assets.Blobs;
 
 namespace Assets.BlobSites {
 
-    public abstract class BlobSitePrivateDataBase : MonoBehaviour {
+    public abstract class BlobSiteConfigurationBase : MonoBehaviour {
 
         #region instance fields and properties
 

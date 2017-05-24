@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Assets.BlobSites;
+using Assets.Core;
 using Assets.Map;
 
 namespace Assets.HighwayManager.ForTesting {
@@ -33,6 +34,9 @@ namespace Assets.HighwayManager.ForTesting {
             get {
                 throw new NotImplementedException();
             }
+            set {
+                throw new NotImplementedException();
+            }
         }
         public MapGraphBase managingGraph;
 
@@ -41,6 +45,26 @@ namespace Assets.HighwayManager.ForTesting {
         }
 
         public override TerrainType Terrain {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override TerrainMaterialRegistry TerrainMaterialRegistry {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override UIControlBase UIControl {
             get {
                 throw new NotImplementedException();
             }

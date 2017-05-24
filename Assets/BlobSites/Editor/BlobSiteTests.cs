@@ -18,7 +18,7 @@ namespace Assets.BlobSites.Editor {
 
         #region instance fields and properties
 
-        private BlobSitePrivateDataBase PrivateData {
+        private BlobSiteConfigurationBase PrivateData {
             get {
                 if(_privateData == null) {
                     var hostingObject = new GameObject();
@@ -38,51 +38,6 @@ namespace Assets.BlobSites.Editor {
         #region tests
 
         #region functionality
-
-        [Test]
-        public void OnInitialization_GetPlacementPermissionForResourceTypeIsFalseForAllResourceTypes() {
-            //Setup
-            var factoryToUse = BuildFactory(PrivateData);
-
-            //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(new GameObject());
-
-            //Validation
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                Assert.That(!siteToTest.GetPlacementPermissionForResourceType(resourceType),
-                    "BlobSite is permitting resource type " + resourceType);
-            }
-        }
-
-        [Test]
-        public void OnInitialization_GetExtractionPermissionForResourceTypeIsFalseForAllResourceTypes() {
-            //Setup
-            var factoryToUse = BuildFactory(PrivateData);
-
-            //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(new GameObject());
-
-            //Validation
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                Assert.That(!siteToTest.GetExtractionPermissionForResourceType(resourceType),
-                    "BlobSite is permitting resource type " + resourceType);
-            }
-        }
-
-        [Test]
-        public void OnInitialization_GetCapacityForResourceTypeIsZeroForAllResourceTypes() {
-            //Setup
-            var factoryToUse = BuildFactory(PrivateData);
-
-            //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(new GameObject());
-
-            //Validation
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(resourceType),
-                    "Capacity is nonzero for resource type " + resourceType);
-            }
-        }
 
         [Test]
         public void OnGetPointOfConnectionFacingPointCalled_ValueReturnedLiesOnTheCorrectConnectionCircle() {
@@ -1261,18 +1216,11 @@ namespace Assets.BlobSites.Editor {
 
         #region utilities
 
-        private BlobSite BuildBlobSite(BlobSitePrivateDataBase privateData) {
+        private BlobSite BuildBlobSite(BlobSiteConfigurationBase privateData) {
             var hostingObject = new GameObject();
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
-            newBlobSite.PrivateData = privateData;
+            newBlobSite.Configuration = privateData;
             return newBlobSite;
-        }
-
-        private BlobSiteFactory BuildFactory(BlobSitePrivateDataBase privateData) {
-            var hostingObject = new GameObject();
-            var newFactory = hostingObject.AddComponent<BlobSiteFactory>();
-            newFactory.BlobSitePrivateData = privateData;
-            return newFactory;
         }
 
         private ResourceBlobBase BuildBlob(ResourceType type) {
@@ -1282,9 +1230,9 @@ namespace Assets.BlobSites.Editor {
             return newBlob;
         }
 
-        private BlobSitePrivateData BuildBlobSitePrivateData() {
+        private BlobSiteConfiguration BuildBlobSitePrivateData() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<BlobSitePrivateData>();
+            return hostingObject.AddComponent<BlobSiteConfiguration>();
         }
 
         #endregion

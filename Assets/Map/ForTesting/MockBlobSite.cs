@@ -15,11 +15,7 @@ namespace Assets.Map.ForTesting {
 
         #region BlobSiteBase
 
-        public override float ConnectionCircleRadius {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public override BlobSiteConfigurationBase Configuration { get; set; }
 
         public override ReadOnlyCollection<ResourceBlobBase> Contents {
             get {

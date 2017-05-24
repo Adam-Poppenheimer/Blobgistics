@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Societies.ForTesting {
 
-    public class MockBlobSitePrivateData : BlobSitePrivateDataBase {
+    public class MockBlobSitePrivateData : BlobSiteConfigurationBase {
 
         #region instance fields and properties
 

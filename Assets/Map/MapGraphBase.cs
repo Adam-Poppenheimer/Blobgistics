@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Assets.Map {
 
+    [ExecuteInEditMode]
     public abstract class MapGraphBase : MonoBehaviour {
 
         #region instance fields and properties
@@ -27,13 +28,15 @@ namespace Assets.Map {
         public abstract void SubscribeNode  (MapNodeBase node);
         public abstract void UnsubscribeNode(MapNodeBase node);
 
-        public abstract MapEdgeBase BuildUndirectedEdge(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
+        public abstract MapEdgeBase BuildMapEdge(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
 
-        public abstract void DestroyUndirectedEdge(MapNodeBase first, MapNodeBase second);
-        public abstract void DestroyUndirectedEdge(MapEdgeBase edge);
+        public abstract void DestroyMapEdge(MapNodeBase first, MapNodeBase second);
+        public abstract void DestroyMapEdge(MapEdgeBase edge);
 
-        public abstract void SubscribeUndirectedEdge  (MapEdgeBase edge);
-        public abstract void UnsubscribeDirectedEdge(MapEdgeBase edge);
+        public abstract void SubscribeMapEdge(MapEdgeBase edge);
+        public abstract void UnsubscribeMapEdge(MapEdgeBase edge);
+
+        public abstract void LoadFromMapAsset(MapAsset asset);
 
         public abstract MapNodeBase GetNodeOfID(int id);
 

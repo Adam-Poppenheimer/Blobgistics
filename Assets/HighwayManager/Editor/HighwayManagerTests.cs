@@ -207,10 +207,10 @@ namespace Assets.HighwayManager.Editor {
             node4.name = "Node4";
             node5.name = "Node5";
 
-            mapGraph.BuildUndirectedEdge(node1, node2);
-            mapGraph.BuildUndirectedEdge(node2, node3);
-            mapGraph.BuildUndirectedEdge(node3, node4);
-            mapGraph.BuildUndirectedEdge(node4, node5);
+            mapGraph.BuildMapEdge(node1, node2);
+            mapGraph.BuildMapEdge(node2, node3);
+            mapGraph.BuildMapEdge(node3, node4);
+            mapGraph.BuildMapEdge(node4, node5);
 
             var highwayFactory = BuildMockHighwayFactory();
 
@@ -266,10 +266,10 @@ namespace Assets.HighwayManager.Editor {
             node4.name = "Node4";
             node5.name = "Node5";
 
-            mapGraph.BuildUndirectedEdge(node1, node2);
-            mapGraph.BuildUndirectedEdge(node2, node3);
-            mapGraph.BuildUndirectedEdge(node3, node4);
-            mapGraph.BuildUndirectedEdge(node4, node5);
+            mapGraph.BuildMapEdge(node1, node2);
+            mapGraph.BuildMapEdge(node2, node3);
+            mapGraph.BuildMapEdge(node3, node4);
+            mapGraph.BuildMapEdge(node4, node5);
 
             var highwayFactory = BuildMockHighwayFactory();
 
@@ -319,10 +319,10 @@ namespace Assets.HighwayManager.Editor {
             node4.name = "Node4";
             node5.name = "Node5";
 
-            mapGraph.BuildUndirectedEdge(node1, node2);
-            mapGraph.BuildUndirectedEdge(node2, node3);
-            mapGraph.BuildUndirectedEdge(node3, node4);
-            mapGraph.BuildUndirectedEdge(node4, node5);
+            mapGraph.BuildMapEdge(node1, node2);
+            mapGraph.BuildMapEdge(node2, node3);
+            mapGraph.BuildMapEdge(node3, node4);
+            mapGraph.BuildMapEdge(node4, node5);
 
             var highwayFactory = BuildMockHighwayFactory();
 
@@ -462,10 +462,10 @@ namespace Assets.HighwayManager.Editor {
             }
             node1.BlobSite.TotalCapacity = 100;
 
-            mapGraph.BuildUndirectedEdge(node1, node2);
-            mapGraph.BuildUndirectedEdge(node2, node3);
-            mapGraph.BuildUndirectedEdge(node3, node4);
-            mapGraph.BuildUndirectedEdge(node4, node5);
+            mapGraph.BuildMapEdge(node1, node2);
+            mapGraph.BuildMapEdge(node2, node3);
+            mapGraph.BuildMapEdge(node3, node4);
+            mapGraph.BuildMapEdge(node4, node5);
 
             var highwayFactory = BuildMockHighwayFactory();
 
@@ -530,10 +530,10 @@ namespace Assets.HighwayManager.Editor {
             node4.name = "Node4";
             node5.name = "Node5";
 
-            mapGraph.BuildUndirectedEdge(node1, node2);
-            mapGraph.BuildUndirectedEdge(node2, node3);
-            mapGraph.BuildUndirectedEdge(node3, node4);
-            mapGraph.BuildUndirectedEdge(node4, node5);
+            mapGraph.BuildMapEdge(node1, node2);
+            mapGraph.BuildMapEdge(node2, node3);
+            mapGraph.BuildMapEdge(node3, node4);
+            mapGraph.BuildMapEdge(node4, node5);
 
             var highwayFactory = BuildMockHighwayFactory();
 
@@ -590,11 +590,11 @@ namespace Assets.HighwayManager.Editor {
             node1.BlobSite.TotalCapacity = 100;
             node1.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Food));
 
-            mapGraph.BuildUndirectedEdge(node1, node2);
-            mapGraph.BuildUndirectedEdge(node2, node3);
-            mapGraph.BuildUndirectedEdge(node3, node4);
-            mapGraph.BuildUndirectedEdge(node4, node5);
-            mapGraph.BuildUndirectedEdge(node5, node1);
+            mapGraph.BuildMapEdge(node1, node2);
+            mapGraph.BuildMapEdge(node2, node3);
+            mapGraph.BuildMapEdge(node3, node4);
+            mapGraph.BuildMapEdge(node4, node5);
+            mapGraph.BuildMapEdge(node5, node1);
 
             var highwayFactory = BuildMockHighwayFactory();
 

@@ -36,7 +36,7 @@ namespace Assets.BlobSites {
 
             Transform = siteToSummarize.transform;
 
-            ConnectionCircleRadius = siteToSummarize.ConnectionCircleRadius;
+            ConnectionCircleRadius = siteToSummarize.Configuration.ConnectionCircleRadius;
         }
 
         #endregion
