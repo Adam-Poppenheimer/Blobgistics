@@ -15,11 +15,19 @@ namespace Assets.HighwayManager {
 
         #region instance fields and properties
 
-        public int ID { get; set; }
+        public int ID {
+            get { return UnderlyingManager.ID; }
+        }
 
-        public ReadOnlyDictionary<ResourceType, int> LastUpkeep { get; set; }
+        public ReadOnlyDictionary<ResourceType, int> LastUpkeep {
+            get { return UnderlyingManager.LastCalculatedUpkeep; }
+        }
 
-        public Transform Transform { get; set; }
+        public Transform Transform {
+            get { return UnderlyingManager.transform; }
+        }
+
+        private HighwayManagerBase UnderlyingManager;
 
         #endregion
 
@@ -27,10 +35,8 @@ namespace Assets.HighwayManager {
 
         public HighwayManagerUISummary() { }
 
-        public HighwayManagerUISummary(HighwayManagerBase manager) {
-            ID = manager.ID;
-            LastUpkeep = manager.LastCalculatedUpkeep;
-            Transform = manager.transform;
+        public HighwayManagerUISummary(HighwayManagerBase underlyingManager) {
+            UnderlyingManager = underlyingManager;
         }
 
         #endregion

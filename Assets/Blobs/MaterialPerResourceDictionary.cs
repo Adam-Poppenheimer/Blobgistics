@@ -11,7 +11,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Blobs {
 
-    public class MaterialResourceSummary : ResourceSummaryBase<Material> {
+    public class MaterialPerResourceDictionary : PerResourceDictionaryBase<Material> {
 
         #region instance fields and properties
 
@@ -27,8 +27,8 @@ namespace Assets.Blobs {
 
         #region static methods
 
-        public static MaterialResourceSummary BuildSummary(GameObject objectToAddTo) {
-            var newSummary = objectToAddTo.AddComponent<MaterialResourceSummary>();
+        public static MaterialPerResourceDictionary BuildSummary(GameObject objectToAddTo) {
+            var newSummary = objectToAddTo.AddComponent<MaterialPerResourceDictionary>();
             if(newSummary.ValueList.Count != EnumUtil.GetValues<ResourceType>().Count()) {
                 newSummary.ValueList.Clear();
                 #pragma warning disable 0168
@@ -40,7 +40,7 @@ namespace Assets.Blobs {
             return newSummary;
         }
 
-        public static MaterialResourceSummary BuildSummary(GameObject objectToAddTo, Dictionary<ResourceType, Material> resourceCountByType){
+        public static MaterialPerResourceDictionary BuildSummary(GameObject objectToAddTo, Dictionary<ResourceType, Material> resourceCountByType){
             var newSummary = BuildSummary(objectToAddTo);
             foreach(var pair in resourceCountByType) {
                 newSummary[pair.Key] = pair.Value;
@@ -48,7 +48,7 @@ namespace Assets.Blobs {
             return newSummary;
         }
 
-        public static MaterialResourceSummary BuildSummary(GameObject objectToAddTo, params KeyValuePair<ResourceType, Material>[] resourcePairs) {
+        public static MaterialPerResourceDictionary BuildSummary(GameObject objectToAddTo, params KeyValuePair<ResourceType, Material>[] resourcePairs) {
             var newSummary = BuildSummary(objectToAddTo);
             foreach(var pair in resourcePairs) {
                 newSummary[pair.Key] = pair.Value;

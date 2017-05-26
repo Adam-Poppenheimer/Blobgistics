@@ -472,7 +472,7 @@ namespace Assets.HighwayManager.Editor {
             var privateData = BuildManagerPrivateData();
             privateData.SetSecondsToPerformConsumption(1f);
             privateData.SetBlobFactory(BuildMockBlobFactory());
-            privateData.SetEfficiencyGainFromResource(IntResourceSummary.BuildSummary(new GameObject()));
+            privateData.SetEfficiencyGainFromResource(IntPerResourceDictionary.BuildSummary(new GameObject()));
 
             var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.MapGraph = mapGraph;
@@ -540,7 +540,7 @@ namespace Assets.HighwayManager.Editor {
             var privateData = BuildManagerPrivateData();
             privateData.SetSecondsToPerformConsumption(1f);
             privateData.SetBlobFactory(BuildMockBlobFactory());
-            privateData.SetEfficiencyGainFromResource(IntResourceSummary.BuildSummary(new GameObject()));
+            privateData.SetEfficiencyGainFromResource(IntPerResourceDictionary.BuildSummary(new GameObject()));
 
             var managerFactory = BuildHighwayManagerFactory(privateData);
             managerFactory.MapGraph = mapGraph;
@@ -601,7 +601,7 @@ namespace Assets.HighwayManager.Editor {
             var privateData = BuildManagerPrivateData();
             privateData.SetSecondsToPerformConsumption(1f);
             privateData.SetBlobFactory(BuildMockBlobFactory());
-            privateData.SetEfficiencyGainFromResource(IntResourceSummary.BuildSummary(new GameObject(), new Dictionary<ResourceType, int>() {
+            privateData.SetEfficiencyGainFromResource(IntPerResourceDictionary.BuildSummary(new GameObject(), new Dictionary<ResourceType, int>() {
                 { ResourceType.Food,         3  },
                 { ResourceType.Textiles,     5  },
                 { ResourceType.ServiceGoods, 8  },

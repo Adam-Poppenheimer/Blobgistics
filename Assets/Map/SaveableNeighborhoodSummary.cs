@@ -21,12 +21,12 @@ namespace Assets.Map {
         public ReadOnlyCollection<int> NodeIDsInNeighborhood {
             get { return nodeIDsInNeighborhood.AsReadOnly(); }
         }
-        private List<int> nodeIDsInNeighborhood;
+        [SerializeField] private List<int> nodeIDsInNeighborhood;
 
         public ReadOnlyCollection<int> EdgeIDsInNeighborhood {
             get { return edgeIDsInNeighborhood.AsReadOnly(); }
         }
-        private List<int> edgeIDsInNeighborhood;
+        [SerializeField] private List<int> edgeIDsInNeighborhood;
 
         #endregion
 

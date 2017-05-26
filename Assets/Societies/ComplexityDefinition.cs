@@ -21,52 +21,52 @@ namespace Assets.Societies {
             get { return name; }
         }
 
-        public override IntResourceSummary Production {
+        public override IntPerResourceDictionary Production {
             get {
                 if(_production == null) {
-                    _production = IntResourceSummary.BuildSummary(gameObject);
+                    _production = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _production;
             }
         }
-        public void SetProduction(IntResourceSummary value) {
+        public void SetProduction(IntPerResourceDictionary value) {
             _production = value;
         }
-        [SerializeField] private IntResourceSummary _production;
+        [SerializeField] private IntPerResourceDictionary _production;
 
-        public override IntResourceSummary Needs {
+        public override IntPerResourceDictionary Needs {
             get {
                 if(_needs == null) {
-                    _needs = IntResourceSummary.BuildSummary(gameObject);
+                    _needs = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _needs;
             }
         }
-        public void SetNeeds(IntResourceSummary value) {
+        public void SetNeeds(IntPerResourceDictionary value) {
             _needs = value;
         }
-        [SerializeField] private IntResourceSummary _needs;
+        [SerializeField] private IntPerResourceDictionary _needs;
 
-        public override IEnumerable<IntResourceSummary> Wants {
+        public override IEnumerable<IntPerResourceDictionary> Wants {
             get { return _wants; }
         }
-        public void SetWants(List<IntResourceSummary> value) {
+        public void SetWants(List<IntPerResourceDictionary> value) {
             _wants = value;
         }
-        [SerializeField] private List<IntResourceSummary> _wants= new List<IntResourceSummary>();
+        [SerializeField] private List<IntPerResourceDictionary> _wants= new List<IntPerResourceDictionary>();
 
-        public override IntResourceSummary CostToAscendInto {
+        public override IntPerResourceDictionary CostToAscendInto {
             get {
                 if(_costToAscendInto == null) {
-                    _costToAscendInto = IntResourceSummary.BuildSummary(gameObject);
+                    _costToAscendInto = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _costToAscendInto;
             }
         }
-        public void SetCostOfAscent(IntResourceSummary value) {
+        public void SetCostOfAscent(IntPerResourceDictionary value) {
             _costToAscendInto = value;
         }
-        [SerializeField] private IntResourceSummary _costToAscendInto;
+        [SerializeField] private IntPerResourceDictionary _costToAscendInto;
 
         public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }

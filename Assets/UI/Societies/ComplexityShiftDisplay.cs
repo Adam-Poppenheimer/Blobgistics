@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 using Assets.Societies;
 using Assets.Map;
+using Assets.UI.Blobs;
 
 namespace Assets.UI.Societies {
 
@@ -20,7 +21,7 @@ namespace Assets.UI.Societies {
 
         [SerializeField] private Text NameField;
         [SerializeField] private Text PermittedTerrainsField;
-        [SerializeField] private Text CostField;
+        [SerializeField] private ResourceDisplay CostField;
 
         [SerializeField] private Color IsCandidateForShiftColor;
         [SerializeField] private Color IsNotCandidateForShiftColor;
@@ -56,8 +57,7 @@ namespace Assets.UI.Societies {
             }
 
             if(CostField != null) {
-                CostField.color = IsCandidateForShift ? IsCandidateForShiftColor : IsNotCandidateForShiftColor;
-                CostField.text  = ComplexityToDisplay.CostToAscendInto.GetSummaryString();
+                CostField.PushAndDisplaySummary(ComplexityToDisplay.CostToAscendInto);
             }
         }
 

@@ -13,7 +13,7 @@ using UnityCustomUtilities.Extensions;
 namespace Assets.Blobs {
 
     [Serializable]
-    public class IntResourceSummary : ResourceSummaryBase<int>, IEnumerable<ResourceType> {
+    public class IntPerResourceDictionary : PerResourceDictionaryBase<int>, IEnumerable<ResourceType> {
 
         #region instance fields and properties
 
@@ -29,8 +29,8 @@ namespace Assets.Blobs {
 
         #region static methods
 
-        public static IntResourceSummary BuildSummary(GameObject objectToAddTo) {
-            var newSummary = objectToAddTo.AddComponent<IntResourceSummary>();
+        public static IntPerResourceDictionary BuildSummary(GameObject objectToAddTo) {
+            var newSummary = objectToAddTo.AddComponent<IntPerResourceDictionary>();
             if(newSummary.ValueList.Count != EnumUtil.GetValues<ResourceType>().Count()) {
                 newSummary.ValueList.Clear();
                 #pragma warning disable 0168
@@ -42,7 +42,7 @@ namespace Assets.Blobs {
             return newSummary;
         }
 
-        public static IntResourceSummary BuildSummary(GameObject objectToAddTo, Dictionary<ResourceType, int> resourceCountByType){
+        public static IntPerResourceDictionary BuildSummary(GameObject objectToAddTo, Dictionary<ResourceType, int> resourceCountByType){
             var newSummary = BuildSummary(objectToAddTo);
             foreach(var pair in resourceCountByType) {
                 newSummary[pair.Key] = pair.Value;
@@ -50,7 +50,7 @@ namespace Assets.Blobs {
             return newSummary;
         }
 
-        public static IntResourceSummary BuildSummary(GameObject objectToAddTo, params KeyValuePair<ResourceType, int>[] resourcePairs) {
+        public static IntPerResourceDictionary BuildSummary(GameObject objectToAddTo, params KeyValuePair<ResourceType, int>[] resourcePairs) {
             var newSummary = BuildSummary(objectToAddTo);
             foreach(var pair in resourcePairs) {
                 newSummary[pair.Key] = pair.Value;

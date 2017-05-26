@@ -10,7 +10,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Blobs {
 
-    public abstract class ResourceSummaryBase<T> : MonoBehaviour, IEnumerable<ResourceType> {
+    public abstract class PerResourceDictionaryBase<T> : MonoBehaviour, IEnumerable<ResourceType> {
 
         #region instance fields and properties
 
@@ -25,6 +25,8 @@ namespace Assets.Blobs {
         [SerializeField] protected List<T> ValueList = new List<T>();
 
         protected abstract T DefaultValue { get; }
+
+        private Dictionary<ResourceType, T> DictionaryRepresentation;
 
         #endregion
 
@@ -64,6 +66,16 @@ namespace Assets.Blobs {
         }
 
         #endregion
+
+        public ReadOnlyDictionary<ResourceType, T> ToReadOnlyDictionary() {
+            if(DictionaryRepresentation == null) {
+                DictionaryRepresentation = new Dictionary<ResourceType, T>();
+                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                    DictionaryRepresentation[resourceType] = this[resourceType];
+                }
+            }
+            return new ReadOnlyDictionary<ResourceType, T>(DictionaryRepresentation);
+        }
 
         #endregion
 

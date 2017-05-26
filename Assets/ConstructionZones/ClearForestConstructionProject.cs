@@ -9,13 +9,15 @@ using Assets.Blobs;
 using Assets.BlobSites;
 using Assets.Map;
 
+using Assets.UI.Blobs;
+
 namespace Assets.ConstructionZones {
 
     public class ClearForestConstructionProject : ConstructionProjectBase {
 
         #region instance fields and properties
 
-        [SerializeField] private IntResourceSummary Cost;
+        [SerializeField] private IntPerResourceDictionary Cost;
 
         #endregion
 
@@ -39,8 +41,8 @@ namespace Assets.ConstructionZones {
             site.SetPlacementPermissionsAndCapacity(Cost);
         }
 
-        public override string GetCostSummaryString() {
-            return Cost.GetSummaryString();
+        public override ResourceDisplayInfo GetCostInfo() {
+            return new ResourceDisplayInfo(Cost);
         }
 
         #endregion

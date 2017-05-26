@@ -138,7 +138,7 @@ namespace Assets.Highways.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void SetPlacementPermissionsAndCapacity(IntResourceSummary placementSummary) {
+        public override void SetPlacementPermissionsAndCapacity(IntPerResourceDictionary placementSummary) {
             throw new NotImplementedException();
         }
 

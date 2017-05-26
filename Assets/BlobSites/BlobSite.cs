@@ -200,7 +200,7 @@ namespace Assets.BlobSites {
             ExtractionPermissionsByResourceType[type] = isPermitted;
         }
 
-        public override void SetPlacementPermissionsAndCapacity(IntResourceSummary placementSummary) {
+        public override void SetPlacementPermissionsAndCapacity(IntPerResourceDictionary placementSummary) {
             if(placementSummary == null) {
                 throw new ArgumentNullException("summary");
             }

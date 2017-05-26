@@ -22,7 +22,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override IntResourceSummary CostToAscendInto {
+        public override IntPerResourceDictionary CostToAscendInto {
             get {
                 throw new NotImplementedException();
             }
@@ -40,7 +40,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override IntResourceSummary Needs {
+        public override IntPerResourceDictionary Needs {
             get {
                 throw new NotImplementedException();
             }
@@ -52,7 +52,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override IntResourceSummary Production {
+        public override IntPerResourceDictionary Production {
             get {
                 throw new NotImplementedException();
             }
@@ -76,7 +76,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override IEnumerable<IntResourceSummary> Wants {
+        public override IEnumerable<IntPerResourceDictionary> Wants {
             get {
                 throw new NotImplementedException();
             }

@@ -10,6 +10,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 using Assets.Societies;
+using Assets.UI.Blobs;
 
 namespace Assets.UI.Societies {
 
@@ -32,10 +33,10 @@ namespace Assets.UI.Societies {
         [SerializeField] private Button DestroySocietyButton;
 
         [SerializeField] private Text CurrentComplexityNameField;
-        [SerializeField] private Text CurrentComplexityProductionField;
-        [SerializeField] private Text CurrentComplexityNeedsField;
+        [SerializeField] private ResourceDisplayBase CurrentComplexityProductionField;
+        [SerializeField] private ResourceDisplayBase CurrentComplexityNeedsField;
         [SerializeField] private Text CurrentComplexityWantsField;
-        [SerializeField] private Text CurrentComplexityCostToAscendIntoField;
+        [SerializeField] private ResourceDisplayBase CurrentComplexityCostToAscendIntoField;
 
         [SerializeField] private RectTransform DescentComplexitySection;
         [SerializeField] private RectTransform AscentComplexitySection;
@@ -108,12 +109,12 @@ namespace Assets.UI.Societies {
             SecondsOfUnsatisfiedNeedsField.text = "";
             SecondsUntilComplexityDescentField.text = "";
 
-            foreach(var textField in AscentComplexityShiftDisplays) {
-                textField.gameObject.SetActive(false);
+            foreach(var display in AscentComplexityShiftDisplays) {
+                display.gameObject.SetActive(false);
             }
 
-            foreach(var textField in DescentComplexityShiftDisplays) {
-                textField.gameObject.SetActive(false);
+            foreach(var display in DescentComplexityShiftDisplays) {
+                display.gameObject.SetActive(false);
             }
 
             PermitAscensionToggle.isOn = false;
@@ -149,8 +150,8 @@ namespace Assets.UI.Societies {
 
         private void UpdateCurrentComplexityDisplay(ComplexityDefinitionBase currentComplexity) {
             CurrentComplexityNameField.text = currentComplexity.Name;
-            CurrentComplexityProductionField.text = currentComplexity.Production.GetSummaryString();
-            CurrentComplexityNeedsField.text = currentComplexity.Needs.GetSummaryString();
+            CurrentComplexityProductionField.PushAndDisplaySummary(currentComplexity.Production);
+            CurrentComplexityNeedsField.PushAndDisplaySummary(currentComplexity.Needs);
 
             CurrentComplexityWantsField.text = "";
             foreach(var want in currentComplexity.Wants) {
@@ -160,7 +161,7 @@ namespace Assets.UI.Societies {
                     CurrentComplexityWantsField.text += want.GetSummaryString() + " OR ";
                 }
             }
-            CurrentComplexityCostToAscendIntoField.text = currentComplexity.CostToAscendInto.GetSummaryString();
+            CurrentComplexityCostToAscendIntoField.PushAndDisplaySummary(currentComplexity.CostToAscendInto);
         }
 
         private void UpdateAscentDisplay() {

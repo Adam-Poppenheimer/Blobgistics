@@ -10,7 +10,7 @@ using Assets.Blobs;
 
 namespace Assets.UI {
 
-    public class ToggleResourceSummary : ResourceSummaryBase<Toggle> {
+    public class ToggleResourceSummary : PerResourceDictionaryBase<Toggle> {
 
         #region instance fields and properties
 

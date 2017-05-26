@@ -129,7 +129,7 @@ namespace Assets.BlobSites.Editor {
         public void OnSetPermissionAndCapacityCalled_PermissionsAndCapacitiesAreCorrectlyAssigned() {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
-            var placementPermissionSummary = IntResourceSummary.BuildSummary(
+            var placementPermissionSummary = IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 2),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 4),
@@ -402,7 +402,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -711,7 +711,7 @@ namespace Assets.BlobSites.Editor {
             var greenBlob = BuildBlob(ResourceType.Textiles);
             var blueBlob  = BuildBlob(ResourceType.ServiceGoods);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -742,7 +742,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
@@ -774,7 +774,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 5),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 5),
@@ -803,7 +803,7 @@ namespace Assets.BlobSites.Editor {
             var greenBlob = BuildBlob(ResourceType.Textiles);
             var blueBlob  = BuildBlob(ResourceType.ServiceGoods);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -859,7 +859,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -880,7 +880,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
@@ -910,7 +910,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
@@ -940,7 +940,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
@@ -972,7 +972,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
@@ -1004,7 +1004,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
@@ -1037,7 +1037,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
@@ -1072,7 +1072,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -1094,7 +1094,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
@@ -1123,7 +1123,7 @@ namespace Assets.BlobSites.Editor {
 
             var siteToTest = BuildBlobSite(newPrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 5)
             ));

@@ -17,11 +17,11 @@ namespace Assets.Societies {
 
         public abstract string Name { get; }
 
-        public abstract IntResourceSummary Production { get; }
-        public abstract IntResourceSummary Needs { get; }
-        public abstract IEnumerable<IntResourceSummary> Wants { get; }
+        public abstract IntPerResourceDictionary Production { get; }
+        public abstract IntPerResourceDictionary Needs { get; }
+        public abstract IEnumerable<IntPerResourceDictionary> Wants { get; }
 
-        public abstract IntResourceSummary CostToAscendInto { get; }
+        public abstract IntPerResourceDictionary CostToAscendInto { get; }
 
         public abstract uint ProductionCapacityCoefficient { get; }
         public abstract uint NeedsCapacityCoefficient { get; }

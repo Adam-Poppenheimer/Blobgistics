@@ -16,8 +16,17 @@ namespace Assets.Core.ForTesting {
         #region from HighwayManagerBase
 
         public override int ID {
-            get { return GetInstanceID(); }
+            get {
+                if(_id == 0) {
+                    _id = GetInstanceID();
+                }
+                return _id;
+            }
         }
+        public void SetID(int value) {
+            _id = value;
+        }
+        private int _id = 0;
 
         public override ReadOnlyDictionary<ResourceType, int> LastCalculatedUpkeep {
             get {

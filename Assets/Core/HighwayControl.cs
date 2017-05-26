@@ -34,6 +34,9 @@ namespace Assets.Core {
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
+        private Dictionary<BlobHighwayBase, Material> OldMaterialOfHighlightedHighway =
+            new Dictionary<BlobHighwayBase, Material>();
+
         #endregion
 
         #region instance methods

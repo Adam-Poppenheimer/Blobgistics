@@ -24,7 +24,7 @@ namespace Assets.HighwayManager {
 
         public abstract HighwayManagerFactoryBase ParentFactory { get; }
 
-        public abstract IntResourceSummary EfficiencyGainFromResource { get; }
+        public abstract IntPerResourceDictionary EfficiencyGainFromResource { get; }
 
         #endregion
 

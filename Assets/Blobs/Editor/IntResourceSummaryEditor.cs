@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace Assets.Blobs.Editor {
 
-    [CustomEditor(typeof(IntResourceSummary))]
+    [CustomEditor(typeof(IntPerResourceDictionary))]
     public class IntResourceSummaryEditor : ResourceSummaryEditorBase {
 
 

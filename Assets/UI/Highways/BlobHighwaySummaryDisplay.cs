@@ -38,7 +38,7 @@ namespace Assets.UI.Highways {
         [SerializeField] private RectTransform FirstEndpointPane;
         [SerializeField] private RectTransform SecondEndpointPane;
 
-        [SerializeField] private MaterialResourceSummary MaterialsForResourceTypes;
+        [SerializeField] private MaterialPerResourceDictionary MaterialsForResourceTypes;
 
         [SerializeField] private ToggleResourceSummary FirstEndpointTogglesForResourceTypes;
         [SerializeField] private ToggleResourceSummary SecondEndpointTogglesForResourceTypes;

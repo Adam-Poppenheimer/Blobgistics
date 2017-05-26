@@ -13,6 +13,7 @@ using Assets.ConstructionZones;
 using Assets.Societies;
 using Assets.ResourceDepots;
 using Assets.HighwayManager;
+using Assets.UI.TitleScreen;
 
 namespace Assets.Core {
 
@@ -56,6 +57,8 @@ namespace Assets.Core {
         }
         [SerializeField] private List<TargetedEventReceiverBase> _highwayManagerEventReceivers;
 
+        [SerializeField] private TitleScreenUI TitleScreenUI;
+
         private Dictionary<Type, List<TargetedEventReceiverBase>> EventReceiversByType =
             new Dictionary<Type, List<TargetedEventReceiverBase>>();
 
@@ -63,7 +66,7 @@ namespace Assets.Core {
 
         #region instance methods
 
-        #region Unity event methods
+        #region Unity message methods
 
         private void Awake() {
             EventReceiversByType[typeof(MapNodeUISummary         )] = MapNodeEventReceivers;
@@ -72,6 +75,9 @@ namespace Assets.Core {
             EventReceiversByType[typeof(ConstructionZoneUISummary)] = ConstructionZoneEventReceivers;
             EventReceiversByType[typeof(ResourceDepotUISummary   )] = ResourceDepotEventReceivers;
             EventReceiversByType[typeof(HighwayManagerUISummary  )] = HighwayManagerEventReceivers;
+
+            TitleScreenUI.GameStartRequested += TitleScreenUI_GameStartRequested;
+            TitleScreenUI.GameExitRequested += TitleScreenUI_GameExitRequested;
         }
 
         #endregion
@@ -160,6 +166,14 @@ namespace Assets.Core {
         }
 
         #endregion
+
+        private void TitleScreenUI_GameStartRequested(object sender, EventArgs e) {
+            TitleScreenUI.gameObject.SetActive(false);
+        }
+
+        private void TitleScreenUI_GameExitRequested(object sender, EventArgs e) {
+            Debug.Log("Exit Requested");
+        }
 
         #endregion
 

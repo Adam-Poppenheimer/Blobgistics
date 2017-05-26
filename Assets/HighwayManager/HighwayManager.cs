@@ -106,15 +106,10 @@ namespace Assets.HighwayManager {
         #endregion
 
         private void PerformConsumptionOnce() {
-            int totalNeedCount = 0;
-            int runningConsumptionTotal = 0;
-            lastCalculatedUpkeep.Clear();
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                lastCalculatedUpkeep[resourceType] = 0;
-            }
-
             var highwaysBeingManaged = new List<BlobHighwayBase>(PrivateData.ParentFactory.GetHighwaysServedByManager(this));
             highwaysBeingManaged.Sort((x, y) => x.Priority - y.Priority);
+
+            RecalculateUpkeep(highwaysBeingManaged);
 
             PrepareBlobSiteForConsumption(highwaysBeingManaged);
 
@@ -123,11 +118,10 @@ namespace Assets.HighwayManager {
             foreach(var highway in highwaysBeingManaged) {
                 highway.Efficiency = 1f;
 
-                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                foreach(var resourceType in lastCalculatedUpkeep.Keys) {
                     if(highway.GetUpkeepRequestedForResource(resourceType) && blobSite.CanExtractBlobOfType(resourceType)) {
                         var blobToDestroy = blobSite.ExtractBlobOfType(resourceType);
                         PrivateData.BlobFactory.DestroyBlob(blobToDestroy);
-                        ++lastCalculatedUpkeep[resourceType];
                         highway.Efficiency += PrivateData.EfficiencyGainFromResource[resourceType];
                     }
                 }
@@ -136,40 +130,39 @@ namespace Assets.HighwayManager {
             RevertBlobSiteToNormal(highwaysBeingManaged);
         }
 
-        private void PrepareBlobSiteForConsumption(IEnumerable<BlobHighwayBase> highwaysBeingManaged) {
-            var blobSite = Location.BlobSite;
-
-            foreach(var highway in highwaysBeingManaged) {
-                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+        private void RecalculateUpkeep(List<BlobHighwayBase> highwaysBeingManaged) {
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                lastCalculatedUpkeep[resourceType] = 0;
+                foreach(var highway in highwaysBeingManaged) {
                     if(highway.GetUpkeepRequestedForResource(resourceType)) {
-                        blobSite.SetExtractionPermissionForResourceType(resourceType, true);
+                        ++lastCalculatedUpkeep[resourceType];
                     }
                 }
             }
         }
 
+        private void PrepareBlobSiteForConsumption(IEnumerable<BlobHighwayBase> highwaysBeingManaged) {
+            var blobSite = Location.BlobSite;
+            blobSite.ClearPermissionsAndCapacity();
+
+            foreach(var resourceType in lastCalculatedUpkeep.Keys) {
+                int upkeepForResource = lastCalculatedUpkeep[resourceType];
+                blobSite.SetExtractionPermissionForResourceType(resourceType, true);
+                blobSite.SetCapacityForResourceType(resourceType, upkeepForResource);
+                blobSite.TotalCapacity += upkeepForResource;
+            }
+        }
+
         private void RevertBlobSiteToNormal(IEnumerable<BlobHighwayBase> highwaysBeingManaged) {
             var blobSite = Location.BlobSite;
-            var newCapacityDict = new Dictionary<ResourceType, int>();
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                newCapacityDict[resourceType] = 0;
-            }
+            blobSite.ClearPermissionsAndCapacity();
 
-            foreach(var highway in highwaysBeingManaged) {
-                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                    if(highway.GetUpkeepRequestedForResource(resourceType)) {
-                        ++newCapacityDict[resourceType];
-                    }
-                }
+            foreach(var resourceType in lastCalculatedUpkeep.Keys) {
+                int upkeepForResource = lastCalculatedUpkeep[resourceType];
+                blobSite.SetPlacementPermissionForResourceType(resourceType, true);
+                blobSite.SetCapacityForResourceType(resourceType, upkeepForResource);
+                blobSite.TotalCapacity += upkeepForResource;
             }
-
-            int totalCapacity = 0;
-            foreach(var capacityPair in newCapacityDict) {
-                int valueStockpiled = capacityPair.Value * PrivateData.NeedStockpileCoefficient;
-                blobSite.SetCapacityForResourceType(capacityPair.Key, valueStockpiled);
-                totalCapacity += valueStockpiled;
-            }
-            blobSite.TotalCapacity = totalCapacity;
         }
         
         #endregion

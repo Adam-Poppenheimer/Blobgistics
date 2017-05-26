@@ -35,38 +35,6 @@ namespace Assets.Map.Editor {
 
         #region Unity event methods
 
-        public override void OnInspectorGUI() {
-            DrawDefaultInspector();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-
-            NewAssetName = GUILayout.TextField(NewAssetName);
-            if(GUILayout.Button("Save Configuration to Asset")) {
-                if(string.IsNullOrEmpty(NewAssetName) || NewAssetName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
-                    Debug.LogErrorFormat("Failed to save configuration: '{0}' is not a valid asset name", NewAssetName);
-                }else {
-                    var newMapAsset = CreateInstance<MapAsset>();
-                    newMapAsset.LoadMapGraphInto(TargetedGraph);
-                    AssetDatabase.CreateAsset(newMapAsset, "Assets/Map/Configurations/" + NewAssetName + ".asset");
-                }
-            }
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-
-            MapAssetToLoad = EditorGUILayout.ObjectField("Asset to load", MapAssetToLoad, typeof(MapAsset), true) as MapAsset;
-            if(GUILayout.Button("Load Configuration From Asset")) {
-                if(MapAssetToLoad == null){
-                    Debug.LogError("");
-                }else {
-                    TargetedGraph.LoadFromMapAsset(MapAssetToLoad);
-                    MapAssetToLoad = null;
-                }
-            }
-        }
-
         private void OnSceneGUI() {
             DrawAllEdges();
 
@@ -95,6 +63,42 @@ namespace Assets.Map.Editor {
             }
             
             HandleUtility.Repaint();
+        }
+
+        #endregion
+
+        #region from Editor
+
+        public override void OnInspectorGUI() {
+            DrawDefaultInspector();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+
+            NewAssetName = GUILayout.TextField(NewAssetName);
+            if(GUILayout.Button("Save Configuration to Asset")) {
+                if(string.IsNullOrEmpty(NewAssetName) || NewAssetName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
+                    Debug.LogErrorFormat("Failed to save configuration: '{0}' is not a valid asset name", NewAssetName);
+                }else {
+                    var newMapAsset = CreateInstance<MapAsset>();
+                    newMapAsset.LoadMapGraphInto(TargetedGraph);
+                    AssetDatabase.CreateAsset(newMapAsset, "Assets/Map/Configurations/" + NewAssetName + ".asset");
+                }
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.Space();
+
+            MapAssetToLoad = EditorGUILayout.ObjectField("Asset to load", MapAssetToLoad, typeof(MapAsset), true) as MapAsset;
+            if(GUILayout.Button("Load Configuration From Asset")) {
+                if(MapAssetToLoad == null){
+                    Debug.LogError("Failed to load configuration from asset: Configuration to load was null");
+                }else {
+                    TargetedGraph.LoadFromMapAsset(MapAssetToLoad);
+                    MapAssetToLoad = null;
+                }
+            }
         }
 
         #endregion

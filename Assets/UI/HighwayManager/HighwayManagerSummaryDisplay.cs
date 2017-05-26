@@ -10,6 +10,8 @@ using UnityEngine.EventSystems;
 
 using Assets.Blobs;
 using Assets.HighwayManager;
+using Assets.UI.Blobs;
+using Assets.Core;
 
 namespace Assets.UI.HighwayManager {
 
@@ -23,11 +25,10 @@ namespace Assets.UI.HighwayManager {
 
         #endregion
         
-        [SerializeField] private Text UpkeepFoodField;
-        [SerializeField] private Text UpkeepYellowField;
-        [SerializeField] private Text UpkeepWhiteField;
-        [SerializeField] private Text UpkeepBlueField;
+        [SerializeField] private HighwayHighlighterControlBase HighwayHighlighter;
+        [SerializeField] private HighwayManagerControlBase HighwayManagerControl;
 
+        [SerializeField] private ResourceDisplayBase UpkeepDisplay;
         [SerializeField] private Button DestroyButton;
 
         #endregion
@@ -38,6 +39,13 @@ namespace Assets.UI.HighwayManager {
 
         private void Start() {
             MovePanelWithCamera = true;
+        }
+
+        protected override void DoOnUpdate() {
+            if(CurrentSummary != null) {
+                ClearDisplay();
+                UpdateDisplay();
+            }
         }
 
         #endregion
@@ -56,30 +64,15 @@ namespace Assets.UI.HighwayManager {
         }
 
         public override void ClearDisplay() {
-            UpkeepFoodField.text   = "0";
-            UpkeepYellowField.text = "0";
-            UpkeepWhiteField.text  = "0";
-            UpkeepBlueField.text   = "0";
+            HighwayHighlighter.UnhighlightAllHighways();
         }
 
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
-                var upkeep = CurrentSummary.LastUpkeep;
-
-                int foodValue = 0;
-                int yellowValue = 0;
-                int whiteValue = 0;
-                int blueValue = 0;
-
-                upkeep.TryGetValue(ResourceType.Food,   out foodValue  );
-                upkeep.TryGetValue(ResourceType.Textiles, out yellowValue);
-                upkeep.TryGetValue(ResourceType.ServiceGoods,  out whiteValue );
-                upkeep.TryGetValue(ResourceType.HiTechGoods,   out blueValue  );
-
-                UpkeepFoodField.text   = foodValue.ToString();
-                UpkeepYellowField.text = yellowValue.ToString();
-                UpkeepWhiteField.text  = whiteValue.ToString();
-                UpkeepBlueField.text   = blueValue.ToString();
+                UpkeepDisplay.PushAndDisplaySummary(CurrentSummary.LastUpkeep);
+                foreach(var highway in HighwayManagerControl.GetHighwaysManagedByManagerOfID(CurrentSummary.ID)) {
+                    HighwayHighlighter.HighlightHighway(highway.ID);
+                }
             }
         }
 

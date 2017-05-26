@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Assets.BlobSites;
 using Assets.ConstructionZones;
 using Assets.Map;
+
+using Assets.UI.Blobs;
 
 namespace Assets.Core.ForTesting {
 
@@ -26,7 +29,7 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override string GetCostSummaryString() {
+        public override ResourceDisplayInfo GetCostInfo() {
             throw new NotImplementedException();
         }
 

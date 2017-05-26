@@ -27,16 +27,16 @@ namespace Assets.Societies.Editor {
                     _standardComplexity = hostingObject.AddComponent<MockComplexityDefinition>();
                     _standardComplexity.SetComplexityDescentDuration(10f);
                     _standardComplexity.SetName("StandardComplexity");
-                    _standardComplexity.SetNeeds(IntResourceSummary.BuildSummary(
+                    _standardComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                         hostingObject.gameObject,
                         new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
                     ));
-                    _standardComplexity.SetProduction(IntResourceSummary.BuildSummary(
+                    _standardComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                         hostingObject.gameObject,
                         new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1)
                     ));
-                    _standardComplexity.SetWants(new List<IntResourceSummary>() {
-                        IntResourceSummary.BuildSummary(
+                    _standardComplexity.SetWants(new List<IntPerResourceDictionary>() {
+                        IntPerResourceDictionary.BuildSummary(
                             hostingObject.gameObject,
                             new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 1)
                         )
@@ -48,7 +48,7 @@ namespace Assets.Societies.Editor {
                     _standardComplexity.SetSecondsToPerformFullProduction(1f);
                     _standardComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
-                    _standardComplexity.SetCostOfAscent(IntResourceSummary.BuildSummary(
+                    _standardComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
                         hostingObject.gameObject,
                         new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
                     ));
@@ -275,16 +275,16 @@ namespace Assets.Societies.Editor {
             //Setup
             var startingComplexity = BuildComplexityDefinition();
 
-            startingComplexity.SetNeeds(IntResourceSummary.BuildSummary(
+            startingComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 startingComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   10)
             ));
-            startingComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            startingComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 startingComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods,  30)
             ));
-            startingComplexity.SetWants(new List<IntResourceSummary>() {
-                IntResourceSummary.BuildSummary(
+            startingComplexity.SetWants(new List<IntPerResourceDictionary>() {
+                IntPerResourceDictionary.BuildSummary(
                     startingComplexity.gameObject,
                     new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 20)
                 )
@@ -315,18 +315,18 @@ namespace Assets.Societies.Editor {
             //Setup
             var startingComplexity = BuildComplexityDefinition();
             
-            startingComplexity.SetNeeds(IntResourceSummary.BuildSummary(
+            startingComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 startingComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
-            startingComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            startingComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 startingComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 1)
             ));
-            startingComplexity.SetWants(new List<IntResourceSummary>() {
-                IntResourceSummary.BuildSummary(
+            startingComplexity.SetWants(new List<IntPerResourceDictionary>() {
+                IntPerResourceDictionary.BuildSummary(
                     startingComplexity.gameObject,
                     new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1)
                 )
@@ -356,7 +356,7 @@ namespace Assets.Societies.Editor {
         public void WhenAscensionIsPermitted_UnderlyingBlobSitePermitsPlacement_AndRefusesExtraction_OfAnyCostsOfAscent() {
             //Setup
             var startingComplexity = BuildComplexityDefinition();
-            startingComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            startingComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                startingComplexity.gameObject,
                new KeyValuePair<ResourceType, int>(ResourceType.Food, 2),
                new KeyValuePair<ResourceType, int>(ResourceType.Wood, 2),
@@ -365,7 +365,7 @@ namespace Assets.Societies.Editor {
             startingComplexity.SetProductionCapacityCoefficient(5);
 
             var ascentComplexity = BuildComplexityDefinition();
-            ascentComplexity.SetCostOfAscent(IntResourceSummary.BuildSummary(
+            ascentComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
                 ascentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Wood, 10)
@@ -399,7 +399,7 @@ namespace Assets.Societies.Editor {
         public void WhenAscensionIsForbidden_UnderlyingBlobSiteIsNotAffectedByAnyCostsOfAscent() {
             //Setup
             var startingComplexity = BuildComplexityDefinition();
-            startingComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            startingComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                startingComplexity.gameObject,
                new KeyValuePair<ResourceType, int>(ResourceType.Food, 2),
                new KeyValuePair<ResourceType, int>(ResourceType.Wood, 2),
@@ -408,7 +408,7 @@ namespace Assets.Societies.Editor {
             startingComplexity.SetProductionCapacityCoefficient(5);
 
             var ascentComplexity = BuildComplexityDefinition();
-            ascentComplexity.SetCostOfAscent(IntResourceSummary.BuildSummary(
+            ascentComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
                 ascentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
                 new KeyValuePair<ResourceType, int>(ResourceType.Wood, 10)
@@ -454,7 +454,7 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetProductionCapacityCoefficient(1);
-            complexityToUse.SetProduction(IntResourceSummary.BuildSummary(
+            complexityToUse.SetProduction(IntPerResourceDictionary.BuildSummary(
                 complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
             ));
@@ -482,7 +482,7 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(IntResourceSummary.BuildSummary(
+            complexityToUse.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 2),
@@ -521,7 +521,7 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(IntResourceSummary.BuildSummary(
+            complexityToUse.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 2),
@@ -549,7 +549,7 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(IntResourceSummary.BuildSummary(
+            complexityToUse.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
@@ -570,7 +570,7 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(IntResourceSummary.BuildSummary(
+            complexityToUse.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
@@ -592,7 +592,7 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(IntResourceSummary.BuildSummary(
+            complexityToUse.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
@@ -619,7 +619,7 @@ namespace Assets.Societies.Editor {
             //Setup
             var complexityToUse = BuildComplexityDefinition();
             complexityToUse.SetNeedsCapacityCoefficient(5);
-            complexityToUse.SetNeeds(IntResourceSummary.BuildSummary(
+            complexityToUse.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 complexityToUse.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
@@ -644,11 +644,11 @@ namespace Assets.Societies.Editor {
             var currentComplexity = BuildComplexityDefinition();
             var ascentComplexity = BuildComplexityDefinition();
 
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(currentComplexity.gameObject));
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject));
             currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
             currentComplexity.SetPermittedTerrains(new List<TerrainType>() { TerrainType.Grassland });
 
-            ascentComplexity.SetCostOfAscent(IntResourceSummary.BuildSummary(
+            ascentComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
                 ascentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
@@ -674,10 +674,10 @@ namespace Assets.Societies.Editor {
             var currentComplexity = BuildComplexityDefinition();
             var ascentComplexity = BuildComplexityDefinition();
 
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(currentComplexity.gameObject));
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject));
             currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
-            ascentComplexity.SetCostOfAscent(IntResourceSummary.BuildSummary(
+            ascentComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
                 ascentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
@@ -704,10 +704,10 @@ namespace Assets.Societies.Editor {
         public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_ExactlyOneWantSummaryIsRemovedFromLocationsblobSite() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetWants(new List<IntResourceSummary>() {
-                IntResourceSummary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Food,   1)),
-                IntResourceSummary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1)),
-                IntResourceSummary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods,  1)),
+            currentComplexity.SetWants(new List<IntPerResourceDictionary>() {
+                IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Food,   1)),
+                IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1)),
+                IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods,  1)),
             });
             currentComplexity.SetWantsCapacityCoefficient(5);
             currentComplexity.SetSecondsToPerformFullProduction(1f);
@@ -741,10 +741,10 @@ namespace Assets.Societies.Editor {
         public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_ProductionIsIncreasedByOne() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetWants(new List<IntResourceSummary>() {
-                IntResourceSummary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)),
+            currentComplexity.SetWants(new List<IntPerResourceDictionary>() {
+                IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)),
             });
-            currentComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            currentComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1)
             ));
@@ -767,15 +767,15 @@ namespace Assets.Societies.Editor {
         public void OnProductionPerformed_AndContainsOnlyEmptyWantSummaries_ProductionIsNotIncreased() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            currentComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
 
-            currentComplexity.SetWants(new List<IntResourceSummary>() {
-                IntResourceSummary.BuildSummary(currentComplexity.gameObject),
-                IntResourceSummary.BuildSummary(currentComplexity.gameObject),
-                IntResourceSummary.BuildSummary(currentComplexity.gameObject)
+            currentComplexity.SetWants(new List<IntPerResourceDictionary>() {
+                IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject),
+                IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject),
+                IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject)
             });
             
             currentComplexity.SetProductionCapacityCoefficient(5);
@@ -794,15 +794,15 @@ namespace Assets.Societies.Editor {
         public void OnProductionPerformed_AndSomeWantSummaryIsSatisfiable_AndOthersAreNot_WantsAreStillConsideredSatisfied() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods,  1)
             ));
-            currentComplexity.SetWants(new List<IntResourceSummary>() {
-                IntResourceSummary.BuildSummary(new GameObject(), new KeyValuePair<ResourceType, int>(ResourceType.Food,   1)),
-                IntResourceSummary.BuildSummary(new GameObject(), new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1)),
+            currentComplexity.SetWants(new List<IntPerResourceDictionary>() {
+                IntPerResourceDictionary.BuildSummary(new GameObject(), new KeyValuePair<ResourceType, int>(ResourceType.Food,   1)),
+                IntPerResourceDictionary.BuildSummary(new GameObject(), new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1)),
             });
-            currentComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            currentComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 1)
             ));
@@ -826,12 +826,12 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetComplexityDescentDuration(1f);
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
             currentComplexity.SetName("Current");
-            currentComplexity.SetCostOfAscent(IntResourceSummary.BuildSummary(
+            currentComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, Int32.MaxValue)
             ));
@@ -860,8 +860,8 @@ namespace Assets.Societies.Editor {
             var currentComplexity = BuildComplexityDefinition();
             var ascentComplexity = BuildComplexityDefinition();
 
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(currentComplexity.gameObject));
-            currentComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject));
+            currentComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -897,11 +897,11 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetComplexityDescentDuration(1f);
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
-            currentComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            currentComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -935,11 +935,11 @@ namespace Assets.Societies.Editor {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
             currentComplexity.SetComplexityDescentDuration(1f);
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
-            currentComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            currentComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -973,14 +973,14 @@ namespace Assets.Societies.Editor {
         public void WhenNeededOrWantedBlobsPlacedInto_ThoseBlobsCannotBeExtracted_ButOthersStillCanBe() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                 new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
-            currentComplexity.SetWants(new List<IntResourceSummary>() { 
-                IntResourceSummary.BuildSummary(new GameObject(), new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1))
+            currentComplexity.SetWants(new List<IntPerResourceDictionary>() { 
+                IntPerResourceDictionary.BuildSummary(new GameObject(), new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1))
             });
-            currentComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            currentComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 1)
             ));
@@ -989,7 +989,7 @@ namespace Assets.Societies.Editor {
             currentComplexity.SetWantsCapacityCoefficient(5);
 
             var location = BuildMapNode();
-            location.BlobSite.SetPlacementPermissionsAndCapacity(IntResourceSummary.BuildSummary(
+            location.BlobSite.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 new GameObject(),
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
                 new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
@@ -1013,10 +1013,10 @@ namespace Assets.Societies.Editor {
         public void OnProductionTicked_WhenAllWantsOnlyPartiallyFulfillable_NoResourcesPartiallyFulfillingWantsConsumed() {
             //Setup
             var currentComplexity = BuildComplexityDefinition();
-            currentComplexity.SetWants(new List<IntResourceSummary>() { 
-                IntResourceSummary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 2))
+            currentComplexity.SetWants(new List<IntPerResourceDictionary>() { 
+                IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject, new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 2))
             });
-            currentComplexity.SetProduction(IntResourceSummary.BuildSummary(
+            currentComplexity.SetProduction(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 1)
             ));
@@ -1040,10 +1040,10 @@ namespace Assets.Societies.Editor {
             var currentComplexity = BuildComplexityDefinition();
             var ascentComplexity = BuildComplexityDefinition();
 
-            currentComplexity.SetNeeds(IntResourceSummary.BuildSummary(currentComplexity.gameObject));
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(currentComplexity.gameObject));
             currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
 
-            ascentComplexity.SetCostOfAscent(IntResourceSummary.BuildSummary(
+            ascentComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
                 ascentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));

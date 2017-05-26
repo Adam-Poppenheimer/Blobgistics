@@ -10,6 +10,7 @@ using UnityEngine.EventSystems;
 
 using Assets.Map;
 using Assets.ConstructionZones;
+using Assets.UI.Blobs;
 
 namespace Assets.UI.ConstructionZones {
 
@@ -23,7 +24,7 @@ namespace Assets.UI.ConstructionZones {
 
         #endregion
 
-        [SerializeField] private List<LabeledButton> ConstructionProjectButtons = new List<LabeledButton>();
+        [SerializeField] private List<Button> ConstructionProjectButtons = new List<Button>();
 
         #endregion
 
@@ -68,7 +69,10 @@ namespace Assets.UI.ConstructionZones {
                 ).FirstOrDefault();
                 if(sameNamedProject != null) {
                     projectButton.interactable = true;
-                    projectButton.Label.text = sameNamedProject.CostSummaryString;
+                    var displayOnButton = projectButton.GetComponentInChildren<ResourceDisplayBase>();
+                    if(displayOnButton != null) {
+                        displayOnButton.PushAndDisplayInfo(sameNamedProject.Cost);
+                    }
                 }else {
                     projectButton.interactable = false;
                 }

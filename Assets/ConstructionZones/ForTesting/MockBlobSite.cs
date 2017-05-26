@@ -174,7 +174,7 @@ namespace Assets.ConstructionZones.ForTesting {
             PlacementPermissions[type] = isPermitted;
         }
 
-        public override void SetPlacementPermissionsAndCapacity(IntResourceSummary placementSummary) {
+        public override void SetPlacementPermissionsAndCapacity(IntPerResourceDictionary placementSummary) {
             throw new NotImplementedException();
         }
 

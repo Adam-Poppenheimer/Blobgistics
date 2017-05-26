@@ -8,6 +8,8 @@ using UnityEngine;
 using Assets.Blobs;
 using Assets.BlobSites;
 
+using Assets.UI.Blobs;
+
 namespace Assets.ConstructionZones {
 
     public abstract class FlexibleCostConstructionProjectBase : ConstructionProjectBase {
@@ -37,19 +39,8 @@ namespace Assets.ConstructionZones {
             return site.Contents.Count >= NumberOfResourcesRequired;
         }
 
-        public override string GetCostSummaryString() {
-            var resourceCandidateString = "";
-            foreach(var resourceType in ResourceTypesAccepted) {
-                if(ResourceTypesAccepted.Last() == resourceType) {
-                    resourceCandidateString += ", or " + resourceType;
-                }else if(ResourceTypesAccepted.First() == resourceType) {
-                    resourceCandidateString += resourceType;
-                }else {
-                    resourceCandidateString += ", " + resourceType;
-                }
-            }
-
-            return string.Format("{0} of some combination of {1}", NumberOfResourcesRequired, resourceCandidateString);
+        public override ResourceDisplayInfo GetCostInfo() {
+            return new ResourceDisplayInfo(ResourceTypesAccepted, NumberOfResourcesRequired);
         }
 
         #endregion

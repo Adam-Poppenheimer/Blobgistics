@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 using Assets.ConstructionZones;
-
+using Assets.UI.Blobs;
 
 namespace Assets.UI.ConstructionZones {
 
@@ -24,7 +24,7 @@ namespace Assets.UI.ConstructionZones {
         #endregion
 
         [SerializeField] private Text ProjectNameField;
-        [SerializeField] private Text CostField;
+        [SerializeField] private ResourceDisplayBase CostField;
         [SerializeField] private Button DestroyButton;
 
         #endregion
@@ -65,7 +65,7 @@ namespace Assets.UI.ConstructionZones {
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
                 ProjectNameField.text = CurrentSummary.Project.Name;
-                CostField.text = CurrentSummary.Project.CostSummaryString;
+                CostField.PushAndDisplayInfo(CurrentSummary.Project.Cost);
             }
         }
 

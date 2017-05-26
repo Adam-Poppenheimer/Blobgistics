@@ -61,13 +61,13 @@ namespace Assets.HighwayManager {
         }
         [SerializeField] private UIControlBase _uiControl;
 
-        public override IntResourceSummary EfficiencyGainFromResource {
+        public override IntPerResourceDictionary EfficiencyGainFromResource {
             get { return _efficiencyGainFromResource; }
         }
-        public void SetEfficiencyGainFromResource(IntResourceSummary value) {
+        public void SetEfficiencyGainFromResource(IntPerResourceDictionary value) {
             _efficiencyGainFromResource = value;
         }
-        [SerializeField] private IntResourceSummary _efficiencyGainFromResource;
+        [SerializeField] private IntPerResourceDictionary _efficiencyGainFromResource;
 
     }
 

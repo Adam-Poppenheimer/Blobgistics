@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Assets.UI.Blobs;
+
 namespace Assets.ConstructionZones {
 
     public class ConstructionProjectUISummary {
@@ -10,7 +12,7 @@ namespace Assets.ConstructionZones {
         #region instance fields and properties
 
         public string Name { get; set; }
-        public string CostSummaryString { get; set; }
+        public ResourceDisplayInfo Cost { get; set; }
 
         #endregion
 
@@ -18,14 +20,14 @@ namespace Assets.ConstructionZones {
 
         public ConstructionProjectUISummary() { }
 
-        public ConstructionProjectUISummary(string name, string costSummaryString) {
+        public ConstructionProjectUISummary(string name, ResourceDisplayInfo costDisplayInfo) {
             Name = name;
-            CostSummaryString = costSummaryString;
+            Cost = costDisplayInfo;
         }
 
         public ConstructionProjectUISummary(ConstructionProjectBase projectToSummarize) {
             Name = projectToSummarize.name;
-            CostSummaryString = projectToSummarize.GetCostSummaryString();
+            Cost = projectToSummarize.GetCostInfo();
         }
 
         #endregion

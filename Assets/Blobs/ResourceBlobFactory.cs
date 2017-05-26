@@ -13,7 +13,7 @@ namespace Assets.Blobs {
 
         #region instance fields and properties
 
-        [SerializeField] private MaterialResourceSummary MaterialsForResourceTypes;
+        [SerializeField] private MaterialPerResourceDictionary MaterialsForResourceTypes;
 
         [SerializeField] private GameObject BlobPrefab = null;
 

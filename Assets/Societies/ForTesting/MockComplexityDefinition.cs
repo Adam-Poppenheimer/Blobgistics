@@ -32,39 +32,39 @@ namespace Assets.Societies.ForTesting {
         }
         private string _name = "DEFAULT";
 
-        public override IntResourceSummary Needs {
+        public override IntPerResourceDictionary Needs {
             get {
                 if(_needs == null) {
-                    _needs = IntResourceSummary.BuildSummary(gameObject);
+                    _needs = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _needs;
             }
         }
-        public void SetNeeds(IntResourceSummary value) {
+        public void SetNeeds(IntPerResourceDictionary value) {
             _needs = value;
         }
-        private IntResourceSummary _needs = null;
+        private IntPerResourceDictionary _needs = null;
 
-        public override IntResourceSummary Production {
+        public override IntPerResourceDictionary Production {
             get {
                 if(_production == null) {
-                    _production = IntResourceSummary.BuildSummary(gameObject);
+                    _production = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _production;
             }
         }
-        public void SetProduction(IntResourceSummary value) {
+        public void SetProduction(IntPerResourceDictionary value) {
             _production = value;
         }
-        private IntResourceSummary _production = null;
+        private IntPerResourceDictionary _production = null;
 
-        public override IEnumerable<IntResourceSummary> Wants {
+        public override IEnumerable<IntPerResourceDictionary> Wants {
             get { return _wants; }
         }
-        public void SetWants(IEnumerable<IntResourceSummary> value) {
+        public void SetWants(IEnumerable<IntPerResourceDictionary> value) {
             _wants = value;
         }
-        private IEnumerable<IntResourceSummary> _wants = new List<IntResourceSummary>();
+        private IEnumerable<IntPerResourceDictionary> _wants = new List<IntPerResourceDictionary>();
 
         public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }
@@ -106,18 +106,18 @@ namespace Assets.Societies.ForTesting {
         }
         private float _secondsToFullyConsumeNeeds = 1f;
 
-        public override IntResourceSummary CostToAscendInto {
+        public override IntPerResourceDictionary CostToAscendInto {
             get {
                 if(_costOfAscent == null) {
-                    _costOfAscent = IntResourceSummary.BuildSummary(gameObject);
+                    _costOfAscent = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _costOfAscent;
             }
         }
-        public void SetCostOfAscent(IntResourceSummary value) {
+        public void SetCostOfAscent(IntPerResourceDictionary value) {
             _costOfAscent = value;
         }
-        private IntResourceSummary _costOfAscent = null;
+        private IntPerResourceDictionary _costOfAscent = null;
 
         public override Material MaterialForSociety {
             get {

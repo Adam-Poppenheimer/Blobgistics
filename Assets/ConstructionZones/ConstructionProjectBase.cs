@@ -9,6 +9,8 @@ using Assets.Blobs;
 using Assets.BlobSites;
 using Assets.Map;
 
+using Assets.UI.Blobs;
+
 namespace Assets.ConstructionZones {
 
     public abstract class ConstructionProjectBase : MonoBehaviour {
@@ -21,7 +23,7 @@ namespace Assets.ConstructionZones {
         public abstract void SetSiteForProject(BlobSiteBase site);
         public abstract bool BlobSiteContainsNecessaryResources(BlobSiteBase site);
 
-        public abstract string GetCostSummaryString();
+        public abstract ResourceDisplayInfo GetCostInfo();
 
         #endregion
 
