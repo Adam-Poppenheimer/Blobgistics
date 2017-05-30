@@ -56,7 +56,7 @@ namespace Assets.Highways {
             get { return PrivateData.TubePullingFromSecondEndpoint.Contents; }
         }
 
-        public override BlobHighwayProfileBase Profile {
+        public override BlobHighwayProfile Profile {
             get { return PrivateData.Profile; }
         }
 

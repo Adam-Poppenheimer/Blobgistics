@@ -54,10 +54,18 @@ namespace Assets.Map.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void PerformVictoryTasks() {
+            throw new NotImplementedException();
+        }
+
+        public override void PerformDefeatTasks() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

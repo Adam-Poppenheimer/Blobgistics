@@ -94,6 +94,12 @@ namespace Assets.Core.ForTesting {
             }
         }
 
+        public override int Score {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

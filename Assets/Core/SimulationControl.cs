@@ -73,6 +73,14 @@ namespace Assets.Core {
             if(GeneratorFactory      != null) GeneratorFactory.TickAllGenerators    (secondsPassed);
         }
 
+        public override void PerformVictoryTasks() {
+            throw new NotImplementedException();
+        }
+
+        public override void PerformDefeatTasks() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

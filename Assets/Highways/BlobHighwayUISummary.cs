@@ -27,7 +27,7 @@ namespace Assets.Highways {
         public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint2 { get; set; }
         public Dictionary<ResourceType, bool> IsRequestingUpkeepForResource   { get; set; }
 
-        public BlobHighwayProfileBase Profile { get; set; }
+        public BlobHighwayProfile Profile { get; set; }
 
         public bool IsBeingUpgraded { get; set; }
 

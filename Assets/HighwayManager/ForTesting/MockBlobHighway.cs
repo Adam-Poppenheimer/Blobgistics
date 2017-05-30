@@ -50,7 +50,7 @@ namespace Assets.HighwayManager.ForTesting {
             }
         }
 
-        public override BlobHighwayProfileBase Profile {
+        public override BlobHighwayProfile Profile {
             get {
                 throw new NotFiniteNumberException();
             }

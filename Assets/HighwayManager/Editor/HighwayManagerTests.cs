@@ -135,6 +135,11 @@ namespace Assets.HighwayManager.Editor {
         }
 
         [Test]
+        public void Factory_OnHighwayManagerConstructed_ManagersCollectionContainsTheNewManager() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
         public void Factory_OnDestroyHighwayManagerCalled_HighwayManagerIsDestroyed_AndGetHighwayManagerAtLocationBecomesNull() {
             //Setup
             var privateData = BuildManagerPrivateData();
@@ -189,6 +194,11 @@ namespace Assets.HighwayManager.Editor {
             Assert.IsNull(factoryToTest.GetHighwayManagerAtLocation(location1), "Factory still registers a highway manager at location1");
             Assert.IsNull(factoryToTest.GetHighwayManagerAtLocation(location2), "Factory still registers a highway manager at location2");
             Assert.IsNull(factoryToTest.GetHighwayManagerAtLocation(location3), "Factory still registers a highway manager at location3");
+        }
+
+        [Test]
+        public void Factory_OnUnsubscribeHighwayManagerCalled_ManagersCollectionNoLongerContainsTheManager() {
+            throw new NotImplementedException();
         }
 
         [Test]
@@ -699,8 +709,7 @@ namespace Assets.HighwayManager.Editor {
         }
 
         private BlobHighwayProfile BuildHighwayProfile() {
-            var hostingObject = new GameObject();
-            return hostingObject.AddComponent<BlobHighwayProfile>();
+            return new BlobHighwayProfile();
         }
 
         private MockBlobHighwayFactory BuildMockHighwayFactory() {

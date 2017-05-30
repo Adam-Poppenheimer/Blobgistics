@@ -41,11 +41,11 @@ namespace Assets.Highways {
         }
         [SerializeField] private UIControl _uiControl;
 
-        public BlobHighwayProfileBase StartingProfile {
+        public BlobHighwayProfile StartingProfile {
             get { return _startingProfile; }
             set { _startingProfile = value; }
         }
-        [SerializeField] private BlobHighwayProfileBase _startingProfile;
+        [SerializeField] private BlobHighwayProfile _startingProfile;
 
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
             get { return AllConstructedHighways.AsReadOnly(); }

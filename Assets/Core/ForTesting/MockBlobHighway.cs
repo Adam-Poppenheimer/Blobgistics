@@ -46,7 +46,7 @@ namespace Assets.Core.ForTesting {
 
         public override int Priority { get; set; }
 
-        public override BlobHighwayProfileBase Profile {
+        public override BlobHighwayProfile Profile {
             get {
                 throw new NotImplementedException();
             }

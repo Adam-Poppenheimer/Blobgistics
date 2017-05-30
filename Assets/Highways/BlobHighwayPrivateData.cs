@@ -65,13 +65,13 @@ namespace Assets.Highways {
         }
         [SerializeField, HideInInspector] private BlobTubeBase _tubePullingFromSecondEndpoint;
 
-        public override BlobHighwayProfileBase Profile {
+        public override BlobHighwayProfile Profile {
             get { return _profile; }
         }
-        public void SetProfile(BlobHighwayProfileBase value) {
+        public void SetProfile(BlobHighwayProfile value) {
             _profile = value;
         }
-        [SerializeField] private BlobHighwayProfileBase _profile;
+        [SerializeField] private BlobHighwayProfile _profile;
 
         #endregion
 

@@ -93,6 +93,11 @@ namespace Assets.ResourceDepots.Editor {
         }
 
         [Test]
+        public void Factory_OnResourceDepotConstructed_ResourceDepotsCollectionContainsTheNewDepot() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
         public void Factory_OnGetDepotOfIDCalled_ReturnsTheDepotWithTheAppropriateID_OrNullIfNoneExists() {
             //Setup
             var factoryToTest = BuildFactory();
@@ -115,6 +120,16 @@ namespace Assets.ResourceDepots.Editor {
             Assert.AreEqual(depot2, depotRetrievedFromID2, "Depot2 was not returned when its ID was provided");
             Assert.AreEqual(depot3, depotRetrievedFromID3, "Depot3 was not returned when its ID was provided");
             Assert.Null(depotRetrievedFrom42, "ID 42 falsely returned a ResourceDepot");
+        }
+
+        [Test]
+        public void Factory_OnDepotUnsubscribed_HasDepotAtLocationReturnsFalse_AndGetDepotAtLocationNull() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Factory_OnDepotUnsubscribed_ResourceDepotsCollectionNoLongerContainsTheDepot() {
+            throw new NotImplementedException();
         }
 
         [Test]

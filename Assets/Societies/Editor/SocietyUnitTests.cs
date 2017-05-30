@@ -140,6 +140,88 @@ namespace Assets.Societies.Editor {
         }
 
         [Test]
+        public void Factory_OnConstructSocietyAtCalled_SocietyIsAlsoSubscribed() {
+            //Setup
+            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
+            var locationToPlace = BuildMapNode();
+
+            //Execution
+            var societyConstructed = factoryToTest.ConstructSocietyAt(locationToPlace, factoryToTest.StandardComplexityLadder,
+                factoryToTest.DefaultComplexityDefinition);
+
+            //Validation
+            Assert.Contains(societyConstructed, factoryToTest.Societies);
+        }
+
+        [Test]
+        public void Factory_OnSubscribeSocietyIsCalled_SocietyAppearsInSocietiesCollection() {
+            //Setup
+            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
+
+            var societyToSubscribe = BuildSociety(BuildComplexityDefinition());
+
+            //Execution
+            factoryToTest.SubscribeSociety(societyToSubscribe);
+
+            //Validation
+            Assert.Contains(societyToSubscribe, factoryToTest.Societies);
+        }
+
+        [Test]
+        public void Factory_OnSubscribeSocietyIsCalled_RaisesSocietySubscribedEvent_WithAppropriateSociety() {
+            //Setup
+            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
+
+            SocietyBase societyReturnedByEvent = null;
+            factoryToTest.SocietySubscribed += delegate(object sender, SocietyEventArgs e) {
+                societyReturnedByEvent = e.Society;
+            };
+
+            var societyToSubscribe = BuildSociety(BuildComplexityDefinition());
+
+            //Execution
+            factoryToTest.SubscribeSociety(societyToSubscribe);
+
+            //Validation
+            Assert.AreEqual(societyToSubscribe, societyReturnedByEvent);
+        }
+
+        [Test]
+        public void Factory_OnUnsubscribeSocietyIsCalled_SocietyNoLongerAppearsInSocietiesCollection() {
+            //Setup
+            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
+
+            SocietyBase societyReturnedByEvent = null;
+            factoryToTest.SocietyUnsubscribed += delegate(object sender, SocietyEventArgs e) {
+                societyReturnedByEvent = e.Society;
+            };
+
+            var societyToUnsubscribe = BuildSociety(BuildComplexityDefinition());
+            factoryToTest.SubscribeSociety(societyToUnsubscribe);
+
+            //Execution
+            factoryToTest.UnsubscribeSociety(societyToUnsubscribe);
+
+            //Validation
+            Assert.AreEqual(societyToUnsubscribe, societyReturnedByEvent);
+        }
+
+        [Test]
+        public void Factory_OnUnsubscribeSocietyIsCalled_RaisesSocietyUnsubscribedEvent_WithAppropriateSociety() {
+            //Setup
+            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
+
+            var societyToUnsubscribe = BuildSociety(BuildComplexityDefinition());
+            factoryToTest.SubscribeSociety(societyToUnsubscribe);
+
+            //Execution
+            factoryToTest.UnsubscribeSociety(societyToUnsubscribe);
+
+            //Validation
+            Assert.That(!factoryToTest.Societies.Contains(societyToUnsubscribe));
+        }
+
+        [Test]
         public void Factory_OnGetSocietyOfIDCalled_ReturnsASocietyWithTheSpecifiedID_OrNullIfNoneExists() {
             //Setup
             var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
@@ -271,6 +353,16 @@ namespace Assets.Societies.Editor {
         }
 
         [Test]
+        public void Factory_OnGetComplexityDefinitionOfNameCalled_ReturnsAnAppropriateDefinition_OrNullIfNoneExists() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void Factory_OnGetComplexityLadderOfNameCalled_ReturnsAnAppropriateLadder_OrNullIfNoneExists() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
         public void OnCurrentComplexityChanged_NeedsWantsAndProductionCorrectlyAffectCapacityOfLocationsBlobSite() {
             //Setup
             var startingComplexity = BuildComplexityDefinition();
@@ -350,6 +442,26 @@ namespace Assets.Societies.Editor {
                 "Incorrect placement permission for Textiles");
             Assert.IsFalse(newSociety.Location.BlobSite.GetPlacementPermissionForResourceType(ResourceType.ServiceGoods),
                 "Incorrect placement permission for ServiceGoods");
+        }
+
+        [Test]
+        public void OnCurrentComplexityIsChanged_RaisesCurrentComplexityChangedEvent() {
+            //Setup
+            var complexityOne = BuildComplexityDefinition();
+            var complexityTwo = BuildComplexityDefinition();
+
+            var societyToTest = BuildSociety(complexityOne);
+
+            ComplexityDefinitionBase complexityChangedTo = null;
+            societyToTest.CurrentComplexityChanged += delegate(object sender, ComplexityDefinitionEventArgs e) {
+                complexityChangedTo = e.Complexity;
+            };
+
+            //Execution
+            societyToTest.SetCurrentComplexity(complexityTwo);
+
+            //Validation
+            Assert.AreEqual(complexityTwo, complexityChangedTo);
         }
 
         [Test]

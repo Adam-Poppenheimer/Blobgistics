@@ -16,6 +16,9 @@ namespace Assets.Core {
 
         public abstract void TickSimulation(float secondsPassed);
 
+        public abstract void PerformVictoryTasks();
+        public abstract void PerformDefeatTasks();
+
         #endregion
 
     }

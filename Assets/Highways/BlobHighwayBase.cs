@@ -26,7 +26,7 @@ namespace Assets.Highways {
 
         public abstract int Priority { get; set; }
 
-        public abstract BlobHighwayProfileBase Profile { get; }
+        public abstract BlobHighwayProfile Profile { get; }
 
         public abstract float Efficiency { get; set; }
 

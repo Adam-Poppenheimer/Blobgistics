@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -10,6 +11,12 @@ using Assets.Map;
 namespace Assets.ConstructionZones {
 
     public abstract class ConstructionZoneFactoryBase : MonoBehaviour {
+
+        #region instance fields and properties
+
+        public abstract ReadOnlyCollection<ConstructionZoneBase> ConstructionZones { get; }
+
+        #endregion
 
         #region instance methods
 

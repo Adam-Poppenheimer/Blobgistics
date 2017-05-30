@@ -11,12 +11,22 @@ using Assets.Map;
 using Assets.Core;
 
 using UnityCustomUtilities.Extensions;
+using System.Collections.ObjectModel;
 
 namespace Assets.HighwayManager {
 
     public class HighwayManagerFactory : HighwayManagerFactoryBase {
 
         #region instance fields and properties
+
+        #region from HighwayManagerFactoryBase
+
+        public override ReadOnlyCollection<HighwayManagerBase> Managers {
+            get { return managers.AsReadOnly(); }
+        }
+        [SerializeField, HideInInspector] private List<HighwayManagerBase> managers = new List<HighwayManagerBase>();
+
+        #endregion
 
         public uint ManagementRadius {
             get { return _managementRadius; }
@@ -54,8 +64,6 @@ namespace Assets.HighwayManager {
 
         [SerializeField] private GameObject ManagerPrefab;
 
-        [SerializeField, HideInInspector] private List<HighwayManagerBase> InstantiatedManagers = new List<HighwayManagerBase>();
-
         private DictionaryOfLists<HighwayManagerBase, BlobHighwayBase> HighwaysServedByManager =
             new DictionaryOfLists<HighwayManagerBase, BlobHighwayBase>();
 
@@ -81,7 +89,7 @@ namespace Assets.HighwayManager {
         #region from HighwayManagerFactoryBase
 
         public override HighwayManagerBase GetHighwayManagerOfID(int id) {
-            return InstantiatedManagers.Find(manager => manager.ID == id);
+            return managers.Find(manager => manager.ID == id);
         }
 
         public override IEnumerable<BlobHighwayBase> GetHighwaysServedByManager(HighwayManagerBase manager) {
@@ -110,7 +118,7 @@ namespace Assets.HighwayManager {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }
-            return InstantiatedManagers.Find(manager => manager.Location == location);
+            return managers.Find(manager => manager.Location == location);
         }
 
         public override bool CanConstructHighwayManagerAtLocation(MapNodeBase location) {
@@ -142,7 +150,7 @@ namespace Assets.HighwayManager {
             newManager.SetLocation(location);
             newManager.PrivateData = ManagerPrivateData;
 
-            InstantiatedManagers.Add(newManager);
+            managers.Add(newManager);
 
             RefreshServiceDict();
             return newManager;
@@ -164,13 +172,13 @@ namespace Assets.HighwayManager {
             if(manager == null) {
                 throw new ArgumentNullException("manager");
             }
-            InstantiatedManagers.Remove(manager);
+            managers.Remove(manager);
             HighwaysServedByManager.RemoveList(manager);
             RefreshServiceDict();
         }
 
         public override void TickAllManangers(float secondsPassed) {
-            foreach(var manager in InstantiatedManagers) {
+            foreach(var manager in managers) {
                 manager.TickConsumption(secondsPassed);
             }
         }

@@ -8,6 +8,7 @@ using UnityEngine;
 using Assets.HighwayManager;
 using Assets.Highways;
 using Assets.Map;
+using System.Collections.ObjectModel;
 
 namespace Assets.Core.ForTesting {
 
@@ -15,7 +16,17 @@ namespace Assets.Core.ForTesting {
 
         #region instance fields and properties
 
-        private List<HighwayManagerBase> Managers = new List<HighwayManagerBase>();
+        #region from HighwayManagerFactoryBase
+
+        public override ReadOnlyCollection<HighwayManagerBase> Managers {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        private List<HighwayManagerBase> managers = new List<HighwayManagerBase>();
 
         #endregion
 
@@ -30,21 +41,21 @@ namespace Assets.Core.ForTesting {
         public override HighwayManagerBase ConstructHighwayManagerAtLocation(MapNodeBase location) {
             var newManager = (new GameObject()).AddComponent<MockHighwayManager>();
             newManager.location = location;
-            Managers.Add(newManager);
+            managers.Add(newManager);
             return newManager;
         }
 
         public override void DestroyHighwayManager(HighwayManagerBase manager) {
-            Managers.Remove(manager);
+            managers.Remove(manager);
             DestroyImmediate(manager.gameObject);
         }
 
         public override HighwayManagerBase GetHighwayManagerAtLocation(MapNodeBase location) {
-            return Managers.Where(manager => manager.Location == location).FirstOrDefault();
+            return managers.Where(manager => manager.Location == location).FirstOrDefault();
         }
 
         public override HighwayManagerBase GetHighwayManagerOfID(int id) {
-            return Managers.Where(manager => manager.ID == id).FirstOrDefault();
+            return managers.Where(manager => manager.ID == id).FirstOrDefault();
         }
 
         public override IEnumerable<BlobHighwayBase> GetHighwaysServedByManager(HighwayManagerBase manager) {

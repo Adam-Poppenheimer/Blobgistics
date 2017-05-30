@@ -437,11 +437,10 @@ namespace Assets.BlobDistributors.Editor {
         }
 
         private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float blobPullCooldownInSeconds) {
-            var hostingObject = new GameObject();
-            var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
-            newProfile.SetBlobSpeedPerSecond(blobSpeedPerSecond);
-            newProfile.SetCapacity(capacity);
-            newProfile.SetBlobPullCooldownInSeconds(blobPullCooldownInSeconds);
+            var newProfile = new BlobHighwayProfile();
+            newProfile.BlobSpeedPerSecond = blobSpeedPerSecond;
+            newProfile.Capacity = capacity;
+            newProfile.BlobPullCooldownInSeconds = blobPullCooldownInSeconds;
             return newProfile;
         }
 

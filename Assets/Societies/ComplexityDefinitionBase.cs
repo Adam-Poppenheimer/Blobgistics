@@ -36,6 +36,8 @@ namespace Assets.Societies {
 
         public abstract Material MaterialForSociety { get; }
 
+        public abstract int Score { get; }
+
         #endregion
 
     }

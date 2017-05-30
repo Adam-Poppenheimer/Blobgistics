@@ -42,6 +42,7 @@ namespace Assets.Societies {
             RefreshAppearance();
             RefreshBlobSitePermissionsAndCapacities();
             DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
+            RaiseCurrentComplexityChanged(_currentComplexity);
         }
         [SerializeField] private ComplexityDefinitionBase _currentComplexity;
 
@@ -51,9 +52,10 @@ namespace Assets.Societies {
         [SerializeField, HideInInspector] private bool needsAreSatisfied = true;
 
         public override float SecondsOfUnsatisfiedNeeds {
-            get { return secondsOfUnsatisfiedNeeds; }
+            get { return _secondsOfUnsatisfiedNeeds; }
+            set { _secondsOfUnsatisfiedNeeds = value; }
         }
-        [SerializeField, HideInInspector] private float secondsOfUnsatisfiedNeeds;
+        [SerializeField, HideInInspector] private float _secondsOfUnsatisfiedNeeds;
 
         public override float SecondsUntilComplexityDescent {
             get {
@@ -199,16 +201,16 @@ namespace Assets.Societies {
                 var needsSatisfiedThisCycle = PerformNeedsConsumptionCycle();
                 if(needsSatisfiedThisCycle) {
                     needsAreSatisfied = true;
-                    secondsOfUnsatisfiedNeeds = 0f;
+                    SecondsOfUnsatisfiedNeeds = 0f;
                 }else if(NeedsAreSatisfied){
                     needsAreSatisfied = false;
-                    secondsOfUnsatisfiedNeeds = 0;
+                    SecondsOfUnsatisfiedNeeds = 0;
                 }
                 CurrentNeedConsumptionTimer -= CurrentComplexity.SecondsToFullyConsumeNeeds;
             }
 
             if(!NeedsAreSatisfied) {
-                secondsOfUnsatisfiedNeeds += secondsPassed;
+                SecondsOfUnsatisfiedNeeds += secondsPassed;
             }
         }
 
@@ -335,7 +337,7 @@ namespace Assets.Societies {
                     SetCurrentComplexity(GetBestDescentCandidate());
 
                     PrivateData.Location.BlobSite.ClearContents();
-                    secondsOfUnsatisfiedNeeds = 0f;
+                    SecondsOfUnsatisfiedNeeds = 0f;
                     needsAreSatisfied = true;
 
                     RefreshAppearance();

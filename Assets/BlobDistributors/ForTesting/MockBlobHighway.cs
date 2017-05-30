@@ -48,13 +48,13 @@ namespace Assets.BlobDistributors.ForTesting {
 
         public override int Priority { get; set; }
 
-        public override BlobHighwayProfileBase Profile {
+        public override BlobHighwayProfile Profile {
             get { return _profile; }
         }
-        public void SetProfile(BlobHighwayProfileBase value) {
+        public void SetProfile(BlobHighwayProfile value) {
             _profile = value;
         }
-        private BlobHighwayProfileBase _profile;
+        private BlobHighwayProfile _profile;
 
         public override float Efficiency { get; set; }
 

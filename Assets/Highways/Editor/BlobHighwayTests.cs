@@ -1099,13 +1099,12 @@ namespace Assets.Highways.Editor {
             return newHighwayFactory;
         }
 
-        private BlobHighwayProfileBase BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float BlobPullCooldownInSeconds) {
-            var hostingObject = new GameObject();
-            var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
+        private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float BlobPullCooldownInSeconds) {
+            var newProfile = new BlobHighwayProfile();
 
-            newProfile.SetBlobSpeedPerSecond(blobSpeedPerSecond);
-            newProfile.SetCapacity(capacity);
-            newProfile.SetBlobPullCooldownInSeconds(BlobPullCooldownInSeconds);
+            newProfile.BlobSpeedPerSecond = blobSpeedPerSecond;
+            newProfile.Capacity = capacity;
+            newProfile.BlobPullCooldownInSeconds = BlobPullCooldownInSeconds;
 
             return newProfile;
         }

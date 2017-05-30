@@ -132,6 +132,14 @@ namespace Assets.Societies {
         }
         [SerializeField] private List<TerrainType> _permittedTerrains;
 
+        public override int Score {
+            get { return _score; }
+        }
+        public void SetPermittedTerrains(int value) {
+            _score = value;
+        }
+        [SerializeField] private int _score;
+
         #endregion
 
         #endregion

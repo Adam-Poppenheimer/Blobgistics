@@ -133,6 +133,12 @@ namespace Assets.Societies.ForTesting {
         }
         private List<TerrainType> _permittedTerrains = new List<TerrainType>();
 
+        public override int Score {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion

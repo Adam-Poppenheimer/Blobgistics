@@ -59,13 +59,13 @@ namespace Assets.Highways.ForTesting {
         }
         private MapNodeBase _secondEndpoint;
 
-        public override BlobHighwayProfileBase Profile {
+        public override BlobHighwayProfile Profile {
             get { return _profile; }
         }
-        public void SetProfile(BlobHighwayProfileBase value) {
+        public void SetProfile(BlobHighwayProfile value) {
             _profile = value;
         }
-        private BlobHighwayProfileBase _profile;
+        private BlobHighwayProfile _profile;
 
         #endregion
 

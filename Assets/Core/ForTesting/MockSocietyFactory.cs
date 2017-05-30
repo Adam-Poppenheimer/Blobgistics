@@ -9,6 +9,7 @@ using Assets.Map;
 using Assets.Societies;
 
 using UnityCustomUtilities.Extensions;
+using System.Collections.ObjectModel;
 
 namespace Assets.Core.ForTesting {
 
@@ -38,9 +39,14 @@ namespace Assets.Core.ForTesting {
         }
         private ComplexityDefinitionBase _defaultComplexityDefinition;
 
+        public override ReadOnlyCollection<SocietyBase> Societies {
+            get { return societies.AsReadOnly(); }
+        }
+        private List<SocietyBase> societies = new List<SocietyBase>();
+
         #endregion
 
-        private List<SocietyBase> Societies = new List<SocietyBase>();
+        
 
         #endregion
 
@@ -73,12 +79,16 @@ namespace Assets.Core.ForTesting {
             newSociety.activeComplexityLadder = ladder;
             newSociety.currentComplexity = startingComplexity;
 
-            Societies.Add(newSociety);
+            societies.Add(newSociety);
             return newSociety;
         }
 
         public override void DestroySociety(SocietyBase society) {
             DestroyImmediate(society.gameObject);
+        }
+
+        public override void SubscribeSociety(SocietyBase society) {
+            throw new NotImplementedException();
         }
 
         public override void UnsubscribeSociety(SocietyBase societyBeingDestroyed) {
@@ -93,6 +103,14 @@ namespace Assets.Core.ForTesting {
             if(FactoryTicked != null) {
                 FactoryTicked(this, new FloatEventArgs(secondsPassed));
             }
+        }
+
+        public override ComplexityDefinitionBase GetComplexityDefinitionOfName(string name) {
+            throw new NotImplementedException();
+        }
+
+        public override ComplexityLadderBase GetComplexityLadderOfName(string name) {
+            throw new NotImplementedException();
         }
 
         #endregion

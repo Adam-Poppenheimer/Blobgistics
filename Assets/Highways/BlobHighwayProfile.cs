@@ -7,33 +7,27 @@ using Assets.Blobs;
 namespace Assets.Highways {
 
     [Serializable]
-    public class BlobHighwayProfile : BlobHighwayProfileBase {
+    public class BlobHighwayProfile {
 
         #region instance fields and properties
 
         #region from BlobHighwayProfileBase
 
-        public override float BlobSpeedPerSecond {
+        public float BlobSpeedPerSecond {
             get { return _blobSpeedPerSecond; }
-        }
-        public void SetBlobSpeedPerSecond(float value) {
-            _blobSpeedPerSecond = value;
+            set { _blobSpeedPerSecond = value; }
         }
         [SerializeField] private float _blobSpeedPerSecond;
 
-        public override int Capacity {
+        public int Capacity {
             get { return _capacity; }
-        }
-        public void SetCapacity(int value) {
-            _capacity = value;
+            set { _capacity = value; }
         }
         [SerializeField] private int _capacity;
 
-        public override float BlobPullCooldownInSeconds {
+        public float BlobPullCooldownInSeconds {
             get { return _blobPullCooldownInSeconds; }
-        }
-        public void SetBlobPullCooldownInSeconds(float value) {
-            _blobPullCooldownInSeconds = value;
+            set { _blobPullCooldownInSeconds = value; }
         }
         [SerializeField] private float _blobPullCooldownInSeconds;
 

@@ -21,7 +21,7 @@ namespace Assets.Highways {
         public abstract MapNodeBase FirstEndpoint { get; }
         public abstract MapNodeBase SecondEndpoint { get; }
 
-        public abstract BlobHighwayProfileBase Profile { get; }
+        public abstract BlobHighwayProfile Profile { get; }
 
         #endregion
 

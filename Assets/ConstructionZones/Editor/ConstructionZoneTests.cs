@@ -53,7 +53,7 @@ namespace Assets.ConstructionZones.Editor {
         }
 
         [Test]
-        public void OnConstructionZoneBuiltViaFactory_ProjectIsInstructedToSetSite() {
+        public void Factory_OnConstructionZoneBuilt_ProjectIsInstructedToSetSite() {
             //Setup
             var hostingObject = new GameObject();
             var factoryToUse = hostingObject.AddComponent<ConstructionZoneFactory>();
@@ -202,6 +202,16 @@ namespace Assets.ConstructionZones.Editor {
             Assert.AreEqual(zones[3], factoryToTest.GetConstructionZoneOfID(zones[3].ID), "Did not return Zone[3] when passed its ID");
             Assert.AreEqual(zones[4], factoryToTest.GetConstructionZoneOfID(zones[4].ID), "Did not return Zone[4] when passed its ID");
             Assert.IsNull(factoryToTest.GetConstructionZoneOfID(Int32.MaxValue), "ID of Int32.MaxValue did not return null");
+        }
+
+        [Test]
+        public void OnConstructionZoneCreated_ConstructionZonesCollectionContainsNewlyCreatedZone() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void OnConstructionZoneUnsubscribed_ConstructionZonesCollectionNoLongerContainsZone() {
+            throw new NotImplementedException();
         }
 
         [Test]

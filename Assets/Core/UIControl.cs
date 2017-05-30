@@ -14,6 +14,7 @@ using Assets.Societies;
 using Assets.ResourceDepots;
 using Assets.HighwayManager;
 using Assets.UI.TitleScreen;
+using Assets.UI;
 
 namespace Assets.Core {
 
@@ -58,6 +59,8 @@ namespace Assets.Core {
         [SerializeField] private List<TargetedEventReceiverBase> _highwayManagerEventReceivers;
 
         [SerializeField] private TitleScreenUI TitleScreenUI;
+
+        [SerializeField] private List<IntelligentPanel> HUDElements = new List<IntelligentPanel>();
 
         private Dictionary<Type, List<TargetedEventReceiverBase>> EventReceiversByType =
             new Dictionary<Type, List<TargetedEventReceiverBase>>();
@@ -165,10 +168,21 @@ namespace Assets.Core {
             }
         }
 
+        public override void PerformVictoryTasks() {
+            throw new NotImplementedException();
+        }
+
+        public override void PerformDefeatTasks() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         private void TitleScreenUI_GameStartRequested(object sender, EventArgs e) {
             TitleScreenUI.gameObject.SetActive(false);
+            foreach(var hudElement in HUDElements) {
+                hudElement.Activate();
+            }
         }
 
         private void TitleScreenUI_GameExitRequested(object sender, EventArgs e) {
