@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using UnityEngine;
 
@@ -59,42 +56,15 @@ namespace Assets.Session {
 
         #region instance methods
 
-        public void SaveCurrentSessionToFile(string sessionName, string filePath) {
-            var session = PullSessionFromRuntime(sessionName);
-
-            using(FileStream fileStream = new FileStream(filePath, FileMode.Create)) {
-                var formatter = new BinaryFormatter();
-                try {
-                    formatter.Serialize(fileStream, session);
-                }catch(SerializationException e) {
-                    Debug.LogError("Failed to serialize session. Reason given: " + e.Message);
-                    throw;
-                }
-            }
-        }
-
-        public void LoadSessionFromFile(string filePath) {
-            using(FileStream fileStream = new FileStream(filePath, FileMode.Open)) {
-                try {
-                    var formatter = new BinaryFormatter();
-                    var session = formatter.Deserialize(fileStream) as SerializableSession;
-                    if(session != null) {
-                        PushSessionIntoRuntime(session);
-                    }else {
-                        Debug.LogError("Failed to load session from file: the file did not represent a SerializableSession object");
-                    }
-                }catch(SerializationException e) {
-                    Debug.LogError("Failed to deserialize. Reason given: " + e.Message);
-                    throw;
-                }
-            }
-        }
-
         public SerializableSession PullSessionFromRuntime(string sessionName) {
             var retval = new SerializableSession(sessionName);
 
-            PushMapGraphIntoSession(MapGraph,       retval);
-            PushHighwaysIntoSession(HighwayFactory, retval);
+            PushMapGraphIntoSession         (retval);
+            PushHighwaysIntoSession         (retval);
+            PushConstructionZonesIntoSession(retval);
+            PushHighwayManagersIntoSession  (retval);
+            PushResourceDepotsIntoSession   (retval);
+            PushSocietiesIntoSession        (retval);
 
             return retval;
         }
@@ -103,39 +73,51 @@ namespace Assets.Session {
             ClearRuntime();
 
             var mapNodeIDMapping = LoadMapNodes(session);
-            LoadMapEdges(session, mapNodeIDMapping);
-            LoadHighways(session, mapNodeIDMapping);
+            LoadMapEdges         (session, mapNodeIDMapping);
+            LoadHighways         (session, mapNodeIDMapping);
+            LoadConstructionZones(session, mapNodeIDMapping);
+            LoadHighwayManagers  (session, mapNodeIDMapping);
+            LoadResourceDepots   (session, mapNodeIDMapping);
+            LoadSocieties        (session, mapNodeIDMapping);
         }
 
-        private void PushMapGraphIntoSession(MapGraphBase mapGraph, SerializableSession session) {
-            foreach(var node in mapGraph.Nodes) {
+        private void PushMapGraphIntoSession(SerializableSession session) {
+            foreach(var node in MapGraph.Nodes) {
                 session.MapNodes.Add(new SerializableMapNodeData(node));
             }
-            foreach(var edge in mapGraph.Edges) {
+            foreach(var edge in MapGraph.Edges) {
                 session.MapEdges.Add(new SerializableMapEdgeData(edge));
             }
         }
 
-        private void PushHighwaysIntoSession(BlobHighwayFactoryBase highwayFactory, SerializableSession session) {
-            foreach(var highway in highwayFactory.Highways) {
+        private void PushHighwaysIntoSession(SerializableSession session) {
+            foreach(var highway in HighwayFactory.Highways) {
                 session.Highways.Add(new SerializableHighwayData(highway));
             }
         }
 
-        private void PushConstructionZonesIntoSession(ConstructionZoneFactoryBase zoneFactory, SerializableSession session) {
-            throw new NotImplementedException();
+        private void PushConstructionZonesIntoSession(SerializableSession session) {
+            foreach(var zone in ConstructionZoneFactory.ConstructionZones) {
+                session.ConstructionZones.Add(new SerializableConstructionZoneData(zone));
+            }
         }
 
-        private void PushHighwayManagersIntoSession(HighwayManagerFactoryBase managerFactory, SerializableSession session) {
-            throw new NotImplementedException();
+        private void PushHighwayManagersIntoSession(SerializableSession session) {
+            foreach(var manager in HighwayManagerFactory.Managers) {
+                session.HighwayManagers.Add(new SerializableHighwayManagerData(manager));
+            }
         }
 
-        private void PushResourceDepotsIntoSession(ResourceDepotFactoryBase depotFactory, SerializableSession session) {
-            throw new NotImplementedException();
+        private void PushResourceDepotsIntoSession(SerializableSession session) {
+            foreach(var depot in ResourceDepotFactory.ResourceDepots) {
+                session.ResourceDepots.Add(new SerializableResourceDepotData(depot));
+            }
         }
 
-        private void PushSocietiesIntoSession(SocietyFactoryBase societyFactory, SerializableSession session) {
-            throw new NotImplementedException();
+        private void PushSocietiesIntoSession(SerializableSession session) {
+            foreach(var society in SocietyFactory.Societies) {
+                session.Societies.Add(new SerializableSocietyData(society));
+            }
         }        
 
         private void ClearRuntime() {
@@ -217,6 +199,51 @@ namespace Assets.Session {
                     foreach(var resourceType in highwayData.PullingPermissionForSecondEndpoint.Keys) {
                         successorHighway.SetPullingPermissionForSecondEndpoint(resourceType, true);
                     }
+                }
+            }
+        }
+
+        private void LoadConstructionZones(SerializableSession session, Dictionary<int, MapNodeBase> mapNodeIDMapping) {
+            foreach(var zoneData in session.ConstructionZones) {
+                MapNodeBase location;
+                ConstructionProjectBase project;
+
+                if( mapNodeIDMapping.TryGetValue(zoneData.LocationID, out location) &&
+                    ConstructionZoneFactory.TryGetProjectOfName(zoneData.ProjectName, out project)
+                ){
+                    ConstructionZoneFactory.BuildConstructionZone(location, project);
+                }
+            }
+        }
+
+        private void LoadHighwayManagers(SerializableSession session, Dictionary<int, MapNodeBase> mapNodeIDMapping) {
+            foreach(var managerData in session.HighwayManagers) {
+                MapNodeBase location;
+                if(mapNodeIDMapping.TryGetValue(managerData.LocationID, out location)) {
+                    HighwayManagerFactory.ConstructHighwayManagerAtLocation(location);
+                }
+            }
+        }
+
+        private void LoadResourceDepots(SerializableSession session, Dictionary<int, MapNodeBase> mapNodeIDMapping) {
+            foreach(var depotData in session.ResourceDepots) {
+                MapNodeBase location;
+                if(mapNodeIDMapping.TryGetValue(depotData.LocationID, out location)) {
+                    ResourceDepotFactory.ConstructDepotAt(location);
+                }
+            }
+        }
+
+        private void LoadSocieties(SerializableSession session, Dictionary<int, MapNodeBase> mapNodeIDMapping) {
+            foreach(var societyData in session.Societies) {
+                MapNodeBase location;
+                ComplexityLadderBase ladder = SocietyFactory.GetComplexityLadderOfName(societyData.ActiveComplexityLadderName);
+                ComplexityDefinitionBase complexity = SocietyFactory.GetComplexityDefinitionOfName(societyData.CurrentComplexityName);
+
+                if(mapNodeIDMapping.TryGetValue(societyData.LocationID, out location) && complexity != null && ladder != null) {
+                    var successorSociety = SocietyFactory.ConstructSocietyAt(location, ladder, complexity);
+                    successorSociety.AscensionIsPermitted = societyData.AscensionIsPermitted;
+                    successorSociety.SecondsOfUnsatisfiedNeeds = societyData.SecondsOfUnsatisfiedNeeds;
                 }
             }
         }

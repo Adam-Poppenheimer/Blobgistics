@@ -149,7 +149,7 @@ namespace Assets.UI.Societies {
         }
 
         private void UpdateCurrentComplexityDisplay(ComplexityDefinitionBase currentComplexity) {
-            CurrentComplexityNameField.text = currentComplexity.Name;
+            CurrentComplexityNameField.text = currentComplexity.name;
             CurrentComplexityProductionField.PushAndDisplaySummary(currentComplexity.Production);
             CurrentComplexityNeedsField.PushAndDisplaySummary(currentComplexity.Needs);
 

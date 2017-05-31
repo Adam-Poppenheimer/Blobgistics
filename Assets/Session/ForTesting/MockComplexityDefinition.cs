@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-
-using UnityEngine;
-
 using Assets.Blobs;
 using Assets.Map;
 using Assets.Societies;
+using UnityEngine;
 
-namespace Assets.Scoring.ForTesting {
+namespace Assets.Session.ForTesting {
 
     public class MockComplexityDefinition : ComplexityDefinitionBase {
 
@@ -66,6 +64,12 @@ namespace Assets.Scoring.ForTesting {
             }
         }
 
+        public override int Score {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         public override float SecondsToFullyConsumeNeeds {
             get {
                 throw new NotImplementedException();
@@ -90,15 +94,10 @@ namespace Assets.Scoring.ForTesting {
             }
         }
 
-        public override int Score {
-            get { return score; }
-        }
-        public int score;
-
         #endregion
 
         #endregion
-
+        
     }
 
 }

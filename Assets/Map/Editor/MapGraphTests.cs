@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -572,7 +573,63 @@ namespace Assets.Map.Editor {
 
         [Test]
         public void OnLoadFromMapAssetCalled_MapGraphGeneratesTheCorrectNodesAndEdges() {
-            throw new NotImplementedException();
+            //Setup
+            var mockAlgorithmSet = BuildMockMapAlgorithmSet();
+
+            var graphToTest = BuildMapGraph();
+            graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
+            graphToTest.UIControl = BuildMockUIControl();
+            graphToTest.AlgorithmSet = mockAlgorithmSet;
+
+            var centerNode = graphToTest.BuildNode(Vector3.zero );
+            var leftNode   = graphToTest.BuildNode(Vector3.left );
+            var rightNode  = graphToTest.BuildNode(Vector3.right);
+            var upNode     = graphToTest.BuildNode(Vector3.up   );
+            var downNode   = graphToTest.BuildNode(Vector3.down );
+
+            centerNode.Terrain = TerrainType.Grassland;
+            leftNode.Terrain   = TerrainType.Forest;
+            rightNode.Terrain  = TerrainType.Mountains;
+            upNode.Terrain     = TerrainType.Grassland;
+            downNode.Terrain   = TerrainType.Forest;
+
+            graphToTest.BuildMapEdge(centerNode, leftNode );
+            graphToTest.BuildMapEdge(centerNode, rightNode);
+            graphToTest.BuildMapEdge(centerNode, upNode   );
+            graphToTest.BuildMapEdge(centerNode, downNode );
+
+            var assetToLoad = ScriptableObject.CreateInstance<MapAsset>();
+            assetToLoad.LoadMapGraphInto(graphToTest);
+
+            //Execution
+            foreach(var node in new List<MapNodeBase>(graphToTest.Nodes)) {
+                graphToTest.UnsubscribeNode(node);
+                node.transform.SetParent(null);
+            }
+            foreach(var edge in new List<MapEdgeBase>(graphToTest.Edges)) {
+                graphToTest.UnsubscribeMapEdge(edge);
+                edge.transform.SetParent(null);
+            }
+
+            graphToTest.LoadFromMapAsset(assetToLoad);
+
+            var newCenterNode = GetEquivalentNode(centerNode, graphToTest.Nodes);
+            var newLeftNode   = GetEquivalentNode(leftNode,   graphToTest.Nodes);
+            var newRightNode  = GetEquivalentNode(rightNode,  graphToTest.Nodes);
+            var newUpNode     = GetEquivalentNode(upNode,     graphToTest.Nodes);
+            var newDownNode   = GetEquivalentNode(downNode,   graphToTest.Nodes);
+
+            //Validation
+            Assert.NotNull(newCenterNode, "Did not find a node equivalent to centerNode");
+            Assert.NotNull(newLeftNode,   "Did not find a node equivalent to leftNode"  );
+            Assert.NotNull(newRightNode,  "Did not find a node equivalent to rightNode" );
+            Assert.NotNull(newUpNode,     "Did not find a node equivalent to upNode"    );
+            Assert.NotNull(newDownNode,   "Did not find a node equivalent to downNode"  );
+
+            Assert.NotNull(graphToTest.GetEdge(newCenterNode, newLeftNode ), "MapGraph failed to establish an edge between newCenter and newLeft" );
+            Assert.NotNull(graphToTest.GetEdge(newCenterNode, newRightNode), "MapGraph failed to establish an edge between newCenter and newRight");
+            Assert.NotNull(graphToTest.GetEdge(newCenterNode, newUpNode   ), "MapGraph failed to establish an edge between newCenter and newUp"   );
+            Assert.NotNull(graphToTest.GetEdge(newCenterNode, newDownNode ), "MapGraph failed to establish an edge between newCenter and newDown" );
         }
 
         [Test]
@@ -710,6 +767,15 @@ namespace Assets.Map.Editor {
 
         private MockMapAlgorithmSet BuildMockMapAlgorithmSet() {
             return (new GameObject()).AddComponent<MockMapAlgorithmSet>();
+        }
+
+        private MapNodeBase GetEquivalentNode(MapNodeBase nodeToTestAgainst, ReadOnlyCollection<MapNodeBase> candidates) {
+            return candidates.Where(delegate(MapNodeBase candidate) {
+                return (
+                    candidate.transform.localPosition.Equals(nodeToTestAgainst.transform.localPosition) &&
+                    candidate.Terrain == nodeToTestAgainst.Terrain
+                );
+            }).FirstOrDefault();
         }
 
         #endregion

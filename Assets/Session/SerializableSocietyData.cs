@@ -29,7 +29,7 @@ namespace Assets.Session {
         public SerializableSocietyData(SocietyBase society) {
             LocationID = society.Location.ID;
             ActiveComplexityLadderName = society.ActiveComplexityLadder.name;
-            CurrentComplexityName = society.CurrentComplexity.Name;
+            CurrentComplexityName = society.CurrentComplexity.name;
             SecondsOfUnsatisfiedNeeds = society.SecondsOfUnsatisfiedNeeds;
             AscensionIsPermitted = society.AscensionIsPermitted;
         }

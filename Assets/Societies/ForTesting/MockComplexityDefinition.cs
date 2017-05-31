@@ -24,14 +24,6 @@ namespace Assets.Societies.ForTesting {
         }
         private float _complexityDescentDuration = 1f;
 
-        public override string Name {
-            get { return _name; }
-        }
-        public void SetName(string value) {
-            _name = value;
-        }
-        private string _name = "DEFAULT";
-
         public override IntPerResourceDictionary Needs {
             get {
                 if(_needs == null) {

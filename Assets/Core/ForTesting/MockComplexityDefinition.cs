@@ -34,12 +34,6 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override string Name {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public override IntPerResourceDictionary Needs {
             get {
                 throw new NotImplementedException();

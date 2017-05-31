@@ -22,6 +22,8 @@ namespace Assets.Session.ForTesting {
         }
         private List<ConstructionZoneBase> constructionZones = new List<ConstructionZoneBase>();
 
+        public List<ConstructionProjectBase> AvailableProjects;
+
         #endregion
 
         #endregion
@@ -64,7 +66,8 @@ namespace Assets.Session.ForTesting {
         }
 
         public override bool TryGetProjectOfName(string projectName, out ConstructionProjectBase project) {
-            throw new NotImplementedException();
+            project = AvailableProjects.Where(candidate => candidate.name.Equals(projectName)).FirstOrDefault();
+            return project != null;
         }
 
         public override void UnsubsribeConstructionZone(ConstructionZoneBase constructionZone) {

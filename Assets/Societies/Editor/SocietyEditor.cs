@@ -35,7 +35,7 @@ namespace Assets.Societies.Editor {
             EditorGUILayout.LabelField("Ascent Transitions");
             foreach(var ascentTransition in TargetedSociety.ActiveComplexityLadder.GetAscentTransitions(TargetedSociety.CurrentComplexity)) {
                 EditorGUI.BeginDisabledGroup(!ascentTransition.PermittedTerrains.Contains(TargetedSociety.Location.Terrain));
-                if(GUILayout.Button(ascentTransition.Name)) {
+                if(GUILayout.Button(ascentTransition.name)) {
                     TargetedSociety.SetCurrentComplexity(ascentTransition);
                 }
                 EditorGUI.EndDisabledGroup();
@@ -50,7 +50,7 @@ namespace Assets.Societies.Editor {
             EditorGUILayout.LabelField("Descent Transitions");
             foreach(var descentTransition in TargetedSociety.ActiveComplexityLadder.GetDescentTransitions(TargetedSociety.CurrentComplexity)) {
                 EditorGUI.BeginDisabledGroup(!descentTransition.PermittedTerrains.Contains(TargetedSociety.Location.Terrain));
-                if(GUILayout.Button(descentTransition.Name)) {
+                if(GUILayout.Button(descentTransition.name)) {
                     TargetedSociety.SetCurrentComplexity(descentTransition);
                 }
                 EditorGUI.EndDisabledGroup();

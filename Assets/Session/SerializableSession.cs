@@ -15,9 +15,13 @@ namespace Assets.Session {
         }
         private string _name;
 
-        public List<SerializableMapNodeData> MapNodes;
-        public List<SerializableMapEdgeData> MapEdges;
-        public List<SerializableHighwayData> Highways;
+        public List<SerializableMapNodeData>          MapNodes;
+        public List<SerializableMapEdgeData>          MapEdges;
+        public List<SerializableHighwayData>          Highways;
+        public List<SerializableConstructionZoneData> ConstructionZones;
+        public List<SerializableHighwayManagerData>   HighwayManagers;
+        public List<SerializableResourceDepotData>    ResourceDepots;
+        public List<SerializableSocietyData>          Societies;
 
         #endregion
 
@@ -25,9 +29,13 @@ namespace Assets.Session {
 
         public SerializableSession(string name) {
             _name = name;
-            MapNodes = new List<SerializableMapNodeData>();
-            MapEdges = new List<SerializableMapEdgeData>();
-            Highways = new List<SerializableHighwayData>();
+            MapNodes          = new List<SerializableMapNodeData>();
+            MapEdges          = new List<SerializableMapEdgeData>();
+            Highways          = new List<SerializableHighwayData>();
+            ConstructionZones = new List<SerializableConstructionZoneData>();
+            HighwayManagers   = new List<SerializableHighwayManagerData>();
+            ResourceDepots    = new List<SerializableResourceDepotData>();
+            Societies         = new List<SerializableSocietyData>();
         }
 
         #endregion

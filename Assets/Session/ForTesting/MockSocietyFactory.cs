@@ -36,6 +36,9 @@ namespace Assets.Session.ForTesting {
 
         #endregion
 
+        public List<ComplexityDefinitionBase> ComplexityDefinitions = new List<ComplexityDefinitionBase>();
+        public List<ComplexityLadderBase> ComplexityLadders = new List<ComplexityLadderBase>();
+
         #endregion
 
         #region instance methods
@@ -85,11 +88,11 @@ namespace Assets.Session.ForTesting {
         }
 
         public override ComplexityDefinitionBase GetComplexityDefinitionOfName(string name) {
-            throw new NotImplementedException();
+            return ComplexityDefinitions.Where(definition => definition.gameObject.name.Equals(name)).FirstOrDefault();
         }
 
         public override ComplexityLadderBase GetComplexityLadderOfName(string name) {
-            throw new NotImplementedException();
+            return ComplexityLadders.Where(ladder => ladder.gameObject.name.Equals(name)).FirstOrDefault();
         }
 
         #endregion

@@ -26,7 +26,7 @@ namespace Assets.Societies.Editor {
                     var hostingObject = new GameObject();
                     _standardComplexity = hostingObject.AddComponent<MockComplexityDefinition>();
                     _standardComplexity.SetComplexityDescentDuration(10f);
-                    _standardComplexity.SetName("StandardComplexity");
+                    _standardComplexity.name = "StandardComplexity";
                     _standardComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
                         hostingObject.gameObject,
                         new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
@@ -354,12 +354,51 @@ namespace Assets.Societies.Editor {
 
         [Test]
         public void Factory_OnGetComplexityDefinitionOfNameCalled_ReturnsAnAppropriateDefinition_OrNullIfNoneExists() {
-            throw new NotImplementedException();
+            //Setup
+            var definitionOne = BuildComplexityDefinition();
+            definitionOne.name = "DefinitionOne";
+
+            var definitionTwo = BuildComplexityDefinition();
+            definitionTwo.name = "DefinitionTwo";
+
+            var definitionThree = BuildComplexityDefinition();
+            definitionThree.name = "DefinitionThree";
+
+            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
+            factoryToTest.SetComplexityDefinitions(new List<ComplexityDefinitionBase>() {
+                definitionOne, definitionTwo, definitionThree
+            });
+
+            //Execution and Validation
+            Assert.AreEqual(definitionOne,   factoryToTest.GetComplexityDefinitionOfName(definitionOne.name),
+                "definitionOne.name failed to return definitionOne");
+            Assert.AreEqual(definitionTwo,   factoryToTest.GetComplexityDefinitionOfName(definitionTwo.name),
+                "definitionTwo.name failed to return definitionTwo");
+            Assert.AreEqual(definitionThree, factoryToTest.GetComplexityDefinitionOfName(definitionThree.name),
+                "definitionThree.name failed to return definitionThree");
         }
 
         [Test]
         public void Factory_OnGetComplexityLadderOfNameCalled_ReturnsAnAppropriateLadder_OrNullIfNoneExists() {
-            throw new NotImplementedException();
+            //Setup
+            var ladderOne = BuildComplexityLadder();
+            ladderOne.name = "LadderOne";
+
+            var ladderTwo = BuildComplexityLadder();
+            ladderTwo.name = "LadderTwo";
+
+            var ladderThree = BuildComplexityLadder();
+            ladderThree.name = "LadderThree";
+
+            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
+            factoryToTest.SetComplexityLadders(new List<ComplexityLadderBase>() {
+                ladderOne, ladderTwo, ladderThree
+            });
+
+            //Execution and Validation
+            Assert.AreEqual(ladderOne,   factoryToTest.GetComplexityLadderOfName(ladderOne.name  ), "ladderOne.name failed to return ladderOne"    );
+            Assert.AreEqual(ladderTwo,   factoryToTest.GetComplexityLadderOfName(ladderTwo.name  ), "ladderTwo.name failed to return ladderTwo"    );
+            Assert.AreEqual(ladderThree, factoryToTest.GetComplexityLadderOfName(ladderThree.name), "ladderThree.name failed to return ladderThree");
         }
 
         [Test]
@@ -942,7 +981,7 @@ namespace Assets.Societies.Editor {
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
-            currentComplexity.SetName("Current");
+            currentComplexity.name = "Current";
             currentComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
                 currentComplexity.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, Int32.MaxValue)
@@ -950,7 +989,7 @@ namespace Assets.Societies.Editor {
             currentComplexity.SetPermittedTerrains(new List<TerrainType>() { TerrainType.Grassland });
 
             var descentComplexity = BuildComplexityDefinition();
-            descentComplexity.SetName("Descent");
+            descentComplexity.name = "Descent";
             descentComplexity.SetPermittedTerrains(new List<TerrainType>() { TerrainType.Grassland });
 
             var activeLadder = BuildComplexityLadder(1, descentComplexity, currentComplexity);

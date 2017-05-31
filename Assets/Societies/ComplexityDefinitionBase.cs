@@ -15,8 +15,6 @@ namespace Assets.Societies {
 
         #region instance fields and properties
 
-        public abstract string Name { get; }
-
         public abstract IntPerResourceDictionary Production { get; }
         public abstract IntPerResourceDictionary Needs { get; }
         public abstract IEnumerable<IntPerResourceDictionary> Wants { get; }

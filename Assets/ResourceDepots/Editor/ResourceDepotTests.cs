@@ -94,7 +94,21 @@ namespace Assets.ResourceDepots.Editor {
 
         [Test]
         public void Factory_OnResourceDepotConstructed_ResourceDepotsCollectionContainsTheNewDepot() {
-            throw new NotImplementedException();
+            //Setup
+            var factoryToTest = BuildFactory();
+            var location1 = BuildMapNode();
+            var location2 = BuildMapNode();
+            var location3 = BuildMapNode();
+
+            //Execution
+            var depot1 = factoryToTest.ConstructDepotAt(location1);
+            var depot2 = factoryToTest.ConstructDepotAt(location2);
+            var depot3 = factoryToTest.ConstructDepotAt(location3);
+
+            //Validation
+            Assert.Contains(depot1, factoryToTest.ResourceDepots, "Factory.ResourceDepots does not contain depot1");
+            Assert.Contains(depot2, factoryToTest.ResourceDepots, "Factory.ResourceDepots does not contain depot2");
+            Assert.Contains(depot3, factoryToTest.ResourceDepots, "Factory.ResourceDepots does not contain depot3");
         }
 
         [Test]
@@ -123,13 +137,54 @@ namespace Assets.ResourceDepots.Editor {
         }
 
         [Test]
-        public void Factory_OnDepotUnsubscribed_HasDepotAtLocationReturnsFalse_AndGetDepotAtLocationNull() {
-            throw new NotImplementedException();
+        public void Factory_OnDepotUnsubscribed_HasDepotAtLocationReturnsFalse_AndGetDepotAtLocationReturnsNull() {
+            //Setup
+            var factoryToTest = BuildFactory();
+            var location1 = BuildMapNode();
+            var location2 = BuildMapNode();
+            var location3 = BuildMapNode();
+
+            var depot1 = factoryToTest.ConstructDepotAt(location1);
+            var depot2 = factoryToTest.ConstructDepotAt(location2);
+            var depot3 = factoryToTest.ConstructDepotAt(location3);
+
+            //Execution
+            factoryToTest.UnsubscribeDepot(depot1);
+            factoryToTest.UnsubscribeDepot(depot2);
+            factoryToTest.UnsubscribeDepot(depot3);
+
+            //Validation
+            Assert.IsFalse(factoryToTest.HasDepotAtLocation(location1), "Factory still acknowledges a depot at location1");
+            Assert.IsNull(factoryToTest.GetDepotAtLocation(location1), "Factory returns a non-null depot at location1");
+
+            Assert.IsFalse(factoryToTest.HasDepotAtLocation(location2), "Factory still acknowledges a depot at location2");
+            Assert.IsNull(factoryToTest.GetDepotAtLocation(location2), "Factory returns a non-null depot at location2");
+
+            Assert.IsFalse(factoryToTest.HasDepotAtLocation(location3), "Factory still acknowledges a depot at location3");
+            Assert.IsNull(factoryToTest.GetDepotAtLocation(location3), "Factory returns a non-null depot at location3");
         }
 
         [Test]
         public void Factory_OnDepotUnsubscribed_ResourceDepotsCollectionNoLongerContainsTheDepot() {
-            throw new NotImplementedException();
+            //Setup
+            var factoryToTest = BuildFactory();
+            var location1 = BuildMapNode();
+            var location2 = BuildMapNode();
+            var location3 = BuildMapNode();
+
+            var depot1 = factoryToTest.ConstructDepotAt(location1);
+            var depot2 = factoryToTest.ConstructDepotAt(location2);
+            var depot3 = factoryToTest.ConstructDepotAt(location3);
+
+            //Execution
+            factoryToTest.UnsubscribeDepot(depot1);
+            factoryToTest.UnsubscribeDepot(depot2);
+            factoryToTest.UnsubscribeDepot(depot3);
+
+            //Validation
+            Assert.IsFalse(factoryToTest.ResourceDepots.Contains(depot1), "Factory.ResourceDepots still contains depot1");
+            Assert.IsFalse(factoryToTest.ResourceDepots.Contains(depot2), "Factory.ResourceDepots still contains depot2");
+            Assert.IsFalse(factoryToTest.ResourceDepots.Contains(depot3), "Factory.ResourceDepots still contains depot3");
         }
 
         [Test]

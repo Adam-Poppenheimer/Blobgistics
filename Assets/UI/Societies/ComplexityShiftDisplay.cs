@@ -33,7 +33,7 @@ namespace Assets.UI.Societies {
         public void RefreshDisplay() {
             if(NameField != null) {
                 NameField.color = IsCandidateForShift ? IsCandidateForShiftColor : IsNotCandidateForShiftColor;
-                NameField.text = ComplexityToDisplay.Name;
+                NameField.text = ComplexityToDisplay.name;
             }
             if(PermittedTerrainsField != null) { 
                 PermittedTerrainsField.color = IsCandidateForShift ? IsCandidateForShiftColor : IsNotCandidateForShiftColor;

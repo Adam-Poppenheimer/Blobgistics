@@ -136,7 +136,25 @@ namespace Assets.HighwayManager.Editor {
 
         [Test]
         public void Factory_OnHighwayManagerConstructed_ManagersCollectionContainsTheNewManager() {
-            throw new NotImplementedException();
+            //Setup
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
+            var location1 = BuildMockMapNode();
+            var location2 = BuildMockMapNode();
+            var location3 = BuildMockMapNode();
+
+            //Execution
+            var manager1 = factoryToTest.ConstructHighwayManagerAtLocation(location1);
+            var manager2 = factoryToTest.ConstructHighwayManagerAtLocation(location2);
+            var manager3 = factoryToTest.ConstructHighwayManagerAtLocation(location3);
+
+            //Validation
+            Assert.Contains(manager1, factoryToTest.Managers, "Factory.Managers does not contain manager1");
+            Assert.Contains(manager2, factoryToTest.Managers, "Factory.Managers does not contain manager2");
+            Assert.Contains(manager3, factoryToTest.Managers, "Factory.Managers does not contain manager3");
         }
 
         [Test]
@@ -198,7 +216,29 @@ namespace Assets.HighwayManager.Editor {
 
         [Test]
         public void Factory_OnUnsubscribeHighwayManagerCalled_ManagersCollectionNoLongerContainsTheManager() {
-            throw new NotImplementedException();
+            //Setup
+            var privateData = BuildManagerPrivateData();
+            privateData.SetBlobFactory(BuildMockBlobFactory());
+
+            var factoryToTest = BuildHighwayManagerFactory(privateData);
+            factoryToTest.HighwayFactory = BuildMockHighwayFactory();
+            var location1 = BuildMockMapNode();
+            var location2 = BuildMockMapNode();
+            var location3 = BuildMockMapNode();
+
+            var manager1 = factoryToTest.ConstructHighwayManagerAtLocation(location1);
+            var manager2 = factoryToTest.ConstructHighwayManagerAtLocation(location2);
+            var manager3 = factoryToTest.ConstructHighwayManagerAtLocation(location3);
+
+            //Execution
+            factoryToTest.UnsubscribeHighwayManager(manager1);
+            factoryToTest.UnsubscribeHighwayManager(manager2);
+            factoryToTest.UnsubscribeHighwayManager(manager3);
+
+            //Validation
+            Assert.IsFalse(factoryToTest.Managers.Contains(manager1), "Factory.Managers still contains manager1");
+            Assert.IsFalse(factoryToTest.Managers.Contains(manager2), "Factory.Managers still contains manager2");
+            Assert.IsFalse(factoryToTest.Managers.Contains(manager3), "Factory.Managers still contains manager3");
         }
 
         [Test]

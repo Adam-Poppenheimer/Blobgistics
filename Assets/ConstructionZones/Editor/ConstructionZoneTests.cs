@@ -206,12 +206,54 @@ namespace Assets.ConstructionZones.Editor {
 
         [Test]
         public void OnConstructionZoneCreated_ConstructionZonesCollectionContainsNewlyCreatedZone() {
-            throw new NotImplementedException();
+            //Setup
+            var factoryToTest = BuildConstructionZoneFactory();
+            var mapNodes = new List<MapNodeBase>() {
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+            };
+
+            ConstructionProjectBase project;
+            factoryToTest.TryGetProjectOfName(StandardProjectName, out project);
+
+            //Execution
+            var zoneOne   = factoryToTest.BuildConstructionZone(mapNodes[0], project);
+            var zoneTwo   = factoryToTest.BuildConstructionZone(mapNodes[1], project);
+            var zoneThree = factoryToTest.BuildConstructionZone(mapNodes[2], project);
+
+            //Validation
+            Assert.Contains(zoneOne,   factoryToTest.ConstructionZones, "Factory.ConstructionZones does not contain zoneOne"  );
+            Assert.Contains(zoneTwo,   factoryToTest.ConstructionZones, "Factory.ConstructionZones does not contain zoneTwo"  );
+            Assert.Contains(zoneThree, factoryToTest.ConstructionZones, "Factory.ConstructionZones does not contain zoneThree");
         }
 
         [Test]
         public void OnConstructionZoneUnsubscribed_ConstructionZonesCollectionNoLongerContainsZone() {
-            throw new NotImplementedException();
+            //Setup
+            var factoryToTest = BuildConstructionZoneFactory();
+            var mapNodes = new List<MapNodeBase>() {
+                BuildMapNode(),
+                BuildMapNode(),
+                BuildMapNode(),
+            };
+
+            ConstructionProjectBase project;
+            factoryToTest.TryGetProjectOfName(StandardProjectName, out project);
+
+            var zoneOne   = factoryToTest.BuildConstructionZone(mapNodes[0], project);
+            var zoneTwo   = factoryToTest.BuildConstructionZone(mapNodes[1], project);
+            var zoneThree = factoryToTest.BuildConstructionZone(mapNodes[2], project);
+
+            //Execution
+            factoryToTest.UnsubsribeConstructionZone(zoneOne);
+            factoryToTest.UnsubsribeConstructionZone(zoneTwo);
+            factoryToTest.UnsubsribeConstructionZone(zoneThree);
+
+            //Validation
+            Assert.IsFalse(factoryToTest.ConstructionZones.Contains(zoneOne  ), "Factory.ConstructionZones still contains zoneOne"  );
+            Assert.IsFalse(factoryToTest.ConstructionZones.Contains(zoneTwo  ), "Factory.ConstructionZones still contains zoneTwo"  );
+            Assert.IsFalse(factoryToTest.ConstructionZones.Contains(zoneThree), "Factory.ConstructionZones still contains zoneThree");
         }
 
         [Test]

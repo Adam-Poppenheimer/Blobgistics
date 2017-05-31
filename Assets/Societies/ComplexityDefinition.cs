@@ -17,10 +17,6 @@ namespace Assets.Societies {
 
         #region from ComplexityDefinitionBase
 
-        public override string Name {
-            get { return name; }
-        }
-
         public override IntPerResourceDictionary Production {
             get {
                 if(_production == null) {

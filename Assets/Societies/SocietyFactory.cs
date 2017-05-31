@@ -55,6 +55,22 @@ namespace Assets.Societies {
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        public ReadOnlyCollection<ComplexityDefinitionBase> ComplexityDefinitions {
+            get { return _complexityDefinitions.AsReadOnly(); }
+        }
+        public void SetComplexityDefinitions(List<ComplexityDefinitionBase> value) {
+            _complexityDefinitions = value;
+        }
+        [SerializeField] private List<ComplexityDefinitionBase> _complexityDefinitions;
+
+        public ReadOnlyCollection<ComplexityLadderBase> ComplexityLadders {
+            get { return _complexityLadders.AsReadOnly(); }
+        }
+        public void SetComplexityLadders(List<ComplexityLadderBase> value) {
+            _complexityLadders = value;
+        }
+        [SerializeField] private List<ComplexityLadderBase> _complexityLadders;
+
         [SerializeField] private GameObject SocietyPrefab;
 
         #endregion
@@ -171,11 +187,11 @@ namespace Assets.Societies {
         }
 
         public override ComplexityDefinitionBase GetComplexityDefinitionOfName(string name) {
-            throw new NotImplementedException();
+            return ComplexityDefinitions.Where(definition => definition.name.Equals(name)).FirstOrDefault();
         }
 
         public override ComplexityLadderBase GetComplexityLadderOfName(string name) {
-            throw new NotImplementedException();
+            return ComplexityLadders.Where(ladder => ladder.name.Equals(name)).FirstOrDefault();
         }
 
         #endregion
