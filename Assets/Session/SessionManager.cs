@@ -73,7 +73,9 @@ namespace Assets.Session {
             ClearRuntime();
 
             var mapNodeIDMapping = LoadMapNodes(session);
-            LoadMapEdges         (session, mapNodeIDMapping);
+            var mapEdgeIDMapping = LoadMapEdges(session, mapNodeIDMapping);
+
+            LoadNeighborhoods    (session, mapNodeIDMapping, mapEdgeIDMapping);
             LoadHighways         (session, mapNodeIDMapping);
             LoadConstructionZones(session, mapNodeIDMapping);
             LoadHighwayManagers  (session, mapNodeIDMapping);
@@ -87,6 +89,9 @@ namespace Assets.Session {
             }
             foreach(var edge in MapGraph.Edges) {
                 session.MapEdges.Add(new SerializableMapEdgeData(edge));
+            }
+            foreach(var neighborhood in MapGraph.transform.GetComponentsInChildren<Neighborhood>()) {
+                session.Neighborhoods.Add(new SerializableNeighborhoodData(neighborhood));
             }
         }
 
@@ -166,6 +171,7 @@ namespace Assets.Session {
                     mapNodeIDMapping.TryGetValue(edgeData.SecondEndpointID, out secondEndpoint)
                 ){
                     var successorEdge = MapGraph.BuildMapEdge(firstEndpoint, secondEndpoint);
+                    mapEdgeIDMapping[edgeData.ID] = successorEdge;
                 }else {
                     Debug.LogErrorFormat("Failed to create map edge between nodes of ID {0} and {1}: one of the nodes does not exist",
                         edgeData.FirstEndpointID, edgeData.SecondEndpointID);
@@ -173,6 +179,24 @@ namespace Assets.Session {
             }
 
             return mapEdgeIDMapping;
+        }
+
+        private void LoadNeighborhoods(SerializableSession session, Dictionary<int, MapNodeBase> mapNodeIDMapping,
+            Dictionary<int, MapEdgeBase> mapEdgeIDMapping) {
+            foreach(var neighborhoodData in session.Neighborhoods) {
+                var newNeighborhood = (new GameObject()).AddComponent<Neighborhood>();
+                newNeighborhood.gameObject.name = neighborhoodData.Name;
+                var neigborhoodTransform = newNeighborhood.transform;
+                neigborhoodTransform.SetParent(MapGraph.transform);
+                neigborhoodTransform.localPosition = neighborhoodData.LocalPosition;
+
+                foreach(var nodeID in neighborhoodData.ChildNodeIDs) {
+                    mapNodeIDMapping[nodeID].transform.SetParent(neigborhoodTransform, false);
+                }
+                foreach(var edgeID in neighborhoodData.ChildEdgeIDs) {
+                    mapEdgeIDMapping[edgeID].transform.SetParent(neigborhoodTransform, true);
+                }
+            }
         }
 
         private void LoadHighways(SerializableSession session, Dictionary<int, MapNodeBase> mapNodeIDMapping) {

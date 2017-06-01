@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Assets.Map {
 
     [ExecuteInEditMode]
-    public class NeighborhoodHelper : MonoBehaviour {
+    public class Neighborhood : MonoBehaviour {
 
         #region instance methods
 
@@ -41,7 +41,7 @@ namespace Assets.Map {
                     mapAbove.SubscribeMapEdge(edge);
                 }
             }
-            foreach(var neighborhoodHelper in gameObject.GetComponentsInChildren<NeighborhoodHelper>()) {
+            foreach(var neighborhoodHelper in gameObject.GetComponentsInChildren<Neighborhood>()) {
                 if(neighborhoodHelper != this) {
                     neighborhoodHelper.SpreadParentChangeToChildren();
                 }

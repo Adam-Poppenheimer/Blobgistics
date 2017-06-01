@@ -37,17 +37,13 @@ namespace Assets.Session {
         #region instance methods
 
         public void SaveSessionToFile(SerializableSession session) {
-            string filePath = Application.persistentDataPath + SessionStoragePath + session.Name;
+            string filePath = string.Format("{0}/{1}/{2}.{3}", Application.persistentDataPath, SessionStoragePath,
+                session.Name, SaveFileExtension);
 
             using(FileStream fileStream = new FileStream(filePath, FileMode.Create)) {
                 var formatter = new BinaryFormatter();
-                try {
-                    formatter.Serialize(fileStream, session);
-                    loadedSessions.Add(session);
-                }catch(SerializationException e) {
-                    Debug.LogError("Failed to serialize session. Reason given: " + e.Message);
-                    throw;
-                }
+                formatter.Serialize(fileStream, session);
+                loadedSessions.Add(session);
             }
         }
 
@@ -68,7 +64,7 @@ namespace Assets.Session {
             SessionDirectory = Directory.CreateDirectory(Application.persistentDataPath + @"\" + SessionStoragePath);
 
             foreach(var file in SessionDirectory.GetFiles("*." + SaveFileExtension)) {
-                if(file.Extension.Equals(SaveFileExtension)) {
+                if(file.Extension.Equals("." + SaveFileExtension)) {
                     loadedSessions.Add(LoadSessionFromFile(file));
                 }
             }

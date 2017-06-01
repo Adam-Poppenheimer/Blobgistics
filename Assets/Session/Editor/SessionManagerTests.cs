@@ -402,6 +402,72 @@ namespace Assets.Session.Editor {
             }
         }
 
+        [Test]
+        public void OnSessionPulledFromAndPushedIntoRuntime_AllNeighborhoodsAreConstructedAndInitializedProperly() {
+            //Setup
+            var mapGraphToPullFrom = BuildMockMapGraph();
+
+            var nodeOne = mapGraphToPullFrom.BuildNode(Vector3.zero);
+            var nodeTwo = mapGraphToPullFrom.BuildNode(Vector3.one);
+
+            var nodeThree = mapGraphToPullFrom.BuildNode(Vector3.zero);
+            var nodeFour  = mapGraphToPullFrom.BuildNode(Vector3.one);
+
+            var nodeFive = mapGraphToPullFrom.BuildNode(Vector3.zero);
+            var nodeSix  = mapGraphToPullFrom.BuildNode(Vector3.one);
+
+            var edgeOne   = mapGraphToPullFrom.BuildMapEdge(nodeOne,   nodeTwo );
+            var edgeTwo   = mapGraphToPullFrom.BuildMapEdge(nodeThree, nodeFour);
+            var edgeThree = mapGraphToPullFrom.BuildMapEdge(nodeFive,  nodeSix );
+
+            var neighborhoodOne = BuildNeighborhood(mapGraphToPullFrom.transform);
+            neighborhoodOne.name = "NeighborhoodOne";
+            neighborhoodOne.transform.localPosition = new Vector3(1f, 1f, 1f);
+            nodeOne.transform.SetParent(neighborhoodOne.transform, false);
+            nodeTwo.transform.SetParent(neighborhoodOne.transform, false);
+            edgeOne.transform.SetParent(neighborhoodOne.transform, true );
+
+            var neighborhoodTwo = BuildNeighborhood(mapGraphToPullFrom.transform);
+            neighborhoodTwo.name = "NeighborhoodTwo";
+            neighborhoodTwo.transform.localPosition = new Vector3(2f, 2f, 2f);
+            nodeThree.transform.SetParent(neighborhoodTwo.transform, false);
+            nodeFour.transform.SetParent (neighborhoodTwo.transform, false);
+            edgeTwo.transform.SetParent  (neighborhoodTwo.transform, true );
+
+            var neighborhoodThree = BuildNeighborhood(mapGraphToPullFrom.transform);
+            neighborhoodThree.name = "NeighborhoodThree";
+            neighborhoodThree.transform.localPosition = new Vector3(3f, 3f, 3f);
+            nodeFive.transform.SetParent (neighborhoodThree.transform, false);
+            nodeSix.transform.SetParent  (neighborhoodThree.transform, false);
+            edgeThree.transform.SetParent(neighborhoodThree.transform, true );
+
+            var mapGraphToPushTo = BuildMockMapGraph();
+
+            var managerToTest = BuildSessionManager();
+            managerToTest.MapGraph                = mapGraphToPullFrom;
+            managerToTest.HighwayFactory          = BuildMockHighwayFactory();
+            managerToTest.ConstructionZoneFactory = BuildMockConstructionZoneFactory();
+            managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
+            managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
+            managerToTest.SocietyFactory          = BuildMockSocietyFactory();
+
+            //Execution
+            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled");
+
+            managerToTest.MapGraph = mapGraphToPushTo;
+
+            managerToTest.PushSessionIntoRuntime(sessionPulled);
+
+            //Validation
+            var neighborhoodsPushed = mapGraphToPushTo.GetComponentsInChildren<Neighborhood>();
+
+            foreach(var neighborhood in mapGraphToPullFrom.GetComponentsInChildren<Neighborhood>()) {
+                Assert.That(DoesSomeEquivalentNeighborhoodExist(neighborhood, neighborhoodsPushed), 
+                    string.Format("Neighborhood from mapGraphToPullFrom with name {0} " +
+                        "has no equivalent Neighborhood in mapGraphToPushTo", neighborhood.name));
+            }
+        }
+
         #endregion
 
         #region utilities
@@ -442,13 +508,19 @@ namespace Assets.Session.Editor {
             return (new GameObject()).AddComponent<MockComplexityLadder>();
         }
 
+        private Neighborhood BuildNeighborhood(Transform parent) {
+            var newNeighborhood = (new GameObject()).AddComponent<Neighborhood>();
+            newNeighborhood.transform.SetParent(parent);
+            return newNeighborhood;
+        }
+
         private MockConstructionProject BuildMockConstructionProject(string name) {
             var newProject = (new GameObject()).AddComponent<MockConstructionProject>();
             newProject.name = name;
             return newProject;
         }
 
-        private bool DoesSomeEquivalentNodeExist(MapNodeBase node, ReadOnlyCollection<MapNodeBase> candidates) {
+        private bool DoesSomeEquivalentNodeExist(MapNodeBase node, IEnumerable<MapNodeBase> candidates) {
             foreach(var candidate in candidates) {
                 if(AreNodesEquivalent(node, candidate)){
                     return true;
@@ -461,7 +533,7 @@ namespace Assets.Session.Editor {
             return nodeOne.transform.localPosition == nodeTwo.transform.localPosition && nodeOne.Terrain == nodeTwo.Terrain;
         }
 
-        private bool DoesSomeEquivalentEdgeExist(MapEdgeBase edge, ReadOnlyCollection<MapEdgeBase> candidates) {
+        private bool DoesSomeEquivalentEdgeExist(MapEdgeBase edge, IEnumerable<MapEdgeBase> candidates) {
             foreach(var candidate in candidates) {
                 if(AreEdgesEquivalent(edge, candidate)) {
                     return true;
@@ -577,6 +649,41 @@ namespace Assets.Session.Editor {
 
             return locationsAreEquivalent && complexitiesAreTheSame && laddersAreTheSame &&
                 unsatisfiedSecondsAreTheSame && ascensionPermissionsAreTheSame;
+        }
+
+        private bool DoesSomeEquivalentNeighborhoodExist(Neighborhood neighborhood,
+            Neighborhood[] candidates) {
+            foreach(var candidate in candidates) {
+                if(AreNeighborhoodsEquivalent(neighborhood, candidate)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool AreNeighborhoodsEquivalent(Neighborhood neighborhoodOne, Neighborhood neighborhoodTwo) {
+            bool areNamesEquivalent = neighborhoodOne.name.Equals(neighborhoodTwo.name);
+            bool arePositionsEquivalent = neighborhoodOne.transform.localPosition.Equals(neighborhoodTwo.transform.localPosition);
+            if(areNamesEquivalent && arePositionsEquivalent) {
+
+                var neighborhoodTwoNodes = neighborhoodTwo.GetComponentsInChildren<MapNodeBase>();
+                foreach(var node in neighborhoodOne.GetComponentsInChildren<MapNodeBase>()) {
+                    if(!DoesSomeEquivalentNodeExist(node, neighborhoodTwoNodes)) {
+                        return false;
+                    }
+                }
+
+                var neighborhoodTwoEdges = neighborhoodTwo.GetComponentsInChildren<MapEdgeBase>();
+                foreach(var edge in neighborhoodOne.GetComponentsInChildren<MapEdgeBase>()) {
+                    if(!DoesSomeEquivalentEdgeExist(edge, neighborhoodTwoEdges)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }else {
+                return false;
+            }            
         }
 
         #endregion

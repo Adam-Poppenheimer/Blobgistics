@@ -7,6 +7,8 @@ using UnityEngine;
 
 using Assets.Map;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.Session {
 
     [Serializable]
@@ -16,7 +18,7 @@ namespace Assets.Session {
 
         public int ID;
         
-        public Vector3 LocalPosition;
+        public SerializableVector3 LocalPosition;
 
         public TerrainType Terrain;
 

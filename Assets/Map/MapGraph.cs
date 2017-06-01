@@ -279,7 +279,7 @@ namespace Assets.Map {
             }
 
             foreach(var neighborhoodSummary in mapAsset.NeighborhoodSummaries) {
-                var newNeighborhood = new GameObject().AddComponent<NeighborhoodHelper>();
+                var newNeighborhood = new GameObject().AddComponent<Neighborhood>();
 
                 newNeighborhood.transform.position = neighborhoodSummary.LocalPosition;
                 newNeighborhood.transform.localRotation = neighborhoodSummary.LocalRotation;

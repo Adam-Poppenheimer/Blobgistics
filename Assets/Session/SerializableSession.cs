@@ -17,6 +17,7 @@ namespace Assets.Session {
 
         public List<SerializableMapNodeData>          MapNodes;
         public List<SerializableMapEdgeData>          MapEdges;
+        public List<SerializableNeighborhoodData>     Neighborhoods;
         public List<SerializableHighwayData>          Highways;
         public List<SerializableConstructionZoneData> ConstructionZones;
         public List<SerializableHighwayManagerData>   HighwayManagers;
@@ -31,6 +32,7 @@ namespace Assets.Session {
             _name = name;
             MapNodes          = new List<SerializableMapNodeData>();
             MapEdges          = new List<SerializableMapEdgeData>();
+            Neighborhoods     = new List<SerializableNeighborhoodData>();
             Highways          = new List<SerializableHighwayData>();
             ConstructionZones = new List<SerializableConstructionZoneData>();
             HighwayManagers   = new List<SerializableHighwayManagerData>();

@@ -13,8 +13,9 @@ using Assets.ConstructionZones;
 using Assets.Societies;
 using Assets.ResourceDepots;
 using Assets.HighwayManager;
-using Assets.UI.TitleScreen;
 using Assets.UI;
+using Assets.UI.TitleScreen;
+using Assets.UI.EscapeMenu;
 
 namespace Assets.Core {
 
@@ -58,7 +59,10 @@ namespace Assets.Core {
         }
         [SerializeField] private List<TargetedEventReceiverBase> _highwayManagerEventReceivers;
 
+        [SerializeField] private SimulationControlBase SimulationControl;
+
         [SerializeField] private TitleScreenUI TitleScreenUI;
+        [SerializeField] private EscapeMenuUI EscapeMenuUI;
 
         [SerializeField] private List<IntelligentPanel> HUDElements = new List<IntelligentPanel>();
 
@@ -81,6 +85,22 @@ namespace Assets.Core {
 
             TitleScreenUI.GameStartRequested += TitleScreenUI_GameStartRequested;
             TitleScreenUI.GameExitRequested += TitleScreenUI_GameExitRequested;
+
+            EscapeMenuUI.GameResumeRequested += EscapeMenuUI_GameResumeRequested;
+        }
+
+        private void Start() {
+            SimulationControl.Pause();
+            TitleScreenUI.gameObject.SetActive(true);
+        }
+
+        private void Update() {
+            if(Input.GetButtonDown("Cancel")) {
+                if(!EscapeMenuUI.gameObject.activeInHierarchy) {
+                    SimulationControl.Pause();
+                    EscapeMenuUI.gameObject.SetActive(true);
+                }
+            }
         }
 
         #endregion
@@ -93,7 +113,6 @@ namespace Assets.Core {
                     receiver.PushBeginDragEvent(source, eventData);
                 }
             }
-            
         }
 
         public override void PushDragEvent<T>(T source, PointerEventData eventData) {
@@ -183,10 +202,16 @@ namespace Assets.Core {
             foreach(var hudElement in HUDElements) {
                 hudElement.Activate();
             }
+            SimulationControl.Resume();
         }
 
         private void TitleScreenUI_GameExitRequested(object sender, EventArgs e) {
             Debug.Log("Exit Requested");
+        }
+
+        private void EscapeMenuUI_GameResumeRequested(object sender, EventArgs e) {
+            EscapeMenuUI.gameObject.SetActive(false);
+            SimulationControl.Resume();
         }
 
         #endregion

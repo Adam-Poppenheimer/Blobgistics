@@ -18,9 +18,10 @@ namespace Assets.UI.TitleScreen {
 
         #region instance fields and properties
 
-        [SerializeField] private NewGameDisplay  NewGameDisplay;
-        [SerializeField] private ExitGameDisplay ExitGameDisplay;
-        [SerializeField] private RectTransform   OptionsDisplay;
+        [SerializeField] private NewGameDisplay     NewGameDisplay;
+        [SerializeField] private LoadSessionDisplay LoadSessionDisplay;
+        [SerializeField] private ExitGameDisplay    ExitGameDisplay;
+        [SerializeField] private RectTransform      OptionsDisplay;
 
         #endregion
 
@@ -50,13 +51,16 @@ namespace Assets.UI.TitleScreen {
         private void Start() {
             NewGameDisplay.DeactivationRequested += NewGameDisplay_DeactivationRequested;
             NewGameDisplay.MapLoaded += NewGameDisplay_MapLoaded;
-            NewGameDisplay.gameObject.SetActive(false);
+            DeactivateNewGameDisplay();
+
+            LoadSessionDisplay.DeactivationRequested += LoadSessionDisplay_DeactivationRequested;
+            LoadSessionDisplay.SessionLoaded += LoadSessionDisplay_SessionLoaded;
 
             ExitGameDisplay.ExitConfirmed += ExitGameDisplay_ExitConfirmed;
             ExitGameDisplay.ExitRejected += ExitGameDisplay_ExitRejected;
-            ExitGameDisplay.gameObject.SetActive(false);
+            DeactivateExitGameDisplay();
 
-            OptionsDisplay.gameObject.SetActive(true);
+            ActivateOptionsDisplay();
         }
 
         #endregion
@@ -73,6 +77,21 @@ namespace Assets.UI.TitleScreen {
         public void DeactivateNewGameDisplay() {
             if(NewGameDisplay != null) {
                 NewGameDisplay.gameObject.SetActive(false);
+            }
+        }
+
+        public void ActivateLoadSessionDisplay() {
+            if(LoadSessionDisplay != null) {
+                DeactivateOptionsDisplay();
+                LoadSessionDisplay.gameObject.SetActive(true);
+            }else {
+                Debug.LogErrorFormat(DisplayErrorMessage, "LoadSessionDisplay");
+            }
+        }
+
+        public void DeactivateLoadSessionDisplay() {
+            if(LoadSessionDisplay != null) {
+                LoadSessionDisplay.gameObject.SetActive(false);
             }
         }
 
@@ -123,6 +142,16 @@ namespace Assets.UI.TitleScreen {
         private void ExitGameDisplay_ExitConfirmed(object sender, EventArgs e) {
             DeactivateExitGameDisplay();
             RaiseGameExitRequested();
+        }
+
+        private void LoadSessionDisplay_DeactivationRequested(object sender, EventArgs e) {
+            DeactivateLoadSessionDisplay();
+            ActivateOptionsDisplay();
+        }
+
+        private void LoadSessionDisplay_SessionLoaded(object sender, EventArgs e) {
+            DeactivateLoadSessionDisplay();
+            RaiseGameStartRequested();
         }
 
         #endregion

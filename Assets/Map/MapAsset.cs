@@ -39,7 +39,7 @@ namespace Assets.Map {
             foreach(var edge in mapGraph.Edges) {
                 edgeSummaries.Add(new SaveableEdgeSummary(edge.ID, edge.FirstNode.ID, edge.SecondNode.ID));
             }
-            foreach(var neighborhood in mapGraph.GetComponentsInChildren<NeighborhoodHelper>()) {
+            foreach(var neighborhood in mapGraph.GetComponentsInChildren<Neighborhood>()) {
                 var listOfNodeIDs = neighborhood.GetComponentsInChildren<MapNodeBase>().Select(node => node.ID).ToList();
                 var listOfEdgeIDs = neighborhood.GetComponentsInChildren<MapEdgeBase>().Select(edge => edge.ID).ToList();
 
