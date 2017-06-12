@@ -87,6 +87,7 @@ namespace Assets.Map {
         #endregion
 
         [SerializeField] private MeshRenderer TerrainSlateRenderer;
+        [SerializeField] private MeshFilter TerrainSlateFilter;
 
         #endregion
 
@@ -158,6 +159,14 @@ namespace Assets.Map {
         }
 
         #endregion
+
+        #region from Object
+
+        public override string ToString() {
+            return name;
+        }
+
+        #endregion  
 
         private void RefreshAppearance() {
             if(TerrainSlateRenderer != null && TerrainMaterialRegistry != null) {

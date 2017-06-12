@@ -68,7 +68,7 @@ namespace Assets.Core {
         #region from SimulationControlBase
 
         public override void TickSimulation(float secondsPassed) {
-            if(IsPaused) {
+            if(!IsPaused) {
                 if(SocietyFactory        != null) SocietyFactory.TickSocieties          (secondsPassed);
                 if(BlobDistributor       != null) BlobDistributor.Tick                  (secondsPassed);
                 if(BlobFactory           != null) BlobFactory.TickAllBlobs              (secondsPassed);

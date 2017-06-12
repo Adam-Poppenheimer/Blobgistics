@@ -246,8 +246,10 @@ namespace Assets.BlobSites {
         public override void ClearContents() {
             var blobsToRemove = new List<ResourceBlobBase>(contents);
             contents.Clear();
-            foreach(var blob in blobsToRemove) {
-                Configuration.BlobFactory.DestroyBlob(blob);
+            if(Configuration != null && Configuration.BlobFactory != null) {
+                foreach(var blob in blobsToRemove) {
+                    Configuration.BlobFactory.DestroyBlob(blob);
+                }
             }
             RaiseAllBlobsCleared();
         }

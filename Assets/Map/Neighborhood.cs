@@ -10,6 +10,12 @@ namespace Assets.Map {
     [ExecuteInEditMode]
     public class Neighborhood : MonoBehaviour {
 
+        #region instance fields and properties
+
+        private bool SpreadParentChangeOnNextUpdate = false;
+
+        #endregion
+
         #region instance methods
 
         #region Unity event methods
@@ -18,9 +24,16 @@ namespace Assets.Map {
             SpreadParentChangeToChildren();
         }
 
+        private void Update() {
+            if(SpreadParentChangeOnNextUpdate) {
+                SpreadParentChangeToChildren();
+                UnityEditor.PrefabUtility.DisconnectPrefabInstance(gameObject);
+                SpreadParentChangeOnNextUpdate = false;
+            }
+        }
+
         private void OnTransformParentChanged() {
-            SpreadParentChangeToChildren();
-            UnityEditor.PrefabUtility.DisconnectPrefabInstance(gameObject);
+            SpreadParentChangeOnNextUpdate = true;
         }
 
         #endregion

@@ -42,7 +42,7 @@ namespace Assets.Map {
         #region from Object
 
         public override string ToString() {
-            return string.Format("Edge [{0} <--> {1}]", FirstNode, SecondNode);
+            return name;
         }
 
         #endregion
