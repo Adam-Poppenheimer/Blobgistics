@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 
-using Assets.Map;
+using Assets.Session;
 
 using UnityCustomUtilities.Extensions;
 
@@ -20,10 +20,6 @@ namespace Assets.Map.Editor {
 
         private MapNode FromNode = null;
         private MapNode ToNode = null;
-
-        private string NewAssetName = "";
-
-        private MapAsset MapAssetToLoad;
 
         private MapGraph TargetedGraph {
             get { return target as MapGraph; }
@@ -63,42 +59,6 @@ namespace Assets.Map.Editor {
             }
             
             HandleUtility.Repaint();
-        }
-
-        #endregion
-
-        #region from Editor
-
-        public override void OnInspectorGUI() {
-            DrawDefaultInspector();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-
-            NewAssetName = GUILayout.TextField(NewAssetName);
-            if(GUILayout.Button("Save Configuration to Asset")) {
-                if(string.IsNullOrEmpty(NewAssetName) || NewAssetName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
-                    Debug.LogErrorFormat("Failed to save configuration: '{0}' is not a valid asset name", NewAssetName);
-                }else {
-                    var newMapAsset = CreateInstance<MapAsset>();
-                    newMapAsset.LoadMapGraphInto(TargetedGraph);
-                    AssetDatabase.CreateAsset(newMapAsset, "Assets/Map/Configurations/" + NewAssetName + ".asset");
-                }
-            }
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-
-            MapAssetToLoad = EditorGUILayout.ObjectField("Asset to load", MapAssetToLoad, typeof(MapAsset), true) as MapAsset;
-            if(GUILayout.Button("Load Configuration From Asset")) {
-                if(MapAssetToLoad == null){
-                    Debug.LogError("Failed to load configuration from asset: Configuration to load was null");
-                }else {
-                    TargetedGraph.LoadFromMapAsset(MapAssetToLoad);
-                    MapAssetToLoad = null;
-                }
-            }
         }
 
         #endregion

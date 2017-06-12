@@ -30,13 +30,9 @@ namespace Assets.Scoring {
         }
         [SerializeField] private PlayerScorerBase _playerScorer;
 
-        public override int ScoreToWin {
-            get { return _scoreToWin; }
-        }
-        public void SetScoreToWin(int value) {
-            _scoreToWin = value;
-        }
-        [SerializeField] private int _scoreToWin;
+        public override int ScoreToWin { get; set; }
+
+        public override bool IsCheckingForVictory { get; set; }
 
         public UIControlBase UIControl {
             get { return _uiControl; }
@@ -81,7 +77,7 @@ namespace Assets.Scoring {
         #endregion
 
         private void PlayerScorer_ScoreChanged(object sender, IntEventArgs e) {
-            if(e.Value >= ScoreToWin) {
+            if(IsCheckingForVictory && e.Value >= ScoreToWin) {
                 TriggerVictory();
             }
         }

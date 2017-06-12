@@ -107,10 +107,6 @@ namespace Assets.HighwayManager.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void LoadFromMapAsset(MapAsset asset) {
-            throw new NotImplementedException();
-        }
-
         public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
             return AlgorithmSet.GetDistanceBetweenNodes(node1, node2, nodes);
         }

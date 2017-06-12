@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-using Assets.Map;
+using Assets.Session;
 
 namespace Assets.UI.TitleScreen {
 
@@ -14,19 +14,22 @@ namespace Assets.UI.TitleScreen {
 
         #region instance fields and properties
 
-        private MapAsset SelectedMap;
+        private SerializableSession SelectedSession;
 
         [SerializeField] private Text MapNameField;
         [SerializeField] private Text MapDescriptionField;
+        [SerializeField] private Text MapScoreToWinField;
 
-        [SerializeField] private List<MapAsset> AvailableMaps;
+        [SerializeField] private RectTransform MapScoreToWinSection;
+
         [SerializeField] private RectTransform  AvailableMapsSection;
         [SerializeField] private GameObject     MapSummaryPrefab;
 
         [SerializeField] private Button StartGameButton;
         [SerializeField] private Button BackButton;
 
-        [SerializeField] private MapGraphBase MapGraph;
+        [SerializeField] private SessionManager SessionManager;
+        [SerializeField] private FileSystemLiaison FileSystemLiason;
 
         #endregion
 
@@ -53,41 +56,60 @@ namespace Assets.UI.TitleScreen {
         #region Unity message methods
 
         private void Start() {
-            foreach(var map in AvailableMaps) {
-                var newSummary = Instantiate(MapSummaryPrefab).GetComponent<MapAssetSummary>();
+            FileSystemLiason.RefreshLoadedMaps();
+            foreach(var session in FileSystemLiason.LoadedMaps) {
+                var newSummary = Instantiate(MapSummaryPrefab).GetComponent<SerializableSessionSummary>();
                 newSummary.transform.SetParent(AvailableMapsSection);
-                newSummary.LoadMap(map);
+                newSummary.LoadSession(session);
                 newSummary.gameObject.SetActive(true);
-                var cachedCurrentMap = map;
-                newSummary.GetComponent<Button>().onClick.AddListener(delegate() { SetSelectedMap(cachedCurrentMap); });
+                var cachedCurrentSession = session;
+                newSummary.GetComponent<Button>().onClick.AddListener(delegate() { SetSelectedSession(cachedCurrentSession); });
             }
 
             BackButton.onClick.AddListener(delegate() { RaiseDeactivationRequested(); });
+
+            SetSelectedSession(null);
+        }
+
+        private void OnDisable() {
+            SetSelectedSession(null);
         }
 
         #endregion
 
-        private void SetSelectedMap(MapAsset newMap) {
-            if(newMap != null) {
-                SelectedMap = newMap;
-                MapNameField.text = SelectedMap.name;
+        private void SetSelectedSession(SerializableSession newSession) {
+            if(newSession != null) {
+                SelectedSession = newSession;
+
+                MapNameField.text = SelectedSession.Name;
                 MapNameField.gameObject.SetActive(true);
-                MapDescriptionField.text = "No Description";
+
+                MapDescriptionField.text = SelectedSession.Description;
                 MapDescriptionField.gameObject.SetActive(true);
+
+                MapScoreToWinField.text = SelectedSession.ScoreToWin.ToString();
+                MapScoreToWinSection.gameObject.SetActive(true);
+
                 StartGameButton.interactable = true;
             }else {
-                SelectedMap = null;
+                SelectedSession = null;
+
                 MapNameField.text = "";
                 MapNameField.gameObject.SetActive(false);
+
                 MapDescriptionField.text = "";
                 MapDescriptionField.gameObject.SetActive(false);
+
+                MapScoreToWinField.text = "";
+                MapScoreToWinSection.gameObject.SetActive(false);
+
                 StartGameButton.interactable = false;
             }
         }
 
         public void StartGameWithSelectedMap() {
-            if(SelectedMap != null) {
-                MapGraph.LoadFromMapAsset(SelectedMap);
+            if(SelectedSession != null) {
+                SessionManager.PushSessionIntoRuntime(SelectedSession);
                 RaiseMapLoaded();
             }
         }

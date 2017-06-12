@@ -66,8 +66,8 @@ namespace Assets.UI.EscapeMenu {
         #endregion
 
         private void RefreshSessionList() {
-            FileSystemLiaison.RefreshLoadedSessions();
-            for(int i = InstantiatedRecords.Count; i < FileSystemLiaison.LoadedSessions.Count; ++i) {
+            FileSystemLiaison.RefreshLoadedSavedGames();
+            for(int i = InstantiatedRecords.Count; i < FileSystemLiaison.LoadedSavedGames.Count; ++i) {
                 var newRecord = Instantiate(SessionRecordPrefab.gameObject).GetComponent<SessionRecord>();
                 newRecord.transform.SetParent(LocationToPlaceRecords);
                 newRecord.MainButton.onClick.AddListener(delegate() {
@@ -78,9 +78,9 @@ namespace Assets.UI.EscapeMenu {
             }
 
             int recordIndex = 0;
-            for(; recordIndex < FileSystemLiaison.LoadedSessions.Count; ++recordIndex) {
+            for(; recordIndex < FileSystemLiaison.LoadedSavedGames.Count; ++recordIndex) {
                 var currentRecord = InstantiatedRecords[recordIndex];
-                currentRecord.SessionToRecord = FileSystemLiaison.LoadedSessions[recordIndex];
+                currentRecord.SessionToRecord = FileSystemLiaison.LoadedSavedGames[recordIndex];
                 currentRecord.gameObject.SetActive(true);
             }
             for(; recordIndex < InstantiatedRecords.Count; ++recordIndex) {
@@ -89,8 +89,9 @@ namespace Assets.UI.EscapeMenu {
         }
 
         private void PerformSave() {
-            var sessionToSave = SessionManager.PullSessionFromRuntime(FilenameInputField.text);
-            FileSystemLiaison.SaveSessionToFile(sessionToSave);
+            var sessionToSave = SessionManager.PullSessionFromRuntime(FilenameInputField.text,
+                SessionManager.CurrentSession.Description, SessionManager.CurrentSession.ScoreToWin);
+            FileSystemLiaison.WriteSavedGameToFile(sessionToSave);
             RefreshSessionList();
         }
 

@@ -30,10 +30,14 @@ namespace Assets.UI.Scoring {
 
         private void Start() {
             Scorer.ScoreChanged += Scorer_ScoreChanged;
-            CurrentScoreField.text = Scorer.TotalScore.ToString();
         }
 
         #endregion
+
+        protected override void DoOnActivate() {
+            CurrentScoreField.text = Scorer.TotalScore.ToString();
+            RequiredScoreField.text = VictoryManager.ScoreToWin.ToString();
+        }
 
         private void Scorer_ScoreChanged(object sender, IntEventArgs e) {
             CurrentScoreField.text = e.Value.ToString();

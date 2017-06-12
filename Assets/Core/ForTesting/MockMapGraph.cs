@@ -102,10 +102,6 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void LoadFromMapAsset(MapAsset asset) {
-            throw new NotImplementedException();
-        }
-
         public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
             Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
             throw new NotImplementedException();

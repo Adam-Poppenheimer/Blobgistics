@@ -8,7 +8,8 @@ namespace Assets.Map {
     public enum TerrainType {
         Grassland,
         Forest,
-        Mountains
+        Mountains,
+        Desert
     }
 
 }

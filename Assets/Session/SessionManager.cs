@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEditor;
 
 using Assets.Map;
 using Assets.ConstructionZones;
@@ -9,12 +10,19 @@ using Assets.HighwayManager;
 using Assets.Highways;
 using Assets.ResourceDepots;
 using Assets.Societies;
+using Assets.Scoring;
 
 namespace Assets.Session {
 
     public class SessionManager : MonoBehaviour {
 
         #region instance fields and properties
+
+        public SerializableSession CurrentSession {
+            get { return _currentSession; }
+            private set { _currentSession = value; }
+        }
+        private SerializableSession _currentSession;
 
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
@@ -52,12 +60,25 @@ namespace Assets.Session {
         }
         [SerializeField] private SocietyFactoryBase _societyFactory;
 
+        public FileSystemLiaison FileSystemLiaison {
+            get { return _fileSystemLiaison; }
+            set { _fileSystemLiaison = value; }
+        }
+        [SerializeField] private FileSystemLiaison _fileSystemLiaison;
+
+        public VictoryManagerBase VictoryManager {
+            get { return _victoryManager; }
+            set { _victoryManager = value; }
+        }
+        [SerializeField] private VictoryManagerBase _victoryManager;
+
         #endregion
 
         #region instance methods
 
-        public SerializableSession PullSessionFromRuntime(string sessionName) {
-            var retval = new SerializableSession(sessionName);
+        public SerializableSession PullSessionFromRuntime(string sessionName, string sessionDescription,
+            int sessionPointsToWin) {
+            var retval = new SerializableSession(sessionName, sessionDescription, sessionPointsToWin);
 
             PushMapGraphIntoSession         (retval);
             PushHighwaysIntoSession         (retval);
@@ -81,6 +102,12 @@ namespace Assets.Session {
             LoadHighwayManagers  (session, mapNodeIDMapping);
             LoadResourceDepots   (session, mapNodeIDMapping);
             LoadSocieties        (session, mapNodeIDMapping);
+
+            if(VictoryManager != null) {
+                VictoryManager.ScoreToWin = session.ScoreToWin;
+            }
+
+            CurrentSession = session;
         }
 
         private void PushMapGraphIntoSession(SerializableSession session) {

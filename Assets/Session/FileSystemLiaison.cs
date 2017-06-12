@@ -15,58 +15,106 @@ namespace Assets.Session {
 
         #region instance fields and properties        
 
-        public string SessionStoragePath {
-            get { return _sessionStoragePath; }
+        public string SavedGameStoragePath {
+            get { return _savedGameStoragePath; }
         }
-        [SerializeField] private string _sessionStoragePath;
+        [SerializeField] private string _savedGameStoragePath;
 
-        public string SaveFileExtension {
-            get { return _saveFileExtension; }
+        public string MapStoragePath {
+            get { return _mapStoragePath; }
         }
-        [SerializeField] private string _saveFileExtension;
+        [SerializeField] private string _mapStoragePath;
 
-        public ReadOnlyCollection<SerializableSession> LoadedSessions {
-            get { return loadedSessions.AsReadOnly(); }
+        public string SessionExtension {
+            get { return _sessionExtension; }
         }
-        private List<SerializableSession> loadedSessions = new List<SerializableSession>();
+        [SerializeField] private string _sessionExtension;
 
-        private DirectoryInfo SessionDirectory;
+        public ReadOnlyCollection<SerializableSession> LoadedSavedGames {
+            get { return loadedSavedGames.AsReadOnly(); }
+        }
+        private List<SerializableSession> loadedSavedGames = new List<SerializableSession>();
+
+        public ReadOnlyCollection<SerializableSession> LoadedMaps {
+            get { return loadedMaps.AsReadOnly(); }
+        }
+        private List<SerializableSession> loadedMaps = new List<SerializableSession>();
+
+        private DirectoryInfo SavedGameDirectory;
+        private DirectoryInfo MapDirectory;
 
         #endregion
 
         #region instance methods
 
-        public void SaveSessionToFile(SerializableSession session) {
-            string filePath = string.Format("{0}/{1}/{2}.{3}", Application.persistentDataPath, SessionStoragePath,
-                session.Name, SaveFileExtension);
-
-            using(FileStream fileStream = new FileStream(filePath, FileMode.Create)) {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(fileStream, session);
-                loadedSessions.Add(session);
+        public void WriteSavedGameToFile(SerializableSession session) {
+            if(!loadedSavedGames.Contains(session)) {
+                string path = string.Format("{0}/{1}/{2}.{3}", Application.persistentDataPath, SavedGameStoragePath,
+                    session.Name, SessionExtension);
+                WriteSessionToFile(session, path);
+                loadedSavedGames.Add(session);
             }
         }
 
-        public void DeleteSessionFile(string sessionName) {
-            var filesToDelete = SessionDirectory.GetFiles(sessionName + "." + SaveFileExtension);
+        public void DeleteSavedGame(string savedGameName) {
+            var filesToDelete = SavedGameDirectory.GetFiles(savedGameName + "." + SessionExtension);
             foreach(var file in filesToDelete) {
                 file.Delete();
             }
         }
 
-        public void RefreshLoadedSessions() {
-            if(string.IsNullOrEmpty(SessionStoragePath)) {
-                throw new SessionException("Cannot refresh loaded sessions: SessionStoragePath must not be empty");
-            }else if(string.IsNullOrEmpty(SaveFileExtension)) {
-                throw new SessionException("Cannot refresh loaded sessions: SaveFileExtension must not be empty");
+        public void RefreshLoadedSavedGames() {
+            if(string.IsNullOrEmpty(SavedGameStoragePath)) {
+                throw new SessionException("Cannot refresh loaded saved games: SavedGameStoragePath must not be empty");
+            }else if(string.IsNullOrEmpty(SessionExtension)) {
+                throw new SessionException("Cannot refresh loaded saved games: SessionExtension must not be empty");
             }
-            loadedSessions.Clear();
-            SessionDirectory = Directory.CreateDirectory(Application.persistentDataPath + @"\" + SessionStoragePath);
+            loadedSavedGames.Clear();
+            SavedGameDirectory = Directory.CreateDirectory(Application.persistentDataPath + @"\" + SavedGameStoragePath);
 
-            foreach(var file in SessionDirectory.GetFiles("*." + SaveFileExtension)) {
-                if(file.Extension.Equals("." + SaveFileExtension)) {
-                    loadedSessions.Add(LoadSessionFromFile(file));
+            foreach(var file in SavedGameDirectory.GetFiles("*." + SessionExtension)) {
+                if(file.Extension.Equals("." + SessionExtension)) {
+                    loadedSavedGames.Add(LoadSessionFromFile(file));
                 }
+            }
+        }
+
+        public void WriteMapToFile(SerializableSession session) {
+            if(!loadedMaps.Contains(session)) {
+                string path = string.Format("{0}/{1}/{2}.{3}", Application.streamingAssetsPath, MapStoragePath,
+                    session.Name, SessionExtension);
+                WriteSessionToFile(session, path);
+                loadedMaps.Add(session);
+            }
+        }
+
+        public void DeleteMap(string mapName) {
+            var filesToDelete = MapDirectory.GetFiles(mapName + "." + SessionExtension);
+            foreach(var file in filesToDelete) {
+                file.Delete();
+            }
+        }
+
+        public void RefreshLoadedMaps() {
+            if(string.IsNullOrEmpty(MapStoragePath)) {
+                throw new SessionException("Cannot refresh loaded maps: MapStoragePath must not be empty");
+            }else if(string.IsNullOrEmpty(SessionExtension)) {
+                throw new SessionException("Cannot refresh loaded maps: SessionExtension must not be empty");
+            }
+            loadedMaps.Clear();
+            MapDirectory = Directory.CreateDirectory(Application.streamingAssetsPath + @"\" + MapStoragePath);
+
+            foreach(var file in MapDirectory.GetFiles("*." + SessionExtension)) {
+                if(file.Extension.Equals("." + SessionExtension)) {
+                    loadedMaps.Add(LoadSessionFromFile(file));
+                }
+            }
+        }
+
+        private void WriteSessionToFile(SerializableSession session, string path) {
+            using(FileStream fileStream = new FileStream(path, FileMode.Create)) {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(fileStream, session);
             }
         }
 

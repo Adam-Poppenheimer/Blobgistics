@@ -90,8 +90,8 @@ namespace Assets.Core {
         }
 
         private void Start() {
-            //SimulationControl.Pause();
-            //TitleScreenUI.gameObject.SetActive(true);
+            SimulationControl.Pause();
+            TitleScreenUI.gameObject.SetActive(true);
         }
 
         private void Update() {

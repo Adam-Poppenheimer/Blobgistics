@@ -79,7 +79,7 @@ namespace Assets.Scoring.Editor {
             };
 
             var managerToTest = BuildVictoryManager();
-            managerToTest.SetScoreToWin(50);
+            managerToTest.ScoreToWin = 50;
             managerToTest.PlayerScorer = playerScorer;
             managerToTest.UIControl = uiControl;
             managerToTest.SimulationControl = simulationControl;

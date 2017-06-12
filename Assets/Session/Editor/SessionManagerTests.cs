@@ -71,7 +71,7 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = societyFactory;
 
             //Execution
-            managerToTest.PushSessionIntoRuntime(new SerializableSession("Empty Session"));
+            managerToTest.PushSessionIntoRuntime(new SerializableSession("Empty Session", "Description", 42));
 
             //Validation
             Assert.IsEmpty(mapGraph.Nodes,                            "MapGraph.Nodes still has undestroyed elements");
@@ -81,6 +81,11 @@ namespace Assets.Session.Editor {
             Assert.IsEmpty(highwayManagerFactory.Managers,            "HighwayManagerFactory.HighwayManagers still has undestroyed elements");
             Assert.IsEmpty(resourceDepotFactory.ResourceDepots,       "ResourceDepotFactory.ResourceDepots still has undestroyed elements");
             Assert.IsEmpty(societyFactory.Societies,                  "SocietyFactory.Societies still has undestroyed elements");
+        }
+
+        [Test]
+        public void OnSessionPushedIntoRuntime_VictoryManagerScoreToWinIsSetProperly() {
+            throw new NotImplementedException();
         }
 
         [Test]
@@ -109,7 +114,7 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled");
+            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
 
             managerToTest.MapGraph = mapGraphToPushTo;
 
@@ -178,7 +183,7 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled");
+            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.HighwayFactory = highwayFactoryToPushTo;
@@ -229,7 +234,7 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled");
+            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.ConstructionZoneFactory = zoneFactoryToPushTo;
@@ -270,7 +275,7 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled");
+            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.HighwayManagerFactory = managerFactoryToPushTo;
@@ -311,7 +316,7 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled");
+            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.ResourceDepotFactory = depotFactoryToPushTo;
@@ -387,7 +392,7 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = societyFactoryToPullFrom;
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled");
+            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.SocietyFactory = societyFactoryToPushTo;
@@ -452,7 +457,7 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled");
+            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
 
             managerToTest.MapGraph = mapGraphToPushTo;
 

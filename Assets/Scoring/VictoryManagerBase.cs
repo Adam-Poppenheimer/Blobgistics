@@ -11,7 +11,8 @@ namespace Assets.Scoring {
 
         #region instance fields and properties
 
-        public abstract int ScoreToWin { get; }
+        public abstract int ScoreToWin { get; set; }
+        public abstract bool IsCheckingForVictory { get; set; }
 
         #endregion
 

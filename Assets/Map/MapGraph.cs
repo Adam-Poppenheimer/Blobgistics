@@ -256,46 +256,6 @@ namespace Assets.Map {
             }
         }
 
-        public override void LoadFromMapAsset(MapAsset mapAsset) {
-            foreach(var node in new List<MapNodeBase>(nodes)) {
-                DestroyNode(node);
-            }
-            for(int i = transform.childCount - 1; i >= 0; --i) {
-                var childOf = transform.GetChild(i);
-                if(childOf != this.transform) {
-                    DestroyImmediate(childOf.gameObject);
-                }
-            }
-
-            var nodeOfSavedID = new Dictionary<int, MapNodeBase>();
-            var edgeOfSavedID = new Dictionary<int, MapEdgeBase>();
-
-            foreach(var nodeSummary in mapAsset.NodeSummaries) {
-                nodeOfSavedID[nodeSummary.ID] = BuildNode(nodeSummary.LocalPosition, nodeSummary.Terrain);
-            }
-
-            foreach(var edgeSummary in mapAsset.EdgeSummaries) {
-                edgeOfSavedID[edgeSummary.ID] = BuildMapEdge(nodeOfSavedID[edgeSummary.FirstNodeID], nodeOfSavedID[edgeSummary.SecondNodeID]);
-            }
-
-            foreach(var neighborhoodSummary in mapAsset.NeighborhoodSummaries) {
-                var newNeighborhood = new GameObject().AddComponent<Neighborhood>();
-
-                newNeighborhood.transform.position = neighborhoodSummary.LocalPosition;
-                newNeighborhood.transform.localRotation = neighborhoodSummary.LocalRotation;
-                newNeighborhood.transform.SetParent(this.transform, false);
-                
-                newNeighborhood.name = neighborhoodSummary.Name;
-
-                foreach(var nodeID in neighborhoodSummary.NodeIDsInNeighborhood) {
-                    nodeOfSavedID[nodeID].transform.SetParent(newNeighborhood.transform, false);
-                }
-                foreach(var edgeID in neighborhoodSummary.EdgeIDsInNeighborhood) {
-                    edgeOfSavedID[edgeID].transform.SetParent(newNeighborhood.transform, false);
-                }
-            }
-        }
-
         public override MapNodeBase GetNodeOfID(int id) {
             return nodes.Find(node => node.ID == id);
         }

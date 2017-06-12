@@ -140,10 +140,6 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void LoadFromMapAsset(MapAsset asset) {
-            throw new NotImplementedException();
-        }
-
         public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
             throw new NotImplementedException();
         }

@@ -36,8 +36,6 @@ namespace Assets.Map {
         public abstract void SubscribeMapEdge(MapEdgeBase edge);
         public abstract void UnsubscribeMapEdge(MapEdgeBase edge);
 
-        public abstract void LoadFromMapAsset(MapAsset asset);
-
         public abstract MapNodeBase GetNodeOfID(int id);
 
         public abstract MapEdgeBase GetEdge(MapNodeBase endpointOne, MapNodeBase endpointTwo);

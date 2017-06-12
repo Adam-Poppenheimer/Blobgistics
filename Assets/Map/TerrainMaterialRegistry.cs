@@ -27,6 +27,11 @@ namespace Assets.Map {
         }
         [SerializeField] private Material _mountainsMaterial;
 
+        public Material DesertMaterial {
+            get { return _desertMaterial; }
+        }
+        [SerializeField] private Material _desertMaterial;
+
         #endregion
 
         #region events
@@ -56,6 +61,7 @@ namespace Assets.Map {
                 case TerrainType.Grassland: return GrasslandMaterial;
                 case TerrainType.Forest:    return ForestMaterial;
                 case TerrainType.Mountains: return MountainsMaterial;
+                case TerrainType.Desert:    return DesertMaterial;
                 default: return null;
             }
         }

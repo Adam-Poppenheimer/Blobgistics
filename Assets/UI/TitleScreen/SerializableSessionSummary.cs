@@ -3,11 +3,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-using Assets.Map;
+using Assets.Session;
 
 namespace Assets.UI.TitleScreen {
 
-    public class MapAssetSummary : MonoBehaviour {
+    public class SerializableSessionSummary : MonoBehaviour {
 
         #region instance fields and properties
 
@@ -17,8 +17,8 @@ namespace Assets.UI.TitleScreen {
 
         #region instance methods
 
-        public void LoadMap(MapAsset map) {
-            MapNameField.text = map.name;
+        public void LoadSession(SerializableSession session) {
+            MapNameField.text = session.Name;
         }
 
         #endregion

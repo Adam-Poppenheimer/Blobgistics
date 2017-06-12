@@ -29,12 +29,16 @@ namespace Assets.Session.Editor {
             EditorGUILayout.Space();
 
             EditorGUI.BeginDisabledGroup(
-                string.IsNullOrEmpty(TargetedLiaison.SessionStoragePath) || 
-                string.IsNullOrEmpty(TargetedLiaison.SaveFileExtension)
+                string.IsNullOrEmpty(TargetedLiaison.SavedGameStoragePath) || 
+                string.IsNullOrEmpty(TargetedLiaison.SessionExtension)
             );
 
-            if(GUILayout.Button("Refresh Loaded Sessions")) {
-                TargetedLiaison.RefreshLoadedSessions();
+            if(GUILayout.Button("Refresh Loaded Saved Games")) {
+                TargetedLiaison.RefreshLoadedSavedGames();
+            }
+
+            if(GUILayout.Button("Refresh Loaded Maps")) {
+                TargetedLiaison.RefreshLoadedMaps();
             }
 
             EditorGUI.EndDisabledGroup();

@@ -97,10 +97,6 @@ namespace Assets.Session.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void LoadFromMapAsset(MapAsset asset) {
-            throw new NotImplementedException();
-        }
-
         public override void SubscribeMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
