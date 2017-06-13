@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,33 +6,36 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 
-using Assets.Session;
-
-using UnityCustomUtilities.Extensions;
+using Assets.Util;
 
 namespace Assets.Map.Editor {
 
-    [CustomEditor(typeof(MapGraph))]
-    public class MapGraphEditor : UnityEditor.Editor {
+    public class MapEditorLogic_HighwayMode {
+
+        #region static fields and properties
+
+        public static MapEditorLogic_HighwayMode Instance {
+            get {
+                if(_instance == null) {
+                    _instance = new MapEditorLogic_HighwayMode();
+                }
+                return _instance;
+            }
+        }
+        private static MapEditorLogic_HighwayMode _instance;
+
+        #endregion
 
         #region instance fields and properties
 
         private MapNodeBase FromNode = null;
         private MapNodeBase ToNode = null;
 
-        private MapGraph TargetedGraph {
-            get { return target as MapGraph; }
-        }
-
         #endregion
 
         #region instance methods
 
-        #region Unity event methods
-
-        private void OnSceneGUI() {
-            DrawAllEdges();
-
+        public void DoOnSceneGUI(SceneView sceneView) {
             var currentEvent = Event.current;
 
             if(currentEvent.type == EventType.Layout) {
@@ -60,8 +62,6 @@ namespace Assets.Map.Editor {
             HandleUtility.Repaint();
         }
 
-        #endregion
-
         private void HandleMouseDown(Event evnt, MapNode candidateNode) {
             FromNode = null;
             ToNode = null;
@@ -83,15 +83,15 @@ namespace Assets.Map.Editor {
 
         private void HandleMouseUp(Event evnt, MapNode candidateNode) {
             if(FromNode != null && ToNode != null) {
-                if(TargetedGraph.GetEdge(FromNode, ToNode) == null) {
-                    TargetedGraph.BuildMapEdge(FromNode, ToNode);
+                var highwayfactory = EditorWindowDependencyPusher.HighwayFactory;
+                if(highwayfactory.CanConstructHighwayBetween(FromNode, ToNode)) {
+                    highwayfactory.ConstructHighwayBetween(FromNode, ToNode);
                 }
                 evnt.Use();
             }
             
             FromNode = null;
             ToNode = null;
-
         }
 
         private MapNode GetCandidateNode(Event evnt) {
@@ -103,25 +103,6 @@ namespace Assets.Map.Editor {
                 if(candidateNode != null) break;
             }
             return candidateNode;
-        }
-
-        private void DrawAllEdges() {
-            if(TargetedGraph == null) {
-                return;
-            }
-            foreach(var edge in TargetedGraph.Edges) {
-                if(edge != null && edge.FirstNode != null && edge.SecondNode != null) {
-                    Handles.color = Color.white;
-                    Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);
-                    var midpoint = (edge.FirstNode.transform.position + edge.SecondNode.transform.position ) / 2f;
-                    Handles.color = Color.red;
-                    if(Handles.Button(midpoint, Quaternion.identity, 0.25f, 0.25f, Handles.SphereCap)) {
-                        TargetedGraph.DestroyMapEdge(edge);
-                        break;
-                    }
-                }
-                
-            }
         }
 
         #endregion

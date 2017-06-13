@@ -39,6 +39,18 @@ namespace Assets.Core.ForTesting {
 
         #endregion
 
+        #region instance methods
+
+        #region from MapEdgeBase
+
+        public override void RefreshOrientation() {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #endregion
+
     }
 
 }

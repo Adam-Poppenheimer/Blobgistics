@@ -32,6 +32,12 @@ namespace Assets.UI.Scoring {
             Scorer.ScoreChanged += Scorer_ScoreChanged;
         }
 
+        private void OnDestroy() {
+            if(Scorer != null) {
+                Scorer.ScoreChanged -= Scorer_ScoreChanged;
+            }
+        }
+
         #endregion
 
         protected override void DoOnActivate() {

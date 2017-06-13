@@ -59,6 +59,14 @@ namespace Assets.Session.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void SubscribeHighway(BlobHighwayBase highway) {
+            throw new NotImplementedException();
+        }
+
+        public override void UnsubscribeHighway(BlobHighwayBase highway) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

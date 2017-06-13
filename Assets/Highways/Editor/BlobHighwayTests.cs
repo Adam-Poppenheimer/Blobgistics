@@ -22,30 +22,8 @@ namespace Assets.Highways.Editor {
 
         #region tests
 
-        #region functionality
-
         [Test]
-        public void OnPrivateDataInitialized_FirstAndSecondEndpointAreSetProperly() {
-            //Setup
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            var privateData = BuildHighwayPrivateData();
-            privateData.SetFirstEndpoint(firstEndpoint);
-            privateData.SetSecondEndpoint(secondEndpoint);
-            privateData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
-            privateData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
-
-            //Execution
-            var highwayToTest = BuildHighway(privateData);
-
-            //Validation
-            Assert.AreEqual(firstEndpoint, highwayToTest.FirstEndpoint, "First endpoint is incorrect");
-            Assert.AreEqual(secondEndpoint, highwayToTest.SecondEndpoint, "Second endpoint is incorrect");
-        }
-
-        [Test]
-        public void OnPrivateDataInitialized_TubesWithinHaveCorrectEndpoints() {
+        public void OnSetEndpointsCalled_EndpointsAreSetCorrectly_AndTubesWithinHaveCorrectEndpoints() {
             //Setup
             var firstEndpoint = BuildMapNode();
             var secondEndpoint = BuildMapNode();
@@ -53,19 +31,20 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
             firstEndpoint.transform.position = Vector3.zero;
             secondEndpoint.transform.position = new Vector3(10, 0f, 0f);
 
+            var highwayToTest = BuildHighway();
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
+
             //Execution
-            BuildHighway(highwayData);
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
 
             //Validation
+            Assert.AreEqual(firstEndpoint, highwayToTest.FirstEndpoint, "First endpoint is incorrect");
+            Assert.AreEqual(secondEndpoint, highwayToTest.SecondEndpoint, "Second endpoint is incorrect");
+
             Assert.AreEqual(new Vector3(1f, BlobHighway.TubeCenterOffset, 0f), tubePullingFromFirst.SourceLocation,
                 "tubePullingFromFirst has incorrect SourceLocation");
 
@@ -82,17 +61,12 @@ namespace Assets.Highways.Editor {
         [Test]
         public void OnHighwayInitialized_AllPermissionsDefaultToFalse() {
             //Setup
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            var privateData = BuildHighwayPrivateData();
-            privateData.SetFirstEndpoint(firstEndpoint);
-            privateData.SetSecondEndpoint(secondEndpoint);
-            privateData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
-            privateData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
+            var highwayToTest = BuildHighway();
+            highwayToTest.TubePullingFromFirstEndpoint = BuildBlobTube();
+            highwayToTest.TubePullingFromSecondEndpoint = BuildBlobTube();
 
             //Execution
-            var highwayToTest = BuildHighway(privateData);
+            
 
             //Validation
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
@@ -105,217 +79,15 @@ namespace Assets.Highways.Editor {
         }
 
         [Test]
-        public void OnHighwayInitialized_PriorityDefaultsToMaxValue() {
-            //Setup
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            var privateData = BuildHighwayPrivateData();
-            privateData.SetFirstEndpoint(firstEndpoint);
-            privateData.SetSecondEndpoint(secondEndpoint);
-            privateData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
-            privateData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
-
-            //Execution
-            var highwayToTest = BuildHighway(privateData);
-
-            //Validation
-            Assert.AreEqual(Int32.MaxValue, highwayToTest.Priority);
-        }
-
-        [Test]
-        public void Factory_OnManyHighwaysCreatedAndDestroyed_NoTwoActiveFactoriesEverHaveTheSameID() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var mapGraph = factoryToTest.MapGraph;
-
-            var nodeList = new List<KeyValuePair<MapNodeBase, MapNodeBase>>();
-            for(int nodeIndex = 0; nodeIndex < 60; ++nodeIndex) {
-                var firstNode = mapGraph.BuildNode(Vector3.zero);
-                var secondNode = mapGraph.BuildNode(Vector3.left);
-                mapGraph.BuildMapEdge(firstNode, secondNode);
-                nodeList.Add(new KeyValuePair<MapNodeBase, MapNodeBase>(firstNode, secondNode));
-            }
-
-            var highwayList = new List<BlobHighwayBase>();
-
-            //Execution and Validation
-            int i = 0;
-            for(; i < 50; ++i) {
-                highwayList.Add(factoryToTest.ConstructHighwayBetween(nodeList[i].Key, nodeList[i].Value));
-                foreach(var outerHighway in highwayList) {
-                    foreach(var innerHighway in highwayList) {
-                        if(innerHighway != outerHighway) {
-                            Assert.AreNotEqual(innerHighway.ID, outerHighway.ID, "Duplicate IDs on first creation cycle on index " + i);
-                        }
-                    }
-                }
-            }
-            for(i = 34; i >= 10; --i) {
-                var highwayToDestroy = highwayList[i];
-                highwayList.Remove(highwayToDestroy);
-                factoryToTest.DestroyHighway(highwayToDestroy);
-            }
-            for(i = 10; i < 35; ++i) {
-                highwayList.Add(factoryToTest.ConstructHighwayBetween(nodeList[i].Key, nodeList[i].Value));
-                foreach(var outerHighway in highwayList) {
-                    foreach(var innerHighway in highwayList) {
-                        if(innerHighway != outerHighway) {
-                            Assert.AreNotEqual(innerHighway.ID, outerHighway.ID, "Duplicate IDs on second creation cycle on index " + i);
-                        }
-                    }
-                }
-            }
-        }
-
-        [Test]
-        public void Factory_OnGetHighwayOfIDCalled_HighwayOfThatIDIsReturned_OrNullIfNoneExists() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var mapGraph = factoryToTest.MapGraph;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var upNode     = mapGraph.BuildNode(Vector3.up);
-
-            mapGraph.BuildMapEdge(middleNode, leftNode);
-            mapGraph.BuildMapEdge(middleNode, rightNode);
-            mapGraph.BuildMapEdge(middleNode, upNode);
-
-            var highways = new List<BlobHighwayBase>() {
-                factoryToTest.ConstructHighwayBetween(middleNode, leftNode),
-                factoryToTest.ConstructHighwayBetween(middleNode, rightNode),
-                factoryToTest.ConstructHighwayBetween(middleNode, upNode),
-            };
-
-            //Execution
-
-
-            //Validation
-            Assert.AreEqual(highways[0], factoryToTest.GetHighwayOfID(highways[0].ID), "Did not return highways[0] when passed its ID");
-            Assert.AreEqual(highways[1], factoryToTest.GetHighwayOfID(highways[1].ID), "Did not return highways[1] when passed its ID");
-            Assert.AreEqual(highways[2], factoryToTest.GetHighwayOfID(highways[2].ID), "Did not return highways[2] when passed its ID");
-            Assert.IsNull(factoryToTest.GetHighwayOfID(Int32.MaxValue), "An expected invalid ID did not return a null value");
-        }
-
-        [Test]
-        public void Factory_OnHasHighwayBetweenCalled_ReturnsTrueIfAndOnlyIfSomeHighwayConnectsThoseMapNodes() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var mapGraph = factoryToTest.MapGraph;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var upNode     = mapGraph.BuildNode(Vector3.up);
-
-            mapGraph.BuildMapEdge(middleNode, leftNode);
-            mapGraph.BuildMapEdge(middleNode, rightNode);
-            mapGraph.BuildMapEdge(middleNode, upNode);
-
-            factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
-            factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
-
-            //Execution
-
-
-            //Validation
-            Assert.IsTrue(factoryToTest.HasHighwayBetween(middleNode, leftNode),  "Does not register highway between middleNode and leftNode");
-            Assert.IsTrue(factoryToTest.HasHighwayBetween(middleNode, rightNode), "Does not register highway between middleNode and rightNode");
-            Assert.IsFalse(factoryToTest.HasHighwayBetween(middleNode, upNode), "Falsely registers highway between middleNode and upNode");
-        }
-
-        [Test]
-        public void Factory_OnGetHighwayBetweenCalled_ReturnedHighwayHasSameEndpointsAsArgumentsPassed() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var mapGraph = factoryToTest.MapGraph;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var upNode     = mapGraph.BuildNode(Vector3.up);
-
-            mapGraph.BuildMapEdge(middleNode, leftNode);
-            mapGraph.BuildMapEdge(middleNode, rightNode);
-            mapGraph.BuildMapEdge(middleNode, upNode);
-
-            var highwayToLeft = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
-            var highwayToRight = factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
-            var highwayToUp = factoryToTest.ConstructHighwayBetween(middleNode, upNode);
-
-            //Execution
-
-
-            //Validation
-            Assert.AreEqual(highwayToLeft, factoryToTest.GetHighwayBetween(middleNode, leftNode),   "Factory retrieves the wrong highway between middleNode and leftNode");
-            Assert.AreEqual(highwayToRight, factoryToTest.GetHighwayBetween(middleNode, rightNode), "Factory retrieves the wrong highway between middleNode and rightNode");
-            Assert.AreEqual(highwayToUp, factoryToTest.GetHighwayBetween(middleNode, upNode),       "Factory retrieves the wrong highway between middleNode and upNode");
-        }
-
-        [Test]
-        public void Factory_OnCanConstructHighwayBetweenCalled_ReturnsFalseIfHasHighwayBetweenIsTrue() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var mapGraph = factoryToTest.MapGraph;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var upNode     = mapGraph.BuildNode(Vector3.up);
-
-            mapGraph.BuildMapEdge(middleNode, leftNode);
-            mapGraph.BuildMapEdge(middleNode, rightNode);
-            mapGraph.BuildMapEdge(middleNode, upNode);
-
-            factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
-
-            //Execution
-
-
-            //Validation
-            Assert.IsFalse(factoryToTest.CanConstructHighwayBetween(middleNode, leftNode), "Factory falsely permits construction between middleNode and leftNode");
-        }
-
-        [Test]
-        public void Factory_OnConstructHighwayBetweenCalled_NewHighwayHasCorrectEndpoints() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var mapGraph = factoryToTest.MapGraph;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var upNode     = mapGraph.BuildNode(Vector3.up);
-
-            mapGraph.BuildMapEdge(middleNode, leftNode);
-            mapGraph.BuildMapEdge(middleNode, rightNode);
-            mapGraph.BuildMapEdge(middleNode, upNode);
-
-            //Execution
-            var highwayToLeft = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
-
-            //Validation
-            Assert.That(
-                (highwayToLeft.FirstEndpoint == middleNode && highwayToLeft.SecondEndpoint == leftNode  ) ||
-                (highwayToLeft.FirstEndpoint == leftNode   && highwayToLeft.SecondEndpoint == middleNode)
-            );
-        }
-
-        [Test]
         public void OnPermissionForResourceTypeSet_SamePermissionForResourceTypeIsGotten() {
             //Setup
             var firstEndpoint = BuildMapNode();
             var secondEndpoint = BuildMapNode();
 
-            var privateData = BuildHighwayPrivateData();
-            privateData.SetFirstEndpoint(firstEndpoint);
-            privateData.SetSecondEndpoint(secondEndpoint);
-            privateData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
-            privateData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
-
-            var highwayToTest = BuildHighway(privateData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = BuildBlobTube();
+            highwayToTest.TubePullingFromSecondEndpoint = BuildBlobTube();
 
             //Execution
             highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
@@ -344,13 +116,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             //Execution
             highwayToTest.SetPullingPermissionForFirstEndpoint(ResourceType.Food, true);
@@ -369,13 +138,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-            highwayData.SetFirstEndpoint(BuildMapNode());
-            highwayData.SetSecondEndpoint(BuildMapNode());
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(BuildMapNode(), BuildMapNode());
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             //Execution
             highwayToTest.SetPullingPermissionForSecondEndpoint(ResourceType.Food, true);
@@ -397,13 +163,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             Assert.AreEqual(0, firstEndpoint.BlobSite.GetExtractableTypes().Count(), "FirstEndpoint has extractable types");
 
@@ -423,13 +186,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
             
             //Execution
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
@@ -459,13 +219,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
             
             //Execution
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
@@ -489,13 +246,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
             
             //Execution
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
@@ -524,13 +278,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             Assert.AreEqual(0, secondEndpoint.BlobSite.GetExtractableTypes().Count(), "SecondEndpoint has extractable types");
 
@@ -550,13 +301,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
             
             //Execution
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, false);
@@ -586,13 +334,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
             
             //Execution
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
@@ -616,13 +361,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
             
             //Execution
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, false);
@@ -651,13 +393,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirstEndpoint = BuildBlobTube();
             var tubePullingFromSecondEndpoint = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirstEndpoint);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecondEndpoint);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirstEndpoint;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecondEndpoint;
 
             var redBlob = BuildBlob(ResourceType.Food);
             var greenBlob = BuildBlob(ResourceType.Textiles);
@@ -689,13 +428,10 @@ namespace Assets.Highways.Editor {
             var firstEndpoint = BuildMapNode();
             var secondEndpoint = BuildMapNode();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(BuildBlobTube());
-            highwayData.SetTubePullingFromSecondEndpoint(BuildBlobTube());
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = BuildBlobTube();
+            highwayToTest.TubePullingFromSecondEndpoint = BuildBlobTube();
 
             var redBlob = BuildBlob(ResourceType.Food);
             var greenBlob = BuildBlob(ResourceType.Textiles);
@@ -730,13 +466,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             var redBlob = BuildBlob(ResourceType.Food);
 
@@ -764,13 +497,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             var redBlob = BuildBlob(ResourceType.Food);
 
@@ -798,13 +528,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             firstEndpoint.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
@@ -849,14 +576,11 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-            highwayData.SetProfile(BuildBlobHighwayProfile(2f, 10, 1f));
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
+            highwayToTest.Profile = BuildBlobHighwayProfile(2f, 10, 1f);
 
             //Execution
             highwayToTest.Efficiency = 10f;
@@ -868,10 +592,6 @@ namespace Assets.Highways.Editor {
                 "TubePullingFromFirst has an incorrect TransportSpeedPerSecond");
         }
 
-        #endregion
-
-        #region error checking
-
         [Test]
         public void IfCanPullFromFirstEndpointIsFalse_AndPullFromFirstEndpointIsCalled_ThrowsBlobHighwayException() {
             //Setup
@@ -881,13 +601,10 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             //Execution and Validation
             Assert.Throws<BlobHighwayException>(delegate() {
@@ -904,129 +621,16 @@ namespace Assets.Highways.Editor {
             var tubePullingFromFirst = BuildBlobTube();
             var tubePullingFromSecond = BuildBlobTube();
 
-            var highwayData = BuildHighwayPrivateData();
-            highwayData.SetFirstEndpoint(firstEndpoint);
-            highwayData.SetSecondEndpoint(secondEndpoint);
-            highwayData.SetTubePullingFromFirstEndpoint(tubePullingFromFirst);
-            highwayData.SetTubePullingFromSecondEndpoint(tubePullingFromSecond);
-
-            var highwayToTest = BuildHighway(highwayData);
+            var highwayToTest = BuildHighway();
+            highwayToTest.SetEndpoints(firstEndpoint, secondEndpoint);
+            highwayToTest.TubePullingFromFirstEndpoint = tubePullingFromFirst;
+            highwayToTest.TubePullingFromSecondEndpoint = tubePullingFromSecond;
 
             //Execution and Validation
             Assert.Throws<BlobHighwayException>(delegate() {
                 highwayToTest.PullFromSecondEndpoint();
             });
         }
-
-        [Test]
-        public void Factory_IfHasHighwayBetweenCalledWithNullArguments_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.HasHighwayBetween(null, secondEndpoint);
-            });
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.HasHighwayBetween(firstEndpoint, null);
-            });
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.HasHighwayBetween(null, null);
-            });
-        }
-
-        [Test]
-        public void Factory_IfGetHighwayBetweenCalledWithNullArguments_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.GetHighwayBetween(null, secondEndpoint);
-            });
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.GetHighwayBetween(firstEndpoint, null);
-            });
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.GetHighwayBetween(null, null);
-            });
-        }
-
-        [Test]
-        public void Factory_IfGetHighwayBetweenCalled_AndHasHighwayBetweenReturnsFalse_ThrowsBlobHighwayException() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            //Execution and Validation
-            Assert.Throws<BlobHighwayException>(delegate() {
-                factoryToTest.GetHighwayBetween(firstEndpoint, secondEndpoint);
-            });
-        }
-
-        [Test]
-        public void Factory_IfConstructHighwayBetweenCalled_AndCanConstructHighwayBetweenReturnsFalse_ThrowsBlobHighwayException() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var mapGraph = factoryToTest.MapGraph;
-
-            var firstEndpoint = mapGraph.BuildNode(Vector3.zero);
-            var secondEndpoint = mapGraph.BuildNode(Vector3.left);
-
-            mapGraph.BuildMapEdge(firstEndpoint, secondEndpoint);
-
-            factoryToTest.ConstructHighwayBetween(firstEndpoint, secondEndpoint);
-
-            //Execution and Validation
-            Assert.Throws<BlobHighwayException>(delegate() {
-                factoryToTest.ConstructHighwayBetween(firstEndpoint, secondEndpoint);
-            });
-        }
-
-        [Test]
-        public void Factory_IfCanConstructHighwayBetweenCalledWithNullArguments_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.CanConstructHighwayBetween(null, secondEndpoint);
-            });
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.CanConstructHighwayBetween(firstEndpoint, null);
-            });
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.CanConstructHighwayBetween(null, null);
-            });
-        }
-
-        [Test]
-        public void Factory_IfConstructHighwayBetweenCalledWithNullArguments_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildHighwayFactory();
-            var firstEndpoint = BuildMapNode();
-            var secondEndpoint = BuildMapNode();
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.ConstructHighwayBetween(null, secondEndpoint);
-            });
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.ConstructHighwayBetween(firstEndpoint, null);
-            });
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.ConstructHighwayBetween(null, null);
-            });
-        }
-
-        #endregion
 
         #endregion
 
@@ -1051,17 +655,10 @@ namespace Assets.Highways.Editor {
             return newMapNode;
         }
 
-        private MockBlobHighwayPrivateData BuildHighwayPrivateData() {
-            var hostingObject = new GameObject();
-            var newData = hostingObject.AddComponent<MockBlobHighwayPrivateData>();
-            newData.SetProfile(BuildBlobHighwayProfile(1f, 10, 0.5f));
-            return newData;
-        }
-
-        private BlobHighway BuildHighway(BlobHighwayPrivateDataBase privateData) {
+        private BlobHighway BuildHighway() {
             var hostingGameObject = new GameObject();
             var newHighway = hostingGameObject.AddComponent<BlobHighway>();
-            newHighway.PrivateData = privateData;
+            newHighway.Profile = BuildBlobHighwayProfile(1f, 10, 0.5f);
             return newHighway;
         }
 
@@ -1075,28 +672,6 @@ namespace Assets.Highways.Editor {
         private MockBlobTube BuildBlobTube() {
             var hostingObject = new GameObject();
             return hostingObject.AddComponent<MockBlobTube>();
-        }
-
-        private BlobHighwayFactory BuildHighwayFactory() {
-            var hostingObject = new GameObject();
-
-            var newBlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
-
-            var newMapGraph = hostingObject.AddComponent<MapGraph>();
-            newMapGraph.BlobSiteConfiguration = hostingObject.AddComponent<MockBlobSiteConfiguration>();
-
-            var newTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
-            var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
-            newTubePrivateData.SetBlobFactory(newBlobFactory);
-            newTubeFactory.TubePrivateData = newTubePrivateData;
-
-            var newHighwayFactory = hostingObject.AddComponent<BlobHighwayFactory>();
-            newHighwayFactory.MapGraph = newMapGraph;
-            newHighwayFactory.BlobTubeFactory = newTubeFactory;
-            newHighwayFactory.StartingProfile = BuildBlobHighwayProfile(1, 10, 1f);
-            newHighwayFactory.BlobFactory = newBlobFactory;
-
-            return newHighwayFactory;
         }
 
         private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float BlobPullCooldownInSeconds) {

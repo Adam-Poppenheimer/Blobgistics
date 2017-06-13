@@ -7,8 +7,8 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Map;
-
 using Assets.Blobs;
+using Assets.Core;
 
 namespace Assets.Highways {
 
@@ -18,15 +18,19 @@ namespace Assets.Highways {
 
         public abstract int ID { get; }
 
+        public abstract BlobHighwayProfile Profile { get; set; }
+
+        public abstract BlobHighwayFactoryBase  ParentFactory { get; set; }
+        public abstract UIControlBase           UIControl     { get; set; }
+        public abstract ResourceBlobFactoryBase BlobFactory   { get; set; }
+
         public abstract MapNodeBase FirstEndpoint  { get; } 
         public abstract MapNodeBase SecondEndpoint { get; }
 
-        public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint { get; }
+        public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint  { get; }
         public abstract ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint { get; }
 
         public abstract int Priority { get; set; }
-
-        public abstract BlobHighwayProfile Profile { get; }
 
         public abstract float Efficiency { get; set; }
 
@@ -43,6 +47,8 @@ namespace Assets.Highways {
         }
 
         #endregion
+
+        public abstract void SetEndpoints(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
 
         public abstract bool GetPullingPermissionForFirstEndpoint(ResourceType type);
         public abstract void SetPullingPermissionForFirstEndpoint(ResourceType type, bool isPermitted);

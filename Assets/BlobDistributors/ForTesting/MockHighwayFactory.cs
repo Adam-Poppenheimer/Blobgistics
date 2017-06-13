@@ -42,9 +42,8 @@ namespace Assets.BlobDistributors.ForTesting {
         public override BlobHighwayBase ConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             var hostingObject = new GameObject();
             var newHighway = hostingObject.AddComponent<MockBlobHighway>();
-            newHighway.SetFirstEndpoint(firstEndpoint);
-            newHighway.SetSecondEndpoint(secondEndpoint);
-            newHighway.SetProfile(StartingProfile);
+            newHighway.SetEndpoints(firstEndpoint, secondEndpoint);
+            newHighway.Profile = StartingProfile;
             newHighway.Efficiency = 1f;
 
             highways.Add(newHighway);
@@ -69,6 +68,14 @@ namespace Assets.BlobDistributors.ForTesting {
 
         public override bool HasHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             return GetHighwayBetween(firstEndpoint, secondEndpoint) != null;
+        }
+
+        public override void SubscribeHighway(BlobHighwayBase highway) {
+            throw new NotImplementedException();
+        }
+
+        public override void UnsubscribeHighway(BlobHighwayBase highway) {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -543,6 +543,7 @@ namespace Assets.Highways.Editor {
         private BlobTube BuildBlobTube(MockBlobTubePrivateData privateData) {
             var newBlobTube = privateData.gameObject.AddComponent<BlobTube>();
             newBlobTube.PrivateData = privateData;
+            newBlobTube.PermissionsForBlobTypes = newBlobTube.gameObject.AddComponent<BoolPerResourceDictionary>();
             return newBlobTube;
         }
 

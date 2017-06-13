@@ -50,12 +50,45 @@ namespace Assets.Core.ForTesting {
             get {
                 throw new NotImplementedException();
             }
+            set {
+                throw new NotImplementedException();
+            }
         }
 
         public override MapNodeBase SecondEndpoint {
             get { return secondEndpoint; }
         }
         public MapNodeBase secondEndpoint;
+
+        public override ResourceBlobFactoryBase BlobFactory {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override BlobHighwayFactoryBase ParentFactory {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override UIControlBase UIControl {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 
@@ -73,6 +106,10 @@ namespace Assets.Core.ForTesting {
         #region instance methods
 
         #region from BlobHighwayBase
+
+        public override void SetEndpoints(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            throw new NotImplementedException();
+        }
 
         public override bool CanPullFromFirstEndpoint() {
             throw new NotImplementedException();

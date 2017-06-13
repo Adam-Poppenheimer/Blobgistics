@@ -22,7 +22,7 @@ namespace Assets.Session {
             get { return _currentSession; }
             private set { _currentSession = value; }
         }
-        private SerializableSession _currentSession;
+        [SerializeField] private SerializableSession _currentSession;
 
         public MapGraphBase MapGraph {
             get { return _mapGraph; }

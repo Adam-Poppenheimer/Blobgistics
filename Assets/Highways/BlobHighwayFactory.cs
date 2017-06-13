@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -9,17 +10,27 @@ using UnityEngine.EventSystems;
 using Assets.Map;
 using Assets.Blobs;
 using Assets.Core;
-using System.Collections.ObjectModel;
 
 namespace Assets.Highways {
 
+    [ExecuteInEditMode]
     public class BlobHighwayFactory : BlobHighwayFactoryBase {
 
         #region instance fields and properties
 
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
-            set { _mapGraph = value; }
+            set {
+                if(_mapGraph != null) {
+                    _mapGraph.MapNodeUnsubscribed -= MapGraph_MapNodeUnsubscribed;
+                    _mapGraph.MapEdgeUnsubscribed -= MapGraph_MapEdgeUnsubscribed;
+                }
+                _mapGraph = value;
+                if(_mapGraph != null) {
+                    _mapGraph.MapNodeUnsubscribed += MapGraph_MapNodeUnsubscribed;
+                    _mapGraph.MapEdgeUnsubscribed += MapGraph_MapEdgeUnsubscribed;
+                }
+            }
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
@@ -29,34 +40,58 @@ namespace Assets.Highways {
         }
         [SerializeField] private BlobTubeFactoryBase _blobTubeFactory;
 
+        public UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
+
         public ResourceBlobFactoryBase BlobFactory {
             get { return _blobFactory; }
             set { _blobFactory = value; }
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
-        public UIControl UIControl {
-            get { return _uiControl; }
-            set { _uiControl = value; }
+        public BlobHighwayProfile HighwayProfile {
+            get { return _highwayProfile; }
+            set { _highwayProfile = value; }
         }
-        [SerializeField] private UIControl _uiControl;
-
-        public BlobHighwayProfile StartingProfile {
-            get { return _startingProfile; }
-            set { _startingProfile = value; }
-        }
-        [SerializeField] private BlobHighwayProfile _startingProfile;
+        [SerializeField] private BlobHighwayProfile _highwayProfile;
 
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
             get { return AllConstructedHighways.AsReadOnly(); }
         }
-        [SerializeField, HideInInspector] private List<BlobHighwayBase> AllConstructedHighways = new List<BlobHighwayBase>();
+        [SerializeField] private List<BlobHighwayBase> AllConstructedHighways = new List<BlobHighwayBase>();
 
         [SerializeField] private GameObject HighwayPrefab;
 
         #endregion
 
         #region instance methods
+
+        #region Unity message methods
+
+        private void OnValidate() {
+            if(MapGraph != null) {
+                MapGraph.MapNodeUnsubscribed -= MapGraph_MapNodeUnsubscribed;
+                MapGraph.MapEdgeUnsubscribed -= MapGraph_MapEdgeUnsubscribed;
+
+                MapGraph.MapNodeUnsubscribed += MapGraph_MapNodeUnsubscribed;                
+                MapGraph.MapEdgeUnsubscribed += MapGraph_MapEdgeUnsubscribed;
+            }
+        }
+
+        private void Start() {
+            if(MapGraph != null) {
+                MapGraph.MapNodeUnsubscribed -= MapGraph_MapNodeUnsubscribed;
+                MapGraph.MapEdgeUnsubscribed -= MapGraph_MapEdgeUnsubscribed;
+
+                MapGraph.MapNodeUnsubscribed += MapGraph_MapNodeUnsubscribed;
+                MapGraph.MapEdgeUnsubscribed += MapGraph_MapEdgeUnsubscribed;
+            }
+        }
+
+        #endregion
 
         #region from BlobHighwayFactoryBase
 
@@ -132,29 +167,36 @@ namespace Assets.Highways {
             hostingObject.name = string.Format("Highway [{0} <--> {1}]", firstEndpoint.name, secondEndpoint.name);
             hostingObject.transform.SetParent(MapGraph.transform);
 
-            var newPrivateData = hostingObject.AddComponent<BlobHighwayPrivateData>();
-            newPrivateData.SetFirstEndpoint(firstEndpoint);
-            newPrivateData.SetSecondEndpoint(secondEndpoint);
-            newPrivateData.SetUIControl(UIControl);
-            newPrivateData.SetBlobFactory(BlobFactory);
+            newHighway.Profile = HighwayProfile;
 
-            newPrivateData.SetTubePullingFromFirstEndpoint(BlobTubeFactory.ConstructTube(
-                firstEndpoint.transform.position, secondEndpoint.transform.position));
+            newHighway.TubePullingFromFirstEndpoint = BlobTubeFactory.ConstructTube(
+                firstEndpoint.transform.position, secondEndpoint.transform.position
+            );
+            newHighway.TubePullingFromSecondEndpoint = BlobTubeFactory.ConstructTube(
+                secondEndpoint.transform.position, firstEndpoint.transform.position
+            );
 
-            newPrivateData.SetTubePullingFromSecondEndpoint(BlobTubeFactory.ConstructTube(
-                secondEndpoint.transform.position, firstEndpoint.transform.position));
+            newHighway.SetEndpoints(firstEndpoint, secondEndpoint);
 
-            newPrivateData.SetProfile(StartingProfile);
+            SubscribeHighway(newHighway);            
+            return newHighway;
+        }
 
-            newHighway.PrivateData = newPrivateData;
+        public override void SubscribeHighway(BlobHighwayBase highway) {
+            if(highway == null) {
+                throw new ArgumentNullException("highway");
+            }
 
-            AllConstructedHighways.Add(newHighway);
+            highway.ParentFactory = this;
+            highway.UIControl = UIControl;
+            highway.BlobFactory = BlobFactory;
+
+            AllConstructedHighways.Add(highway);
 
             if(EventSystem.current != null) {
-                EventSystem.current.SetSelectedGameObject(newHighway.gameObject);
+                EventSystem.current.SetSelectedGameObject(highway.gameObject);
             }
-            RaiseHighwayConstructed(newHighway);
-            return newHighway;
+            RaiseHighwaySubscribed(highway);
         }
 
         public override BlobHighwayBase GetHighwayOfID(int id) {
@@ -165,22 +207,45 @@ namespace Assets.Highways {
             if(highway == null) {
                 throw new ArgumentNullException("highway");
             }
-
-            var highwayToRemove = AllConstructedHighways.Where(delegate(BlobHighwayBase highwayToCheck) {
-                return highway == highwayToCheck;
-            }).FirstOrDefault();
-            if(highwayToRemove != null) {
-                AllConstructedHighways.Remove(highwayToRemove);
-                RaiseHighwayBeingDestroyed(highwayToRemove);
-                if(Application.isPlaying) {
-                    Destroy(highwayToRemove.gameObject);
-                }else {
-                    DestroyImmediate(highwayToRemove.gameObject);
-                }
+            UnsubscribeHighway(highway);
+            if(Application.isPlaying) {
+                Destroy(highway.gameObject);
+            }else {
+                DestroyImmediate(highway.gameObject);
             }
         }
 
+        public override void UnsubscribeHighway(BlobHighwayBase highway) {
+            if(highway == null) {
+                throw new ArgumentNullException("highway");
+            }
+            AllConstructedHighways.Remove(highway);
+            RaiseHighwayUnsubscribed(highway);
+        }
+
         #endregion
+
+        private void MapGraph_MapNodeUnsubscribed(object sender, MapNodeEventArgs e) {
+            var highwaysToDestroy = new List<BlobHighwayBase>(
+                AllConstructedHighways.Where(delegate(BlobHighwayBase highway) {
+                    return highway.FirstEndpoint == e.Node || highway.SecondEndpoint == e.Node;
+                })
+            );
+            foreach(var highway in highwaysToDestroy) {
+                DestroyHighway(highway);
+            }
+        }
+
+        private void MapGraph_MapEdgeUnsubscribed(object sender, MapEdgeEventArgs e) {
+            var highwaysToDestroy = new List<BlobHighwayBase>(
+                AllConstructedHighways.Where(delegate(BlobHighwayBase highway) {
+                    return MapGraph.GetEdge(highway.FirstEndpoint, highway.SecondEndpoint) == null;
+                })
+            );
+            foreach(var highway in highwaysToDestroy) {
+                DestroyHighway(highway);
+            }
+        }
 
         #endregion
         

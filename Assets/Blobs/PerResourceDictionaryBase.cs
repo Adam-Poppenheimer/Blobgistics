@@ -18,8 +18,11 @@ namespace Assets.Blobs {
             get {
                 return ValueList[(int)type];
             }
-            protected set {
+            set {
                 ValueList[(int)type] = value;
+                if(DictionaryRepresentation != null) {
+                    DictionaryRepresentation[type] = value;
+                }
             }
         }
         [SerializeField] protected List<T> ValueList = new List<T>();
@@ -33,6 +36,13 @@ namespace Assets.Blobs {
         #region instance methods
 
         #region Unity event methods
+
+        private void Awake() {
+            int resourceTypeCount = EnumUtil.GetValues<ResourceType>().Count();
+            for(int i = ValueList.Count; i < resourceTypeCount; ++i) {
+                ValueList.Add(DefaultValue);
+            }
+        }
 
         private void OnValidate() {
             int resourceTypeCount = EnumUtil.GetValues<ResourceType>().Count();
@@ -66,6 +76,16 @@ namespace Assets.Blobs {
         }
 
         #endregion
+
+        public bool TryGetValue(ResourceType key, out T value) {
+            value = DefaultValue;
+            if(ValueList.Count > (int)key) {
+                value = this[key];
+                return true;
+            }else {
+                return false;
+            }
+        }
 
         public ReadOnlyDictionary<ResourceType, T> ToReadOnlyDictionary() {
             if(DictionaryRepresentation == null) {

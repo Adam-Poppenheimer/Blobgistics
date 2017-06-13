@@ -44,13 +44,13 @@ namespace Assets.HighwayManager {
             get { return _highwayFactory; }
             set {
                 if(_highwayFactory != null) {
-                    _highwayFactory.HighwayConstructed    -= HighwayFactory_HighwayConstructed;
-                    _highwayFactory.HighwayBeingDestroyed -= HighwayFactory_HighwayBeingDestroyed;
+                    _highwayFactory.HighwaySubscribed    -= HighwayFactory_HighwayConstructed;
+                    _highwayFactory.HighwayUnsubscribed -= HighwayFactory_HighwayBeingDestroyed;
                 }
                 _highwayFactory = value;
                 if(_highwayFactory != null) {
-                    _highwayFactory.HighwayConstructed    += HighwayFactory_HighwayConstructed;
-                    _highwayFactory.HighwayBeingDestroyed += HighwayFactory_HighwayBeingDestroyed;
+                    _highwayFactory.HighwaySubscribed    += HighwayFactory_HighwayConstructed;
+                    _highwayFactory.HighwayUnsubscribed += HighwayFactory_HighwayBeingDestroyed;
                 }
             }
         }
@@ -77,11 +77,11 @@ namespace Assets.HighwayManager {
         #region Unity event methods
 
         private void Start() {
-            HighwayFactory.HighwayConstructed    -= HighwayFactory_HighwayConstructed;
-            HighwayFactory.HighwayBeingDestroyed -= HighwayFactory_HighwayBeingDestroyed;
+            HighwayFactory.HighwaySubscribed    -= HighwayFactory_HighwayConstructed;
+            HighwayFactory.HighwayUnsubscribed -= HighwayFactory_HighwayBeingDestroyed;
 
-            HighwayFactory.HighwayConstructed    += HighwayFactory_HighwayConstructed;
-            HighwayFactory.HighwayBeingDestroyed += HighwayFactory_HighwayBeingDestroyed;
+            HighwayFactory.HighwaySubscribed    += HighwayFactory_HighwayConstructed;
+            HighwayFactory.HighwayUnsubscribed += HighwayFactory_HighwayBeingDestroyed;
         }
 
         #endregion

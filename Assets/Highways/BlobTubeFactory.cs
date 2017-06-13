@@ -5,10 +5,10 @@ using System.Text;
 
 using UnityEngine;
 
-using UnityCustomUtilities.Extensions;
-
 using Assets.Map;
 using Assets.Blobs;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.Highways {
 
@@ -58,6 +58,7 @@ namespace Assets.Highways {
             }
 
             newTube.PrivateData = TubePrivateData;
+            newTube.PermissionsForBlobTypes = newTube.gameObject.AddComponent<BoolPerResourceDictionary>();
             newTube.SetEndpoints(sourceLocation, targetLocation);
             return newTube;
         }

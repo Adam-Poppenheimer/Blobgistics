@@ -140,6 +140,8 @@ namespace Assets.Map {
                 node.BlobSite.Configuration = BlobSiteConfiguration;
                 node.TerrainMaterialRegistry = TerrainMaterialRegistry;
 
+                node.TransformChanged += Node_TransformChanged;
+
                 node.name = string.Format("Node [{0}]", node.ID);
             }
         }
@@ -148,6 +150,9 @@ namespace Assets.Map {
             if(nodeToRemove == null) {
                 throw new ArgumentNullException("node");
             }
+
+            nodeToRemove.TransformChanged -= Node_TransformChanged;
+
             bool existedInGraph = nodes.Remove(nodeToRemove);
             if(existedInGraph && edges != null) {
                 var edgesToRemove = new List<MapEdgeBase>(edges.Where(delegate(MapEdgeBase edge){
@@ -165,6 +170,8 @@ namespace Assets.Map {
             if(nodeToRemove.BlobSite != null) {
                 nodeToRemove.BlobSite.Configuration = null;
             }
+
+            RaiseMapNodeUnsubscribed(nodeToRemove);
         }
 
         public override MapEdgeBase BuildMapEdge(MapNodeBase first, MapNodeBase second) {
@@ -254,6 +261,7 @@ namespace Assets.Map {
             if(edge.BlobSite != null) {
                 edge.BlobSite.Configuration = null;
             }
+            RaiseMapEdgeUnsubscribed(edge);
         }
 
         public override MapNodeBase GetNodeOfID(int id) {
@@ -331,6 +339,13 @@ namespace Assets.Map {
                     ( edge.SecondNode == first && edge.FirstNode  == second )
                 );
             };
+        }
+
+        private void Node_TransformChanged(object sender, EventArgs e) {
+            var node = sender as MapNodeBase;
+            foreach(var edge in GetEdgesAttachedToNode(node)) {
+                edge.RefreshOrientation();
+            }
         }
 
         #endregion

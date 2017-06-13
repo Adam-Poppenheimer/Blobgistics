@@ -65,8 +65,11 @@ namespace Assets.Highways {
         }
         [SerializeField] private BlobTubePrivateDataBase _privateData;
 
-        private Dictionary<ResourceType, bool> PermissionsForBlobTypes = 
-            new Dictionary<ResourceType, bool>();
+        public BoolPerResourceDictionary PermissionsForBlobTypes {
+            get { return _permissionsForBlobTypes; }
+            set { _permissionsForBlobTypes = value; }
+        }
+        [SerializeField] private BoolPerResourceDictionary _permissionsForBlobTypes;
 
         private float distanceBetweenEndpoints = 0f;
 

@@ -20,18 +20,18 @@ namespace Assets.Highways {
 
         #region events
 
-        public event EventHandler<BlobHighwayEventArgs> HighwayConstructed;
-        public event EventHandler<BlobHighwayEventArgs> HighwayBeingDestroyed;
+        public event EventHandler<BlobHighwayEventArgs> HighwaySubscribed;
+        public event EventHandler<BlobHighwayEventArgs> HighwayUnsubscribed;
 
-        protected void RaiseHighwayConstructed(BlobHighwayBase newHighway) {
-            if(HighwayConstructed != null) {
-                HighwayConstructed(this, new BlobHighwayEventArgs(newHighway));
+        protected void RaiseHighwaySubscribed(BlobHighwayBase newHighway) {
+            if(HighwaySubscribed != null) {
+                HighwaySubscribed(this, new BlobHighwayEventArgs(newHighway));
             }
         }
 
-        protected void RaiseHighwayBeingDestroyed(BlobHighwayBase oldHighway) {
-            if(HighwayBeingDestroyed != null) {
-                HighwayBeingDestroyed(this, new BlobHighwayEventArgs(oldHighway));
+        protected void RaiseHighwayUnsubscribed(BlobHighwayBase oldHighway) {
+            if(HighwayUnsubscribed != null) {
+                HighwayUnsubscribed(this, new BlobHighwayEventArgs(oldHighway));
             }
         }
 
@@ -46,6 +46,9 @@ namespace Assets.Highways {
 
         public abstract bool            CanConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
         public abstract BlobHighwayBase ConstructHighwayBetween   (MapNodeBase firstEndpoint, MapNodeBase secondEndpoint);
+
+        public abstract void SubscribeHighway(BlobHighwayBase highway);
+        public abstract void UnsubscribeHighway(BlobHighwayBase highway);
 
         public abstract void DestroyHighway(BlobHighwayBase highway);
 

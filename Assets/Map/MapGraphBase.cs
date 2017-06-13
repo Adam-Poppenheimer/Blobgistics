@@ -18,6 +18,25 @@ namespace Assets.Map {
 
         #endregion
 
+        #region events
+
+        public event EventHandler<MapNodeEventArgs> MapNodeUnsubscribed;
+        public event EventHandler<MapEdgeEventArgs> MapEdgeUnsubscribed;
+
+        protected void RaiseMapNodeUnsubscribed(MapNodeBase node) {
+            if(MapNodeUnsubscribed != null) {
+                MapNodeUnsubscribed(this, new MapNodeEventArgs(node));
+            }
+        }
+
+        protected void RaiseMapEdgeUnsubscribed(MapEdgeBase edge) {
+            if(MapEdgeUnsubscribed != null) {
+                MapEdgeUnsubscribed(this, new MapEdgeEventArgs(edge));
+            }
+        }
+
+        #endregion
+
         #region instance methods
 
         public abstract MapNodeBase BuildNode(Vector3 localPosition);

@@ -10,20 +10,11 @@ namespace Assets.Session {
 
         #region instance fields and properties
 
-        public string Name {
-            get { return _name; }
-        }
-        private string _name;
+        public string Name { get; set; }
 
-        public string Description {
-            get { return _description; }
-        }
-        private string _description;
+        public string Description { get; set; }
 
-        public int ScoreToWin {
-            get { return _pointsToWin; }
-        }
-        private int _pointsToWin;
+        public int ScoreToWin { get; set; }
 
         public List<SerializableMapNodeData>          MapNodes;
         public List<SerializableMapEdgeData>          MapEdges;
@@ -38,10 +29,10 @@ namespace Assets.Session {
 
         #region constructors
 
-        public SerializableSession(string name, string description, int pointsToWin) {
-            _name = name;
-            _description = description;
-            _pointsToWin = pointsToWin;
+        public SerializableSession(string name, string description, int scoreToWin) {
+            Name = name;
+            Description = description;
+            ScoreToWin = scoreToWin;
 
             MapNodes          = new List<SerializableMapNodeData>();
             MapEdges          = new List<SerializableMapEdgeData>();

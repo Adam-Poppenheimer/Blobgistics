@@ -47,6 +47,8 @@ namespace Assets.Map {
 
         #endregion
 
+        public abstract void RefreshOrientation();
+
         #endregion
 
     }

@@ -70,15 +70,6 @@ namespace Assets.Map {
 
         #region Unity event methods
 
-        private void Awake() {
-            if(firstNode != null) {
-                firstNode.TransformChanged += OnEndpointTransformChanged;
-            }
-            if(secondNode != null) {
-                secondNode.TransformChanged += OnEndpointTransformChanged;
-            }
-        }
-
         private void Start() {
             var graphAbove = GetComponentInParent<MapGraphBase>();
             if(graphAbove != null) {
@@ -93,12 +84,6 @@ namespace Assets.Map {
         }
 
         private void OnDestroy() {
-            if(firstNode != null) {
-                firstNode.TransformChanged -= OnEndpointTransformChanged;
-            }
-            if(secondNode != null) {
-                secondNode.TransformChanged -= OnEndpointTransformChanged;
-            }
             if(ParentGraph != null) {
                 ParentGraph.UnsubscribeMapEdge(this);
             }
@@ -106,27 +91,9 @@ namespace Assets.Map {
 
         #endregion
 
-        public void SetNodes(MapNodeBase firstNode, MapNodeBase secondNode) {
-            if(this.firstNode != null) {
-                this.firstNode.TransformChanged -= OnEndpointTransformChanged;
-            }
-            this.firstNode = firstNode;
-            if(this.firstNode != null) {
-                this.firstNode.TransformChanged += OnEndpointTransformChanged;
-            }
+        #region from MapEdgeBase
 
-            if(this.secondNode != null) {
-                this.secondNode.TransformChanged -= OnEndpointTransformChanged;
-            }
-            this.secondNode = secondNode;
-            if(this.secondNode != null) {
-                this.secondNode.TransformChanged += OnEndpointTransformChanged;
-            }
-
-            RefreshOrientation();
-        }
-
-        private void RefreshOrientation() {
+        public override void RefreshOrientation() {
             if(firstNode != null && secondNode != null) {
                 EdgeOrientationUtil.AlignTransformWithEndpoints(transform, firstNode.transform.position, secondNode.transform.position, false);
                 EdgeOrientationUtil.AlignTransformWithEndpoints(DisplayComponent, firstNode.transform.position, secondNode.transform.position, true);
@@ -134,7 +101,11 @@ namespace Assets.Map {
             }
         }
 
-        private void OnEndpointTransformChanged(object sender, EventArgs e) {
+        #endregion
+
+        public void SetNodes(MapNodeBase firstNode, MapNodeBase secondNode) {
+            this.firstNode = firstNode;
+            this.secondNode = secondNode;
             RefreshOrientation();
         }
 

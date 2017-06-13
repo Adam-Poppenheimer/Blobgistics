@@ -13,9 +13,11 @@ using Assets.BlobSites;
 
 using UnityCustomUtilities.Extensions;
 using System.Collections.ObjectModel;
+using Assets.Core;
 
 namespace Assets.Highways {
 
+    [ExecuteInEditMode]
     public class BlobHighway : BlobHighwayBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler {
 
@@ -34,6 +36,24 @@ namespace Assets.Highways {
             get { return GetInstanceID(); }
         }
 
+        public override ResourceBlobFactoryBase BlobFactory {
+            get { return _blobFactory; }
+            set { _blobFactory = value; }
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
+
+        public override BlobHighwayFactoryBase ParentFactory {
+            get { return _parentFactory; }
+            set { _parentFactory = value; }
+        }
+        [SerializeField] private BlobHighwayFactoryBase _parentFactory;
+
+        public override UIControlBase UIControl {
+            get { return _uiControl; }
+            set { _uiControl = value; }
+        }
+        [SerializeField] private UIControlBase _uiControl;
+
         public override int Priority {
             get { return _priority; }
             set { _priority = value; }
@@ -41,24 +61,28 @@ namespace Assets.Highways {
         [SerializeField] private int _priority = Int32.MaxValue;
 
         public override MapNodeBase FirstEndpoint {
-            get { return PrivateData.FirstEndpoint; }
+            get { return firstEndpoint; }
         }
+        [SerializeField] private MapNodeBase firstEndpoint;
 
         public override MapNodeBase SecondEndpoint {
-            get { return PrivateData.SecondEndpoint; }
+            get { return secondEndpoint; }
         }
+        [SerializeField] private MapNodeBase secondEndpoint;
 
         public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint {
-            get { return PrivateData.TubePullingFromFirstEndpoint.Contents; }
+            get { return TubePullingFromFirstEndpoint.Contents; }
         }
 
         public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint {
-            get { return PrivateData.TubePullingFromSecondEndpoint.Contents; }
+            get { return TubePullingFromSecondEndpoint.Contents; }
         }
 
         public override BlobHighwayProfile Profile {
-            get { return PrivateData.Profile; }
+            get { return _profile; }
+            set { _profile = value; }
         }
+        [SerializeField] private BlobHighwayProfile _profile;
 
         public override float Efficiency {
             get { return _efficiency; }
@@ -75,21 +99,31 @@ namespace Assets.Highways {
 
         #endregion
 
-        public BlobHighwayPrivateDataBase PrivateData {
-            get { return _privateData; }
+        public BlobTubeBase TubePullingFromFirstEndpoint {
+            get { return _tubePullingFromFirstEndpoint; }
             set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _privateData = value;
-                    _privateData.TubePullingFromFirstEndpoint.BlobReachedEndOfTube += TubePullingFromFirstEndpoint_BlobReachedEndOfTube;
-                    _privateData.TubePullingFromSecondEndpoint.BlobReachedEndOfTube += TubePullingFromSecondEndpoint_BlobReachedEndOfTube;
+                _tubePullingFromFirstEndpoint = value;
+                if(_tubePullingFromFirstEndpoint != null) {
+                    _tubePullingFromFirstEndpoint.BlobReachedEndOfTube += TubePullingFromFirstEndpoint_BlobReachedEndOfTube;
                     UpdateTubeSpeedAndCapacity();
                     UpdateTubeEndpoints();
                 }
             }
         }
-        [SerializeField, HideInInspector] private BlobHighwayPrivateDataBase _privateData;
+        [SerializeField] private BlobTubeBase _tubePullingFromFirstEndpoint;
+
+        public BlobTubeBase TubePullingFromSecondEndpoint {
+            get { return _tubePullingFromSecondEndpoint; }
+            set {
+                _tubePullingFromSecondEndpoint = value;
+                if(_tubePullingFromSecondEndpoint != null) {
+                    _tubePullingFromSecondEndpoint.BlobReachedEndOfTube += TubePullingFromSecondEndpoint_BlobReachedEndOfTube;
+                    UpdateTubeSpeedAndCapacity();
+                    UpdateTubeEndpoints();
+                }
+            }
+        }
+        [SerializeField] private BlobTubeBase _tubePullingFromSecondEndpoint;
 
         private Dictionary<ResourceType, bool> UpkeepRequestedForResource =
             new Dictionary<ResourceType, bool>();
@@ -101,21 +135,26 @@ namespace Assets.Highways {
         #region Unity event methods
 
         private void Start() {
-            if(PrivateData != null) {
-                UpdateTubeSpeedAndCapacity();
+            UpdateTubeSpeedAndCapacity();
+            if(ParentFactory != null && ParentFactory.GetHighwayOfID(ID) == null) {
+                ParentFactory.SubscribeHighway(this);
             }
         }
 
         private void OnDestroy() {
-            if(PrivateData != null && PrivateData.UIControl != null) {
-                PrivateData.UIControl.PushObjectDestroyedEvent(new BlobHighwayUISummary(this));
+            if(UIControl != null && FirstEndpoint != null && SecondEndpoint != null) {
+                UIControl.PushObjectDestroyedEvent(new BlobHighwayUISummary(this));
+            }
+            if(ParentFactory != null) {
+                ParentFactory.UnsubscribeHighway(this);
             }
         }
 
         private void OnValidate() {
-            if(PrivateData != null) {
-                UpdateTubeSpeedAndCapacity();
-            }            
+            UpdateTubeSpeedAndCapacity(); 
+            if(ParentFactory != null && ParentFactory.GetHighwayOfID(ID) == null) {
+                ParentFactory.SubscribeHighway(this);
+            }        
         }
 
         #endregion
@@ -123,48 +162,54 @@ namespace Assets.Highways {
         #region EventSystem interface implementations
 
         public void OnBeginDrag(PointerEventData eventData) {
-            PrivateData.UIControl.PushBeginDragEvent(new BlobHighwayUISummary(this), eventData);
+            UIControl.PushBeginDragEvent(new BlobHighwayUISummary(this), eventData);
         }
 
         public void OnDrag(PointerEventData eventData) {
-            PrivateData.UIControl.PushDragEvent(new BlobHighwayUISummary(this), eventData);
+            UIControl.PushDragEvent(new BlobHighwayUISummary(this), eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData) {
-            PrivateData.UIControl.PushEndDragEvent(new BlobHighwayUISummary(this), eventData);
+            UIControl.PushEndDragEvent(new BlobHighwayUISummary(this), eventData);
         }
 
         public void OnPointerClick(PointerEventData eventData) {
-            PrivateData.UIControl.PushPointerClickEvent(new BlobHighwayUISummary(this), eventData);
+            UIControl.PushPointerClickEvent(new BlobHighwayUISummary(this), eventData);
             EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
         public void OnPointerEnter(PointerEventData eventData) {
-            PrivateData.UIControl.PushPointerEnterEvent(new BlobHighwayUISummary(this), eventData);
+            UIControl.PushPointerEnterEvent(new BlobHighwayUISummary(this), eventData);
         }
 
         public void OnPointerExit(PointerEventData eventData) {
-            PrivateData.UIControl.PushPointerExitEvent(new BlobHighwayUISummary(this), eventData);
+            UIControl.PushPointerExitEvent(new BlobHighwayUISummary(this), eventData);
         }
 
         public void OnSelect(BaseEventData eventData) {
-            PrivateData.UIControl.PushSelectEvent(new BlobHighwayUISummary(this), eventData);
+            UIControl.PushSelectEvent(new BlobHighwayUISummary(this), eventData);
         }
 
         public void OnDeselect(BaseEventData eventData) {
-            PrivateData.UIControl.PushDeselectEvent(new BlobHighwayUISummary(this), eventData);
+            UIControl.PushDeselectEvent(new BlobHighwayUISummary(this), eventData);
         }
 
         #endregion
 
         #region from BlobHighwayBase
 
+        public override void SetEndpoints(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            this.firstEndpoint = firstEndpoint;
+            this.secondEndpoint = secondEndpoint;
+            UpdateTubeEndpoints();
+        }
+
         public override bool CanPullFromFirstEndpoint() {
-            if(PrivateData.TubePullingFromFirstEndpoint.SpaceLeft > 0) {
+            if(TubePullingFromFirstEndpoint.SpaceLeft > 0) {
                 foreach(var blob in FirstEndpoint.BlobSite.Contents) {
                     var canExtractFromFirstEndpoint = FirstEndpoint.BlobSite.CanExtractBlob(blob);
                     var canPlaceIntoSecondEndpoint = SecondEndpoint.BlobSite.CanPlaceBlobInto(blob);
-                    var CanPushIntoTube = PrivateData.TubePullingFromFirstEndpoint.CanPushBlobInto(blob);
+                    var CanPushIntoTube = TubePullingFromFirstEndpoint.CanPushBlobInto(blob);
                     if(canExtractFromFirstEndpoint && canPlaceIntoSecondEndpoint && CanPushIntoTube){
                         return true;
                     }
@@ -174,15 +219,15 @@ namespace Assets.Highways {
         }
 
         public override void PullFromFirstEndpoint() {
-            if(PrivateData.TubePullingFromFirstEndpoint.SpaceLeft > 0) {
+            if(TubePullingFromFirstEndpoint.SpaceLeft > 0) {
                 foreach(var blob in FirstEndpoint.BlobSite.Contents) {
                     if(
                         FirstEndpoint.BlobSite.CanExtractBlob(blob) &&
                         SecondEndpoint.BlobSite.CanPlaceBlobInto(blob) &&
-                        PrivateData.TubePullingFromFirstEndpoint.CanPushBlobInto(blob)
+                        TubePullingFromFirstEndpoint.CanPushBlobInto(blob)
                     ){
                         FirstEndpoint.BlobSite.ExtractBlob(blob);
-                        PrivateData.TubePullingFromFirstEndpoint.PushBlobInto(blob);
+                        TubePullingFromFirstEndpoint.PushBlobInto(blob);
                         return;
                     }
                 }
@@ -191,12 +236,12 @@ namespace Assets.Highways {
         }
 
         public override bool CanPullFromSecondEndpoint() {
-            if(PrivateData.TubePullingFromSecondEndpoint.SpaceLeft > 0) {
+            if(TubePullingFromSecondEndpoint.SpaceLeft > 0) {
                 foreach(var blob in SecondEndpoint.BlobSite.Contents) {
 
                     var canExtractFromSecondEndpoint = SecondEndpoint.BlobSite.CanExtractBlob(blob);
                     var canPlaceIntoFirstEndpoint = FirstEndpoint.BlobSite.CanPlaceBlobInto(blob);
-                    var canPushIntoTube = PrivateData.TubePullingFromSecondEndpoint.CanPushBlobInto(blob);
+                    var canPushIntoTube = TubePullingFromSecondEndpoint.CanPushBlobInto(blob);
                     if(canExtractFromSecondEndpoint && canPlaceIntoFirstEndpoint && canPushIntoTube){
                         return true;
                     }
@@ -207,15 +252,15 @@ namespace Assets.Highways {
         }
 
         public override void PullFromSecondEndpoint() {
-            if(PrivateData.TubePullingFromSecondEndpoint.SpaceLeft > 0) {
+            if(TubePullingFromSecondEndpoint.SpaceLeft > 0) {
                 foreach(var blob in SecondEndpoint.BlobSite.Contents) {
                     if(
                         SecondEndpoint.BlobSite.CanExtractBlob(blob) &&
                         FirstEndpoint.BlobSite.CanPlaceBlobInto(blob) &&
-                        PrivateData.TubePullingFromSecondEndpoint.CanPushBlobInto(blob)
+                        TubePullingFromSecondEndpoint.CanPushBlobInto(blob)
                     ){
                         SecondEndpoint.BlobSite.ExtractBlob(blob);
-                        PrivateData.TubePullingFromSecondEndpoint.PushBlobInto(blob);
+                        TubePullingFromSecondEndpoint.PushBlobInto(blob);
                         return;
                     }
                 }
@@ -224,19 +269,19 @@ namespace Assets.Highways {
         }
 
         public override bool GetPullingPermissionForFirstEndpoint(ResourceType type) {
-            return PrivateData.TubePullingFromFirstEndpoint.GetPermissionForResourceType(type);
+            return TubePullingFromFirstEndpoint.GetPermissionForResourceType(type);
         }
 
         public override void SetPullingPermissionForFirstEndpoint(ResourceType type, bool isPermitted) {
-            PrivateData.TubePullingFromFirstEndpoint.SetPermissionForResourceType(type, isPermitted);
+            TubePullingFromFirstEndpoint.SetPermissionForResourceType(type, isPermitted);
         }
 
         public override bool GetPullingPermissionForSecondEndpoint(ResourceType type) {
-            return PrivateData.TubePullingFromSecondEndpoint.GetPermissionForResourceType(type);
+            return TubePullingFromSecondEndpoint.GetPermissionForResourceType(type);
         }
 
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
-            PrivateData.TubePullingFromSecondEndpoint.SetPermissionForResourceType(type, isPermitted);
+            TubePullingFromSecondEndpoint.SetPermissionForResourceType(type, isPermitted);
         }
 
         public override bool GetUpkeepRequestedForResource(ResourceType type) {
@@ -250,8 +295,8 @@ namespace Assets.Highways {
         }
 
         public override void Clear() {
-            PrivateData.TubePullingFromFirstEndpoint.Clear();
-            PrivateData.TubePullingFromSecondEndpoint.Clear();
+            TubePullingFromFirstEndpoint.Clear();
+            TubePullingFromSecondEndpoint.Clear();
         }
 
         #endregion
@@ -267,19 +312,26 @@ namespace Assets.Highways {
         }
 
         private void UpdateTubeSpeedAndCapacity() {
-            PrivateData.TubePullingFromFirstEndpoint.TransportSpeedPerSecond = Profile.BlobSpeedPerSecond * Efficiency;
-            PrivateData.TubePullingFromFirstEndpoint.Capacity = Profile.Capacity;
-
-            PrivateData.TubePullingFromSecondEndpoint.TransportSpeedPerSecond = Profile.BlobSpeedPerSecond * Efficiency;
-            PrivateData.TubePullingFromSecondEndpoint.Capacity = Profile.Capacity;
+            if(TubePullingFromFirstEndpoint != null) {
+                TubePullingFromFirstEndpoint.TransportSpeedPerSecond = Profile.BlobSpeedPerSecond * Efficiency;
+                TubePullingFromFirstEndpoint.Capacity = Profile.Capacity;
+            }
+            if(TubePullingFromSecondEndpoint != null) {
+                TubePullingFromSecondEndpoint.TransportSpeedPerSecond = Profile.BlobSpeedPerSecond * Efficiency;
+                TubePullingFromSecondEndpoint.Capacity = Profile.Capacity;
+            }
         }
 
         private void UpdateTubeEndpoints() {
-            PrivateData.TubePullingFromFirstEndpoint.transform.SetParent(transform, false);
-            PrivateData.TubePullingFromSecondEndpoint.transform.SetParent(transform, false);
+            if( FirstEndpoint == null || SecondEndpoint == null ||
+                TubePullingFromFirstEndpoint == null || TubePullingFromSecondEndpoint == null ){
+                return;
+            }
+            TubePullingFromFirstEndpoint.transform.SetParent(transform, false);
+            TubePullingFromSecondEndpoint.transform.SetParent(transform, false);
 
-            PrivateData.TubePullingFromFirstEndpoint.transform.Translate(Vector3.up * TubeCenterOffset);
-            PrivateData.TubePullingFromSecondEndpoint.transform.Translate(Vector3.down * TubeCenterOffset);
+            TubePullingFromFirstEndpoint.transform.Translate(Vector3.up * TubeCenterOffset);
+            TubePullingFromSecondEndpoint.transform.Translate(Vector3.down * TubeCenterOffset);
 
             var firstConnectionPoint = FirstEndpoint.BlobSite.GetPointOfConnectionFacingPoint(SecondEndpoint.transform.position);
             var secondConnectionPoint = SecondEndpoint.BlobSite.GetPointOfConnectionFacingPoint(FirstEndpoint.transform.position);
@@ -291,31 +343,31 @@ namespace Assets.Highways {
                 boxCollider.size = new Vector2(Vector3.Distance(firstConnectionPoint, secondConnectionPoint), boxCollider.size.y);
             }
 
-            PrivateData.TubePullingFromFirstEndpoint.SetEndpoints(
-                firstConnectionPoint + PrivateData.TubePullingFromFirstEndpoint.transform.TransformDirection(Vector3.up * TubeCenterOffset),
-                secondConnectionPoint + PrivateData.TubePullingFromFirstEndpoint.transform.TransformDirection(Vector3.up * TubeCenterOffset)
+            TubePullingFromFirstEndpoint.SetEndpoints(
+                firstConnectionPoint + TubePullingFromFirstEndpoint.transform.TransformDirection(Vector3.up * TubeCenterOffset),
+                secondConnectionPoint + TubePullingFromFirstEndpoint.transform.TransformDirection(Vector3.up * TubeCenterOffset)
             );
-            PrivateData.TubePullingFromSecondEndpoint.SetEndpoints(
-                secondConnectionPoint + PrivateData.TubePullingFromSecondEndpoint.transform.TransformDirection(Vector3.down * TubeCenterOffset),
-                firstConnectionPoint + PrivateData.TubePullingFromSecondEndpoint.transform.TransformDirection(Vector3.down * TubeCenterOffset)
+            TubePullingFromSecondEndpoint.SetEndpoints(
+                secondConnectionPoint + TubePullingFromSecondEndpoint.transform.TransformDirection(Vector3.down * TubeCenterOffset),
+                firstConnectionPoint + TubePullingFromSecondEndpoint.transform.TransformDirection(Vector3.down * TubeCenterOffset)
             );
         }
 
         private void TubePullingFromFirstEndpoint_BlobReachedEndOfTube(object sender, BlobEventArgs e) {
-            if(PrivateData.SecondEndpoint.BlobSite.CanPlaceBlobInto(e.Blob)) {
-                PrivateData.TubePullingFromFirstEndpoint.PullBlobFrom(e.Blob);
-                PrivateData.SecondEndpoint.BlobSite.PlaceBlobInto(e.Blob);
+            if(SecondEndpoint.BlobSite.CanPlaceBlobInto(e.Blob)) {
+                TubePullingFromFirstEndpoint.PullBlobFrom(e.Blob);
+                SecondEndpoint.BlobSite.PlaceBlobInto(e.Blob);
             }else {
-                PrivateData.BlobFactory.DestroyBlob(e.Blob);
+                BlobFactory.DestroyBlob(e.Blob);
             }
         }
 
         private void TubePullingFromSecondEndpoint_BlobReachedEndOfTube(object sender, BlobEventArgs e) {
-            if(PrivateData.FirstEndpoint.BlobSite.CanPlaceBlobInto(e.Blob)) {
-                PrivateData.TubePullingFromSecondEndpoint.PullBlobFrom(e.Blob);
-                PrivateData.FirstEndpoint.BlobSite.PlaceBlobInto(e.Blob);
+            if(FirstEndpoint.BlobSite.CanPlaceBlobInto(e.Blob)) {
+                TubePullingFromSecondEndpoint.PullBlobFrom(e.Blob);
+                FirstEndpoint.BlobSite.PlaceBlobInto(e.Blob);
             }else {
-                PrivateData.BlobFactory.DestroyBlob(e.Blob);
+                BlobFactory.DestroyBlob(e.Blob);
             }
         }
 

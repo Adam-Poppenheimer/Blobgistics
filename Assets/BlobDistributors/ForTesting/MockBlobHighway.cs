@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Assets.Blobs;
+using Assets.Core;
 using Assets.Highways;
 using Assets.Map;
 using UnityEngine;
@@ -27,20 +28,14 @@ namespace Assets.BlobDistributors.ForTesting {
         private List<ResourceBlobBase> contentsPulledFromSecondEndpoint = new List<ResourceBlobBase>();
 
         public override MapNodeBase FirstEndpoint {
-            get { return _firstEndpoint; }
+            get { return firstEndpoint; }
         }
-        public void SetFirstEndpoint(MapNodeBase value) {
-            _firstEndpoint = value;
-        }
-        private MapNodeBase _firstEndpoint;
+        private MapNodeBase firstEndpoint;
 
         public override MapNodeBase SecondEndpoint {
-            get { return _secondEndpoint; }
+            get { return secondEndpoint; }
         }
-        public void SetSecondEndpoint(MapNodeBase value) {
-            _secondEndpoint = value;
-        }
-        private MapNodeBase _secondEndpoint;
+        private MapNodeBase secondEndpoint;
 
         public override int ID {
             get { return 42; }
@@ -48,18 +43,42 @@ namespace Assets.BlobDistributors.ForTesting {
 
         public override int Priority { get; set; }
 
-        public override BlobHighwayProfile Profile {
-            get { return _profile; }
-        }
-        public void SetProfile(BlobHighwayProfile value) {
-            _profile = value;
-        }
-        private BlobHighwayProfile _profile;
+        public override BlobHighwayProfile Profile { get; set; }
 
         public override float Efficiency { get; set; }
 
         public override float BlobPullCooldownInSeconds {
             get { return Profile.BlobPullCooldownInSeconds / Efficiency; }
+        }
+
+        public override ResourceBlobFactoryBase BlobFactory {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override BlobHighwayFactoryBase ParentFactory {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override UIControlBase UIControl {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
         }
 
         #endregion
@@ -77,6 +96,11 @@ namespace Assets.BlobDistributors.ForTesting {
         #endregion
 
         #region from BlobHighwayBase
+
+        public override void SetEndpoints(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            this.firstEndpoint = firstEndpoint;
+            this.secondEndpoint = secondEndpoint;
+        }
 
         public override bool CanPullFromFirstEndpoint() {
             return FirstEndpoint.BlobSite.CanExtractAnyBlob() && contentsPulledFromFirstEndpoint.Count < Profile.Capacity;

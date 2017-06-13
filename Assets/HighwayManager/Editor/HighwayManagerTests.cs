@@ -727,10 +727,7 @@ namespace Assets.HighwayManager.Editor {
         private MockBlobHighway BuildMockBlobHighway(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             var hostingObject = new GameObject();
             var newHighway = hostingObject.AddComponent<MockBlobHighway>();
-
-            newHighway.SetFirstEndpoint(firstEndpoint);
-            newHighway.SetSecondEndpoint(secondEndpoint);
-
+            newHighway.SetEndpoints(firstEndpoint, secondEndpoint);
             return newHighway;
         }
 

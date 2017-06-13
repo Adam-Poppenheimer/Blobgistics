@@ -87,6 +87,11 @@ namespace Assets.Map.Editor {
         }
 
         [Test]
+        public void OnUnsubscribeNodeCalled_NodeUnsubscribedEventIsCalled() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
         public void OnBuildUndirectedEdgeCalled_ReturnedEdgeHasCorrectEndpoints_AndAppearsInEdgesProperty() {
             //Setup
             var graphToTest = BuildMapGraph();
@@ -191,7 +196,7 @@ namespace Assets.Map.Editor {
         }
 
         [Test]
-        public void OnUnsubscribeDirectedEdgeCalled_EdgeIsRemovedFromEdgesProperty_AndHasItsParentGraphResetToNull() {
+        public void OnUnsubscribeEdgeCalled_EdgeIsRemovedFromEdgesProperty_AndHasItsParentGraphResetToNull() {
             //Setup
             var graphToTest = BuildMapGraph();
             graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
@@ -199,6 +204,13 @@ namespace Assets.Map.Editor {
 
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
+
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void OnUnsubscribeEdgeCalled_EdgeUnsubscribedEventIsInvoked() {
+            throw new NotImplementedException();
         }
 
         [Test]

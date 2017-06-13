@@ -6,12 +6,10 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 
-using Assets.Blobs.Editor;
-
 namespace Assets.Blobs.Editor {
 
-    [CustomEditor(typeof(MaterialPerResourceDictionary))]
-    public class MaterialResourceSummaryEditor : ResourceSummaryEditorBase {
+    [CustomEditor(typeof(IntPerResourceDictionary))]
+    public class IntResourceDictionaryEditor : ResourceSummaryEditorBase {
 
 
 
