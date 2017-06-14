@@ -67,7 +67,7 @@ namespace Assets.Scoring.Editor {
         }
 
         [Test]
-        public void OnPlayerScorerGeneratesAWinningScore_TriggerVictoryIsCalled() {
+        public void OnPlayerScorerGeneratesAWinningScore_AndManagerIsCheckingForVictory_TriggerVictoryIsCalled() {
             //Setup
             var playerScorer = BuildMockPlayerScorer();
             var uiControl = BuildMockUIControl();
@@ -80,6 +80,7 @@ namespace Assets.Scoring.Editor {
 
             var managerToTest = BuildVictoryManager();
             managerToTest.ScoreToWin = 50;
+            managerToTest.IsCheckingForVictory = true;
             managerToTest.PlayerScorer = playerScorer;
             managerToTest.UIControl = uiControl;
             managerToTest.SimulationControl = simulationControl;

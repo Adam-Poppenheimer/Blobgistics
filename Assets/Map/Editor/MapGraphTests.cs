@@ -88,7 +88,23 @@ namespace Assets.Map.Editor {
 
         [Test]
         public void OnUnsubscribeNodeCalled_NodeUnsubscribedEventIsCalled() {
-            throw new NotImplementedException();
+            //Setup
+            var graphToTest = BuildMapGraph();
+            graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
+            graphToTest.UIControl = BuildMockUIControl();
+
+            MapNodeBase nodeReturnedByEvent = null;
+            graphToTest.MapNodeUnsubscribed += delegate(object sender, MapNodeEventArgs e) {
+                nodeReturnedByEvent = e.Node;
+            };
+
+            var nodeToUnsubscribe = graphToTest.BuildNode(Vector3.zero);
+
+            //Execution
+            graphToTest.UnsubscribeNode(nodeToUnsubscribe);
+
+            //Validation
+            Assert.AreEqual(nodeToUnsubscribe, nodeReturnedByEvent, "GraphToTest either did not fire the event or performed it on the wrong node");
         }
 
         [Test]
@@ -205,12 +221,38 @@ namespace Assets.Map.Editor {
             var nodeOne = graphToTest.BuildNode(Vector3.zero);
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
 
-            throw new NotImplementedException();
+            var edgeToUnsubscribe = graphToTest.BuildMapEdge(nodeOne, nodeTwo);
+            
+            //Execution
+            graphToTest.UnsubscribeMapEdge(edgeToUnsubscribe);
+
+            //Validation
+            Assert.IsFalse(graphToTest.Edges.Contains(edgeToUnsubscribe), "EdgeToUnsubscribe is still in the factory's Edges collection");
+            Assert.Null(edgeToUnsubscribe.ParentGraph, "EdgeToUnsubscribe still has GraphToTest as its parent graph");
         }
 
         [Test]
         public void OnUnsubscribeEdgeCalled_EdgeUnsubscribedEventIsInvoked() {
-            throw new NotImplementedException();
+            //Setup
+            var graphToTest = BuildMapGraph();
+            graphToTest.TerrainMaterialRegistry = BuildTerrainMaterialRegistry();
+            graphToTest.UIControl = BuildMockUIControl();
+
+            MapEdgeBase edgeReturnedByEvent = null;
+            graphToTest.MapEdgeUnsubscribed += delegate(object sender, MapEdgeEventArgs e) {
+                edgeReturnedByEvent = e.Edge;
+            };
+
+            var nodeOne = graphToTest.BuildNode(Vector3.zero);
+            var nodeTwo = graphToTest.BuildNode(Vector3.one);
+
+            var edgeToUnsubscribe = graphToTest.BuildMapEdge(nodeOne, nodeTwo);
+            
+            //Execution
+            graphToTest.UnsubscribeMapEdge(edgeToUnsubscribe);
+
+            //Validation
+            Assert.AreEqual(edgeToUnsubscribe, edgeReturnedByEvent, "GraphToTest either did not fire the event or fired it on the wrong MapEdge");
         }
 
         [Test]

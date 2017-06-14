@@ -15,12 +15,9 @@ namespace Assets.Highways.ForTesting {
         #region from MapNodeBase
 
         public override BlobSiteBase BlobSite {
-            get { return _blobSite; }
+            get { return blobSite; }
         }
-        public void SetBlobSite(BlobSiteBase value) {
-            _blobSite = value;
-        }
-        private BlobSiteBase _blobSite;
+        public BlobSiteBase blobSite;
 
         public override int ID {
             get {
@@ -43,15 +40,7 @@ namespace Assets.Highways.ForTesting {
             }
         }
 
-        public override TerrainType Terrain {
-            get {
-                throw new NotImplementedException();
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
-        }
+        public override TerrainType Terrain { get; set; }
 
         public override TerrainMaterialRegistry TerrainMaterialRegistry {
             get {

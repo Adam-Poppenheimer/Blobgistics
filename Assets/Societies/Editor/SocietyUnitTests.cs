@@ -92,316 +92,6 @@ namespace Assets.Societies.Editor {
         }
 
         [Test]
-        public void Factory_OnCanConstructSocietyCalled_ReturnsFalseIfTerrainOfLocationIsIncompatibleWithStartingComplexity() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-            var locationToPlace = BuildMapNode();
-            locationToPlace.Terrain = TerrainType.Forest;
-
-            var startingComplexity = BuildComplexityDefinition();
-            startingComplexity.SetPermittedTerrains(new List<TerrainType>() { TerrainType.Grassland });
-
-            var activeLadder = BuildComplexityLadder(0, startingComplexity);
-
-            //Execution
-            var canConstruct = factoryToTest.CanConstructSocietyAt(locationToPlace, activeLadder, startingComplexity);
-
-            //Validation
-            Assert.False(canConstruct);
-        }
-
-        [Test]
-        public void Factory_OnConstructSocietyAtCalled_SocietyReturnedHasTheAppropriateLocation() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-            var locationToPlace = BuildMapNode();
-
-            //Execution
-            var societyConstructed = factoryToTest.ConstructSocietyAt(locationToPlace, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-
-            //Validation
-            Assert.AreEqual(locationToPlace, societyConstructed.Location, "The constructed society was not in the correct location");
-        }
-
-        [Test]
-        public void Factory_OnConstructSocietyAtCalled_SocietyReturnedHasTheAppropriateComplexityLadder() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-            var locationToPlace = BuildMapNode();
-
-            //Execution
-            var societyConstructed = factoryToTest.ConstructSocietyAt(locationToPlace, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-
-            //Validation
-            Assert.AreEqual(factoryToTest.StandardComplexityLadder, societyConstructed.ActiveComplexityLadder, 
-                "The constructed society has the wrong ActiveComplexityLadder");
-        }
-
-        [Test]
-        public void Factory_OnConstructSocietyAtCalled_SocietyIsAlsoSubscribed() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-            var locationToPlace = BuildMapNode();
-
-            //Execution
-            var societyConstructed = factoryToTest.ConstructSocietyAt(locationToPlace, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-
-            //Validation
-            Assert.Contains(societyConstructed, factoryToTest.Societies);
-        }
-
-        [Test]
-        public void Factory_OnSubscribeSocietyIsCalled_SocietyAppearsInSocietiesCollection() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            var societyToSubscribe = BuildSociety(BuildComplexityDefinition());
-
-            //Execution
-            factoryToTest.SubscribeSociety(societyToSubscribe);
-
-            //Validation
-            Assert.Contains(societyToSubscribe, factoryToTest.Societies);
-        }
-
-        [Test]
-        public void Factory_OnSubscribeSocietyIsCalled_RaisesSocietySubscribedEvent_WithAppropriateSociety() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            SocietyBase societyReturnedByEvent = null;
-            factoryToTest.SocietySubscribed += delegate(object sender, SocietyEventArgs e) {
-                societyReturnedByEvent = e.Society;
-            };
-
-            var societyToSubscribe = BuildSociety(BuildComplexityDefinition());
-
-            //Execution
-            factoryToTest.SubscribeSociety(societyToSubscribe);
-
-            //Validation
-            Assert.AreEqual(societyToSubscribe, societyReturnedByEvent);
-        }
-
-        [Test]
-        public void Factory_OnUnsubscribeSocietyIsCalled_SocietyNoLongerAppearsInSocietiesCollection() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            SocietyBase societyReturnedByEvent = null;
-            factoryToTest.SocietyUnsubscribed += delegate(object sender, SocietyEventArgs e) {
-                societyReturnedByEvent = e.Society;
-            };
-
-            var societyToUnsubscribe = BuildSociety(BuildComplexityDefinition());
-            factoryToTest.SubscribeSociety(societyToUnsubscribe);
-
-            //Execution
-            factoryToTest.UnsubscribeSociety(societyToUnsubscribe);
-
-            //Validation
-            Assert.AreEqual(societyToUnsubscribe, societyReturnedByEvent);
-        }
-
-        [Test]
-        public void Factory_OnUnsubscribeSocietyIsCalled_RaisesSocietyUnsubscribedEvent_WithAppropriateSociety() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            var societyToUnsubscribe = BuildSociety(BuildComplexityDefinition());
-            factoryToTest.SubscribeSociety(societyToUnsubscribe);
-
-            //Execution
-            factoryToTest.UnsubscribeSociety(societyToUnsubscribe);
-
-            //Validation
-            Assert.That(!factoryToTest.Societies.Contains(societyToUnsubscribe));
-        }
-
-        [Test]
-        public void Factory_OnGetSocietyOfIDCalled_ReturnsASocietyWithTheSpecifiedID_OrNullIfNoneExists() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            var location1 = BuildMapNode();
-            var location2 = BuildMapNode();
-
-            var society1 = factoryToTest.ConstructSocietyAt(location1, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            var society2 = factoryToTest.ConstructSocietyAt(location2, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            
-            //Execution
-
-
-            //Validation
-            Assert.AreEqual(society1, factoryToTest.GetSocietyOfID(society1.ID), "Does not return society1 when its ID is given");
-            Assert.AreEqual(society2, factoryToTest.GetSocietyOfID(society2.ID), "Does not return society2 when its ID is given");
-            Assert.IsNull(factoryToTest.GetSocietyOfID(Int32.MaxValue), "Does not return null on an ID not expected to exist");
-        }
-
-        [Test]
-        public void Factory_OnHasSocietyAtLocationCalled_ReturnsTrueIfThereExistsASocietyWithThatLocation() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            var location1 = BuildMapNode();
-            var location2 = BuildMapNode();
-            var location3 = BuildMapNode();
-
-            factoryToTest.ConstructSocietyAt(location1, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            factoryToTest.ConstructSocietyAt(location2, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            
-            //Execution
-
-
-            //Validation
-            Assert.IsTrue(factoryToTest.HasSocietyAtLocation(location1), "Factory does not register society at location1");
-            Assert.IsTrue(factoryToTest.HasSocietyAtLocation(location2), "Factory does not register society at location2");
-            Assert.IsFalse(factoryToTest.HasSocietyAtLocation(location3), "Factory falsely registers a society at location3");
-        }
-
-        [Test]
-        public void Factory_OnGetSocietyAtLocationCalled_SocietyReturnedHasTheCorrectLocation() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            var location1 = BuildMapNode();
-            var location2 = BuildMapNode();
-            var location3 = BuildMapNode();
-
-            factoryToTest.ConstructSocietyAt(location1, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            factoryToTest.ConstructSocietyAt(location2, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            factoryToTest.ConstructSocietyAt(location3, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            
-            //Execution
-
-
-            //Validation
-            Assert.AreEqual(location1, factoryToTest.GetSocietyAtLocation(location1).Location, "The society registered at location1 had an incorrect location");
-            Assert.AreEqual(location2, factoryToTest.GetSocietyAtLocation(location2).Location, "The society registered at location2 had an incorrect location");
-            Assert.AreEqual(location3, factoryToTest.GetSocietyAtLocation(location3).Location, "The society registered at location3 had an incorrect location");
-        }
-
-        [Test]
-        public void Factory_OnHasSocietyAtLocationReturnsTrue_CanConstructSocietyAtSameLocationReturnsFalse() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-            var locationToPlace = BuildMapNode();
-
-            factoryToTest.ConstructSocietyAt(locationToPlace, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            
-            //Execution
-
-
-            //Validation
-            Assert.IsFalse(factoryToTest.CanConstructSocietyAt(locationToPlace, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition),
-                "Factory falsely registers the ability to construct a society at locationToPlace");
-        }
-
-        [Test]
-        public void Factory_OnManySocietiesCreatedAndDestroyed_NoTwoActiveSocietiesEverHaveTheSameID() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            var locationList = new List<MapNodeBase>();
-            for(int locationIndex = 0; locationIndex < 60; ++locationIndex) {
-                locationList.Add(BuildMapNode());
-            }
-
-            var societyList = new List<SocietyBase>();
-
-            //Execution and Validation
-            int i = 0;
-            for(; i < 50; ++i) {
-                societyList.Add(factoryToTest.ConstructSocietyAt(locationList[i], factoryToTest.StandardComplexityLadder,
-                    factoryToTest.DefaultComplexityDefinition));
-                foreach(var outerSociety in societyList) {
-                    foreach(var innerSociety in societyList) {
-                        if(innerSociety != outerSociety) {
-                            Assert.AreNotEqual(innerSociety.ID, outerSociety.ID, "Duplicate IDs on first creation cycle on index " + i);
-                        }
-                    }
-                }
-            }
-            for(i = 34; i >= 10; --i) {
-                var societyToDestroy = societyList[i];
-                societyList.Remove(societyToDestroy);
-                factoryToTest.DestroySociety(societyToDestroy);
-            }
-            for(i = 10; i < 35; ++i) {
-                societyList.Add(factoryToTest.ConstructSocietyAt(locationList[i], factoryToTest.StandardComplexityLadder,
-                    factoryToTest.DefaultComplexityDefinition));
-                foreach(var outerSociety in societyList) {
-                    foreach(var innerSociety in societyList) {
-                        if(innerSociety != outerSociety) {
-                            Assert.AreNotEqual(innerSociety.ID, outerSociety.ID, "Duplicate IDs on second creation cycle on index " + i);
-                        }
-                    }
-                }
-            }
-        }
-
-        [Test]
-        public void Factory_OnGetComplexityDefinitionOfNameCalled_ReturnsAnAppropriateDefinition_OrNullIfNoneExists() {
-            //Setup
-            var definitionOne = BuildComplexityDefinition();
-            definitionOne.name = "DefinitionOne";
-
-            var definitionTwo = BuildComplexityDefinition();
-            definitionTwo.name = "DefinitionTwo";
-
-            var definitionThree = BuildComplexityDefinition();
-            definitionThree.name = "DefinitionThree";
-
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-            factoryToTest.SetComplexityDefinitions(new List<ComplexityDefinitionBase>() {
-                definitionOne, definitionTwo, definitionThree
-            });
-
-            //Execution and Validation
-            Assert.AreEqual(definitionOne,   factoryToTest.GetComplexityDefinitionOfName(definitionOne.name),
-                "definitionOne.name failed to return definitionOne");
-            Assert.AreEqual(definitionTwo,   factoryToTest.GetComplexityDefinitionOfName(definitionTwo.name),
-                "definitionTwo.name failed to return definitionTwo");
-            Assert.AreEqual(definitionThree, factoryToTest.GetComplexityDefinitionOfName(definitionThree.name),
-                "definitionThree.name failed to return definitionThree");
-        }
-
-        [Test]
-        public void Factory_OnGetComplexityLadderOfNameCalled_ReturnsAnAppropriateLadder_OrNullIfNoneExists() {
-            //Setup
-            var ladderOne = BuildComplexityLadder();
-            ladderOne.name = "LadderOne";
-
-            var ladderTwo = BuildComplexityLadder();
-            ladderTwo.name = "LadderTwo";
-
-            var ladderThree = BuildComplexityLadder();
-            ladderThree.name = "LadderThree";
-
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-            factoryToTest.SetComplexityLadders(new List<ComplexityLadderBase>() {
-                ladderOne, ladderTwo, ladderThree
-            });
-
-            //Execution and Validation
-            Assert.AreEqual(ladderOne,   factoryToTest.GetComplexityLadderOfName(ladderOne.name  ), "ladderOne.name failed to return ladderOne"    );
-            Assert.AreEqual(ladderTwo,   factoryToTest.GetComplexityLadderOfName(ladderTwo.name  ), "ladderTwo.name failed to return ladderTwo"    );
-            Assert.AreEqual(ladderThree, factoryToTest.GetComplexityLadderOfName(ladderThree.name), "ladderThree.name failed to return ladderThree");
-        }
-
-        [Test]
         public void OnCurrentComplexityChanged_NeedsWantsAndProductionCorrectlyAffectCapacityOfLocationsBlobSite() {
             //Setup
             var startingComplexity = BuildComplexityDefinition();
@@ -1218,92 +908,45 @@ namespace Assets.Societies.Editor {
         }
 
         [Test]
-        public void Factory_OnHasSocietyAtLocationReturnsFalse_AndGetSocietyAtLocationIsCalled_ThrowsSocietyException() {
+        public void IfSocietyHasNonzeroSecondsOfUnsatisfiedNeeds_ThenSocietyCannotAscend() {
             //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
+            var currentComplexity = BuildComplexityDefinition();
+            var ascentComplexity = BuildComplexityDefinition();
 
-            //Execution and Validation
-            Assert.Throws<SocietyException>(delegate() {
-                factoryToTest.GetSocietyAtLocation(BuildMapNode());
-            });
+            currentComplexity.SetNeeds(IntPerResourceDictionary.BuildSummary(
+                currentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Food, 10)
+            ));
+            currentComplexity.SetSecondsToFullyConsumeNeeds(1f);
+
+            ascentComplexity.SetCostOfAscent(IntPerResourceDictionary.BuildSummary(
+                ascentComplexity.gameObject,
+                new KeyValuePair<ResourceType, int>(ResourceType.Lumber, 1)
+            ));
+            ascentComplexity.SetPermittedTerrains(new List<TerrainType>(EnumUtil.GetValues<TerrainType>()));
+
+            var activeLadder = BuildComplexityLadder(0, currentComplexity, ascentComplexity);
+            var privateData = BuildPrivateData(activeLadder, StandardBlobFactory, BuildMapNode(),
+                BuildSocietyFactory(StandardBlobFactory));
+
+            var societyToTest = BuildSociety(privateData, currentComplexity);
+            societyToTest.SecondsOfUnsatisfiedNeeds = 5;
+
+            //Execution
+            societyToTest.Location.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Lumber, true);
+            societyToTest.Location.BlobSite.SetCapacityForResourceType(ResourceType.Lumber, 10);
+            societyToTest.Location.BlobSite.TotalCapacity += 10;
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Lumber));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Lumber));
+            societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Lumber));
+            societyToTest.AscensionIsPermitted = true;
+            societyToTest.TickConsumption(10f);
+
+            //Validation
+            Assert.AreEqual(currentComplexity, societyToTest.CurrentComplexity, "SocietyToTest's complexity has changed when change was unexpected");
         }
 
-        [Test]
-        public void Factory_OnHasSocietyAtLocationPassedNullLocation_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.HasSocietyAtLocation(null);
-            });
-        }
-
-        [Test]
-        public void Factory_OnGetSocietyAtLocationPassedNullLocation_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.GetSocietyAtLocation(null);
-            });
-        }
-
-        [Test]
-        public void Factory_OnCanConstructSocietyAtPassedAnyNullArgument_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            var location = BuildMapNode();
-            var complexityDefinition = BuildComplexityDefinition();
-            var complexityLadder = BuildComplexityLadder(0, complexityDefinition);
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.CanConstructSocietyAt(null, complexityLadder, complexityDefinition);
-            }, "Does not throw on parameter location");
-
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.CanConstructSocietyAt(location, null, complexityDefinition);
-            }, "Does not throw on parameter ladder");
-
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.CanConstructSocietyAt(location, complexityLadder, null);
-            }, "Does not throw on parameter startingComplexity");
-        }
-
-        [Test]
-        public void Factory_OnConstructSocietyAtPassedNullArguments_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.ConstructSocietyAt(null, factoryToTest.StandardComplexityLadder,
-                factoryToTest.DefaultComplexityDefinition);
-            }, "Does not throw on parameter location");
-
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.ConstructSocietyAt(BuildMapNode(), null,
-                factoryToTest.DefaultComplexityDefinition);
-            }, "Does not throw on parameter ladder");
-
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.ConstructSocietyAt(BuildMapNode(), factoryToTest.StandardComplexityLadder, null);
-            }, "Does not throw on parameter startingComplexity");
-        }
-
-        [Test]
-        public void Factory_OnDestroySocietyPassedNullSociety_ThrowsArgumentNullException() {
-            //Setup
-            var factoryToTest = BuildSocietyFactory(BuildBlobFactory());
-
-            //Execution and Validation
-            Assert.Throws<ArgumentNullException>(delegate() {
-                factoryToTest.DestroySociety(null);
-            });
-        }
+        
 
         #endregion
 

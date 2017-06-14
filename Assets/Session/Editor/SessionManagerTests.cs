@@ -27,7 +27,7 @@ namespace Assets.Session.Editor {
         #region tests        
 
         [Test]
-        public void OnSessionPushedToRuntime_AllOldObjectsInRuntimeAreDestroyed() {
+        public void OnRuntimePulledIntoSession_AllOldObjectsInRuntimeAreDestroyed() {
             //Setup
             var mapGraph = BuildMockMapGraph();
             mapGraph.BuildNode(Vector3.zero);
@@ -71,7 +71,8 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = societyFactory;
 
             //Execution
-            managerToTest.PushSessionIntoRuntime(new SerializableSession("Empty Session", "Description", 42));
+            managerToTest.CurrentSession = new SerializableSession("Empty Session", "Description", 42);
+            managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
             Assert.IsEmpty(mapGraph.Nodes,                            "MapGraph.Nodes still has undestroyed elements");
@@ -84,12 +85,35 @@ namespace Assets.Session.Editor {
         }
 
         [Test]
-        public void OnSessionPushedIntoRuntime_VictoryManagerScoreToWinIsSetProperly() {
-            throw new NotImplementedException();
+        public void OnRuntimePulledFromSession_VictoryManagerScoreToWinIsSetProperly() {
+            //Setup
+            var mapGraph                = BuildMockMapGraph();
+            var highwayFactory          = BuildMockHighwayFactory();
+            var constructionZoneFactory = BuildMockConstructionZoneFactory();
+            var highwayManagerFactory   = BuildMockHighwayManagerFactory();
+            var resourceDepotFactory    = BuildMockResourceDepotFactory();
+            var societyFactory          = BuildMockSocietyFactory();
+            var victoryManager          = BuildMockVictoryManager();
+
+            var managerToTest = BuildSessionManager();
+            managerToTest.MapGraph                = mapGraph;
+            managerToTest.HighwayFactory          = highwayFactory;
+            managerToTest.ConstructionZoneFactory = constructionZoneFactory;
+            managerToTest.HighwayManagerFactory   = highwayManagerFactory;
+            managerToTest.ResourceDepotFactory    = resourceDepotFactory;
+            managerToTest.SocietyFactory          = societyFactory;
+            managerToTest.VictoryManager          = victoryManager;
+
+            //Execution
+            managerToTest.CurrentSession = new SerializableSession("Empty Session", "Description", 42);
+            managerToTest.PullRuntimeFromCurrentSession();
+
+            //Validation
+            Assert.AreEqual(managerToTest.CurrentSession.ScoreToWin, victoryManager.ScoreToWin);
         }
 
         [Test]
-        public void OnSessionPulledFromAndPushedToRuntime_AllMapNodesAndEdgesAreConstructedAndInitializedProperly() {
+        public void OnRuntimePushedIntoAndPulledFromSession_AllMapNodesAndEdgesAreConstructedAndInitializedProperly() {
             //Setup
             var mapGraphToPullFrom = BuildMockMapGraph();
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
@@ -114,11 +138,12 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
 
-            managerToTest.PushSessionIntoRuntime(sessionPulled);
+            managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
             foreach(var node in mapGraphToPullFrom.Nodes) {
@@ -132,7 +157,7 @@ namespace Assets.Session.Editor {
         }
 
         [Test]
-        public void OnSessionPulledFromAndPushedToRuntime_AllHighwaysAreConstructedAndInitializedProperly() {
+        public void OnRuntimePushedIntoAndPulledFromSession_AllHighwaysAreConstructedAndInitializedProperly() {
             //Setup
             var mapGraphToPullFrom = BuildMockMapGraph();
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
@@ -183,12 +208,13 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.HighwayFactory = highwayFactoryToPushTo;
 
-            managerToTest.PushSessionIntoRuntime(sessionPulled);
+            managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
             foreach(var highway in highwayFactoryToPullFrom.Highways) {
@@ -199,7 +225,7 @@ namespace Assets.Session.Editor {
         }
 
         [Test]
-        public void OnSessionPulledFromAndPushedToRuntime_AllConstructionZonesAreConstructedAndInitializedProperly() {
+        public void OnRuntimePushedIntoAndPulledFromSession_AllConstructionZonesAreConstructedAndInitializedProperly() {
             //Setup
             var mapGraphToPullFrom = BuildMockMapGraph();
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
@@ -234,12 +260,13 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.ConstructionZoneFactory = zoneFactoryToPushTo;
 
-            managerToTest.PushSessionIntoRuntime(sessionPulled);
+            managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
             foreach(var constructionZone in zoneFactoryToPullFrom.ConstructionZones) {
@@ -250,7 +277,7 @@ namespace Assets.Session.Editor {
         }
 
         [Test]
-        public void OnSessionPulledFromAndPushedToRuntime_AllHighwayManagersAreConstructedAndInitializedProperly() {
+        public void OnRuntimePushedIntoAndPulledFromSession_AllHighwayManagersAreConstructedAndInitializedProperly() {
             //Setup
             var mapGraphToPullFrom = BuildMockMapGraph();
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
@@ -275,12 +302,13 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.HighwayManagerFactory = managerFactoryToPushTo;
 
-            managerToTest.PushSessionIntoRuntime(sessionPulled);
+            managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
             foreach(var manager in managerFactoryToPullFrom.Managers) {
@@ -291,7 +319,7 @@ namespace Assets.Session.Editor {
         }
 
         [Test]
-        public void OnSessionPulledFromAndPushedToRuntime_AllResourceDepotsAreConstructedAndInitializedProperly() {
+        public void OnRuntimePushedIntoAndPulledFromSession_AllResourceDepotsAreConstructedAndInitializedProperly() {
             //Setup
             var mapGraphToPullFrom = BuildMockMapGraph();
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
@@ -316,12 +344,13 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.ResourceDepotFactory = depotFactoryToPushTo;
 
-            managerToTest.PushSessionIntoRuntime(sessionPulled);
+            managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
             foreach(var depot in depotFactoryToPullFrom.ResourceDepots) {
@@ -332,7 +361,7 @@ namespace Assets.Session.Editor {
         }
 
         [Test]
-        public void OnSessionPulledFromAndPushedToRuntime_AllSocietiesAreConstructedAndInitializedProperly() {
+        public void OnRuntimePushedIntoAndPulledFromSession_AllSocietiesAreConstructedAndInitializedProperly() {
             //Setup
             var mapGraphToPullFrom = BuildMockMapGraph();
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
@@ -392,12 +421,13 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = societyFactoryToPullFrom;
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
             managerToTest.SocietyFactory = societyFactoryToPushTo;
 
-            managerToTest.PushSessionIntoRuntime(sessionPulled);
+            managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
             foreach(var society in societyFactoryToPullFrom.Societies) {
@@ -408,7 +438,7 @@ namespace Assets.Session.Editor {
         }
 
         [Test]
-        public void OnSessionPulledFromAndPushedIntoRuntime_AllNeighborhoodsAreConstructedAndInitializedProperly() {
+        public void OnRuntimePushedIntoAndPulledFromSession_AllNeighborhoodsAreConstructedAndInitializedProperly() {
             //Setup
             var mapGraphToPullFrom = BuildMockMapGraph();
 
@@ -457,11 +487,12 @@ namespace Assets.Session.Editor {
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
 
             //Execution
-            var sessionPulled = managerToTest.PullSessionFromRuntime("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
 
-            managerToTest.PushSessionIntoRuntime(sessionPulled);
+            managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
             var neighborhoodsPushed = mapGraphToPushTo.GetComponentsInChildren<Neighborhood>();
@@ -511,6 +542,10 @@ namespace Assets.Session.Editor {
 
         private MockComplexityLadder BuildMockComplexityLadder() {
             return (new GameObject()).AddComponent<MockComplexityLadder>();
+        }
+
+        private MockVictoryManager BuildMockVictoryManager() {
+            return (new GameObject()).AddComponent<MockVictoryManager>();
         }
 
         private Neighborhood BuildNeighborhood(Transform parent) {

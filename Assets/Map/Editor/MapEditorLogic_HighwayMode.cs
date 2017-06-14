@@ -36,6 +36,8 @@ namespace Assets.Map.Editor {
         #region instance methods
 
         public void DoOnSceneGUI(SceneView sceneView) {
+            DrawAllEdges();
+
             var currentEvent = Event.current;
 
             if(currentEvent.type == EventType.Layout) {
@@ -43,7 +45,7 @@ namespace Assets.Map.Editor {
             }
 
             if(FromNode != null) {
-                Handles.color = Color.white;
+                Handles.color = Color.blue;
                 if(ToNode != null) {
                     Handles.DrawLine(FromNode.transform.position, ToNode.transform.position);
                 }else {
@@ -103,6 +105,21 @@ namespace Assets.Map.Editor {
                 if(candidateNode != null) break;
             }
             return candidateNode;
+        }
+
+        private void DrawAllEdges() {
+            if(EditorWindowDependencyPusher.MapGraph == null) {
+                return;
+            }
+            foreach(var edge in EditorWindowDependencyPusher.MapGraph.Edges) {
+                if(edge != null && edge.FirstNode != null && edge.SecondNode != null &&
+                    EditorWindowDependencyPusher.HighwayFactory.CanConstructHighwayBetween(edge.FirstNode, edge.SecondNode)) {
+                    Handles.color = Color.green;
+                    Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);
+                    var midpoint = (edge.FirstNode.transform.position + edge.SecondNode.transform.position ) / 2f;
+                }
+                
+            }
         }
 
         #endregion

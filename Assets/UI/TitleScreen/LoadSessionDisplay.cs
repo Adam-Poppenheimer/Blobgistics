@@ -112,8 +112,8 @@ namespace Assets.UI.TitleScreen {
         }
 
         private void PerformLoad() {
-            var sessionToLoad = SelectedRecord.SessionToRecord;
-            SessionManager.PushSessionIntoRuntime(sessionToLoad);
+            SessionManager.CurrentSession = SelectedRecord.SessionToRecord;
+            SessionManager.PullRuntimeFromCurrentSession();
             RaiseSessionLoaded();
         }
 

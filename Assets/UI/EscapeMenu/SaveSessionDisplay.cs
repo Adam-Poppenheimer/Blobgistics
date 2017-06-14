@@ -89,9 +89,9 @@ namespace Assets.UI.EscapeMenu {
         }
 
         private void PerformSave() {
-            var sessionToSave = SessionManager.PullSessionFromRuntime(FilenameInputField.text,
-                SessionManager.CurrentSession.Description, SessionManager.CurrentSession.ScoreToWin);
-            FileSystemLiaison.WriteSavedGameToFile(sessionToSave);
+            SessionManager.CurrentSession.Name = FilenameInputField.text;
+            SessionManager.PushRuntimeIntoCurrentSession();
+            FileSystemLiaison.WriteSavedGameToFile(SessionManager.CurrentSession);
             RefreshSessionList();
         }
 

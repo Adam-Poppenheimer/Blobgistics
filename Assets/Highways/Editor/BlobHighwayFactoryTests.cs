@@ -204,12 +204,59 @@ namespace Assets.Highways.Editor {
 
         [Test]
         public void Factory_OnMapGraphRaisesMapNodeUnsubscribedEvent_HighwaysAttachedToNodeAreDestroyed() {
-            throw new NotImplementedException();
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph as MockMapGraph;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
+
+            var highwayToLeft  = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
+            var highwayToRight = factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
+            var highwayToUp    = factoryToTest.ConstructHighwayBetween(middleNode, upNode);
+
+            //Execution and validation
+            mapGraph.UnsubscribeNode(leftNode);
+            Assert.That(highwayToLeft == null, "HighwayToLeft was not destroyed when LeftNode was unsubscribed");
+
+            mapGraph.UnsubscribeNode(middleNode);
+            Assert.AreEqual(0, factoryToTest.Highways.Count, "Factory still has highways even after MiddleNode was destroyed");
         }
 
         [Test]
         public void Factory_OnMapGraphRaisesMapEdgeUnsubscribedEvent_HighwayOnEdgeIsDestroyed() {
-            throw new NotImplementedException();
+            //Setup
+            var factoryToTest = BuildHighwayFactory();
+            var mapGraph = factoryToTest.MapGraph as MockMapGraph;
+
+            var middleNode = mapGraph.BuildNode(Vector3.zero);
+            var leftNode   = mapGraph.BuildNode(Vector3.left);
+            var rightNode  = mapGraph.BuildNode(Vector3.right);
+            var upNode     = mapGraph.BuildNode(Vector3.up);
+
+            var edgeToLeft  = mapGraph.BuildMapEdge(middleNode, leftNode);
+            var edgeToRight = mapGraph.BuildMapEdge(middleNode, rightNode);
+            var edgeToUp    = mapGraph.BuildMapEdge(middleNode, upNode);
+
+            var highwayToLeft  = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
+            var highwayToRight = factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
+            var highwayToUp    = factoryToTest.ConstructHighwayBetween(middleNode, upNode);
+
+            //Execution and validation
+            mapGraph.UnsubscribeMapEdge(edgeToLeft);
+            Assert.That(highwayToLeft == null, "HighwayToLeft was not destroyed when EdgeToLeft was unsubscribed");
+
+            mapGraph.UnsubscribeMapEdge(edgeToRight);
+            Assert.That(highwayToRight == null, "HighwayToRight was not destroyed when EdgeToRight was unsubscribed");
+
+            mapGraph.UnsubscribeMapEdge(edgeToUp);
+            Assert.That(highwayToUp == null, "HighwayToUp was not destroyed when EdgeToUp was unsubscribed");
         }
 
         [Test]
@@ -329,8 +376,7 @@ namespace Assets.Highways.Editor {
 
             var newBlobFactory = hostingObject.AddComponent<MockResourceBlobFactory>();
 
-            var newMapGraph = hostingObject.AddComponent<MapGraph>();
-            newMapGraph.BlobSiteConfiguration = hostingObject.AddComponent<MockBlobSiteConfiguration>();
+            var newMapGraph = hostingObject.AddComponent<MockMapGraph>();
 
             var newTubeFactory = hostingObject.AddComponent<BlobTubeFactory>();
             var newTubePrivateData = hostingObject.AddComponent<BlobTubePrivateData>();
@@ -360,7 +406,7 @@ namespace Assets.Highways.Editor {
             }
 
             var newMapNode = hostingObject.AddComponent<MockMapNode>();
-            newMapNode.SetBlobSite(newBlobSite);
+            newMapNode.blobSite = newBlobSite;
 
             return newMapNode;
         }

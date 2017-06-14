@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,22 +6,33 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 
-using Assets.Session;
-
-using UnityCustomUtilities.Extensions;
+using Assets.Util;
 
 namespace Assets.Map.Editor {
 
-    [CustomEditor(typeof(MapGraph))]
-    public class MapGraphEditor : UnityEditor.Editor {
+    public class MapEditorLogic_MapEdgesMode {
+
+        #region static fields and properties
+
+        public static MapEditorLogic_MapEdgesMode Instance {
+            get {
+                if(_instance == null) {
+                    _instance = new MapEditorLogic_MapEdgesMode();
+                }
+                return _instance;
+            }
+        }
+        private static MapEditorLogic_MapEdgesMode _instance;
+
+        #endregion
 
         #region instance fields and properties
 
         private MapNodeBase FromNode = null;
         private MapNodeBase ToNode = null;
 
-        private MapGraph TargetedGraph {
-            get { return target as MapGraph; }
+        private MapGraphBase TargetedGraph {
+            get { return EditorWindowDependencyPusher.MapGraph; }
         }
 
         #endregion
@@ -31,7 +41,7 @@ namespace Assets.Map.Editor {
 
         #region Unity event methods
 
-        private void OnSceneGUI() {
+        public void DoOnSceneGUI(SceneView sceneView) {
             DrawAllEdges();
 
             var currentEvent = Event.current;

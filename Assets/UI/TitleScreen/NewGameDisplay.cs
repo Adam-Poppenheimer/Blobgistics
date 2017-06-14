@@ -109,7 +109,8 @@ namespace Assets.UI.TitleScreen {
 
         public void StartGameWithSelectedMap() {
             if(SelectedSession != null) {
-                SessionManager.PushSessionIntoRuntime(SelectedSession);
+                SessionManager.CurrentSession = SelectedSession;
+                SessionManager.PullRuntimeFromCurrentSession();
                 RaiseMapLoaded();
             }
         }

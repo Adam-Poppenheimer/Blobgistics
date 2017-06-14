@@ -20,7 +20,7 @@ namespace Assets.Session {
 
         public SerializableSession CurrentSession {
             get { return _currentSession; }
-            private set { _currentSession = value; }
+            set { _currentSession = value; }
         }
         [SerializeField] private SerializableSession _currentSession;
 
@@ -76,38 +76,39 @@ namespace Assets.Session {
 
         #region instance methods
 
-        public SerializableSession PullSessionFromRuntime(string sessionName, string sessionDescription,
-            int sessionPointsToWin) {
-            var retval = new SerializableSession(sessionName, sessionDescription, sessionPointsToWin);
+        public void PushRuntimeIntoCurrentSession() {
+            if(CurrentSession == null) {
+                throw new InvalidOperationException("CurrentSession must be initialized in order to push the session into it");
+            }
+            CurrentSession.Clear();
 
-            PushMapGraphIntoSession         (retval);
-            PushHighwaysIntoSession         (retval);
-            PushConstructionZonesIntoSession(retval);
-            PushHighwayManagersIntoSession  (retval);
-            PushResourceDepotsIntoSession   (retval);
-            PushSocietiesIntoSession        (retval);
-
-            return retval;
+            PushMapGraphIntoSession         (CurrentSession);
+            PushHighwaysIntoSession         (CurrentSession);
+            PushConstructionZonesIntoSession(CurrentSession);
+            PushHighwayManagersIntoSession  (CurrentSession);
+            PushResourceDepotsIntoSession   (CurrentSession);
+            PushSocietiesIntoSession        (CurrentSession);
         }
 
-        public void PushSessionIntoRuntime(SerializableSession session) {
+        public void PullRuntimeFromCurrentSession() {
+            if(CurrentSession == null) {
+                throw new InvalidOperationException("CurrentSession must be initialized in order to pull the session from it");
+            }
             ClearRuntime();
 
-            var mapNodeIDMapping = LoadMapNodes(session);
-            var mapEdgeIDMapping = LoadMapEdges(session, mapNodeIDMapping);
+            var mapNodeIDMapping = LoadMapNodes(CurrentSession);
+            var mapEdgeIDMapping = LoadMapEdges(CurrentSession, mapNodeIDMapping);
 
-            LoadNeighborhoods    (session, mapNodeIDMapping, mapEdgeIDMapping);
-            LoadHighways         (session, mapNodeIDMapping);
-            LoadConstructionZones(session, mapNodeIDMapping);
-            LoadHighwayManagers  (session, mapNodeIDMapping);
-            LoadResourceDepots   (session, mapNodeIDMapping);
-            LoadSocieties        (session, mapNodeIDMapping);
+            LoadNeighborhoods    (CurrentSession, mapNodeIDMapping, mapEdgeIDMapping);
+            LoadHighways         (CurrentSession, mapNodeIDMapping);
+            LoadConstructionZones(CurrentSession, mapNodeIDMapping);
+            LoadHighwayManagers  (CurrentSession, mapNodeIDMapping);
+            LoadResourceDepots   (CurrentSession, mapNodeIDMapping);
+            LoadSocieties        (CurrentSession, mapNodeIDMapping);
 
             if(VictoryManager != null) {
-                VictoryManager.ScoreToWin = session.ScoreToWin;
+                VictoryManager.ScoreToWin = CurrentSession.ScoreToWin;
             }
-
-            CurrentSession = session;
         }
 
         private void PushMapGraphIntoSession(SerializableSession session) {

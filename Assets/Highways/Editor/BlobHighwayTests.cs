@@ -642,7 +642,7 @@ namespace Assets.Highways.Editor {
             var newBlobSiteData = hostingObject.AddComponent<MockBlobSiteConfiguration>();
             newBlobSiteData.SetConnectionCircleRadius(1f);
 
-            var newBlobSite = hostingObject.AddComponent<BlobSite>();
+            var newBlobSite = hostingObject.AddComponent<MockBlobSite>();
             newBlobSite.Configuration = newBlobSiteData;
             newBlobSite.TotalCapacity = Int32.MaxValue;
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
@@ -650,7 +650,7 @@ namespace Assets.Highways.Editor {
             }
 
             var newMapNode = hostingObject.AddComponent<MockMapNode>();
-            newMapNode.SetBlobSite(newBlobSite);
+            newMapNode.blobSite = newBlobSite;
 
             return newMapNode;
         }

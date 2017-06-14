@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 namespace Assets.Session {
 
     [Serializable]
@@ -10,11 +12,23 @@ namespace Assets.Session {
 
         #region instance fields and properties
 
-        public string Name { get; set; }
+        public string Name {
+            get { return _name; }
+            set { _name = value; }
+        }
+        [SerializeField] private string _name;
 
-        public string Description { get; set; }
+        public string Description {
+            get { return _description; }
+            set { _description = value; }
+        }
+        [SerializeField] private string _description;
 
-        public int ScoreToWin { get; set; }
+        public int ScoreToWin {
+            get { return _scoreToWin; }
+            set { _scoreToWin = value; }
+        }
+        [SerializeField] private int _scoreToWin;
 
         public List<SerializableMapNodeData>          MapNodes;
         public List<SerializableMapEdgeData>          MapEdges;
@@ -42,6 +56,21 @@ namespace Assets.Session {
             HighwayManagers   = new List<SerializableHighwayManagerData>();
             ResourceDepots    = new List<SerializableResourceDepotData>();
             Societies         = new List<SerializableSocietyData>();
+        }
+
+        #endregion
+
+        #region instance methods
+
+        public void Clear() {
+            MapNodes.Clear();
+            MapEdges.Clear();
+            Neighborhoods.Clear();
+            Highways.Clear();
+            ConstructionZones.Clear();
+            HighwayManagers.Clear();
+            ResourceDepots.Clear();
+            Societies.Clear();
         }
 
         #endregion

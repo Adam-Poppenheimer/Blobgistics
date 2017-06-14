@@ -307,7 +307,7 @@ namespace Assets.Societies {
 
         private bool CanAscendComplexityLadder() {
             var complexitiesAbove = ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity);
-            if(AscensionIsPermitted) {
+            if(AscensionIsPermitted && SecondsOfUnsatisfiedNeeds <= 0) {
                 return GetBestAscentCandidate() != null;
             }
             return false;
