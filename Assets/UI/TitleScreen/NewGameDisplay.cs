@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using Assets.Session;
+using Assets.Scoring;
 
 namespace Assets.UI.TitleScreen {
 
@@ -20,6 +21,9 @@ namespace Assets.UI.TitleScreen {
         [SerializeField] private Text MapDescriptionField;
         [SerializeField] private Text MapScoreToWinField;
 
+        [SerializeField] private Text PrerequisiteMapsField;
+        [SerializeField] private string PrerequisitesRequiredMessage;
+
         [SerializeField] private RectTransform MapScoreToWinSection;
 
         [SerializeField] private RectTransform  AvailableMapsSection;
@@ -30,6 +34,8 @@ namespace Assets.UI.TitleScreen {
 
         [SerializeField] private SessionManager SessionManager;
         [SerializeField] private FileSystemLiaison FileSystemLiason;
+        [SerializeField] private VictoryManagerBase VictoryManager;
+        [SerializeField] private MapPermissionManager MapPermissionManager;
 
         #endregion
 
@@ -67,6 +73,7 @@ namespace Assets.UI.TitleScreen {
             }
 
             BackButton.onClick.AddListener(delegate() { RaiseDeactivationRequested(); });
+            PrerequisiteMapsField.gameObject.SetActive(false);
 
             SetSelectedSession(null);
         }
@@ -90,7 +97,21 @@ namespace Assets.UI.TitleScreen {
                 MapScoreToWinField.text = SelectedSession.ScoreToWin.ToString();
                 MapScoreToWinSection.gameObject.SetActive(true);
 
-                StartGameButton.interactable = true;
+                if(MapPermissionManager.GetMapIsPermittedToBePlayed(SelectedSession.Name)) {
+                    PrerequisiteMapsField.gameObject.SetActive(false);
+                    StartGameButton.interactable = true;
+                }else {
+                    StartGameButton.interactable = false;
+                    var prerequisiteString = PrerequisitesRequiredMessage;
+                    var mapsLeftToWin = MapPermissionManager.GetMapsLeftToWinRequiredToPlayMap(SelectedSession.Name);
+                    for(int i = 0; i < mapsLeftToWin.Count() - 1; ++i) {
+                        prerequisiteString += string.Format(" {0},", mapsLeftToWin[i]);
+                    }
+                    prerequisiteString += string.Format(" {0}", mapsLeftToWin.Last());
+
+                    PrerequisiteMapsField.text = prerequisiteString;
+                    PrerequisiteMapsField.gameObject.SetActive(true);
+                }
             }else {
                 SelectedSession = null;
 
@@ -111,6 +132,7 @@ namespace Assets.UI.TitleScreen {
             if(SelectedSession != null) {
                 SessionManager.CurrentSession = SelectedSession;
                 SessionManager.PullRuntimeFromCurrentSession();
+                VictoryManager.IsCheckingForVictory = true;
                 RaiseMapLoaded();
             }
         }

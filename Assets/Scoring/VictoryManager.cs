@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Core;
+using Assets.Session;
 using Assets.Scoring.ForTesting;
 
 using UnityCustomUtilities.Extensions;
@@ -46,6 +47,18 @@ namespace Assets.Scoring {
         }
         [SerializeField] private SimulationControlBase _simulationControl;
 
+        public SessionManager SessionManager {
+            get { return _sessionManager; }
+            set { _sessionManager= value; }
+        }
+        [SerializeField] private SessionManager _sessionManager;
+
+        public MapPermissionManager MapPermissionManager {
+            get { return _mapPermissionManager; }
+            set { _mapPermissionManager= value; }
+        }
+        [SerializeField] private MapPermissionManager _mapPermissionManager;
+
         #endregion
 
         #region instance methods
@@ -67,11 +80,15 @@ namespace Assets.Scoring {
         public override void TriggerDefeat() {
             SimulationControl.PerformDefeatTasks();
             UIControl.PerformDefeatTasks();
+            IsCheckingForVictory = false;
         }
 
         public override void TriggerVictory() {
+            Debug.Log("Victory triggered");
             SimulationControl.PerformVictoryTasks();
             UIControl.PerformVictoryTasks();
+            MapPermissionManager.FlagMapAsHavingBeenWon(SessionManager.CurrentSession.Name);
+            IsCheckingForVictory = false;
         }
 
         #endregion

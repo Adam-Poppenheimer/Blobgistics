@@ -12,7 +12,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI {
 
-    public abstract class IntelligentPanel : MonoBehaviour, ISelectHandler, IDeselectHandler {
+    public abstract class IntelligentPanelBase : PanelBase, ISelectHandler, IDeselectHandler {
 
         #region instance fields and properties
 
@@ -33,20 +33,6 @@ namespace Assets.UI {
             }
         }
         private RectTransform _rectTransform;
-
-        #endregion
-
-        #region events
-
-        public event EventHandler<EventArgs> DeactivationRequested;
-
-        protected void RaiseDeactivationRequested() { RaiseEvent(DeactivationRequested, EventArgs.Empty); }
-
-        protected void RaiseEvent<T>(EventHandler<T> handler, T e) where T : EventArgs {
-            if(handler != null) {
-                handler(this, e);
-            }
-        }
 
         #endregion
 
@@ -80,7 +66,7 @@ namespace Assets.UI {
 
         #endregion
 
-        public void Activate() {
+        public override void Activate() {
             gameObject.SetActive(true);
             StartCoroutine(ReselectToThis());
             UpdateDisplay();
@@ -89,18 +75,6 @@ namespace Assets.UI {
                 RepositionInCameraView();
             }
         }
-
-        public void Deactivate() {
-            DoOnDeactivate();
-            ClearDisplay();
-            gameObject.SetActive(false);
-        }
-
-        public virtual void UpdateDisplay() { }
-        public virtual void ClearDisplay() { }
-
-        protected virtual void DoOnActivate() { }
-        protected virtual void DoOnDeactivate() { }
 
         protected virtual void DoOnUpdate() { }
 

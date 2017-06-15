@@ -30,6 +30,16 @@ namespace Assets.Session {
         }
         [SerializeField] private string _sessionExtension;
 
+        public string VictoryDataPath {
+            get { return _victoryDataPath; }
+        }
+        [SerializeField] private string _victoryDataPath;
+
+        public string VictoryDataExtension {
+            get { return _victoryDataExtension; }
+        }
+        [SerializeField] private string _victoryDataExtension;
+
         public ReadOnlyCollection<SerializableSession> LoadedSavedGames {
             get { return loadedSavedGames.AsReadOnly(); }
         }
@@ -107,6 +117,32 @@ namespace Assets.Session {
             foreach(var file in MapDirectory.GetFiles("*." + SessionExtension)) {
                 if(file.Extension.Equals("." + SessionExtension)) {
                     loadedMaps.Add(LoadSessionFromFile(file));
+                }
+            }
+        }
+
+        public void WriteVictoryDataToFile(List<string> victoryData) {
+            string fullPath = string.Format("{0}/{1}.{2}", Application.persistentDataPath, VictoryDataPath, VictoryDataExtension);
+
+            using(FileStream fileStream = new FileStream(fullPath, FileMode.Create)) {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(fileStream, victoryData);
+            }
+        }
+
+        public List<string> ReadVictoryDataFromFile() {
+            string fullPath = string.Format("{0}/{1}.{2}", Application.persistentDataPath, VictoryDataPath, VictoryDataExtension);
+            if(!File.Exists(fullPath)) {
+                WriteVictoryDataToFile(new List<string>());
+            }
+            using(FileStream fileStream = new FileStream(fullPath, FileMode.OpenOrCreate)) {
+                try {
+                    var formatter = new BinaryFormatter();
+                    var victoryData = formatter.Deserialize(fileStream) as List<string>;
+                    return victoryData;
+                }catch(SerializationException e) {
+                    Debug.LogError("Failed to deserialize. Reason given: " + e.Message);
+                    throw;
                 }
             }
         }

@@ -16,6 +16,7 @@ using Assets.HighwayManager;
 using Assets.UI;
 using Assets.UI.TitleScreen;
 using Assets.UI.EscapeMenu;
+using Assets.UI.Scoring;
 
 namespace Assets.Core {
 
@@ -63,8 +64,9 @@ namespace Assets.Core {
 
         [SerializeField] private TitleScreenUI TitleScreenUI;
         [SerializeField] private EscapeMenuUI EscapeMenuUI;
+        [SerializeField] private VictorySplashScreen VictorySplashScreen;
 
-        [SerializeField] private List<IntelligentPanel> HUDElements = new List<IntelligentPanel>();
+        [SerializeField] private List<PanelBase> HUDElements = new List<PanelBase>();
 
         private Dictionary<Type, List<TargetedEventReceiverBase>> EventReceiversByType =
             new Dictionary<Type, List<TargetedEventReceiverBase>>();
@@ -87,6 +89,8 @@ namespace Assets.Core {
             TitleScreenUI.GameExitRequested += TitleScreenUI_GameExitRequested;
 
             EscapeMenuUI.GameResumeRequested += EscapeMenuUI_GameResumeRequested;
+
+            VictorySplashScreen.ReturnToTitleScreenRequested += VictorySplashScreen_ReturnToTitleScreenRequested;
         }
 
         private void Start() {
@@ -188,17 +192,21 @@ namespace Assets.Core {
         }
 
         public override void PerformVictoryTasks() {
-            throw new NotImplementedException();
+            Debug.Log("Victory!");
+            foreach(var hudElement in HUDElements) {
+                hudElement.Deactivate();
+            }
+            VictorySplashScreen.Activate();
         }
 
         public override void PerformDefeatTasks() {
-            throw new NotImplementedException();
+            Debug.Log("Defeat!");
         }
 
         #endregion
 
         private void TitleScreenUI_GameStartRequested(object sender, EventArgs e) {
-            TitleScreenUI.gameObject.SetActive(false);
+            TitleScreenUI.Deactivate();
             foreach(var hudElement in HUDElements) {
                 hudElement.Activate();
             }
@@ -212,6 +220,12 @@ namespace Assets.Core {
         private void EscapeMenuUI_GameResumeRequested(object sender, EventArgs e) {
             EscapeMenuUI.gameObject.SetActive(false);
             SimulationControl.Resume();
+        }
+
+        private void VictorySplashScreen_ReturnToTitleScreenRequested(object sender, EventArgs e) {
+            VictorySplashScreen.Deactivate();
+            TitleScreenUI.Activate();
+            TitleScreenUI.ActivateOptionsDisplay();
         }
 
         #endregion

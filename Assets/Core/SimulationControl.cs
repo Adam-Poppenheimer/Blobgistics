@@ -86,11 +86,11 @@ namespace Assets.Core {
         }
 
         public override void PerformVictoryTasks() {
-            throw new NotImplementedException();
+            Pause();
         }
 
         public override void PerformDefeatTasks() {
-            throw new NotImplementedException();
+            Pause();
         }
 
         #endregion

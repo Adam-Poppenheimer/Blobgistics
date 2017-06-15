@@ -9,7 +9,7 @@ using Assets.ConstructionZones;
 
 namespace Assets.UI.ConstructionZones {
 
-    public abstract class ConstructionZoneSummaryDisplayBase : IntelligentPanel {
+    public abstract class ConstructionZoneSummaryDisplayBase : IntelligentPanelBase {
 
         #region instance fields and properties
 

@@ -9,7 +9,7 @@ using Assets.ResourceDepots;
 
 namespace Assets.UI.ResourceDepots {
 
-    public abstract class ResourceDepotSummaryDisplayBase : IntelligentPanel {
+    public abstract class ResourceDepotSummaryDisplayBase : IntelligentPanelBase {
 
         #region instance fields and properties
 

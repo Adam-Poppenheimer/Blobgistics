@@ -92,6 +92,11 @@ namespace Assets.Scoring.Editor {
             Assert.IsTrue(performVictoryTasksWasCalled);
         }
 
+        [Test]
+        public void WhenVictoryIsAchieved_MapPermissionManagersFlagMapAsHavingBeenWonIsCalledOnTheNameOfTheCurrentSession() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region utilities

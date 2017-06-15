@@ -12,7 +12,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Highways {
 
-    public abstract class BlobHighwaySummaryDisplayBase : IntelligentPanel {
+    public abstract class BlobHighwaySummaryDisplayBase : IntelligentPanelBase {
 
         #region instance fields and properties
 

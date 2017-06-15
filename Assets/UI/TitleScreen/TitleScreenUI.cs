@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Assets.UI.TitleScreen {
 
-    public class TitleScreenUI : MonoBehaviour {
+    public class TitleScreenUI : PanelBase {
 
         #region static fields and properties
 

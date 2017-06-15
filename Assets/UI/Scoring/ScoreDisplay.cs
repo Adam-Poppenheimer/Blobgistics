@@ -12,7 +12,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Scoring {
 
-    public class ScoreDisplay : IntelligentPanel {
+    public class ScoreDisplay : PanelBase {
 
         #region instance fields and properties
 
