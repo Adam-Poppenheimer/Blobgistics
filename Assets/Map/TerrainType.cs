@@ -9,7 +9,7 @@ namespace Assets.Map {
         Grassland,
         Forest,
         Mountains,
-        Desert
+        Desert,
     }
 
 }
