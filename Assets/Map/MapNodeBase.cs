@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -7,6 +8,8 @@ using UnityEngine;
 
 using Assets.BlobSites;
 using Assets.Core;
+
+using UnityCustomUtilities.Grids;
 
 namespace Assets.Map {
 
@@ -27,6 +30,10 @@ namespace Assets.Map {
         public abstract UIControlBase UIControl { get; set; }
 
         public abstract TerrainMaterialRegistry TerrainMaterialRegistry { get; set; }
+
+        public abstract HexGridBase<TerrainHexTile> TerrainTileGrid { get; set; }
+
+        public abstract ReadOnlyCollection<TerrainHexTile> AssociatedTiles { get; }
 
         #endregion
 
@@ -51,6 +58,13 @@ namespace Assets.Map {
         }
 
         #endregion
+
+        public abstract void ClearAssociatedTiles();
+
+        public abstract void AddAssociatedTile(TerrainHexTile tile);
+
+        public abstract void RefreshOutline();
+          
 
         #endregion
 

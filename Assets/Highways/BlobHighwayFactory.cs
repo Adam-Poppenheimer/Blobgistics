@@ -177,6 +177,7 @@ namespace Assets.Highways {
             );
 
             newHighway.SetEndpoints(firstEndpoint, secondEndpoint);
+            newHighway.gameObject.SetActive(true);
 
             SubscribeHighway(newHighway);            
             return newHighway;

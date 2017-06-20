@@ -21,7 +21,7 @@ namespace Assets.ResourceDepots {
         public override ReadOnlyCollection<ResourceDepotBase> ResourceDepots {
             get { return resourceDepots.AsReadOnly(); }
         }
-        [SerializeField, HideInInspector] private List<ResourceDepotBase> resourceDepots = new List<ResourceDepotBase>();
+        [SerializeField] private List<ResourceDepotBase> resourceDepots = new List<ResourceDepotBase>();
 
         #endregion
 
@@ -80,6 +80,7 @@ namespace Assets.ResourceDepots {
 
             newDepot.transform.SetParent(location.transform, false);
             newDepot.name = "ResourceDepot at " + location.name;
+            newDepot.gameObject.SetActive(true);
 
             resourceDepots.Add(newDepot);
 

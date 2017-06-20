@@ -68,6 +68,36 @@ namespace Assets.Core.ForTesting {
             }
         }
 
+        public override TerrainTileHexGrid TerrainTileGrid {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region instance methods
+
+        #region from MapNodeBase
+
+        public override void AddAssociatedTile(TerrainHexTile tile) {
+            throw new NotImplementedException();
+        }
+
+        public override void ClearAssociatedTiles() {
+            throw new NotImplementedException();
+        }
+
+        public override void RefreshOutline() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

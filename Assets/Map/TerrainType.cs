@@ -10,6 +10,7 @@ namespace Assets.Map {
         Forest,
         Mountains,
         Desert,
+        Water
     }
 
 }

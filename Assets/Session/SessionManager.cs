@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEditor;
 
+using Assets.Blobs;
 using Assets.Map;
 using Assets.ConstructionZones;
 using Assets.HighwayManager;
@@ -60,6 +60,12 @@ namespace Assets.Session {
         }
         [SerializeField] private SocietyFactoryBase _societyFactory;
 
+        public ResourceBlobFactoryBase BlobFactory {
+            get { return _blobFactory; }
+            set { _blobFactory = value; }
+        }
+        [SerializeField] private ResourceBlobFactoryBase _blobFactory;
+
         public FileSystemLiaison FileSystemLiaison {
             get { return _fileSystemLiaison; }
             set { _fileSystemLiaison = value; }
@@ -71,6 +77,18 @@ namespace Assets.Session {
             set { _victoryManager = value; }
         }
         [SerializeField] private VictoryManagerBase _victoryManager;
+
+        public TerrainTileHexGrid TerrainTileGrid {
+            get { return _terrainTileGrid; }
+            set { _terrainTileGrid = value; }
+        }
+        [SerializeField] private TerrainTileHexGrid _terrainTileGrid;
+
+        public Camera MainCamera {
+            get { return _mainCamera; }
+            set { _mainCamera = value; }
+        }
+        [SerializeField] private Camera _mainCamera;
 
         #endregion
 
@@ -88,6 +106,9 @@ namespace Assets.Session {
             PushHighwayManagersIntoSession  (CurrentSession);
             PushResourceDepotsIntoSession   (CurrentSession);
             PushSocietiesIntoSession        (CurrentSession);
+
+            CurrentSession.TerrainData = new SerializableTerrainData(TerrainTileGrid);
+            CurrentSession.CameraData = new SerializableCameraData(MainCamera);
         }
 
         public void PullRuntimeFromCurrentSession() {
@@ -105,6 +126,8 @@ namespace Assets.Session {
             LoadHighwayManagers  (CurrentSession, mapNodeIDMapping);
             LoadResourceDepots   (CurrentSession, mapNodeIDMapping);
             LoadSocieties        (CurrentSession, mapNodeIDMapping);
+            LoadTerrainData      (CurrentSession);
+            LoadCameraData       (CurrentSession);
 
             if(VictoryManager != null) {
                 VictoryManager.ScoreToWin = CurrentSession.ScoreToWin;
@@ -182,6 +205,14 @@ namespace Assets.Session {
 
             foreach(var nodeData in session.MapNodes) {
                 var successorNode = MapGraph.BuildNode(nodeData.LocalPosition, nodeData.Terrain);
+                if(nodeData.CurrentBlobSitePermissionProfile != null) {
+                    nodeData.CurrentBlobSitePermissionProfile.InsertProfileIntoBlobSite(successorNode.BlobSite);
+                    foreach(var stockpilePair in nodeData.ResourceStockpileOfType) {
+                        for(int i = 0; i < stockpilePair.Value; ++i) {
+                            successorNode.BlobSite.PlaceBlobInto(BlobFactory.BuildBlob(stockpilePair.Key, successorNode.transform.position));
+                        }
+                    }
+                }
                 mapNodeIDMapping[nodeData.ID] = successorNode;
             }
 
@@ -297,6 +328,26 @@ namespace Assets.Session {
                     successorSociety.AscensionIsPermitted = societyData.AscensionIsPermitted;
                     successorSociety.SecondsOfUnsatisfiedNeeds = societyData.SecondsOfUnsatisfiedNeeds;
                 }
+            }
+        }
+
+        private void LoadTerrainData(SerializableSession session) {
+            if(session.TerrainData != null) {
+                var terrainData = session.TerrainData;
+                TerrainTileGrid.Radius = terrainData.Radius;
+                TerrainTileGrid.MaxAcquisitionDistance = terrainData.MaxTerrainAcquisitionRange;
+                TerrainTileGrid.Layout = terrainData.Layout;
+
+                TerrainTileGrid.ClearMap();
+                TerrainTileGrid.CreateMap();
+                TerrainTileGrid.RefreshMapTerrains();
+            }
+        }
+
+        private void LoadCameraData(SerializableSession session) {
+            if(session.CameraData != null) {
+                MainCamera.orthographicSize = session.CameraData.Size;
+                MainCamera.transform.position = session.CameraData.Position;
             }
         }
 

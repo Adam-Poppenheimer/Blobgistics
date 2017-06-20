@@ -504,6 +504,21 @@ namespace Assets.Session.Editor {
             }
         }
 
+        [Test]
+        public void OnRuntimePushedIntoAndPulledFromSession_MainCameraIsUpdatedProperly() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void OnRuntimePushedIntoAndPulledFromSession_AllContentsOfAllMapNodesAreInitializedProperly() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void OnRuntimePushedIntoAndPulledFromSession_TerrainGridIsUpdatedProperly() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region utilities

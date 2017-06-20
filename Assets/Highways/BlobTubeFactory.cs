@@ -60,6 +60,7 @@ namespace Assets.Highways {
             newTube.PrivateData = TubePrivateData;
             newTube.PermissionsForBlobTypes = newTube.gameObject.AddComponent<BoolPerResourceDictionary>();
             newTube.SetEndpoints(sourceLocation, targetLocation);
+            newTube.gameObject.SetActive(true);
             return newTube;
         }
 

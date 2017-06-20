@@ -45,6 +45,12 @@ namespace Assets.Map {
         }
         [SerializeField] private TerrainMaterialRegistry _terrainMaterialRegistry;
 
+        public TerrainTileHexGrid TerrainTileGrid {
+            get { return _terrainTileGrid; }
+            set { _terrainTileGrid = value; }
+        }
+        [SerializeField] private TerrainTileHexGrid _terrainTileGrid;
+
         public MapGraphAlgorithmSetBase AlgorithmSet {
             get { return _algorithmSet; }
             set { _algorithmSet = value; }
@@ -139,10 +145,13 @@ namespace Assets.Map {
                 node.UIControl = UIControl;
                 node.BlobSite.Configuration = BlobSiteConfiguration;
                 node.TerrainMaterialRegistry = TerrainMaterialRegistry;
+                node.TerrainTileGrid = TerrainTileGrid;
 
                 node.TransformChanged += Node_TransformChanged;
 
                 node.name = string.Format("Node [{0}]", node.ID);
+
+                node.ClearAssociatedTiles();
             }
         }
 

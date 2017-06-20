@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Blobs;
+using Assets.BlobSites;
 using Assets.Map;
 
 using UnityCustomUtilities.Extensions;
@@ -22,6 +24,10 @@ namespace Assets.Session {
 
         public TerrainType Terrain;
 
+        public Dictionary<ResourceType, int> ResourceStockpileOfType;
+
+        public BlobSitePermissionProfile CurrentBlobSitePermissionProfile;
+
         #endregion
 
         #region constructors
@@ -30,6 +36,11 @@ namespace Assets.Session {
             ID = node.ID;
             LocalPosition = node.transform.localPosition;
             Terrain = node.Terrain;
+            ResourceStockpileOfType = new Dictionary<ResourceType, int>();
+            foreach(var blob in node.BlobSite.Contents) {
+                ++ResourceStockpileOfType[blob.BlobType];
+            }
+            CurrentBlobSitePermissionProfile = BlobSitePermissionProfile.BuildFromBlobSite(node.BlobSite);
         }
 
         #endregion

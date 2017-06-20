@@ -10,6 +10,8 @@ using UnityEngine.EventSystems;
 using Assets.Core;
 using Assets.BlobSites;
 
+using UnityCustomUtilities.Grids;
+
 namespace Assets.Map {
 
     [ExecuteInEditMode]
@@ -69,6 +71,12 @@ namespace Assets.Map {
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        public override HexGridBase<TerrainHexTile> TerrainTileGrid {
+            get { return _terrainTileGrid; }
+            set { _terrainTileGrid = value; }
+        }
+        [SerializeField] private HexGridBase<TerrainHexTile> _terrainTileGrid;
+
         public override TerrainMaterialRegistry TerrainMaterialRegistry {
             get { return _terrainMaterialRegistry; }
             set {
@@ -84,16 +92,24 @@ namespace Assets.Map {
         }
         [SerializeField] private TerrainMaterialRegistry _terrainMaterialRegistry;
 
+        public override ReadOnlyCollection<TerrainHexTile> AssociatedTiles {
+            get { return associatedTiles.AsReadOnly(); }
+        }
+        [SerializeField] private List<TerrainHexTile> associatedTiles = new List<TerrainHexTile>();
+
         #endregion
 
-        [SerializeField] private MeshRenderer TerrainSlateRenderer;
-        [SerializeField] private MeshFilter TerrainSlateFilter;
+        [SerializeField] private LineRenderer TerrainOutlineRenderer;
+
+        
 
         #endregion
 
         #region instance methods
 
         #region Unity event methods
+
+        #if UNITY_EDITOR
 
         private void Start() {
             var graphAbove = GetComponentInParent<MapGraphBase>();
@@ -120,6 +136,8 @@ namespace Assets.Map {
                 ParentGraph.UnsubscribeNode(this);
             }
         }
+
+        #endif
 
         #endregion
 
@@ -168,9 +186,67 @@ namespace Assets.Map {
 
         #endregion  
 
+        public override void ClearAssociatedTiles() {
+            associatedTiles.Clear();
+        }
+
+        public override void AddAssociatedTile(TerrainHexTile tile) {
+            associatedTiles.Add(tile);
+            tile.Terrain = Terrain;
+        }
+
+        public override void RefreshOutline() {
+            var pointList = new List<Vector3>();
+
+            TerrainHexTile startingTile, activeTile;
+            int startingNeighborIndex, activeNeighborIndex;
+                       
+            startingTile = GetFirstExternalTileAndNeighborIndex(associatedTiles, out startingNeighborIndex);
+            activeTile = startingTile;
+            activeNeighborIndex = startingNeighborIndex;
+
+            pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainTileGrid.Layout, activeNeighborIndex - 1) + (Vector2)activeTile.transform.localPosition);
+            pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainTileGrid.Layout, activeNeighborIndex) + (Vector2)activeTile.transform.localPosition);
+
+            activeNeighborIndex = (activeNeighborIndex + 1) % 6;
+
+            while(activeTile != startingTile || activeNeighborIndex != startingNeighborIndex) {
+                TerrainHexTile neighborInDirection;
+                TerrainTileGrid.TryGetNeighborInDirection(activeTile, activeNeighborIndex, out neighborInDirection);
+                if(neighborInDirection == null || !AssociatedTiles.Contains(neighborInDirection)) {
+                    pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainTileGrid.Layout, activeNeighborIndex) + (Vector2)activeTile.transform.localPosition);
+                    activeNeighborIndex = (activeNeighborIndex + 1) % 6;
+                }else {
+                    activeTile = neighborInDirection;
+                    activeNeighborIndex = (activeNeighborIndex + 4) % 6;
+                }
+            }
+
+            var pointArray = pointList.ToArray();
+            TerrainOutlineRenderer.SetVertexCount(pointArray.Length);
+            TerrainOutlineRenderer.SetPositions(pointArray);
+        }
+
+        private TerrainHexTile GetFirstExternalTileAndNeighborIndex(List<TerrainHexTile> internalTiles, out int externalEdgeIndex) {
+            foreach(var edgeCandidate in internalTiles) {
+                for(int i = 0; i < 6; ++i) {
+                    TerrainHexTile neighborInDirection;
+                    bool neighborExists = TerrainTileGrid.TryGetNeighborInDirection(edgeCandidate, i, out neighborInDirection);
+                    if(neighborExists) {
+                        if(!internalTiles.Contains(neighborInDirection)){
+                            externalEdgeIndex = i;
+                            return edgeCandidate;
+                        }
+                    }
+                }
+            }
+            externalEdgeIndex = -1;
+            return null;
+        }
+
         private void RefreshAppearance() {
-            if(TerrainSlateRenderer != null && TerrainMaterialRegistry != null) {
-                TerrainSlateRenderer.sharedMaterial = TerrainMaterialRegistry.GetMaterialForTerrain(Terrain);
+            foreach(var tile in AssociatedTiles) {
+                tile.Terrain = Terrain;
             }
         }
 

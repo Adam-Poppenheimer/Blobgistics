@@ -20,6 +20,8 @@ namespace Assets.Map {
 
         #region Unity event methods
 
+        #if UNITY_EDITOR
+
         private void Start() {
             SpreadParentChangeToChildren();
         }
@@ -35,6 +37,8 @@ namespace Assets.Map {
         private void OnTransformParentChanged() {
             SpreadParentChangeOnNextUpdate = true;
         }
+
+        #endif
 
         #endregion
 

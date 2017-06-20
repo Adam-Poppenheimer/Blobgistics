@@ -26,7 +26,7 @@ namespace Assets.Map.Editor {
 
         #region instance fields and properties 
 
-        private SceneViewInteractionMode CurrentInteractionMode = SceneViewInteractionMode.Highways;
+        private SceneViewInteractionMode CurrentInteractionMode = SceneViewInteractionMode.Viewing;
 
         #endregion
 

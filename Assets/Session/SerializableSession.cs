@@ -39,6 +39,9 @@ namespace Assets.Session {
         public List<SerializableResourceDepotData>    ResourceDepots;
         public List<SerializableSocietyData>          Societies;
 
+        public SerializableTerrainData TerrainData;
+        public SerializableCameraData CameraData;
+
         #endregion
 
         #region constructors

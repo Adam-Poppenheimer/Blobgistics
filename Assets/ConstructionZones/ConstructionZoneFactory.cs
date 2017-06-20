@@ -109,6 +109,7 @@ namespace Assets.ConstructionZones {
             newConstructionZone.UIControl = UIControl;
 
             newConstructionZone.name = "ConstructionZone for " + project.name;
+            newConstructionZone.gameObject.SetActive(true);
 
             constructionZones.Add(newConstructionZone);
             return newConstructionZone;

@@ -5,8 +5,11 @@ using System.Text;
 
 using Assets.Blobs;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.BlobSites {
 
+    [Serializable]
     public class BlobSitePermissionProfile {
 
         #region instance fields and properties
@@ -21,6 +24,23 @@ namespace Assets.BlobSites {
             new Dictionary<ResourceType, int>();
 
         public int TotalCapacity { get; set; }
+
+        #endregion
+
+        #region static methods
+
+        public static BlobSitePermissionProfile BuildFromBlobSite(BlobSiteBase site) {
+            var retval = new BlobSitePermissionProfile();
+
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                retval.SetCapacity(resourceType, site.GetCapacityForResourceType(resourceType));
+                retval.SetPlacementPermission(resourceType, site.GetPlacementPermissionForResourceType(resourceType)); 
+                retval.SetExtractionPermission(resourceType, site.GetExtractionPermissionForResourceType(resourceType));
+            }
+            retval.SetTotalCapacity(site.TotalCapacity);
+
+            return retval;
+        }
 
         #endregion
 
