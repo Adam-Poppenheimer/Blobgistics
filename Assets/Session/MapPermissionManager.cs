@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Session {
 
-    public class MapPermissionManager : MonoBehaviour {
+    public class MapPermissionManager : MapPermissionManagerBase {
 
         #region internal types
 
@@ -53,23 +53,23 @@ namespace Assets.Session {
 
         #endregion
 
-        public void FlagMapAsHavingBeenWon(string mapName) {
+        public override void FlagMapAsHavingBeenWon(string mapName) {
             if(!LastCalculatedVictoryData.Contains(mapName)) {
                 LastCalculatedVictoryData.Add(mapName);
                 FileSystemLiaison.WriteVictoryDataToFile(LastCalculatedVictoryData);
             }
         }
 
-        public bool GetMapHasBeenWon(string mapName) {
+        public override bool GetMapHasBeenWon(string mapName) {
             return LastCalculatedVictoryData.Contains(mapName);
         }
 
-        public void ClearAllVictoryInformation() {
+        public override void ClearAllVictoryInformation() {
             LastCalculatedVictoryData.Clear();
             FileSystemLiaison.WriteVictoryDataToFile(LastCalculatedVictoryData);
         }
 
-        public bool GetMapIsPermittedToBePlayed(string mapName) {
+        public override bool GetMapIsPermittedToBePlayed(string mapName) {
             var permissionsForMap = MapPermissions.Where(permissions => permissions.MapName.Equals(mapName)).FirstOrDefault();
             if(permissionsForMap != null) {
                 foreach(var mapNameRequired in permissionsForMap.MapNamesRequiredToPlay) {
@@ -83,7 +83,7 @@ namespace Assets.Session {
             }
         }
 
-        public ReadOnlyCollection<string> GetAllMapsRequiredToPlayMap(string mapName) {
+        public override ReadOnlyCollection<string> GetAllMapsRequiredToPlayMap(string mapName) {
             var permissionsForMap = MapPermissions.Where(permissions => permissions.MapName.Equals(mapName)).FirstOrDefault();
             if(permissionsForMap != null) {
                 return permissionsForMap.MapNamesRequiredToPlay;
@@ -92,7 +92,7 @@ namespace Assets.Session {
             }
         }
 
-        public ReadOnlyCollection<string> GetMapsLeftToWinRequiredToPlayMap(string mapName) {
+        public override ReadOnlyCollection<string> GetMapsLeftToWinRequiredToPlayMap(string mapName) {
             var retval = new List<string>();
 
             var permissionsForMap = MapPermissions.Where(permissions => permissions.MapName.Equals(mapName)).FirstOrDefault();

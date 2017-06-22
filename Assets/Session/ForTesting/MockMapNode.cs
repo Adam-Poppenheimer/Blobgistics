@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+
 using Assets.BlobSites;
 using Assets.Core;
 using Assets.Map;
+
+using UnityCustomUtilities.Grids;
 
 namespace Assets.Session.ForTesting {
 
@@ -16,9 +20,13 @@ namespace Assets.Session.ForTesting {
 
         public override BlobSiteBase BlobSite {
             get {
-                throw new NotImplementedException();
+                if(_blobSite == null) {
+                    _blobSite = gameObject.AddComponent<MockBlobSite>();
+                }
+                return _blobSite;
             }
         }
+        private BlobSiteBase _blobSite;
 
         public override int ID {
             get { return GetInstanceID(); }
@@ -62,12 +70,18 @@ namespace Assets.Session.ForTesting {
             }
         }
 
-        public override TerrainTileHexGrid TerrainTileGrid {
+        public override HexGridBase<TerrainHexTile> TerrainTileGrid {
             get {
                 throw new NotImplementedException();
             }
 
             set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<TerrainHexTile> AssociatedTiles {
+            get {
                 throw new NotImplementedException();
             }
         }

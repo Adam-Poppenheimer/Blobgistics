@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -11,24 +12,24 @@ using UnityCustomUtilities.Grids;
 
 namespace Assets.Session {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class SerializableTerrainData {
 
         #region instance fields and properties
 
-        public HexGridLayout Layout;
+        [DataMember()] public HexGridLayout Layout;
         
-        public int Radius;
-        public float MaxTerrainAcquisitionRange;
+        [DataMember()] public int Radius;
+        [DataMember()] public float MaxTerrainAcquisitionRange;
 
         #endregion
 
         #region constructors
 
-        public SerializableTerrainData(TerrainTileHexGrid tileGrid) {
-            Layout = tileGrid.Layout;
-            Radius = tileGrid.Radius;
-            MaxTerrainAcquisitionRange = tileGrid.MaxAcquisitionDistance;
+        public SerializableTerrainData(TerrainGridBase terrainGrid) {
+            Layout = terrainGrid.Layout;
+            Radius = terrainGrid.Radius;
+            MaxTerrainAcquisitionRange = terrainGrid.MaxAcquisitionDistance;
         }
 
         #endregion

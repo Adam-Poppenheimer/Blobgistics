@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -7,20 +8,20 @@ using Assets.Societies;
 
 namespace Assets.Session {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class SerializableSocietyData {
 
         #region instance fields and properties
 
-        public int LocationID;
+        [DataMember()] public int LocationID;
 
-        public string ActiveComplexityLadderName;
+        [DataMember()] public string ActiveComplexityLadderName;
 
-        public string CurrentComplexityName;
+        [DataMember()] public string CurrentComplexityName;
 
-        public float SecondsOfUnsatisfiedNeeds;
+        [DataMember()] public float SecondsOfUnsatisfiedNeeds;
 
-        public bool AscensionIsPermitted;
+        [DataMember()] public bool AscensionIsPermitted;
 
         #endregion
 

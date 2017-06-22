@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -11,14 +12,14 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Session {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class SerializableCameraData {
 
         #region instance fields and properties
 
-        public float Size;
+        [DataMember()] public float Size;
 
-        public SerializableVector3 Position;
+        [DataMember()] public SerializableVector3 Position;
 
         #endregion
 

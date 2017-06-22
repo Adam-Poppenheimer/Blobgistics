@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -8,12 +9,12 @@ using Assets.HighwayManager;
 
 namespace Assets.Session {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class SerializableHighwayManagerData {
 
         #region instance fields and properties
 
-        public int LocationID;
+        [DataMember()] public int LocationID;
 
         #endregion
 

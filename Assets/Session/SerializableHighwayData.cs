@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -10,24 +11,24 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Session {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class SerializableHighwayData {
 
         #region instance fields and properties
 
-        public int ID;
+        [DataMember()] public int ID;
 
-        public int FirstEndpointID;
-        public int SecondEndpointID;
+        [DataMember()] public int FirstEndpointID;
+        [DataMember()] public int SecondEndpointID;
 
-        public int Priority;
+        [DataMember()] public int Priority;
 
-        public float Efficiency;
+        [DataMember()] public float Efficiency;
 
-        public Dictionary<ResourceType, bool> UpkeepRequestedForResource;
+        [DataMember(EmitDefaultValue = false, IsRequired = false)] public Dictionary<ResourceType, bool> UpkeepRequestedForResource;
 
-        public Dictionary<ResourceType, bool> PullingPermissionForFirstEndpoint;
-        public Dictionary<ResourceType, bool> PullingPermissionForSecondEndpoint;
+        [DataMember(EmitDefaultValue = false, IsRequired = false)] public Dictionary<ResourceType, bool> PullingPermissionForFirstEndpoint;
+        [DataMember(EmitDefaultValue = false, IsRequired = false)] public Dictionary<ResourceType, bool> PullingPermissionForSecondEndpoint;
 
         #endregion
 
@@ -42,23 +43,17 @@ namespace Assets.Session {
 
             UpkeepRequestedForResource = new Dictionary<ResourceType, bool>();
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                if(highway.GetUpkeepRequestedForResource(resourceType)) {
-                    UpkeepRequestedForResource[resourceType] = true;
-                }
+                UpkeepRequestedForResource[resourceType] = highway.GetUpkeepRequestedForResource(resourceType);
             }
 
             PullingPermissionForFirstEndpoint = new Dictionary<ResourceType, bool>();
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                if(highway.GetPullingPermissionForFirstEndpoint(resourceType)) {
-                    PullingPermissionForFirstEndpoint[resourceType] = true;
-                }
+                 PullingPermissionForFirstEndpoint[resourceType] = highway.GetPullingPermissionForFirstEndpoint(resourceType);
             }
 
             PullingPermissionForSecondEndpoint = new Dictionary<ResourceType, bool>();
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                if(highway.GetPullingPermissionForSecondEndpoint(resourceType)) {
-                    PullingPermissionForSecondEndpoint[resourceType] = true;
-                }
+                PullingPermissionForSecondEndpoint[resourceType] = highway.GetPullingPermissionForSecondEndpoint(resourceType);
             }
         }
 

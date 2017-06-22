@@ -32,10 +32,10 @@ namespace Assets.UI.TitleScreen {
         [SerializeField] private Button StartGameButton;
         [SerializeField] private Button BackButton;
 
-        [SerializeField] private SessionManager SessionManager;
+        [SerializeField] private SessionManagerBase SessionManager;
         [SerializeField] private FileSystemLiaison FileSystemLiason;
         [SerializeField] private VictoryManagerBase VictoryManager;
-        [SerializeField] private MapPermissionManager MapPermissionManager;
+        [SerializeField] private MapPermissionManagerBase MapPermissionManager;
 
         #endregion
 

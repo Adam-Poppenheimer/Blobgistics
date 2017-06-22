@@ -97,11 +97,13 @@ namespace Assets.Map {
         }
         [SerializeField] private List<TerrainHexTile> associatedTiles = new List<TerrainHexTile>();
 
-        #endregion
+        public LineRenderer TerrainOutlineRenderer {
+            get { return _terrainOutlineRenderer; }
+            set { _terrainOutlineRenderer = value; }
+        }
+        [SerializeField] private LineRenderer _terrainOutlineRenderer;
 
-        [SerializeField] private LineRenderer TerrainOutlineRenderer;
-
-        
+        #endregion        
 
         #endregion
 

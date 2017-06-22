@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -7,14 +8,14 @@ using Assets.ResourceDepots;
 
 namespace Assets.Session {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class SerializableResourceDepotData {
 
         #region instance fields and properties
 
-        public int LocationID;
+        [DataMember()] public int LocationID;
 
-        public ResourceDepotProfile Profile;
+        [DataMember()] public ResourceDepotProfile Profile;
 
         #endregion
 
