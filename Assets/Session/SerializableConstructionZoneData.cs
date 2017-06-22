@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -8,14 +7,14 @@ using Assets.ConstructionZones;
 
 namespace Assets.Session {
 
-    [Serializable, DataContract]
+    [Serializable]
     public class SerializableConstructionZoneData {
 
         #region instance fields and properties
 
-        [DataMember()] public int LocationID;
+        public int LocationID;
 
-        [DataMember()] public string ProjectName;
+        public string ProjectName;
 
         #endregion
 

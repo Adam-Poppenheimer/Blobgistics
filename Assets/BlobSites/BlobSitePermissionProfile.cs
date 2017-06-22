@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -10,24 +9,21 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobSites {
 
-    [Serializable, DataContract]
+    [Serializable]
     public class BlobSitePermissionProfile {
 
         #region instance fields and properties
 
-        [DataMember()]
         private Dictionary<ResourceType, bool> PlacementPermissions =
             new Dictionary<ResourceType, bool>();
 
-        [DataMember()]
         private Dictionary<ResourceType, bool> ExtractionPermissions =
             new Dictionary<ResourceType, bool>();
 
-        [DataMember()]
         private Dictionary<ResourceType, int> Capacities =
             new Dictionary<ResourceType, int>();
 
-        [DataMember()] public int TotalCapacity { get; set; }
+        public int TotalCapacity { get; set; }
 
         #endregion
 

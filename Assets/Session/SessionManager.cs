@@ -14,11 +14,11 @@ using Assets.Scoring;
 
 namespace Assets.Session {
 
-    public class SessionManager : SessionManagerBase {
+    public class SessionManager : MonoBehaviour {
 
         #region instance fields and properties
 
-        public override SerializableSession CurrentSession {
+        public SerializableSession CurrentSession {
             get { return _currentSession; }
             set { _currentSession = value; }
         }
@@ -78,11 +78,11 @@ namespace Assets.Session {
         }
         [SerializeField] private VictoryManagerBase _victoryManager;
 
-        public TerrainGridBase TerrainGrid {
-            get { return _terrainGrid; }
-            set { _terrainGrid = value; }
+        public TerrainTileHexGrid TerrainTileGrid {
+            get { return _terrainTileGrid; }
+            set { _terrainTileGrid = value; }
         }
-        [SerializeField] private TerrainGridBase _terrainGrid;
+        [SerializeField] private TerrainTileHexGrid _terrainTileGrid;
 
         public Camera MainCamera {
             get { return _mainCamera; }
@@ -94,7 +94,7 @@ namespace Assets.Session {
 
         #region instance methods
 
-        public override void PushRuntimeIntoCurrentSession() {
+        public void PushRuntimeIntoCurrentSession() {
             if(CurrentSession == null) {
                 throw new InvalidOperationException("CurrentSession must be initialized in order to push the session into it");
             }
@@ -107,11 +107,11 @@ namespace Assets.Session {
             PushResourceDepotsIntoSession   (CurrentSession);
             PushSocietiesIntoSession        (CurrentSession);
 
-            CurrentSession.TerrainData = new SerializableTerrainData(TerrainGrid);
+            CurrentSession.TerrainData = new SerializableTerrainData(TerrainTileGrid);
             CurrentSession.CameraData = new SerializableCameraData(MainCamera);
         }
 
-        public override void PullRuntimeFromCurrentSession() {
+        public void PullRuntimeFromCurrentSession() {
             if(CurrentSession == null) {
                 throw new InvalidOperationException("CurrentSession must be initialized in order to pull the session from it");
             }
@@ -204,7 +204,7 @@ namespace Assets.Session {
             var mapNodeIDMapping = new Dictionary<int, MapNodeBase>();
 
             foreach(var nodeData in session.MapNodes) {
-                var successorNode = MapGraph.BuildNode(nodeData.LocalPosition, nodeData.LandType);
+                var successorNode = MapGraph.BuildNode(nodeData.LocalPosition, nodeData.Terrain);
                 if(nodeData.CurrentBlobSitePermissionProfile != null) {
                     nodeData.CurrentBlobSitePermissionProfile.InsertProfileIntoBlobSite(successorNode.BlobSite);
                     foreach(var stockpilePair in nodeData.ResourceStockpileOfType) {
@@ -334,13 +334,13 @@ namespace Assets.Session {
         private void LoadTerrainData(SerializableSession session) {
             if(session.TerrainData != null) {
                 var terrainData = session.TerrainData;
-                TerrainGrid.Radius = terrainData.Radius;
-                TerrainGrid.MaxAcquisitionDistance = terrainData.MaxTerrainAcquisitionRange;
-                TerrainGrid.Layout = terrainData.Layout;
+                TerrainTileGrid.Radius = terrainData.Radius;
+                TerrainTileGrid.MaxAcquisitionDistance = terrainData.MaxTerrainAcquisitionRange;
+                TerrainTileGrid.Layout = terrainData.Layout;
 
-                TerrainGrid.ClearMap();
-                TerrainGrid.CreateMap();
-                TerrainGrid.RefreshMapTerrains();
+                TerrainTileGrid.ClearMap();
+                TerrainTileGrid.CreateMap();
+                TerrainTileGrid.RefreshMapTerrains();
             }
         }
 

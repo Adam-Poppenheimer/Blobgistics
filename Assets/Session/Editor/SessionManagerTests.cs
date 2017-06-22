@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 using Assets.Map;
 using Assets.Blobs;
-using Assets.BlobSites;
 using Assets.Highways;
 using Assets.ConstructionZones;
 using Assets.HighwayManager;
@@ -18,7 +17,6 @@ using Assets.Societies;
 using Assets.Session.ForTesting;
 
 using UnityCustomUtilities.Extensions;
-using UnityCustomUtilities.Grids;
 
 namespace Assets.Session.Editor {
 
@@ -71,8 +69,6 @@ namespace Assets.Session.Editor {
             managerToTest.HighwayManagerFactory   = highwayManagerFactory;
             managerToTest.ResourceDepotFactory    = resourceDepotFactory;
             managerToTest.SocietyFactory          = societyFactory;
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("Empty Session", "Description", 42);
@@ -107,8 +103,6 @@ namespace Assets.Session.Editor {
             managerToTest.ResourceDepotFactory    = resourceDepotFactory;
             managerToTest.SocietyFactory          = societyFactory;
             managerToTest.VictoryManager          = victoryManager;
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("Empty Session", "Description", 42);
@@ -142,8 +136,6 @@ namespace Assets.Session.Editor {
             managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
             managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
@@ -214,8 +206,6 @@ namespace Assets.Session.Editor {
             managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
             managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
@@ -268,8 +258,6 @@ namespace Assets.Session.Editor {
             managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
             managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
@@ -312,8 +300,6 @@ namespace Assets.Session.Editor {
             managerToTest.HighwayManagerFactory   = managerFactoryToPullFrom;
             managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
@@ -356,8 +342,6 @@ namespace Assets.Session.Editor {
             managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
             managerToTest.ResourceDepotFactory    = depotFactoryToPullFrom;
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
@@ -435,8 +419,6 @@ namespace Assets.Session.Editor {
             managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
             managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
             managerToTest.SocietyFactory          = societyFactoryToPullFrom;
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
@@ -503,8 +485,6 @@ namespace Assets.Session.Editor {
             managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
             managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
             managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
             managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
@@ -526,131 +506,17 @@ namespace Assets.Session.Editor {
 
         [Test]
         public void OnRuntimePushedIntoAndPulledFromSession_MainCameraIsUpdatedProperly() {
-            //Setup
-            var cameraToPullFrom = BuildCamera();
-            cameraToPullFrom.orthographicSize = 42;
-            cameraToPullFrom.transform.position = new Vector3(3f, 4f, 5f);
-
-            var managerToTest = BuildSessionManager();
-            managerToTest.MapGraph                = BuildMockMapGraph();
-            managerToTest.HighwayFactory          = BuildMockHighwayFactory();
-            managerToTest.ConstructionZoneFactory = BuildMockConstructionZoneFactory();
-            managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
-            managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
-            managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = cameraToPullFrom;
-            managerToTest.TerrainGrid         = BuildMockTerrainGrid();
-
-            var cameraToPushInto = BuildCamera();
-
-            //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
-            managerToTest.PushRuntimeIntoCurrentSession();
-
-            managerToTest.MainCamera = cameraToPushInto;
-
-            managerToTest.PullRuntimeFromCurrentSession();
-
-            //Validation
-            Assert.AreEqual(cameraToPullFrom.orthographicSize, cameraToPushInto.orthographicSize, "CameraToPushInto has an incorrect size");
-            Assert.That(cameraToPullFrom.transform.position == cameraToPushInto.transform.position, "CameraToPushInto has an incorrect position");
+            throw new NotImplementedException();
         }
 
         [Test]
-        public void OnRuntimePushedIntoAndPulledFromSession_AllPermissions_Capacities_AndContentsOfAllMapNodesAreInitializedProperly() {
-            //Setup
-            var mapGraphToPullFrom = BuildMockMapGraph();
-            var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
-            var nodeLeft   = mapGraphToPullFrom.BuildNode(Vector3.left,  TerrainType.Forest   );
-            var nodeRight  = mapGraphToPullFrom.BuildNode(Vector3.right, TerrainType.Mountains);
-
-            nodeCenter.BlobSite.TotalCapacity = 10;
-            nodeCenter.BlobSite.SetCapacityForResourceType(ResourceType.Food, 1);
-            nodeCenter.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Food, true);
-            nodeCenter.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Food, true);
-            nodeCenter.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Food));
-
-            nodeLeft.BlobSite.TotalCapacity = 20;
-            nodeLeft.BlobSite.SetCapacityForResourceType(ResourceType.Ore, 2);
-            nodeLeft.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Ore, true);
-            nodeLeft.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Ore, true);
-            nodeLeft.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Ore));
-
-            nodeRight.BlobSite.TotalCapacity = 30;
-            nodeRight.BlobSite.SetCapacityForResourceType(ResourceType.Wood, 3);
-            nodeRight.BlobSite.SetPlacementPermissionForResourceType(ResourceType.Wood, true);
-            nodeRight.BlobSite.SetExtractionPermissionForResourceType(ResourceType.Wood, true);
-            nodeRight.BlobSite.PlaceBlobInto(BuildMockResourceBlob(ResourceType.Wood));
-
-            var mapGraphToPushTo = BuildMockMapGraph();
-
-            var highwayFactory = BuildMockHighwayFactory();
-
-            var managerToTest = BuildSessionManager();
-            managerToTest.MapGraph                = mapGraphToPullFrom;
-            managerToTest.HighwayFactory          = highwayFactory;
-            managerToTest.ConstructionZoneFactory = BuildMockConstructionZoneFactory();
-            managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
-            managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
-            managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = BuildMockTerrainGrid();
-            managerToTest.BlobFactory             = BuildMockBlobFactory();
-
-            //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
-            managerToTest.PushRuntimeIntoCurrentSession();
-
-            managerToTest.MapGraph = mapGraphToPushTo;
-
-            managerToTest.PullRuntimeFromCurrentSession();
-
-            //Validation
-            foreach(var node in mapGraphToPullFrom.Nodes) {
-                Assert.That(DoesSomeEquivalentBlobSiteExist(node.BlobSite, mapGraphToPushTo.Nodes),
-                    string.Format("Node from mapGraphToPullFrom with ID {0} has no equivalent node in mapGraphToPushTo", node.ID));
-            }
+        public void OnRuntimePushedIntoAndPulledFromSession_AllContentsOfAllMapNodesAreInitializedProperly() {
+            throw new NotImplementedException();
         }
 
         [Test]
         public void OnRuntimePushedIntoAndPulledFromSession_TerrainGridIsUpdatedProperly() {
-            //Setup
-            var terrainGridToPullFrom = BuildMockTerrainGrid();
-            terrainGridToPullFrom.Layout = new HexGridLayout(HexGridOrientationType.Flat, new Vector2(1, 2), new Vector2(3, 4));
-            terrainGridToPullFrom.Radius = 5;
-            terrainGridToPullFrom.MaxAcquisitionDistance = 6f;
-
-            var managerToTest = BuildSessionManager();
-            managerToTest.MapGraph                = BuildMockMapGraph();
-            managerToTest.HighwayFactory          = BuildMockHighwayFactory();
-            managerToTest.ConstructionZoneFactory = BuildMockConstructionZoneFactory();
-            managerToTest.HighwayManagerFactory   = BuildMockHighwayManagerFactory();
-            managerToTest.ResourceDepotFactory    = BuildMockResourceDepotFactory();
-            managerToTest.SocietyFactory          = BuildMockSocietyFactory();
-            managerToTest.MainCamera              = BuildCamera();
-            managerToTest.TerrainGrid             = terrainGridToPullFrom;
-            managerToTest.BlobFactory             = BuildMockBlobFactory();
-
-            var terrainGridToPushInto = BuildMockTerrainGrid();
-
-            //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
-            managerToTest.PushRuntimeIntoCurrentSession();
-
-            managerToTest.TerrainGrid = terrainGridToPushInto;
-
-            managerToTest.PullRuntimeFromCurrentSession();
-
-            //Validation
-            Assert.That((
-                terrainGridToPullFrom.Layout.OrientationType == terrainGridToPushInto.Layout.OrientationType &&
-                terrainGridToPushInto.Layout.Origin == terrainGridToPushInto.Layout.Origin &&
-                terrainGridToPushInto.Layout.Size == terrainGridToPushInto.Layout.Size
-            ), "TerrainGridToPushInto has an incorrect layout");
-
-            Assert.AreEqual(terrainGridToPullFrom.Radius, terrainGridToPushInto.Radius, "TerrainGridToPushInto has an incorrect Radius");
-            Assert.That(Mathf.Approximately(terrainGridToPullFrom.MaxAcquisitionDistance, terrainGridToPushInto.MaxAcquisitionDistance),
-                "TerrainGridToPushInto has an incorrect MaxAcquisitionDistance");
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -709,26 +575,6 @@ namespace Assets.Session.Editor {
             return newProject;
         }
 
-        private MockTerrainGrid BuildMockTerrainGrid() {
-            var newGrid = (new GameObject()).AddComponent<MockTerrainGrid>();
-            newGrid.Layout = new HexGridLayout(HexGridOrientationType.Pointy, Vector2.one, Vector2.zero);
-            return newGrid;
-        }
-
-        private Camera BuildCamera() {
-            return (new GameObject()).AddComponent<Camera>();
-        }
-
-        private MockResourceBlob BuildMockResourceBlob(ResourceType type) {
-            var newBlob = (new GameObject()).AddComponent<MockResourceBlob>();
-            newBlob.BlobType = type;
-            return newBlob;
-        }
-
-        private MockResourceBlobFactory BuildMockBlobFactory() {
-            return (new GameObject()).AddComponent<MockResourceBlobFactory>();
-        }
-
         private bool DoesSomeEquivalentNodeExist(MapNodeBase node, IEnumerable<MapNodeBase> candidates) {
             foreach(var candidate in candidates) {
                 if(AreNodesEquivalent(node, candidate)){
@@ -753,29 +599,6 @@ namespace Assets.Session.Editor {
 
         private bool AreEdgesEquivalent(MapEdgeBase edgeOne, MapEdgeBase edgeTwo) {
             return AreNodesEquivalent(edgeOne.FirstNode, edgeTwo.FirstNode) && AreNodesEquivalent(edgeOne.SecondNode, edgeTwo.SecondNode);
-        }
-
-        private bool DoesSomeEquivalentBlobSiteExist(BlobSiteBase site, IEnumerable<MapNodeBase> candidates) {
-            foreach(var candidate in candidates) {
-                if(AreBlobSitesEquivalent(site, candidate.BlobSite)){
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private bool AreBlobSitesEquivalent(BlobSiteBase siteOne, BlobSiteBase siteTwo) {
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                bool sameCapacities = siteOne.GetCapacityForResourceType(resourceType) == siteTwo.GetCapacityForResourceType(resourceType);
-                bool samePlacements = siteOne.GetPlacementPermissionForResourceType(resourceType) == siteTwo.GetPlacementPermissionForResourceType(resourceType);
-                bool sameExtractions = siteOne.GetExtractionPermissionForResourceType(resourceType) == siteTwo.GetExtractionPermissionForResourceType(resourceType);
-                bool sameContentCount = siteOne.GetCountOfContentsOfType(resourceType) == siteTwo.GetCountOfContentsOfType(resourceType);
-
-                if(!sameCapacities || !samePlacements || !sameExtractions || !sameContentCount) {
-                    return false;
-                }
-            }
-            return siteOne.TotalCapacity == siteTwo.TotalCapacity;
         }
 
         private bool DoesSomeEquivalentHighwayExist(BlobHighwayBase highway, ReadOnlyCollection<BlobHighwayBase> candidates) {

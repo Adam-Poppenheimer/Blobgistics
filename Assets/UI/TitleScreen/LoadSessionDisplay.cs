@@ -22,7 +22,7 @@ namespace Assets.UI.TitleScreen {
         [SerializeField] private Button BackButton;
 
         [SerializeField] private FileSystemLiaison FileSystemLiaison;
-        [SerializeField] private SessionManagerBase SessionManager;
+        [SerializeField] private SessionManager SessionManager;
 
         private SessionRecord SelectedRecord {
             get { return _selectedRecord; }

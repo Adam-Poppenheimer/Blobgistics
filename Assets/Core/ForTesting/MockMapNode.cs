@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-
 using Assets.BlobSites;
 using Assets.Map;
-
-using UnityCustomUtilities.Grids;
 
 namespace Assets.Core.ForTesting {
 
@@ -72,18 +68,12 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override HexGridBase<TerrainHexTile> TerrainTileGrid {
+        public override TerrainTileHexGrid TerrainTileGrid {
             get {
                 throw new NotImplementedException();
             }
 
             set {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override ReadOnlyCollection<TerrainHexTile> AssociatedTiles {
-            get {
                 throw new NotImplementedException();
             }
         }

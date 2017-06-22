@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 using UnityEngine;
 
@@ -7,7 +6,7 @@ using Assets.Blobs;
 
 namespace Assets.ResourceDepots {
 
-    [Serializable, DataContract]
+    [Serializable]
     public struct ResourceDepotProfile {
 
         #region static fields and properties
@@ -24,7 +23,7 @@ namespace Assets.ResourceDepots {
         public int PerResourceCapacity {
             get { return _perResourceCapacity; }
         }
-        [SerializeField, DataMember()] private int _perResourceCapacity;
+        [SerializeField] private int _perResourceCapacity;
 
         #endregion
 

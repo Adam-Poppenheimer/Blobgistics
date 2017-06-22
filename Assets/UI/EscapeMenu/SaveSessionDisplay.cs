@@ -23,7 +23,7 @@ namespace Assets.UI.EscapeMenu {
         [SerializeField] private Button CancelButton;
 
         [SerializeField] private FileSystemLiaison FileSystemLiaison;
-        [SerializeField] private SessionManagerBase SessionManager;
+        [SerializeField] private SessionManager SessionManager;
 
         private bool PerformSaveOnNextUpdate = false;
 

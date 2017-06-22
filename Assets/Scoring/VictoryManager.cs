@@ -47,17 +47,17 @@ namespace Assets.Scoring {
         }
         [SerializeField] private SimulationControlBase _simulationControl;
 
-        public SessionManagerBase SessionManager {
+        public SessionManager SessionManager {
             get { return _sessionManager; }
             set { _sessionManager= value; }
         }
-        [SerializeField] private SessionManagerBase _sessionManager;
+        [SerializeField] private SessionManager _sessionManager;
 
-        public MapPermissionManagerBase MapPermissionManager {
+        public MapPermissionManager MapPermissionManager {
             get { return _mapPermissionManager; }
             set { _mapPermissionManager= value; }
         }
-        [SerializeField] private MapPermissionManagerBase _mapPermissionManager;
+        [SerializeField] private MapPermissionManager _mapPermissionManager;
 
         #endregion
 
@@ -84,6 +84,7 @@ namespace Assets.Scoring {
         }
 
         public override void TriggerVictory() {
+            Debug.Log("Victory triggered");
             SimulationControl.PerformVictoryTasks();
             UIControl.PerformVictoryTasks();
             MapPermissionManager.FlagMapAsHavingBeenWon(SessionManager.CurrentSession.Name);

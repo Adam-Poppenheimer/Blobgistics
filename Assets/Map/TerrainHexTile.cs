@@ -40,11 +40,11 @@ namespace Assets.Map {
         }
         [SerializeField] private TerrainType _terrain;
 
-        public TerrainGrid ParentGrid {
+        public TerrainTileHexGrid ParentGrid {
             get { return _parentGrid; }
             set { _parentGrid = value; }
         }
-        [SerializeField] private TerrainGrid _parentGrid;
+        [SerializeField] private TerrainTileHexGrid _parentGrid;
 
         [SerializeField] private MeshRenderer MeshRenderer;
 

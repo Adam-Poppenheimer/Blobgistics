@@ -25,10 +25,10 @@ namespace Assets.Util {
         }
         private static MapGraphBase StaticMapGraph;
 
-        public static SessionManagerBase SessionManager {
+        public static SessionManager SessionManager {
             get { return StaticSessionManager; }
         }
-        private static SessionManagerBase StaticSessionManager;
+        private static SessionManager StaticSessionManager;
 
         public static FileSystemLiaison FileSystemLiaison {
             get { return StaticFileSystemLiaison; }
@@ -41,7 +41,7 @@ namespace Assets.Util {
 
         [SerializeField] private BlobHighwayFactoryBase highwayFactory;
         [SerializeField] private MapGraphBase mapGraph;
-        [SerializeField] private SessionManagerBase sessionManager;
+        [SerializeField] private SessionManager sessionManager;
         [SerializeField] private FileSystemLiaison fileSystemLiaison;
 
         #endregion

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -8,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Session {
 
-    [Serializable, DataContract]
+    [Serializable]
     public class SerializableSession {
 
         #region instance fields and properties
@@ -17,31 +16,31 @@ namespace Assets.Session {
             get { return _name; }
             set { _name = value; }
         }
-        [SerializeField, DataMember()] private string _name;
+        [SerializeField] private string _name;
 
         public string Description {
             get { return _description; }
             set { _description = value; }
         }
-        [SerializeField, DataMember()] private string _description;
+        [SerializeField] private string _description;
 
         public int ScoreToWin {
             get { return _scoreToWin; }
             set { _scoreToWin = value; }
         }
-        [SerializeField, DataMember()] private int _scoreToWin;
+        [SerializeField] private int _scoreToWin;
 
-        [DataMember()] public List<SerializableMapNodeData>          MapNodes;
-        [DataMember()] public List<SerializableMapEdgeData>          MapEdges;
-        [DataMember()] public List<SerializableNeighborhoodData>     Neighborhoods;
-        [DataMember()] public List<SerializableHighwayData>          Highways;
-        [DataMember()] public List<SerializableConstructionZoneData> ConstructionZones;
-        [DataMember()] public List<SerializableHighwayManagerData>   HighwayManagers;
-        [DataMember()] public List<SerializableResourceDepotData>    ResourceDepots;
-        [DataMember()] public List<SerializableSocietyData>          Societies;
+        public List<SerializableMapNodeData>          MapNodes;
+        public List<SerializableMapEdgeData>          MapEdges;
+        public List<SerializableNeighborhoodData>     Neighborhoods;
+        public List<SerializableHighwayData>          Highways;
+        public List<SerializableConstructionZoneData> ConstructionZones;
+        public List<SerializableHighwayManagerData>   HighwayManagers;
+        public List<SerializableResourceDepotData>    ResourceDepots;
+        public List<SerializableSocietyData>          Societies;
 
-        [DataMember()] public SerializableTerrainData TerrainData;
-        [DataMember()] public SerializableCameraData CameraData;
+        public SerializableTerrainData TerrainData;
+        public SerializableCameraData CameraData;
 
         #endregion
 
