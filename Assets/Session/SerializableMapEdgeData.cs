@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -7,15 +8,15 @@ using Assets.Map;
 
 namespace Assets.Session {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class SerializableMapEdgeData {
 
         #region instance fields and properties
 
-        public int ID;
+        [DataMember()] public int ID;
 
-        public int FirstEndpointID;
-        public int SecondEndpointID;
+        [DataMember()] public int FirstEndpointID;
+        [DataMember()] public int SecondEndpointID;
 
         #endregion
 

@@ -4,10 +4,16 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml;
 using System.Linq;
 using System.Text;
 
 using UnityEngine;
+
+using Assets.Blobs;
+using Assets.Map;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.Session {
 
@@ -24,11 +30,6 @@ namespace Assets.Session {
             get { return _mapStoragePath; }
         }
         [SerializeField] private string _mapStoragePath;
-
-        public string SessionExtension {
-            get { return _sessionExtension; }
-        }
-        [SerializeField] private string _sessionExtension;
 
         public string VictoryDataPath {
             get { return _victoryDataPath; }
@@ -59,15 +60,15 @@ namespace Assets.Session {
 
         public void WriteSavedGameToFile(SerializableSession session) {
             if(!loadedSavedGames.Contains(session)) {
-                string path = string.Format("{0}/{1}/{2}.{3}", Application.persistentDataPath, SavedGameStoragePath,
-                    session.Name, SessionExtension);
+                string path = string.Format("{0}/{1}/{2}.xml", Application.persistentDataPath, SavedGameStoragePath,
+                    session.Name);
                 WriteSessionToFile(session, path);
                 loadedSavedGames.Add(session);
             }
         }
 
         public void DeleteSavedGame(string savedGameName) {
-            var filesToDelete = SavedGameDirectory.GetFiles(savedGameName + "." + SessionExtension);
+            var filesToDelete = SavedGameDirectory.GetFiles(savedGameName + ".xml");
             foreach(var file in filesToDelete) {
                 file.Delete();
             }
@@ -76,14 +77,12 @@ namespace Assets.Session {
         public void RefreshLoadedSavedGames() {
             if(string.IsNullOrEmpty(SavedGameStoragePath)) {
                 throw new SessionException("Cannot refresh loaded saved games: SavedGameStoragePath must not be empty");
-            }else if(string.IsNullOrEmpty(SessionExtension)) {
-                throw new SessionException("Cannot refresh loaded saved games: SessionExtension must not be empty");
             }
             loadedSavedGames.Clear();
             SavedGameDirectory = Directory.CreateDirectory(Application.persistentDataPath + @"\" + SavedGameStoragePath);
 
-            foreach(var file in SavedGameDirectory.GetFiles("*." + SessionExtension)) {
-                if(file.Extension.Equals("." + SessionExtension)) {
+            foreach(var file in SavedGameDirectory.GetFiles("*.xml")) {
+                if(file.Extension.Equals(".xml")) {
                     loadedSavedGames.Add(LoadSessionFromFile(file));
                 }
             }
@@ -91,15 +90,15 @@ namespace Assets.Session {
 
         public void WriteMapToFile(SerializableSession session) {
             if(!loadedMaps.Contains(session)) {
-                string path = string.Format("{0}/{1}/{2}.{3}", Application.streamingAssetsPath, MapStoragePath,
-                    session.Name, SessionExtension);
+                string path = string.Format("{0}/{1}/{2}.xml", Application.streamingAssetsPath, MapStoragePath,
+                    session.Name);
                 WriteSessionToFile(session, path);
                 loadedMaps.Add(session);
             }
         }
 
         public void DeleteMap(string mapName) {
-            var filesToDelete = MapDirectory.GetFiles(mapName + "." + SessionExtension);
+            var filesToDelete = MapDirectory.GetFiles(mapName + ".xml");
             foreach(var file in filesToDelete) {
                 file.Delete();
             }
@@ -108,14 +107,12 @@ namespace Assets.Session {
         public void RefreshLoadedMaps() {
             if(string.IsNullOrEmpty(MapStoragePath)) {
                 throw new SessionException("Cannot refresh loaded maps: MapStoragePath must not be empty");
-            }else if(string.IsNullOrEmpty(SessionExtension)) {
-                throw new SessionException("Cannot refresh loaded maps: SessionExtension must not be empty");
             }
             loadedMaps.Clear();
             MapDirectory = Directory.CreateDirectory(Application.streamingAssetsPath + @"\" + MapStoragePath);
 
-            foreach(var file in MapDirectory.GetFiles("*." + SessionExtension)) {
-                if(file.Extension.Equals("." + SessionExtension)) {
+            foreach(var file in MapDirectory.GetFiles("*.xml")) {
+                if(file.Extension.Equals(".xml")) {
                     loadedMaps.Add(LoadSessionFromFile(file));
                 }
             }
@@ -149,24 +146,34 @@ namespace Assets.Session {
 
         private void WriteSessionToFile(SerializableSession session, string path) {
             using(FileStream fileStream = new FileStream(path, FileMode.Create)) {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(fileStream, session);
+                using(var xmlWriter = XmlDictionaryWriter.CreateTextWriter(fileStream)) {
+                    var knownTypes = new List<Type> {
+                        typeof(Dictionary<ResourceType, bool>), typeof(Dictionary<ResourceType, int>),
+                        typeof(SerializableVector3)
+                    };
+                
+                    var contractSerializer = new DataContractSerializer(typeof(SerializableSession), knownTypes);
+                    contractSerializer.WriteObject(xmlWriter, session);
+                }
             }
         }
 
         private SerializableSession LoadSessionFromFile(FileInfo file) {
             using(FileStream fileStream = file.OpenRead()) {
-                try {
-                    var formatter = new BinaryFormatter();
-                    var session = formatter.Deserialize(fileStream) as SerializableSession;
-                    if(session != null) {
-                        return session;
-                    }else {
-                        throw new SessionException("Failed to load session from file: the file did not represent a SerializableSession object");
+                using(var xmlReader = XmlDictionaryReader.CreateTextReader(fileStream, new XmlDictionaryReaderQuotas())) {
+                    try {
+                        var knownTypes = new List<Type> {
+                            typeof(Dictionary<ResourceType, bool>), typeof(Dictionary<ResourceType, int>),
+                            typeof(SerializableVector3)
+                        };
+
+                        var contractSerializer = new DataContractSerializer(typeof(SerializableSession), knownTypes);
+                        var sessionInFile = (SerializableSession)contractSerializer.ReadObject(xmlReader, true);
+                        return sessionInFile;
+                    }catch(SerializationException e) {
+                        Debug.LogError("Failed to deserialize. Reason given: " + e.Message);
+                        throw;
                     }
-                }catch(SerializationException e) {
-                    Debug.LogError("Failed to deserialize. Reason given: " + e.Message);
-                    throw;
                 }
             }
         }

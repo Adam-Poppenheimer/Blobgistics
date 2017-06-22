@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -9,17 +10,17 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Session {
 
-    [Serializable]
+    [Serializable, DataContract]
     public class SerializableNeighborhoodData {
 
         #region instance fields and properties
 
-        public string Name;
+        [DataMember()] public string Name;
 
-        public SerializableVector3 LocalPosition;
+        [DataMember()]  public SerializableVector3 LocalPosition;
 
-        public List<int> ChildNodeIDs;
-        public List<int> ChildEdgeIDs;
+        [DataMember()] public List<int> ChildNodeIDs;
+        [DataMember()] public List<int> ChildEdgeIDs;
 
         #endregion
 

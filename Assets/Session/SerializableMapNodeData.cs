@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Linq;
 using System.Text;
 
@@ -14,19 +15,20 @@ using UnityCustomUtilities.Extensions;
 namespace Assets.Session {
 
     [Serializable]
+    [DataContract()]
     public class SerializableMapNodeData {
 
         #region instance fields and properties
 
-        public int ID;
+        [DataMember()] public BlobSitePermissionProfile CurrentBlobSitePermissionProfile;
+
+        [DataMember()] public int ID;
         
-        public SerializableVector3 LocalPosition;
+        [DataMember()] public SerializableVector3 LocalPosition;
 
-        public TerrainType Terrain;
+        [DataMember()] public Dictionary<ResourceType, int> ResourceStockpileOfType;
 
-        public Dictionary<ResourceType, int> ResourceStockpileOfType;
-
-        public BlobSitePermissionProfile CurrentBlobSitePermissionProfile;
+        [DataMember()] public TerrainType LandType;
 
         #endregion
 
@@ -35,10 +37,13 @@ namespace Assets.Session {
         public SerializableMapNodeData(MapNodeBase node) {
             ID = node.ID;
             LocalPosition = node.transform.localPosition;
-            Terrain = node.Terrain;
+            LandType = node.Terrain;
             ResourceStockpileOfType = new Dictionary<ResourceType, int>();
             foreach(var blob in node.BlobSite.Contents) {
-                ++ResourceStockpileOfType[blob.BlobType];
+                int currentCount;
+                ResourceStockpileOfType.TryGetValue(blob.BlobType, out currentCount);
+                ++currentCount;
+                ResourceStockpileOfType[blob.BlobType] = currentCount;
             }
             CurrentBlobSitePermissionProfile = BlobSitePermissionProfile.BuildFromBlobSite(node.BlobSite);
         }

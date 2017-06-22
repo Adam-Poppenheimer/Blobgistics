@@ -45,11 +45,11 @@ namespace Assets.Map {
         }
         [SerializeField] private TerrainMaterialRegistry _terrainMaterialRegistry;
 
-        public TerrainTileHexGrid TerrainTileGrid {
+        public TerrainGrid TerrainTileGrid {
             get { return _terrainTileGrid; }
             set { _terrainTileGrid = value; }
         }
-        [SerializeField] private TerrainTileHexGrid _terrainTileGrid;
+        [SerializeField] private TerrainGrid _terrainTileGrid;
 
         public MapGraphAlgorithmSetBase AlgorithmSet {
             get { return _algorithmSet; }

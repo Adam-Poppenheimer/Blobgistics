@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace Assets.Map.Editor {
 
-    [CustomEditor(typeof(TerrainTileHexGrid))]
+    [CustomEditor(typeof(TerrainGrid))]
     public class TerrainTileHexGridEditor : UnityEditor.Editor {
 
         #region instance fields and properties
@@ -33,13 +33,13 @@ namespace Assets.Map.Editor {
             HexGridSerializedObject.Update();
 
             if(GUILayout.Button("Rebuild Map")) {
-                var hexGrid = target as TerrainTileHexGrid;
+                var hexGrid = target as TerrainGrid;
                 hexGrid.ClearMap();
                 hexGrid.CreateMap();
             }
 
             if(GUILayout.Button("Refresh Map Terrains")) {
-                var hexGrid = target as TerrainTileHexGrid;
+                var hexGrid = target as TerrainGrid;
                 hexGrid.RefreshMapTerrains();
             }
 

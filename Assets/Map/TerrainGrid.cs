@@ -10,31 +10,36 @@ using UnityCustomUtilities.Grids;
 namespace Assets.Map {
 
     [ExecuteInEditMode]
-    public class TerrainTileHexGrid : HexGrid<TerrainHexTile> {
+    public class TerrainGrid : TerrainGridBase {
 
         #region instance fields and properties
 
-        public int Radius {
+        public override int Radius {
             get { return _radius; }
             set { _radius = value; }
         }
         [SerializeField] private int _radius;
 
-        public float MaxAcquisitionDistance {
+        public override float MaxAcquisitionDistance {
             get { return _maxAcquisitionDistance; }
             set { _maxAcquisitionDistance = value; }
         }
         [SerializeField] private float _maxAcquisitionDistance;
 
+        public MapGraphBase MapGraph {
+            get { return _mapGraph; }
+            set { _mapGraph = value; }
+        }
+        [SerializeField] private MapGraphBase _mapGraph;
+
         [SerializeField] private TerrainMaterialRegistry TerrainMaterialRegistry;
-        [SerializeField] private MapGraphBase MapGraph;
         [SerializeField] private GameObject HexTilePrefab;
 
         #endregion
 
         #region instance methods
 
-        public void ClearMap() {
+        public override void ClearMap() {
             for(int i = tiles.Count - 1; i >= 0; --i) {
                 DestroyHexTile(tiles[i]);
             }
@@ -46,7 +51,7 @@ namespace Assets.Map {
             }
         }
 
-        public void CreateMap() {
+        public override void CreateMap() {
             for(int q = -Radius; q <= Radius; ++q) {
                 int r1 = Math.Max(-Radius, -q - Radius);
                 int r2 = Math.Min(Radius, -q + Radius);
@@ -60,7 +65,7 @@ namespace Assets.Map {
             }
         }
 
-        public void RefreshMapTerrains() {
+        public override void RefreshMapTerrains() {
             foreach(var node in MapGraph.Nodes) {
                 node.ClearAssociatedTiles();
             }
@@ -96,7 +101,12 @@ namespace Assets.Map {
             var newHexCoords = new HexCoords(q, r, -q - r);
             Vector2 locationOfNewHex = HexGridLayout.HexCoordsToPixel(Layout, newHexCoords);
 
-            var newHexTile = Instantiate(HexTilePrefab).GetComponent<TerrainHexTile>();
+            TerrainHexTile newHexTile;
+            if(HexTilePrefab == null) {
+                newHexTile = (new GameObject()).AddComponent<TerrainHexTile>();
+            }else {
+                newHexTile = Instantiate(HexTilePrefab).GetComponent<TerrainHexTile>();
+            }
 
             newHexTile.transform.SetParent(this.transform, false);
             newHexTile.transform.localPosition = locationOfNewHex;
