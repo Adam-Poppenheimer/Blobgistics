@@ -71,11 +71,11 @@ namespace Assets.Map {
         }
         [SerializeField] private UIControlBase _uiControl;
 
-        public override HexGridBase<TerrainHexTile> TerrainTileGrid {
-            get { return _terrainTileGrid; }
-            set { _terrainTileGrid = value; }
+        public override TerrainGridBase TerrainGrid {
+            get { return _terrainGrid; }
+            set { _terrainGrid = value; }
         }
-        [SerializeField] private HexGridBase<TerrainHexTile> _terrainTileGrid;
+        [SerializeField] private TerrainGridBase _terrainGrid;
 
         public override TerrainMaterialRegistry TerrainMaterialRegistry {
             get { return _terrainMaterialRegistry; }
@@ -204,23 +204,25 @@ namespace Assets.Map {
             int startingNeighborIndex, activeNeighborIndex;
                        
             startingTile = GetFirstExternalTileAndNeighborIndex(associatedTiles, out startingNeighborIndex);
-            activeTile = startingTile;
-            activeNeighborIndex = startingNeighborIndex;
+            if(startingTile != null) {
+                activeTile = startingTile;
+                activeNeighborIndex = startingNeighborIndex;
 
-            pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainTileGrid.Layout, activeNeighborIndex - 1) + (Vector2)activeTile.transform.localPosition);
-            pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainTileGrid.Layout, activeNeighborIndex) + (Vector2)activeTile.transform.localPosition);
+                pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainGrid.Layout, activeNeighborIndex - 1) + (Vector2)activeTile.transform.localPosition);
+                pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainGrid.Layout, activeNeighborIndex) + (Vector2)activeTile.transform.localPosition);
 
-            activeNeighborIndex = (activeNeighborIndex + 1) % 6;
+                activeNeighborIndex = (activeNeighborIndex + 1) % 6;
 
-            while(activeTile != startingTile || activeNeighborIndex != startingNeighborIndex) {
-                TerrainHexTile neighborInDirection;
-                TerrainTileGrid.TryGetNeighborInDirection(activeTile, activeNeighborIndex, out neighborInDirection);
-                if(neighborInDirection == null || !AssociatedTiles.Contains(neighborInDirection)) {
-                    pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainTileGrid.Layout, activeNeighborIndex) + (Vector2)activeTile.transform.localPosition);
-                    activeNeighborIndex = (activeNeighborIndex + 1) % 6;
-                }else {
-                    activeTile = neighborInDirection;
-                    activeNeighborIndex = (activeNeighborIndex + 4) % 6;
+                while(activeTile != startingTile || activeNeighborIndex != startingNeighborIndex) {
+                    TerrainHexTile neighborInDirection;
+                    TerrainGrid.TryGetNeighborInDirection(activeTile, activeNeighborIndex, out neighborInDirection);
+                    if(neighborInDirection == null || !AssociatedTiles.Contains(neighborInDirection)) {
+                        pointList.Add(HexGridLayout.GetHexCornerOffset(TerrainGrid.Layout, activeNeighborIndex) + (Vector2)activeTile.transform.localPosition);
+                        activeNeighborIndex = (activeNeighborIndex + 1) % 6;
+                    }else {
+                        activeTile = neighborInDirection;
+                        activeNeighborIndex = (activeNeighborIndex + 4) % 6;
+                    }
                 }
             }
 
@@ -233,7 +235,7 @@ namespace Assets.Map {
             foreach(var edgeCandidate in internalTiles) {
                 for(int i = 0; i < 6; ++i) {
                     TerrainHexTile neighborInDirection;
-                    bool neighborExists = TerrainTileGrid.TryGetNeighborInDirection(edgeCandidate, i, out neighborInDirection);
+                    bool neighborExists = TerrainGrid.TryGetNeighborInDirection(edgeCandidate, i, out neighborInDirection);
                     if(neighborExists) {
                         if(!internalTiles.Contains(neighborInDirection)){
                             externalEdgeIndex = i;

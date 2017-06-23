@@ -145,7 +145,7 @@ namespace Assets.Map {
                 node.UIControl = UIControl;
                 node.BlobSite.Configuration = BlobSiteConfiguration;
                 node.TerrainMaterialRegistry = TerrainMaterialRegistry;
-                node.TerrainTileGrid = TerrainTileGrid;
+                node.TerrainGrid = TerrainTileGrid;
 
                 node.TransformChanged += Node_TransformChanged;
 

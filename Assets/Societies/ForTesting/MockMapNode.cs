@@ -69,7 +69,7 @@ namespace Assets.Societies.ForTesting {
             }
         }
 
-        public override HexGridBase<TerrainHexTile> TerrainTileGrid {
+        public override TerrainGridBase TerrainGrid {
             get {
                 throw new NotImplementedException();
             }

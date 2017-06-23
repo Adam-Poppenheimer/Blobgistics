@@ -9,6 +9,13 @@ namespace Assets.UI {
 
     public class PanelBase : MonoBehaviour {
 
+        #region instance fields and properties
+
+        [SerializeField] protected AudioSource ActivationAudio;
+        [SerializeField] protected AudioSource DeactivationAudio;
+
+        #endregion
+
         #region events
 
         public event EventHandler<EventArgs> DeactivationRequested;
@@ -29,12 +36,18 @@ namespace Assets.UI {
             gameObject.SetActive(true);
             UpdateDisplay();
             DoOnActivate();
+            if(ActivationAudio != null && !ActivationAudio.isPlaying) {
+                ActivationAudio.Play();
+            }
         }
 
         public virtual void Deactivate() {
             DoOnDeactivate();
             ClearDisplay();
             gameObject.SetActive(false);
+            if(DeactivationAudio != null && !DeactivationAudio.isPlaying) {
+                DeactivationAudio.Play();
+            }
         }
 
         public virtual void UpdateDisplay() { }

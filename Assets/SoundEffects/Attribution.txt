@@ -1,3 +1,5 @@
 Attribution of various sound effects:
 
-29301_junggle_btn121.wav: http://profiles.google.com/jun66le
+29301_junggle_btn121.wav: http://profiles.google.com/jun66le    under an attribution license
+
+147242__qubodup__car-engine-loop: https://freesound.org/s/147242/    under an attribution license

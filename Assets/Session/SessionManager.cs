@@ -12,6 +12,8 @@ using Assets.ResourceDepots;
 using Assets.Societies;
 using Assets.Scoring;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.Session {
 
     public class SessionManager : SessionManagerBase {
@@ -271,16 +273,10 @@ namespace Assets.Session {
                     successorHighway.Priority = highwayData.Priority;
                     successorHighway.Efficiency = highwayData.Efficiency;
 
-                    foreach(var resourceType in highwayData.UpkeepRequestedForResource.Keys) {
-                        successorHighway.SetUpkeepRequestedForResource(resourceType, true);
-                    }
-
-                    foreach(var resourceType in highwayData.PullingPermissionForFirstEndpoint.Keys) {
-                        successorHighway.SetPullingPermissionForFirstEndpoint(resourceType, true);
-                    }
-
-                    foreach(var resourceType in highwayData.PullingPermissionForSecondEndpoint.Keys) {
-                        successorHighway.SetPullingPermissionForSecondEndpoint(resourceType, true);
+                    foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                        successorHighway.SetUpkeepRequestedForResource(resourceType, highwayData.UpkeepRequestedForResource[resourceType]);
+                        successorHighway.SetPullingPermissionForFirstEndpoint(resourceType, highwayData.PullingPermissionForFirstEndpoint[resourceType]);
+                        successorHighway.SetPullingPermissionForSecondEndpoint(resourceType, highwayData.PullingPermissionForSecondEndpoint[resourceType]);
                     }
                 }
             }

@@ -25,7 +25,7 @@ namespace Assets.UI.ConstructionZones {
         #endregion
 
         [SerializeField] private List<Button> ConstructionProjectButtons = new List<Button>();
-
+        
         #endregion
 
         #region instance methods

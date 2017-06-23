@@ -74,6 +74,9 @@ namespace Assets.UI {
             if(MovePanelWithCamera) {
                 RepositionInCameraView();
             }
+            if(ActivationAudio != null && !ActivationAudio.isPlaying) {
+                ActivationAudio.Play();
+            }
         }
 
         protected virtual void DoOnUpdate() { }

@@ -11,7 +11,7 @@ using Assets.UI.Session;
 
 namespace Assets.UI.EscapeMenu {
 
-    public class SaveSessionDisplay : MonoBehaviour {
+    public class SaveSessionDisplay : PanelBase {
 
         #region instance fields and properties
 
@@ -31,18 +31,6 @@ namespace Assets.UI.EscapeMenu {
 
         #endregion
 
-        #region events
-
-        public event EventHandler<EventArgs> DeactivationRequested;
-
-        protected void RaiseDeactivationRequested() {
-            if(DeactivationRequested != null) {
-                DeactivationRequested(this, EventArgs.Empty);
-            }
-        }
-
-        #endregion
-
         #region instance methods
 
         #region Unity message methods
@@ -52,15 +40,19 @@ namespace Assets.UI.EscapeMenu {
             CancelButton.onClick.AddListener(delegate() { RaiseDeactivationRequested(); });
         }
 
-        private void OnEnable() {
-            RefreshSessionList();
-        }
-
         private void Update() {
             if(PerformSaveOnNextUpdate) {
                 PerformSave();
                 PerformSaveOnNextUpdate = false;
             }
+        }
+
+        #endregion
+
+        #region from PanelBase
+
+        protected override void DoOnActivate() {
+            RefreshSessionList();
         }
 
         #endregion

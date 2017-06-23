@@ -31,7 +31,7 @@ namespace Assets.Map {
 
         public abstract TerrainMaterialRegistry TerrainMaterialRegistry { get; set; }
 
-        public abstract HexGridBase<TerrainHexTile> TerrainTileGrid { get; set; }
+        public abstract TerrainGridBase TerrainGrid { get; set; }
 
         public abstract ReadOnlyCollection<TerrainHexTile> AssociatedTiles { get; }
 

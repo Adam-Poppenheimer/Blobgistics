@@ -77,7 +77,7 @@ namespace Assets.Map.Editor {
             terrainGrid.CreateMap();
 
             var nodeToTest = BuildMapNode();
-            nodeToTest.TerrainTileGrid = terrainGrid;
+            nodeToTest.TerrainGrid = terrainGrid;
 
             TerrainHexTile centerTile;
             terrainGrid.TryGetTileOfCoords(new HexCoords(0, 0, 0), out centerTile);
@@ -106,7 +106,7 @@ namespace Assets.Map.Editor {
             terrainGrid.CreateMap();
 
             var nodeToTest = BuildMapNode();
-            nodeToTest.TerrainTileGrid = terrainGrid;
+            nodeToTest.TerrainGrid = terrainGrid;
 
             TerrainHexTile centerTile;
             terrainGrid.TryGetTileOfCoords(new HexCoords(0, 0, 0), out centerTile);
@@ -144,7 +144,7 @@ namespace Assets.Map.Editor {
             terrainGrid.CreateMap();
 
             var nodeToTest = BuildMapNode();
-            nodeToTest.TerrainTileGrid = terrainGrid;
+            nodeToTest.TerrainGrid = terrainGrid;
 
             TerrainHexTile centerTile;
             terrainGrid.TryGetTileOfCoords(new HexCoords(0, 0, 0), out centerTile);
