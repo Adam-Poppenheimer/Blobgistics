@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 using UnityEngine;
 
+using Assets.Map;
 using Assets.Blobs;
 
 namespace Assets.Societies {
@@ -13,14 +15,11 @@ namespace Assets.Societies {
 
         #region instance fields and properties
 
-        public abstract string Name { get; }
+        public abstract IntPerResourceDictionary Production { get; }
+        public abstract IntPerResourceDictionary Needs { get; }
+        public abstract IEnumerable<IntPerResourceDictionary> Wants { get; }
 
-        public abstract ResourceSummary Production { get; }
-        public abstract ResourceSummary Needs { get; }
-        public abstract IEnumerable<ResourceSummary> Wants { get; }
-
-        public abstract ResourceSummary CostOfAscent { get; }
-        public abstract bool IsPermittedToAscend { get; }
+        public abstract IntPerResourceDictionary CostToAscendInto { get; }
 
         public abstract uint ProductionCapacityCoefficient { get; }
         public abstract uint NeedsCapacityCoefficient { get; }
@@ -31,7 +30,11 @@ namespace Assets.Societies {
 
         public abstract float ComplexityDescentDuration { get; }
 
+        public abstract ReadOnlyCollection<TerrainType> PermittedTerrains { get; }
+
         public abstract Material MaterialForSociety { get; }
+
+        public abstract int Score { get; }
 
         #endregion
 

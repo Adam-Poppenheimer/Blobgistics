@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using UnityEditor;
 using UnityEngine;
 
 using Assets.Map;
 using Assets.Blobs;
 using Assets.Core;
+using System.Collections.ObjectModel;
 
 namespace Assets.Societies {
 
@@ -27,6 +27,19 @@ namespace Assets.Societies {
         }
         [SerializeField] private ComplexityLadderBase _standardComplexityLadder;
 
+        public override ComplexityDefinitionBase DefaultComplexityDefinition {
+            get { return _defaultComplexityDefinition; }
+        }
+        public void SetDefaultComplexityDefinition(ComplexityDefinitionBase value) {
+            _defaultComplexityDefinition = value;
+        }
+        [SerializeField] private ComplexityDefinitionBase _defaultComplexityDefinition;
+
+        public override ReadOnlyCollection<SocietyBase> Societies {
+            get { return societies.AsReadOnly(); }
+        }
+        [SerializeField, HideInInspector] private List<SocietyBase> societies = new List<SocietyBase>();
+
         #endregion
 
         public ResourceBlobFactoryBase BlobFactory {
@@ -41,9 +54,23 @@ namespace Assets.Societies {
         }
         [SerializeField] private UIControlBase _uiControl;
 
-        [SerializeField] private GameObject SocietyPrefab;
+        public ReadOnlyCollection<ComplexityDefinitionBase> ComplexityDefinitions {
+            get { return _complexityDefinitions.AsReadOnly(); }
+        }
+        public void SetComplexityDefinitions(List<ComplexityDefinitionBase> value) {
+            _complexityDefinitions = value;
+        }
+        [SerializeField] private List<ComplexityDefinitionBase> _complexityDefinitions;
 
-        [SerializeField, HideInInspector] private List<SocietyBase> InstantiatedSocieties = new List<SocietyBase>();
+        public ReadOnlyCollection<ComplexityLadderBase> ComplexityLadders {
+            get { return _complexityLadders.AsReadOnly(); }
+        }
+        public void SetComplexityLadders(List<ComplexityLadderBase> value) {
+            _complexityLadders = value;
+        }
+        [SerializeField] private List<ComplexityLadderBase> _complexityLadders;
+
+        [SerializeField] private GameObject SocietyPrefab;
 
         #endregion
 
@@ -52,14 +79,14 @@ namespace Assets.Societies {
         #region from SocietyFactoryBase
 
         public override SocietyBase GetSocietyOfID(int id) {
-            return InstantiatedSocieties.Find(society => society.ID == id);
+            return societies.Find(society => society.ID == id);
         }
 
         public override SocietyBase GetSocietyAtLocation(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }
-            var retval = InstantiatedSocieties.Find(society => society.Location == location);
+            var retval = societies.Find(society => society.Location == location);
             if(retval != null) {
                 return retval;
             }else {
@@ -71,24 +98,19 @@ namespace Assets.Societies {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }
-            return InstantiatedSocieties.Exists(society => society.Location == location);
+            return societies.Exists(society => society.Location == location);
         }
 
-        public override bool CanConstructSocietyAt(MapNodeBase location) {
-            if(location == null) {
-                throw new ArgumentNullException("location");
-            }
-            return !HasSocietyAtLocation(location);
-        }
-
-        public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder) {
+        public override bool CanConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder,
+            ComplexityDefinitionBase startingComplexity) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }else if(ladder == null) {
                 throw new ArgumentNullException("ladder");
+            }else if(startingComplexity == null) {
+                throw new ArgumentNullException("startingComplexity");
             }
-
-            return ConstructSocietyAt(location, ladder, ladder.GetStartingComplexity());
+            return !HasSocietyAtLocation(location) && startingComplexity.PermittedTerrains.Contains(location.Terrain);
         }
 
         public override SocietyBase ConstructSocietyAt(MapNodeBase location, ComplexityLadderBase ladder, ComplexityDefinitionBase startingComplexity) {
@@ -96,9 +118,11 @@ namespace Assets.Societies {
                 throw new ArgumentNullException("location");
             }else if(ladder == null) {
                 throw new ArgumentNullException("ladder");
+            }else if(startingComplexity == null) {
+                throw new ArgumentNullException("startingComplexity");
             }else if(!ladder.ContainsComplexity(startingComplexity)) {
                 throw new SocietyException("The starting complexity of a society must be contained within its ActiveComplexityLadder");
-            }else if(!CanConstructSocietyAt(location)) {
+            }else if(!CanConstructSocietyAt(location, ladder, startingComplexity)) {
                 throw new SocietyException("Cannot construct a society at this location");
             }
 
@@ -126,35 +150,53 @@ namespace Assets.Societies {
             newSociety.SetCurrentComplexity(startingComplexity);
             newSociety.transform.SetParent(location.transform, false);
             newSociety.name = "Society at " + location.name;
-            newSociety.AscensionIsPermitted = true;
+            newSociety.AscensionIsPermitted = false;
 
-            InstantiatedSocieties.Add(newSociety);
+            SubscribeSociety(newSociety);
             return newSociety;
         }
 
         public override void DestroySociety(SocietyBase society) {
             UnsubscribeSociety(society);
-            DestroyImmediate(society.gameObject);
+            if(Application.isPlaying) {
+                Destroy(society.gameObject);
+            }else {
+                DestroyImmediate(society.gameObject);
+            }
         }
 
-        public override void UnsubscribeSociety(SocietyBase societyBeingDestroyed) {
-            if(societyBeingDestroyed == null) {
+        public override void SubscribeSociety(SocietyBase society) {
+            societies.Add(society);
+            RaiseSocietySubscribed(society);
+        }
+
+        public override void UnsubscribeSociety(SocietyBase society) {
+            if(society == null) {
                 throw new ArgumentNullException("societyBeingDestroyed");
             }
-            InstantiatedSocieties.Remove(societyBeingDestroyed);
+            societies.Remove(society);
+            RaiseSocietyUnsubscribed(society);
         }
 
         public override void TickSocieties(float secondsPassed) {
-            foreach(var society in InstantiatedSocieties) {
+            foreach(var society in societies) {
                 society.TickProduction(secondsPassed);
                 society.TickConsumption(secondsPassed);
             }
         }
 
+        public override ComplexityDefinitionBase GetComplexityDefinitionOfName(string name) {
+            return ComplexityDefinitions.Where(definition => definition.name.Equals(name)).FirstOrDefault();
+        }
+
+        public override ComplexityLadderBase GetComplexityLadderOfName(string name) {
+            return ComplexityLadders.Where(ladder => ladder.name.Equals(name)).FirstOrDefault();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

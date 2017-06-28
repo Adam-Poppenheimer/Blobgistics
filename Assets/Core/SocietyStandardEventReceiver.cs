@@ -74,7 +74,6 @@ namespace Assets.Core {
         public override void PushSelectEvent(SocietyUISummary source, BaseEventData eventData) {
             if(SocietySummaryDisplay != null) {
                 SocietySummaryDisplay.CurrentSummary = source as SocietyUISummary;
-                SocietySummaryDisplay.CanBeDestroyed = SocietyControl.CanDestroySociety(SocietySummaryDisplay.CurrentSummary.ID);
                 SocietySummaryDisplay.Activate();
             }
         }
@@ -92,10 +91,8 @@ namespace Assets.Core {
         #endregion
 
         private void SocietySummaryDisplay_DestructionRequested(object sender, EventArgs e) {
-            if(SocietyControl.CanDestroySociety(SocietySummaryDisplay.CurrentSummary.ID)) {
-                SocietyControl.DestroySociety(SocietySummaryDisplay.CurrentSummary.ID);
-                SocietySummaryDisplay.Deactivate();
-            }
+            SocietyControl.DestroySociety(SocietySummaryDisplay.CurrentSummary.ID);
+            SocietySummaryDisplay.Deactivate();
         }
 
         private void SocietySummaryDisplay_AscensionPermissionChangeRequested(object sender, BoolEventArgs e) {

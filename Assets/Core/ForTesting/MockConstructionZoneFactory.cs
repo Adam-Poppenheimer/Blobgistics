@@ -7,10 +7,25 @@ using UnityEngine;
 
 using Assets.ConstructionZones;
 using Assets.Map;
+using System.Collections.ObjectModel;
 
 namespace Assets.Core.ForTesting {
 
     public class MockConstructionZoneFactory : ConstructionZoneFactoryBase {
+
+        #region instance fields and properties
+
+        #region from ConstructionZoneFactoryBase
+
+        public override ReadOnlyCollection<ConstructionZoneBase> ConstructionZones {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        #endregion
 
         #region instance fields and properties
 

@@ -33,33 +33,33 @@ namespace Assets.Core.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var leftNode   = mapGraph.BuildNode(Vector3.left);
 
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
 
             var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
 
             //Execution
             controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.Food,   true);
-            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.Yellow, true);
-            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.White,  false);
-            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.Blue,   false);
+            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.Textiles, true);
+            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.ServiceGoods,  false);
+            controlToTest.SetHighwayUpkeepRequest(highway1.ID, ResourceType.HiTechGoods,   false);
 
             controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.Food,   false);
-            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.Yellow, false);
-            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.White,  true);
-            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.Blue,   true);
+            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.Textiles, false);
+            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.ServiceGoods,  true);
+            controlToTest.SetHighwayUpkeepRequest(highway2.ID, ResourceType.HiTechGoods,   true);
 
             //Validation
-            Assert.That   (highway1.IsRequestingFood,   "Highway1 is not requesting food");
-            Assert.That   (highway1.IsRequestingYellow, "Highway1 is not requesting yellow");
-            Assert.IsFalse(highway1.IsRequestingWhite,  "Highway1 is falsely requesting white");
-            Assert.IsFalse(highway1.IsRequestingBlue,   "Highway1 is falsely requesting blue");
+            Assert.That   (highway1.GetUpkeepRequestedForResource(ResourceType.Food        ), "Highway1 is not requesting food"            );
+            Assert.That   (highway1.GetUpkeepRequestedForResource(ResourceType.Textiles    ), "Highway1 is not requesting Textiles"        );
+            Assert.IsFalse(highway1.GetUpkeepRequestedForResource(ResourceType.ServiceGoods), "Highway1 is falsely requesting ServiceGoods");
+            Assert.IsFalse(highway1.GetUpkeepRequestedForResource(ResourceType.HiTechGoods ), "Highway1 is falsely requesting HiTechGoods" );
 
-            Assert.IsFalse(highway2.IsRequestingFood,   "Highway2 is falsely requesting food");
-            Assert.IsFalse(highway2.IsRequestingYellow, "Highway2 is falsely requesting yellow");
-            Assert.That   (highway2.IsRequestingWhite,  "Highway2 is not requesting white");
-            Assert.That   (highway2.IsRequestingBlue,   "Highway2 is not requesting blue");
+            Assert.IsFalse(highway2.GetUpkeepRequestedForResource(ResourceType.Food        ), "Highway2 is falsely requesting food"    );
+            Assert.IsFalse(highway2.GetUpkeepRequestedForResource(ResourceType.Textiles    ), "Highway2 is falsely requesting Textiles");
+            Assert.That   (highway2.GetUpkeepRequestedForResource(ResourceType.ServiceGoods), "Highway2 is not requesting ServiceGoods");
+            Assert.That   (highway2.GetUpkeepRequestedForResource(ResourceType.HiTechGoods ), "Highway2 is not requesting HiTechGoods" );
         }
 
         [Test]
@@ -74,9 +74,9 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             //Execution
 
@@ -120,9 +120,9 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             //Execution
             controlToTest.ConnectNodesWithHighway(middleNode.ID, rightNode.ID);
@@ -150,8 +150,8 @@ namespace Assets.Core.Editor {
             var rightNode  = mapGraph.BuildNode(Vector3.right);
             var leftNode   = mapGraph.BuildNode(Vector3.left);
 
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
 
             var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
@@ -160,18 +160,18 @@ namespace Assets.Core.Editor {
 
             //Highway 1
             controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Food, true);
-            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Yellow, true);
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway1.ID, ResourceType.Textiles, true);
 
             controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Food, false);
-            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Yellow, true);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway1.ID, ResourceType.Textiles, true);
 
             //Highway 2
 
             controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.Food, true);
-            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.White, true);
+            controlToTest.SetHighwayPullingPermissionOnFirstEndpointForResource(highway2.ID, ResourceType.ServiceGoods, true);
 
             controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.Food, false);
-            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.White, true);
+            controlToTest.SetHighwayPullingPermissionOnSecondEndpointForResource(highway2.ID, ResourceType.ServiceGoods, true);
 
             //Validation
 
@@ -185,17 +185,17 @@ namespace Assets.Core.Editor {
                 )
             );
             Assert.That(
-                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Yellow),
+                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.Textiles),
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "1", "First", ResourceType.Yellow
+                    "1", "First", ResourceType.Textiles
                 )
             );
             Assert.IsFalse(
-                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.White),
+                highway1.GetPullingPermissionForFirstEndpoint(ResourceType.ServiceGoods),
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "1", "First", ResourceType.White
+                    "1", "First", ResourceType.ServiceGoods
                 )
             );
 
@@ -207,17 +207,17 @@ namespace Assets.Core.Editor {
                 )
             );
             Assert.That(
-                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Yellow),
+                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.Textiles),
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "1", "Second", ResourceType.Yellow
+                    "1", "Second", ResourceType.Textiles
                 )
             );
             Assert.IsFalse(
-                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.White),
+                highway1.GetPullingPermissionForSecondEndpoint(ResourceType.ServiceGoods),
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "1", "Second", ResourceType.White
+                    "1", "Second", ResourceType.ServiceGoods
                 )
             );
 
@@ -231,17 +231,17 @@ namespace Assets.Core.Editor {
                 )
             );
             Assert.IsFalse(
-                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Yellow), 
+                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.Textiles), 
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "2", "First", ResourceType.Yellow
+                    "2", "First", ResourceType.Textiles
                 )
             );
             Assert.That(
-                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.White), 
+                highway2.GetPullingPermissionForFirstEndpoint(ResourceType.ServiceGoods), 
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "2", "First", ResourceType.White
+                    "2", "First", ResourceType.ServiceGoods
                 )
             );
 
@@ -253,17 +253,17 @@ namespace Assets.Core.Editor {
                 )
             );
             Assert.IsFalse(
-                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Yellow), 
+                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.Textiles), 
                 string.Format(
                     "Highway {0} falsely has pulling permission on {1} endpoint for resource {2}",
-                    "2", "Second", ResourceType.Yellow
+                    "2", "Second", ResourceType.Textiles
                 )
             );
             Assert.That(
-                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.White),
+                highway2.GetPullingPermissionForSecondEndpoint(ResourceType.ServiceGoods),
                 string.Format(
                     "Highway {0} lacks pulling permission on {1} endpoint for resource {2}",
-                    "2", "Second", ResourceType.White
+                    "2", "Second", ResourceType.ServiceGoods
                 )
             );
         }
@@ -281,9 +281,9 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
@@ -313,9 +313,9 @@ namespace Assets.Core.Editor {
             var leftNode   = mapGraph.BuildNode(Vector3.left);
             var upNode     = mapGraph.BuildNode(Vector3.up);
 
-            mapGraph.AddUndirectedEdge(middleNode, rightNode);
-            mapGraph.AddUndirectedEdge(middleNode, leftNode);
-            mapGraph.AddUndirectedEdge(middleNode, upNode);
+            mapGraph.BuildMapEdge(middleNode, rightNode);
+            mapGraph.BuildMapEdge(middleNode, leftNode);
+            mapGraph.BuildMapEdge(middleNode, upNode);
 
             var highway1 = highwayFactory.ConstructHighwayBetween(middleNode, rightNode);
             var highway2 = highwayFactory.ConstructHighwayBetween(middleNode, leftNode);

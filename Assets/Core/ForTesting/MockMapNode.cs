@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+
 using Assets.BlobSites;
 using Assets.Map;
+
+using UnityCustomUtilities.Grids;
 
 namespace Assets.Core.ForTesting {
 
@@ -23,8 +27,11 @@ namespace Assets.Core.ForTesting {
             get { return GetInstanceID(); }
         }
 
-        public override MapGraphBase ManagingGraph {
+        public override MapGraphBase ParentGraph {
             get {
+                throw new NotImplementedException();
+            }
+            set {
                 throw new NotImplementedException();
             }
         }
@@ -35,10 +42,76 @@ namespace Assets.Core.ForTesting {
             }
         }
 
+        public override TerrainType Terrain {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override TerrainMaterialRegistry TerrainMaterialRegistry {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override UIControlBase UIControl {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override TerrainGridBase TerrainGrid {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<TerrainHexTile> AssociatedTiles {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
+        #region instance methods
+
+        #region from MapNodeBase
+
+        public override void AddAssociatedTile(TerrainHexTile tile) {
+            throw new NotImplementedException();
+        }
+
+        public override void ClearAssociatedTiles() {
+            throw new NotImplementedException();
+        }
+
+        public override void RefreshOutline() {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #endregion
+
     }
 
 }

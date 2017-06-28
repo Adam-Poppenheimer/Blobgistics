@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Assets.Map;
 using Assets.ResourceDepots;
+using System.Collections.ObjectModel;
 
 namespace Assets.Core.ForTesting {
 
@@ -14,7 +15,17 @@ namespace Assets.Core.ForTesting {
 
         #region instance fields and properties
 
-        private List<ResourceDepotBase> Depots = new List<ResourceDepotBase>();
+        #region from ResourceDepotFactoryBase
+
+        public override ReadOnlyCollection<ResourceDepotBase> ResourceDepots {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        private List<ResourceDepotBase> depots = new List<ResourceDepotBase>();
 
         #endregion
 
@@ -27,21 +38,21 @@ namespace Assets.Core.ForTesting {
 
             newDepot.location = location;
 
-            Depots.Add(newDepot);
+            depots.Add(newDepot);
             return newDepot;
         }
 
         public override void DestroyDepot(ResourceDepotBase depot) {
-            Depots.Remove(depot);
+            depots.Remove(depot);
             DestroyImmediate(depot.gameObject);
         }
 
         public override ResourceDepotBase GetDepotAtLocation(MapNodeBase location) {
-            return Depots.Where(depot => depot.Location == location).FirstOrDefault();
+            return depots.Where(depot => depot.Location == location).FirstOrDefault();
         }
 
         public override ResourceDepotBase GetDepotOfID(int id) {
-            return Depots.Where(depot => depot.ID == id).FirstOrDefault();
+            return depots.Where(depot => depot.ID == id).FirstOrDefault();
         }
 
         public override bool HasDepotAtLocation(MapNodeBase location) {

@@ -7,9 +7,18 @@ namespace Assets.Blobs {
 
     public enum ResourceType {
         Food,
-        Yellow,
-        White,
-        Blue
+        Wood,
+        Ore,
+        Cotton,
+
+        Textiles,
+        Steel,
+        Lumber,
+
+        ServiceGoods,
+        HeavyMachinery,
+
+        HiTechGoods
     }
 
 }

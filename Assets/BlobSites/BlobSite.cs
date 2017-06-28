@@ -31,17 +31,13 @@ namespace Assets.BlobSites {
             get { return TotalSpaceLeft == 0; }
         }
 
-        public override float ConnectionCircleRadius {
-            get { return PrivateData.ConnectionCircleRadius; }
+        public override BlobSiteConfigurationBase Configuration {
+            get { return _configuration; }
+            set { _configuration = value; }
         }
+        [SerializeField] private BlobSiteConfigurationBase _configuration;
 
         #endregion
-
-        public BlobSitePrivateDataBase PrivateData {
-            get { return _privateData; }
-            set { _privateData = value; }
-        }
-        [SerializeField] private BlobSitePrivateDataBase _privateData;
         
         private Dictionary<ResourceType, bool> PlacementPermissionsByResourceType = 
             new Dictionary<ResourceType, bool>();
@@ -60,7 +56,11 @@ namespace Assets.BlobSites {
 
         public override Vector3 GetPointOfConnectionFacingPoint(Vector3 point) {
             var normalizedCenterToPoint = (point - transform.position).normalized;
-            return (normalizedCenterToPoint * ConnectionCircleRadius) + transform.position;
+            if(Configuration != null) {
+                return (normalizedCenterToPoint * Configuration.ConnectionCircleRadius) + transform.position;
+            }else {
+                return (normalizedCenterToPoint * 1 ) + transform.position;
+            }
         }
 
         public override bool CanExtractAnyBlob() {
@@ -124,7 +124,7 @@ namespace Assets.BlobSites {
                 blob.transform.SetParent(null, true);
                 
                 RaiseBlobExtractedFrom(blob);
-                PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
+                Configuration.AlignmentStrategy.RealignBlobs(contents, transform.position, Configuration.BlobRealignmentSpeedPerSecond);
             }else {
                 throw new BlobSiteException("Cannot extract this blob from this BlobSite");
             }
@@ -153,7 +153,7 @@ namespace Assets.BlobSites {
             if(CanPlaceBlobInto(blob)) {
                 contents.Add(blob);                
                 blob.transform.SetParent(transform, true);
-                PrivateData.AlignmentStrategy.RealignBlobs(contents, transform.position, PrivateData.BlobRealignmentSpeedPerSecond);
+                Configuration.AlignmentStrategy.RealignBlobs(contents, transform.position, Configuration.BlobRealignmentSpeedPerSecond);
                 RaiseBlobPlacedInto(blob);
             }else {
                 throw new BlobSiteException("Cannot place this blob into this BlobSite");
@@ -200,7 +200,7 @@ namespace Assets.BlobSites {
             ExtractionPermissionsByResourceType[type] = isPermitted;
         }
 
-        public override void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary) {
+        public override void SetPlacementPermissionsAndCapacity(IntPerResourceDictionary placementSummary) {
             if(placementSummary == null) {
                 throw new ArgumentNullException("summary");
             }
@@ -246,8 +246,10 @@ namespace Assets.BlobSites {
         public override void ClearContents() {
             var blobsToRemove = new List<ResourceBlobBase>(contents);
             contents.Clear();
-            foreach(var blob in blobsToRemove) {
-                PrivateData.BlobFactory.DestroyBlob(blob);
+            if(Configuration != null && Configuration.BlobFactory != null) {
+                foreach(var blob in blobsToRemove) {
+                    Configuration.BlobFactory.DestroyBlob(blob);
+                }
             }
             RaiseAllBlobsCleared();
         }

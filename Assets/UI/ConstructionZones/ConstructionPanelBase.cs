@@ -12,7 +12,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.ConstructionZones {
 
-    public abstract class ConstructionPanelBase : IntelligentPanel {
+    public abstract class ConstructionPanelBase : IntelligentPanelBase {
 
         #region instance fields and properties
 

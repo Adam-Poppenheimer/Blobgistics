@@ -8,10 +8,13 @@ using UnityEngine.EventSystems;
 
 using NUnit.Framework;
 
+using Assets.Blobs;
 using Assets.Map;
 using Assets.ConstructionZones;
 using Assets.Highways;
 using Assets.Core.ForTesting;
+
+using Assets.UI.Blobs;
 
 namespace Assets.Core.Editor {
 
@@ -280,9 +283,12 @@ namespace Assets.Core.Editor {
             var constructionPanel = BuildMockConstructionPanel();
 
             constructionZoneControl.PermittedProjects = new List<ConstructionProjectUISummary>() { 
-                new ConstructionProjectUISummary("Resource Depot", ""),
-                new ConstructionProjectUISummary("Village", ""),
-                new ConstructionProjectUISummary("Farmland", "")
+                new ConstructionProjectUISummary("Resource Depot", new ResourceDisplayInfo(
+                    IntPerResourceDictionary.BuildSummary(new GameObject(), new Dictionary<ResourceType, int>()))),
+                new ConstructionProjectUISummary("Village", new ResourceDisplayInfo(
+                    IntPerResourceDictionary.BuildSummary(new GameObject(), new Dictionary<ResourceType, int>()))),
+                new ConstructionProjectUISummary("Farmland", new ResourceDisplayInfo(
+                    IntPerResourceDictionary.BuildSummary(new GameObject(), new Dictionary<ResourceType, int>())))
             };
 
             var receiverToTest = BuildMapNodeReceiver();

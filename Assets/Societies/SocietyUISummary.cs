@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,15 +26,15 @@ namespace Assets.Societies {
             get { return SocietyToSummarize.CurrentComplexity; }
         }
 
-        public ComplexityDefinitionBase AscentComplexity {
+        public ReadOnlyCollection<ComplexityDefinitionBase> AscentComplexities {
             get {
-                return SocietyToSummarize.ActiveComplexityLadder.GetAscentTransition(SocietyToSummarize.CurrentComplexity);
+                return SocietyToSummarize.ActiveComplexityLadder.GetAscentTransitions(SocietyToSummarize.CurrentComplexity);
             }
         }
 
-        public ComplexityDefinitionBase DescentComplexity {
+        public ReadOnlyCollection<ComplexityDefinitionBase> DescentComplexities {
             get {
-                return SocietyToSummarize.ActiveComplexityLadder.GetDescentTransition(SocietyToSummarize.CurrentComplexity);
+                return SocietyToSummarize.ActiveComplexityLadder.GetDescentTransitions(SocietyToSummarize.CurrentComplexity);
             }
         }
 

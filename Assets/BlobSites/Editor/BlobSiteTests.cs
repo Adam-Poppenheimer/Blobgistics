@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
-using UnityEditor;
 
 using NUnit.Framework;
 
@@ -18,7 +17,7 @@ namespace Assets.BlobSites.Editor {
 
         #region instance fields and properties
 
-        private BlobSitePrivateDataBase PrivateData {
+        private BlobSiteConfigurationBase PrivateData {
             get {
                 if(_privateData == null) {
                     var hostingObject = new GameObject();
@@ -38,51 +37,6 @@ namespace Assets.BlobSites.Editor {
         #region tests
 
         #region functionality
-
-        [Test]
-        public void OnInitialization_GetPlacementPermissionForResourceTypeIsFalseForAllResourceTypes() {
-            //Setup
-            var factoryToUse = BuildFactory(PrivateData);
-
-            //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(new GameObject());
-
-            //Validation
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                Assert.That(!siteToTest.GetPlacementPermissionForResourceType(resourceType),
-                    "BlobSite is permitting resource type " + resourceType);
-            }
-        }
-
-        [Test]
-        public void OnInitialization_GetExtractionPermissionForResourceTypeIsFalseForAllResourceTypes() {
-            //Setup
-            var factoryToUse = BuildFactory(PrivateData);
-
-            //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(new GameObject());
-
-            //Validation
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                Assert.That(!siteToTest.GetExtractionPermissionForResourceType(resourceType),
-                    "BlobSite is permitting resource type " + resourceType);
-            }
-        }
-
-        [Test]
-        public void OnInitialization_GetCapacityForResourceTypeIsZeroForAllResourceTypes() {
-            //Setup
-            var factoryToUse = BuildFactory(PrivateData);
-
-            //Execution
-            var siteToTest = factoryToUse.ConstructBlobSite(new GameObject());
-
-            //Validation
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(resourceType),
-                    "Capacity is nonzero for resource type " + resourceType);
-            }
-        }
 
         [Test]
         public void OnGetPointOfConnectionFacingPointCalled_ValueReturnedLiesOnTheCorrectConnectionCircle() {
@@ -132,12 +86,12 @@ namespace Assets.BlobSites.Editor {
 
             //Execution
             siteToTest.SetPlacementPermissionForResourceType(ResourceType.Food, true);
-            siteToTest.SetPlacementPermissionForResourceType(ResourceType.Yellow, true);
+            siteToTest.SetPlacementPermissionForResourceType(ResourceType.Textiles, true);
 
             //Validation
             Assert.That(siteToTest.GetPlacementPermissionForResourceType(ResourceType.Food),   "ResourceType.Food does not register its permission");
-            Assert.That(siteToTest.GetPlacementPermissionForResourceType(ResourceType.Yellow), "ResourceType.Yellow does not register its permission");
-            Assert.That(!siteToTest.GetPlacementPermissionForResourceType(ResourceType.White), "ResourceType.White falsely registers that it has permission");
+            Assert.That(siteToTest.GetPlacementPermissionForResourceType(ResourceType.Textiles), "ResourceType.Textiles does not register its permission");
+            Assert.That(!siteToTest.GetPlacementPermissionForResourceType(ResourceType.ServiceGoods), "ResourceType.ServiceGoods falsely registers that it has permission");
         }
 
         [Test]
@@ -147,12 +101,12 @@ namespace Assets.BlobSites.Editor {
 
             //Execution
             siteToTest.SetExtractionPermissionForResourceType(ResourceType.Food, true);
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
 
             //Validation
             Assert.That(siteToTest.GetExtractionPermissionForResourceType(ResourceType.Food),   "ResourceType.Food does not register its permission");
-            Assert.That(siteToTest.GetExtractionPermissionForResourceType(ResourceType.Yellow), "ResourceType.Yellow does not register its permission");
-            Assert.That(!siteToTest.GetExtractionPermissionForResourceType(ResourceType.White), "ResourceType.White falsely registers that it has permission");
+            Assert.That(siteToTest.GetExtractionPermissionForResourceType(ResourceType.Textiles), "ResourceType.Textiles does not register its permission");
+            Assert.That(!siteToTest.GetExtractionPermissionForResourceType(ResourceType.ServiceGoods), "ResourceType.ServiceGoods falsely registers that it has permission");
         }
 
         [Test]
@@ -162,23 +116,23 @@ namespace Assets.BlobSites.Editor {
 
             //Execution
             siteToTest.SetCapacityForResourceType(ResourceType.Food, 1);
-            siteToTest.SetCapacityForResourceType(ResourceType.Yellow, 2);
+            siteToTest.SetCapacityForResourceType(ResourceType.Textiles, 2);
 
             //Validation
             Assert.AreEqual(1, siteToTest.GetCapacityForResourceType(ResourceType.Food),   "ResourceType.Food has the wrong capacity");
-            Assert.AreEqual(2, siteToTest.GetCapacityForResourceType(ResourceType.Yellow), "ResourceType.Yellow has the wrong capacity");
-            Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(ResourceType.White),  "ResourceType.White has the wrong capacity");
+            Assert.AreEqual(2, siteToTest.GetCapacityForResourceType(ResourceType.Textiles), "ResourceType.Textiles has the wrong capacity");
+            Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(ResourceType.ServiceGoods),  "ResourceType.ServiceGoods has the wrong capacity");
         }
 
         [Test]
         public void OnSetPermissionAndCapacityCalled_PermissionsAndCapacitiesAreCorrectlyAssigned() {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
-            var placementPermissionSummary = ResourceSummary.BuildResourceSummary(
+            var placementPermissionSummary = IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 2),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 4),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 0)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 4),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 0)
             );
 
             //Execution
@@ -188,11 +142,11 @@ namespace Assets.BlobSites.Editor {
             Assert.That(siteToTest.GetPlacementPermissionForResourceType(ResourceType.Food), "Placement of Food is not permitted");
             Assert.AreEqual(2, siteToTest.GetCapacityForResourceType(ResourceType.Food), "Food has the wrong capacity");
 
-            Assert.That(siteToTest.GetPlacementPermissionForResourceType (ResourceType.Yellow), "Placement of Yellow is not permitted" );
-            Assert.AreEqual(4, siteToTest.GetCapacityForResourceType(ResourceType.Yellow), "Yellow has the wrong capacity");
+            Assert.That(siteToTest.GetPlacementPermissionForResourceType (ResourceType.Textiles), "Placement of Textiles is not permitted" );
+            Assert.AreEqual(4, siteToTest.GetCapacityForResourceType(ResourceType.Textiles), "Textiles has the wrong capacity");
 
-            Assert.IsFalse(siteToTest.GetPlacementPermissionForResourceType (ResourceType.White), "Placement of White is falsely permitted");
-            Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(ResourceType.White), "White has the wrong capacity");
+            Assert.IsFalse(siteToTest.GetPlacementPermissionForResourceType (ResourceType.ServiceGoods), "Placement of ServiceGoods is falsely permitted");
+            Assert.AreEqual(0, siteToTest.GetCapacityForResourceType(ResourceType.ServiceGoods), "ServiceGoods has the wrong capacity");
 
             Assert.AreEqual(6, siteToTest.TotalCapacity, "TotalCapacity is incorrect");
         }
@@ -447,39 +401,39 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.White,  1)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods,  1)
             ));
             
             siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
-            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.White));
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.ServiceGoods));
 
             //Execution and Validation
             Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.Food), "Falsely acknowledges Food as extractable");
-            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.Yellow), "Falsely acknowledges Yellow as extractable");
-            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.White), "Falsely acknowledges White as extractable");
+            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.Textiles), "Falsely acknowledges Textiles as extractable");
+            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.ServiceGoods), "Falsely acknowledges ServiceGoods as extractable");
 
             siteToTest.SetExtractionPermissionForResourceType(ResourceType.Food, true);
 
             Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.Food), "Fails to acknowledge Food as extractable");
-            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.Yellow), "Falsely acknowledges Yellow as extractable");
-            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.White), "Falsely acknowledges White as extractable");
+            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.Textiles), "Falsely acknowledges Textiles as extractable");
+            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.ServiceGoods), "Falsely acknowledges ServiceGoods as extractable");
 
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
-
-            Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.Food), "Fails to acknowledge Food as extractable");
-            Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.Yellow), "Fails to acknowledges Yellow as extractable");
-            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.White), "Falsely acknowledges White as extractable");
-
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.White, true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
 
             Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.Food), "Fails to acknowledge Food as extractable");
-            Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.Yellow), "Fails to acknowledges Yellow as extractable");
-            Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.White), "Fails to acknowledges White as extractable");
+            Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.Textiles), "Fails to acknowledges Textiles as extractable");
+            Assert.That(!siteToTest.GetExtractableTypes().Contains(ResourceType.ServiceGoods), "Falsely acknowledges ServiceGoods as extractable");
+
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.ServiceGoods, true);
+
+            Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.Food), "Fails to acknowledge Food as extractable");
+            Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.Textiles), "Fails to acknowledges Textiles as extractable");
+            Assert.That(siteToTest.GetExtractableTypes().Contains(ResourceType.ServiceGoods), "Fails to acknowledges ServiceGoods as extractable");
 
         }
 
@@ -570,7 +524,7 @@ namespace Assets.BlobSites.Editor {
             siteToTest.PlaceBlobInto(blobToInsert);
 
             //Validation
-            Assert.That(!siteToTest.CanExtractBlobOfType(ResourceType.Yellow));
+            Assert.That(!siteToTest.CanExtractBlobOfType(ResourceType.Textiles));
         }
 
         [Test]
@@ -604,14 +558,14 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
             var redBlob = BuildBlob(ResourceType.Food);
-            var blueBlob = BuildBlob(ResourceType.White);
+            var blueBlob = BuildBlob(ResourceType.ServiceGoods);
 
             siteToTest.SetPlacementPermissionForResourceType(ResourceType.Food, true);
             siteToTest.SetExtractionPermissionForResourceType(ResourceType.Food, true);
             siteToTest.SetCapacityForResourceType(ResourceType.Food, 1);
-            siteToTest.SetPlacementPermissionForResourceType(ResourceType.White, true);
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.White, true);
-            siteToTest.SetCapacityForResourceType(ResourceType.White, 1);
+            siteToTest.SetPlacementPermissionForResourceType(ResourceType.ServiceGoods, true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.ServiceGoods, true);
+            siteToTest.SetCapacityForResourceType(ResourceType.ServiceGoods, 1);
             siteToTest.TotalCapacity = 2;
             siteToTest.PlaceBlobInto(redBlob);
             siteToTest.PlaceBlobInto(blueBlob);
@@ -753,33 +707,33 @@ namespace Assets.BlobSites.Editor {
             var siteToTest = BuildBlobSite(PrivateData);
 
             var redBlob   = BuildBlob(ResourceType.Food);
-            var greenBlob = BuildBlob(ResourceType.Yellow);
-            var blueBlob  = BuildBlob(ResourceType.White);
+            var greenBlob = BuildBlob(ResourceType.Textiles);
+            var blueBlob  = BuildBlob(ResourceType.ServiceGoods);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food,   1),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.White,  1)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods,  1)
             ));
             siteToTest.TotalCapacity = 3;
             siteToTest.SetExtractionPermissionForResourceType(ResourceType.Food,   true);
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.White,  true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.ServiceGoods,  true);
 
             siteToTest.PlaceBlobInto(redBlob);
             siteToTest.PlaceBlobInto(greenBlob);
             siteToTest.PlaceBlobInto(blueBlob);
 
             //Execution
-            var blueExtractedBlob  = siteToTest.ExtractBlobOfType(ResourceType.White);
+            var blueExtractedBlob  = siteToTest.ExtractBlobOfType(ResourceType.ServiceGoods);
             var redExtractedBlob   = siteToTest.ExtractBlobOfType(ResourceType.Food);
-            var greenExtractedBlob = siteToTest.ExtractBlobOfType(ResourceType.Yellow);
+            var greenExtractedBlob = siteToTest.ExtractBlobOfType(ResourceType.Textiles);
 
             //Validation
             Assert.AreEqual(ResourceType.Food,   redExtractedBlob.BlobType,   "redExtractedBlob has the wrong BlobType"  );
-            Assert.AreEqual(ResourceType.Yellow, greenExtractedBlob.BlobType, "greenExtractedBlob has the wrong BlobType");
-            Assert.AreEqual(ResourceType.White,  blueExtractedBlob.BlobType,  "blueExtractedBlob has the wrong BlobType" );
+            Assert.AreEqual(ResourceType.Textiles, greenExtractedBlob.BlobType, "greenExtractedBlob has the wrong BlobType");
+            Assert.AreEqual(ResourceType.ServiceGoods,  blueExtractedBlob.BlobType,  "blueExtractedBlob has the wrong BlobType" );
         }
 
         [Test]
@@ -787,31 +741,31 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 10)
             ));
             siteToTest.TotalCapacity = 30;
             siteToTest.SetExtractionPermissionForResourceType(ResourceType.Food,   true);
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.White,  true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.ServiceGoods,  true);
 
             //Execution
             for(int i = 0; i < 5; ++i) {
                 siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
             }
 
             var extractableTypes = siteToTest.GetExtractableTypes();
 
             //Validation
             Assert.That(extractableTypes.Contains (ResourceType.Food  ), "extractableTypes does not contain Food");
-            Assert.That(extractableTypes.Contains (ResourceType.Yellow), "extractableTypes does not contain Yellow");
-            Assert.That(!extractableTypes.Contains(ResourceType.White ), "extractableTypes falsely contains White");
+            Assert.That(extractableTypes.Contains (ResourceType.Textiles), "extractableTypes does not contain Textiles");
+            Assert.That(!extractableTypes.Contains(ResourceType.ServiceGoods ), "extractableTypes falsely contains ServiceGoods");
         }
 
         [Test]
@@ -819,11 +773,11 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 5),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 5),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 5)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 5),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 5)
             ));
             siteToTest.TotalCapacity = 10;
 
@@ -832,7 +786,7 @@ namespace Assets.BlobSites.Editor {
                 siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
             for(int i = 0; i < 5; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
             }
 
             //Validation
@@ -845,19 +799,19 @@ namespace Assets.BlobSites.Editor {
             var siteToTest = BuildBlobSite(PrivateData);
 
             var redBlob   = BuildBlob(ResourceType.Food);
-            var greenBlob = BuildBlob(ResourceType.Yellow);
-            var blueBlob  = BuildBlob(ResourceType.White);
+            var greenBlob = BuildBlob(ResourceType.Textiles);
+            var blueBlob  = BuildBlob(ResourceType.ServiceGoods);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 1)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 1)
             ));
             siteToTest.TotalCapacity = 3;
             siteToTest.SetExtractionPermissionForResourceType(ResourceType.Food,   true);
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Yellow, true);
-            siteToTest.SetExtractionPermissionForResourceType(ResourceType.White,  true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.Textiles, true);
+            siteToTest.SetExtractionPermissionForResourceType(ResourceType.ServiceGoods,  true);
 
             IEnumerable<ResourceType> extractableTypes;
 
@@ -865,38 +819,38 @@ namespace Assets.BlobSites.Editor {
             siteToTest.PlaceBlobInto(redBlob);
             extractableTypes = siteToTest.GetExtractableTypes();
             Assert.That(extractableTypes.Contains (ResourceType.Food  ), "Food insertion does not add red as an extractable type");
-            Assert.That(!extractableTypes.Contains(ResourceType.Yellow), "Food insertion adds green as an extractable type");
-            Assert.That(!extractableTypes.Contains(ResourceType.White ), "Food insertion adds blue as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Textiles), "Food insertion adds green as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.ServiceGoods ), "Food insertion adds blue as an extractable type");
 
             siteToTest.PlaceBlobInto(greenBlob);
             extractableTypes = siteToTest.GetExtractableTypes();
-            Assert.That(extractableTypes.Contains (ResourceType.Food  ), "Yellow insertion removes red as an extractable type");
-            Assert.That(extractableTypes.Contains (ResourceType.Yellow), "Yellow insertion does not add green as an extractable type");
-            Assert.That(!extractableTypes.Contains(ResourceType.White ), "Yellow insertion adds blue as an extractable type");
+            Assert.That(extractableTypes.Contains (ResourceType.Food  ), "Textiles insertion removes red as an extractable type");
+            Assert.That(extractableTypes.Contains (ResourceType.Textiles), "Textiles insertion does not add green as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.ServiceGoods ), "Textiles insertion adds blue as an extractable type");
 
             siteToTest.PlaceBlobInto(blueBlob);
             extractableTypes = siteToTest.GetExtractableTypes();
-            Assert.That(extractableTypes.Contains(ResourceType.Food  ), "White insertion removes red as an extractable type");
-            Assert.That(extractableTypes.Contains(ResourceType.Yellow), "White insertion removes green as an extractable type");
-            Assert.That(extractableTypes.Contains(ResourceType.White ), "White insertion does not add blue as an extractable type");
+            Assert.That(extractableTypes.Contains(ResourceType.Food  ), "ServiceGoods insertion removes red as an extractable type");
+            Assert.That(extractableTypes.Contains(ResourceType.Textiles), "ServiceGoods insertion removes green as an extractable type");
+            Assert.That(extractableTypes.Contains(ResourceType.ServiceGoods ), "ServiceGoods insertion does not add blue as an extractable type");
 
-            siteToTest.ExtractBlobOfType(ResourceType.Yellow);
+            siteToTest.ExtractBlobOfType(ResourceType.Textiles);
             extractableTypes = siteToTest.GetExtractableTypes();
-            Assert.That(extractableTypes.Contains (ResourceType.Food  ), "Yellow extraction removes red as an extractable type");
-            Assert.That(!extractableTypes.Contains(ResourceType.Yellow), "Yellow extraction does not remove green as an extractable type");
-            Assert.That(extractableTypes.Contains (ResourceType.White ), "Yellow extraction removes blue as an extractable type");
+            Assert.That(extractableTypes.Contains (ResourceType.Food  ), "Textiles extraction removes red as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Textiles), "Textiles extraction does not remove green as an extractable type");
+            Assert.That(extractableTypes.Contains (ResourceType.ServiceGoods ), "Textiles extraction removes blue as an extractable type");
 
             siteToTest.ExtractBlobOfType(ResourceType.Food);
             extractableTypes = siteToTest.GetExtractableTypes();
             Assert.That(!extractableTypes.Contains(ResourceType.Food  ), "Food extraction does not remove red as an extractable type");
-            Assert.That(!extractableTypes.Contains(ResourceType.Yellow), "Food extraction adds green as an extractable type");
-            Assert.That(extractableTypes.Contains (ResourceType.White ), "Food extraction removes blue as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Textiles), "Food extraction adds green as an extractable type");
+            Assert.That(extractableTypes.Contains (ResourceType.ServiceGoods ), "Food extraction removes blue as an extractable type");
 
-            siteToTest.ExtractBlobOfType(ResourceType.White);
+            siteToTest.ExtractBlobOfType(ResourceType.ServiceGoods);
             extractableTypes = siteToTest.GetExtractableTypes();
-            Assert.That(!extractableTypes.Contains(ResourceType.Food  ), "White extraction adds red as an extractable type");
-            Assert.That(!extractableTypes.Contains(ResourceType.Yellow), "White extraction adds green as an extractable type");
-            Assert.That(!extractableTypes.Contains(ResourceType.White ), "White extraction does not remove blue as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Food  ), "ServiceGoods extraction adds red as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.Textiles), "ServiceGoods extraction adds green as an extractable type");
+            Assert.That(!extractableTypes.Contains(ResourceType.ServiceGoods ), "ServiceGoods extraction does not remove blue as an extractable type");
         }
 
         [Test]
@@ -904,17 +858,17 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 1)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 1)
             ));
             siteToTest.TotalCapacity = 3;
 
             //Execution
             siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
 
             //Validation
             Assert.That(!siteToTest.IsAtCapacity);
@@ -925,11 +879,11 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 10)
             ));
             siteToTest.TotalCapacity = 30;
 
@@ -938,10 +892,10 @@ namespace Assets.BlobSites.Editor {
                 siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.White));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.ServiceGoods));
             }
 
             siteToTest.ClearContents();
@@ -955,11 +909,11 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 10)
             ));
             siteToTest.TotalCapacity = 30;
 
@@ -968,10 +922,10 @@ namespace Assets.BlobSites.Editor {
                 siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.White));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.ServiceGoods));
             }
 
             siteToTest.ClearContents();
@@ -985,11 +939,11 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 10)
             ));
             siteToTest.TotalCapacity = 30;
 
@@ -998,10 +952,10 @@ namespace Assets.BlobSites.Editor {
                 siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.White));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.ServiceGoods));
             }
 
             siteToTest.ClearContents();
@@ -1017,11 +971,11 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 10)
             ));
             siteToTest.TotalCapacity = 30;
 
@@ -1030,10 +984,10 @@ namespace Assets.BlobSites.Editor {
                 siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.White));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.ServiceGoods));
             }
 
             siteToTest.ClearContents();
@@ -1049,11 +1003,11 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 10)
             ));
             siteToTest.TotalCapacity = 30;
 
@@ -1062,10 +1016,10 @@ namespace Assets.BlobSites.Editor {
                 siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.White));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.ServiceGoods));
             }
 
             siteToTest.ClearContents();
@@ -1082,11 +1036,11 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 10),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 10)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 10),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 10)
             ));
             siteToTest.TotalCapacity = 30;
 
@@ -1100,10 +1054,10 @@ namespace Assets.BlobSites.Editor {
                 siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
             }
             for(int i = 0; i < 10; ++i) {
-                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.White));
+                siteToTest.PlaceBlobInto(BuildBlob(ResourceType.ServiceGoods));
             }
 
             siteToTest.ClearContents();
@@ -1117,18 +1071,18 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.Yellow, 1),
-                new KeyValuePair<ResourceType, int>(ResourceType.White, 1)
+                new KeyValuePair<ResourceType, int>(ResourceType.Textiles, 1),
+                new KeyValuePair<ResourceType, int>(ResourceType.ServiceGoods, 1)
             ));
             siteToTest.TotalCapacity = 4;
 
             //Execution
             siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Food));
-            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Yellow));
-            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.White));
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.Textiles));
+            siteToTest.PlaceBlobInto(BuildBlob(ResourceType.ServiceGoods));
 
             //Validation
             Assert.That(!siteToTest.IsAtCapacity);
@@ -1139,7 +1093,7 @@ namespace Assets.BlobSites.Editor {
             //Setup
             var siteToTest = BuildBlobSite(PrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 1)
             ));
@@ -1168,7 +1122,7 @@ namespace Assets.BlobSites.Editor {
 
             var siteToTest = BuildBlobSite(newPrivateData);
 
-            siteToTest.SetPlacementPermissionsAndCapacity(ResourceSummary.BuildResourceSummary(
+            siteToTest.SetPlacementPermissionsAndCapacity(IntPerResourceDictionary.BuildSummary(
                 siteToTest.gameObject,
                 new KeyValuePair<ResourceType, int>(ResourceType.Food, 5)
             ));
@@ -1240,7 +1194,7 @@ namespace Assets.BlobSites.Editor {
 
             //Execution and Validation
             Assert.Throws<BlobSiteException>(delegate() {
-                siteToTest.ExtractBlobOfType(ResourceType.Yellow);
+                siteToTest.ExtractBlobOfType(ResourceType.Textiles);
             });
         }
 
@@ -1261,18 +1215,11 @@ namespace Assets.BlobSites.Editor {
 
         #region utilities
 
-        private BlobSite BuildBlobSite(BlobSitePrivateDataBase privateData) {
+        private BlobSite BuildBlobSite(BlobSiteConfigurationBase privateData) {
             var hostingObject = new GameObject();
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
-            newBlobSite.PrivateData = privateData;
+            newBlobSite.Configuration = privateData;
             return newBlobSite;
-        }
-
-        private BlobSiteFactory BuildFactory(BlobSitePrivateDataBase privateData) {
-            var hostingObject = new GameObject();
-            var newFactory = hostingObject.AddComponent<BlobSiteFactory>();
-            newFactory.BlobSitePrivateData = privateData;
-            return newFactory;
         }
 
         private ResourceBlobBase BuildBlob(ResourceType type) {
@@ -1282,9 +1229,9 @@ namespace Assets.BlobSites.Editor {
             return newBlob;
         }
 
-        private BlobSitePrivateData BuildBlobSitePrivateData() {
+        private BlobSiteConfiguration BuildBlobSitePrivateData() {
             var hostingObject = new GameObject();
-            return hostingObject.AddComponent<BlobSitePrivateData>();
+            return hostingObject.AddComponent<BlobSiteConfiguration>();
         }
 
         #endregion

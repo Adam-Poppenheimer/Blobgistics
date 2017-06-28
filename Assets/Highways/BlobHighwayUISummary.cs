@@ -25,18 +25,14 @@ namespace Assets.Highways {
 
         public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint1 { get; set; }
         public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint2 { get; set; }
+        public Dictionary<ResourceType, bool> IsRequestingUpkeepForResource   { get; set; }
 
-        public BlobHighwayProfileBase Profile { get; set; }
+        public BlobHighwayProfile Profile { get; set; }
 
         public bool IsBeingUpgraded { get; set; }
 
         public Vector3 FirstEndpoint  { get; set; }
         public Vector3 SecondEndpoint { get; set; }
-
-        public bool IsRequestingFoodUpkeep   { get; set; }
-        public bool IsRequestingYellowUpkeep { get; set; }
-        public bool IsRequestingWhiteUpkeep  { get; set; }
-        public bool IsRequestingBlueUpkeep   { get; set; }
 
         #endregion
 
@@ -52,10 +48,12 @@ namespace Assets.Highways {
 
             ResourcePermissionsForEndpoint1 = new Dictionary<ResourceType, bool>();
             ResourcePermissionsForEndpoint2 = new Dictionary<ResourceType, bool>();
+            IsRequestingUpkeepForResource = new Dictionary<ResourceType, bool>();
 
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                ResourcePermissionsForEndpoint1[resourceType] = highwayToSummarize.GetPullingPermissionForFirstEndpoint(resourceType);
+                ResourcePermissionsForEndpoint1[resourceType] = highwayToSummarize.GetPullingPermissionForFirstEndpoint (resourceType);
                 ResourcePermissionsForEndpoint2[resourceType] = highwayToSummarize.GetPullingPermissionForSecondEndpoint(resourceType);
+                IsRequestingUpkeepForResource  [resourceType] = highwayToSummarize.GetUpkeepRequestedForResource        (resourceType);
             }
 
             Profile = highwayToSummarize.Profile;
@@ -64,11 +62,6 @@ namespace Assets.Highways {
                 highwayToSummarize.SecondEndpoint.transform.position);
             SecondEndpoint = highwayToSummarize.SecondEndpoint.BlobSite.GetPointOfConnectionFacingPoint(
                 highwayToSummarize.FirstEndpoint.transform.position);;
-
-            IsRequestingFoodUpkeep   = highwayToSummarize.IsRequestingFood;
-            IsRequestingYellowUpkeep = highwayToSummarize.IsRequestingYellow;
-            IsRequestingWhiteUpkeep  = highwayToSummarize.IsRequestingWhite;
-            IsRequestingBlueUpkeep   = highwayToSummarize.IsRequestingBlue;
         }
 
         #endregion

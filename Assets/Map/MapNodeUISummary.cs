@@ -16,6 +16,8 @@ namespace Assets.Map {
         public int ID { get; set; }
         public BlobSiteUISummary BlobSite { get; set; }
 
+        public TerrainType Terrain { get; set; }
+
         public Transform Transform { get; set; }
 
         #endregion
@@ -27,6 +29,7 @@ namespace Assets.Map {
         public MapNodeUISummary(MapNodeBase nodeToSummarize) {
             ID = nodeToSummarize.ID;
             BlobSite = new BlobSiteUISummary(nodeToSummarize.BlobSite);
+            Terrain = nodeToSummarize.Terrain;
             Transform = nodeToSummarize.transform;
         }
 

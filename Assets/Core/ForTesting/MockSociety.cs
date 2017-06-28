@@ -46,6 +46,9 @@ namespace Assets.Core.ForTesting {
             get {
                 throw new NotImplementedException();
             }
+            set {
+                throw new NotImplementedException();
+            }
         }
 
         public override float SecondsUntilComplexityDescent {

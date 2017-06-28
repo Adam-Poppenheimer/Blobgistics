@@ -9,6 +9,7 @@ using Assets.Blobs;
 using Assets.Map;
 using Assets.ResourceDepots;
 using Assets.Core;
+using System.Collections.ObjectModel;
 
 namespace Assets.ConstructionZones {
 
@@ -25,6 +26,12 @@ namespace Assets.ConstructionZones {
         [SerializeField] private List<ConstructionProjectBase> _availableProjects =
             new List<ConstructionProjectBase>();
 
+        public override ReadOnlyCollection<ConstructionZoneBase> ConstructionZones {
+            get { return constructionZones.AsReadOnly(); }
+        }
+        private List<ConstructionZoneBase> constructionZones = 
+            new List<ConstructionZoneBase>();
+
         #endregion
 
         [SerializeField] private GameObject ConstructionZonePrefab;
@@ -33,10 +40,7 @@ namespace Assets.ConstructionZones {
             get { return _uiControl; }
             set { _uiControl = value; }
         }
-        [SerializeField] private UIControlBase _uiControl;
-
-        private List<ConstructionZoneBase> InstantiatedConstructionZones = 
-            new List<ConstructionZoneBase>();
+        [SerializeField] private UIControlBase _uiControl;        
 
         #endregion
 
@@ -45,21 +49,21 @@ namespace Assets.ConstructionZones {
         #region from ConstructionZoneFactoryBase
 
         public override ConstructionZoneBase GetConstructionZoneOfID(int id) {
-            return InstantiatedConstructionZones.Find(zone => zone.ID == id);
+            return constructionZones.Find(zone => zone.ID == id);
         }
 
         public override bool HasConstructionZoneAtLocation(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }
-            return InstantiatedConstructionZones.Exists(zone => zone.Location == location);
+            return constructionZones.Exists(zone => zone.Location == location);
         }
 
         public override ConstructionZoneBase GetConstructionZoneAtLocation(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }
-            var desiredZone = InstantiatedConstructionZones.Find(zone => zone.Location == location);
+            var desiredZone = constructionZones.Find(zone => zone.Location == location);
             if(desiredZone != null) {
                 return desiredZone;
             }else {
@@ -75,7 +79,7 @@ namespace Assets.ConstructionZones {
             }else if(HasConstructionZoneAtLocation(location)) {
                 return false;
             }else {
-                return true;
+                return project.IsValidAtLocation(location);
             }
         }
 
@@ -105,8 +109,9 @@ namespace Assets.ConstructionZones {
             newConstructionZone.UIControl = UIControl;
 
             newConstructionZone.name = "ConstructionZone for " + project.name;
+            newConstructionZone.gameObject.SetActive(true);
 
-            InstantiatedConstructionZones.Add(newConstructionZone);
+            constructionZones.Add(newConstructionZone);
             return newConstructionZone;
         }
 
@@ -125,7 +130,7 @@ namespace Assets.ConstructionZones {
 
         public override void UnsubsribeConstructionZone(ConstructionZoneBase constructionZone) {
             if(constructionZone != null) {
-                InstantiatedConstructionZones.Remove(constructionZone);
+                constructionZones.Remove(constructionZone);
                 if(constructionZone.Location != null && !constructionZone.ProjectHasBeenCompleted) {
                     constructionZone.Location.BlobSite.ClearContents();
                     constructionZone.Location.BlobSite.ClearPermissionsAndCapacity();

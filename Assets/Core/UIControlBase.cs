@@ -27,6 +27,9 @@ namespace Assets.Core {
 
         public abstract void PushObjectDestroyedEvent<T>(T source) where T : class;
 
+        public abstract void PerformVictoryTasks();
+        public abstract void PerformDefeatTasks();
+
         #endregion
 
     }

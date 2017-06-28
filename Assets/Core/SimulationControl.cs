@@ -51,6 +51,8 @@ namespace Assets.Core {
         }
         [SerializeField] private ResourceGeneratorFactory _generatorFactory;
 
+        private bool IsPaused = false;
+
         #endregion
 
         #region instance methods
@@ -66,11 +68,29 @@ namespace Assets.Core {
         #region from SimulationControlBase
 
         public override void TickSimulation(float secondsPassed) {
-            if(SocietyFactory        != null) SocietyFactory.TickSocieties          (secondsPassed);
-            if(BlobDistributor       != null) BlobDistributor.Tick                  (secondsPassed);
-            if(BlobFactory           != null) BlobFactory.TickAllBlobs              (secondsPassed);
-            if(HighwayManagerFactory != null) HighwayManagerFactory.TickAllManangers(secondsPassed);
-            if(GeneratorFactory      != null) GeneratorFactory.TickAllGenerators    (secondsPassed);
+            if(!IsPaused) {
+                if(SocietyFactory        != null) SocietyFactory.TickSocieties          (secondsPassed);
+                if(BlobDistributor       != null) BlobDistributor.Tick                  (secondsPassed);
+                if(BlobFactory           != null) BlobFactory.TickAllBlobs              (secondsPassed);
+                if(HighwayManagerFactory != null) HighwayManagerFactory.TickAllManangers(secondsPassed);
+                if(GeneratorFactory      != null) GeneratorFactory.TickAllGenerators    (secondsPassed);
+            }
+        }
+
+        public override void Pause() {
+            IsPaused = true;
+        }
+
+        public override void Resume() {
+            IsPaused = false;
+        }
+
+        public override void PerformVictoryTasks() {
+            Pause();
+        }
+
+        public override void PerformDefeatTasks() {
+            Pause();
         }
 
         #endregion

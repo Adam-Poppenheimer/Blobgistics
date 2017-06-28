@@ -24,10 +24,7 @@ namespace Assets.HighwayManager {
 
         public abstract HighwayManagerFactoryBase ParentFactory { get; }
 
-        public abstract float EfficiencyGainFromFood   { get; }
-        public abstract float EfficiencyGainFromYellow { get; }
-        public abstract float EfficiencyGainFromWhite  { get; }
-        public abstract float EfficiencyGainFromBlue   { get; }
+        public abstract IntPerResourceDictionary EfficiencyGainFromResource { get; }
 
         #endregion
 

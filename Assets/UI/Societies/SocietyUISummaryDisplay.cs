@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 using Assets.Societies;
+using Assets.UI.Blobs;
 
 namespace Assets.UI.Societies {
 
@@ -20,15 +22,6 @@ namespace Assets.UI.Societies {
 
         public override SocietyUISummary CurrentSummary { get; set; }
 
-        public override bool CanBeDestroyed {
-            get { return _canBeDestroyed; }
-            set {
-                _canBeDestroyed = value;
-                DestroySocietyButton.interactable = _canBeDestroyed;
-            }
-        }
-        private bool _canBeDestroyed = false;
-
         #endregion
 
         [SerializeField] private Text   LocationIDField;
@@ -39,20 +32,20 @@ namespace Assets.UI.Societies {
 
         [SerializeField] private Button DestroySocietyButton;
 
-        [SerializeField] private RectTransform DescentComplexitySection;
-        [SerializeField] private Text DescentComplexityNameField;
-
         [SerializeField] private Text CurrentComplexityNameField;
-        [SerializeField] private Text CurrentComplexityProductionField;
-        [SerializeField] private Text CurrentComplexityNeedsField;
+        [SerializeField] private ResourceDisplayBase CurrentComplexityProductionField;
+        [SerializeField] private ResourceDisplayBase CurrentComplexityNeedsField;
         [SerializeField] private Text CurrentComplexityWantsField;
-        [SerializeField] private Text CurrentComplexityCostToAscendIntoField;
-        [SerializeField] private Text CurrentComplexityCostToAscendFromField;
+        [SerializeField] private ResourceDisplayBase CurrentComplexityCostToAscendIntoField;
 
+        [SerializeField] private RectTransform DescentComplexitySection;
         [SerializeField] private RectTransform AscentComplexitySection;
-        [SerializeField] private Text AscentComplexityNameField;
 
-        
+        [SerializeField] private GameObject AscentComplexityShiftDisplayPrefab;
+        [SerializeField] private GameObject DescentComplexityShiftDisplayPrefab;
+
+        private List<ComplexityShiftDisplay> AscentComplexityShiftDisplays  = new List<ComplexityShiftDisplay>();
+        private List<ComplexityShiftDisplay> DescentComplexityShiftDisplays = new List<ComplexityShiftDisplay>();
 
         #endregion
 
@@ -99,11 +92,9 @@ namespace Assets.UI.Societies {
 
                 PermitAscensionToggle.isOn = CurrentSummary.AscensionIsPermitted;
 
-                DestroySocietyButton.interactable = CanBeDestroyed;
-
-                UpdateDescentComplexityDisplay(CurrentSummary.DescentComplexity);
+                UpdateDescentDisplay();
                 UpdateCurrentComplexityDisplay(CurrentSummary.CurrentComplexity);
-                UpdateAscentComplexityDisplay(CurrentSummary.AscentComplexity);
+                UpdateAscentDisplay();                
             }
         }
 
@@ -113,32 +104,54 @@ namespace Assets.UI.Societies {
             LocationIDField.text = "";
                 
             CurrentComplexityNameField.text = "";
-            DescentComplexityNameField.text = "";
-            AscentComplexityNameField.text = "";
 
             NeedsAreSatisfiedField.text = "false";
             SecondsOfUnsatisfiedNeedsField.text = "";
             SecondsUntilComplexityDescentField.text = "";
+
+            foreach(var display in AscentComplexityShiftDisplays) {
+                display.gameObject.SetActive(false);
+            }
+
+            foreach(var display in DescentComplexityShiftDisplays) {
+                display.gameObject.SetActive(false);
+            }
 
             PermitAscensionToggle.isOn = false;
         }
 
         #endregion
 
-        private void UpdateDescentComplexityDisplay(ComplexityDefinitionBase descentComplexity) {
-            if(descentComplexity != null) {
-                DescentComplexitySection.gameObject.SetActive(true);
-                DescentComplexityNameField.text = descentComplexity.Name;
-            }else {
-                DescentComplexitySection.gameObject.SetActive(false);
-                DescentComplexityNameField.text = "--";
+        private void UpdateDescentDisplay() {
+            foreach(var shiftSummary in DescentComplexityShiftDisplays) {
+                shiftSummary.gameObject.SetActive(false);
+            }
+            while(DescentComplexityShiftDisplays.Count < CurrentSummary.DescentComplexities.Count) {
+                var newTextPrefab = Instantiate(AscentComplexityShiftDisplayPrefab);
+                newTextPrefab.transform.SetParent(DescentComplexitySection);
+                DescentComplexityShiftDisplays.Add(newTextPrefab.GetComponent<ComplexityShiftDisplay>());
+            }
+
+            for(int i = 0; i < CurrentSummary.DescentComplexities.Count; ++i) {
+                var descentComplexity = CurrentSummary.DescentComplexities[i];
+                var shiftSummary = DescentComplexityShiftDisplays[i];
+
+                shiftSummary.gameObject.SetActive(true);
+                shiftSummary.ComplexityToDisplay = descentComplexity;
+                if(descentComplexity.PermittedTerrains.Contains(CurrentSummary.Location.Terrain)) {
+                    shiftSummary.IsCandidateForShift = true;
+                }else {
+                    shiftSummary.IsCandidateForShift = false;
+                }
+
+                shiftSummary.RefreshDisplay();
             }
         }
 
         private void UpdateCurrentComplexityDisplay(ComplexityDefinitionBase currentComplexity) {
-            CurrentComplexityNameField.text = currentComplexity.Name;
-            CurrentComplexityProductionField.text = currentComplexity.Production.GetSummaryString();
-            CurrentComplexityNeedsField.text = currentComplexity.Needs.GetSummaryString();
+            CurrentComplexityNameField.text = currentComplexity.name;
+            CurrentComplexityProductionField.PushAndDisplaySummary(currentComplexity.Production);
+            CurrentComplexityNeedsField.PushAndDisplaySummary(currentComplexity.Needs);
 
             CurrentComplexityWantsField.text = "";
             foreach(var want in currentComplexity.Wants) {
@@ -148,18 +161,32 @@ namespace Assets.UI.Societies {
                     CurrentComplexityWantsField.text += want.GetSummaryString() + " OR ";
                 }
             }
-            CurrentComplexityCostToAscendIntoField.text = currentComplexity.CostOfAscent.GetSummaryString();
+            CurrentComplexityCostToAscendIntoField.PushAndDisplaySummary(currentComplexity.CostToAscendInto);
         }
 
-        private void UpdateAscentComplexityDisplay(ComplexityDefinitionBase ascentComplexity) {
-            if(ascentComplexity != null) {
-                AscentComplexitySection.gameObject.SetActive(true);
-                AscentComplexityNameField.text = ascentComplexity.Name;
-                CurrentComplexityCostToAscendFromField.text = ascentComplexity.CostOfAscent.GetSummaryString();
-            }else {
-                AscentComplexitySection.gameObject.SetActive(false);
-                AscentComplexityNameField.text = "--";
-                CurrentComplexityCostToAscendFromField.text = "--";
+        private void UpdateAscentDisplay() {
+            foreach(var shiftSummary in AscentComplexityShiftDisplays) {
+                shiftSummary.gameObject.SetActive(false);
+            }
+            while(AscentComplexityShiftDisplays.Count < CurrentSummary.AscentComplexities.Count) {
+                var newTextPrefab = Instantiate(AscentComplexityShiftDisplayPrefab);
+                newTextPrefab.transform.SetParent(AscentComplexitySection);
+                AscentComplexityShiftDisplays.Add(newTextPrefab.GetComponent<ComplexityShiftDisplay>());
+            }
+
+            for(int i = 0; i < CurrentSummary.AscentComplexities.Count; ++i) {
+                var ascentComplexity = CurrentSummary.AscentComplexities[i];
+                var shiftSummary = AscentComplexityShiftDisplays[i];
+
+                shiftSummary.gameObject.SetActive(true);
+                shiftSummary.ComplexityToDisplay = ascentComplexity;
+                if(ascentComplexity.PermittedTerrains.Contains(CurrentSummary.Location.Terrain)) {
+                    shiftSummary.IsCandidateForShift = true;
+                }else {
+                    shiftSummary.IsCandidateForShift = false;
+                }
+
+                shiftSummary.RefreshDisplay();
             }
         }
 

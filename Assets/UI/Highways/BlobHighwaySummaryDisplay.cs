@@ -12,10 +12,11 @@ using Assets.Blobs;
 using Assets.Highways;
 using Assets.Core;
 
-using UnityCustomUtilities.UI;
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Highways {
 
+    [ExecuteInEditMode]
     public class BlobHighwaySummaryDisplay : BlobHighwaySummaryDisplayBase {
 
         #region instance fields and properties
@@ -37,20 +38,12 @@ namespace Assets.UI.Highways {
         [SerializeField] private RectTransform FirstEndpointPane;
         [SerializeField] private RectTransform SecondEndpointPane;
 
-        [SerializeField] private Toggle FirstEndpointFoodPermissionToggle;
-        [SerializeField] private Toggle FirstEndpointYellowPermissionToggle;
-        [SerializeField] private Toggle FirstEndpointWhitePermissionToggle;
-        [SerializeField] private Toggle FirstEndpointBluePermissionToggle;
-        
-        [SerializeField] private Toggle SecondEndpointFoodPermissionToggle;
-        [SerializeField] private Toggle SecondEndpointYellowPermissionToggle;
-        [SerializeField] private Toggle SecondEndpointWhitePermissionToggle;
-        [SerializeField] private Toggle SecondEndpointBluePermissionToggle;
+        [SerializeField] private MaterialPerResourceDictionary MaterialsForResourceTypes;
 
-        [SerializeField] private Toggle IsRequestingFoodToggle;
-        [SerializeField] private Toggle IsRequestingYellowToggle;
-        [SerializeField] private Toggle IsRequestingWhiteToggle;
-        [SerializeField] private Toggle IsRequestingBlueToggle;
+        [SerializeField] private ToggleResourceSummary FirstEndpointTogglesForResourceTypes;
+        [SerializeField] private ToggleResourceSummary SecondEndpointTogglesForResourceTypes;
+
+        [SerializeField] private ToggleResourceSummary UpkeepRequestTogglesForResourceTypes;
 
         #endregion
 
@@ -62,6 +55,38 @@ namespace Assets.UI.Highways {
             if(CurrentSummary != null) {
                 FirstEndpointPane.transform.position  = Camera.main.WorldToScreenPoint(CurrentSummary.FirstEndpoint);
                 SecondEndpointPane.transform.position = Camera.main.WorldToScreenPoint(CurrentSummary.SecondEndpoint);
+            }
+        }
+
+        private void OnValidate() {
+            if(MaterialsForResourceTypes != null) {
+                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                    var materialForResource = MaterialsForResourceTypes[resourceType];
+
+                    if(FirstEndpointTogglesForResourceTypes != null){
+                        var firstEndpointToggle = FirstEndpointTogglesForResourceTypes[resourceType];
+                        if(firstEndpointToggle != null) {
+                            firstEndpointToggle.transform.GetChild(0).GetComponent<Image>().color = 
+                                materialForResource != null ? materialForResource.color : Color.white;
+                        }
+                    }
+
+                    if(SecondEndpointTogglesForResourceTypes != null) {
+                        var secondEndpointToggle = SecondEndpointTogglesForResourceTypes[resourceType];
+                        if(secondEndpointToggle != null) {
+                            secondEndpointToggle.transform.GetChild(0).GetComponent<Image>().color = 
+                                materialForResource != null ? materialForResource.color : Color.white;
+                        }
+                    }
+                    
+                    if(UpkeepRequestTogglesForResourceTypes != null) {
+                        var upkeepRequestToggle = UpkeepRequestTogglesForResourceTypes[resourceType];
+                        if(upkeepRequestToggle != null) {
+                            upkeepRequestToggle.transform.GetChild(0).GetComponent<Image>().color = 
+                                materialForResource != null ? materialForResource.color : Color.white;
+                        }
+                    }
+                }
             }
         }
 
@@ -81,47 +106,37 @@ namespace Assets.UI.Highways {
                 }
             });
 
-            FirstEndpointFoodPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseFirstEndpointPermissionChanged(ResourceType.Food, newPermission);
-            });
-            FirstEndpointYellowPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseFirstEndpointPermissionChanged(ResourceType.Yellow, newPermission);
-            });
-            FirstEndpointWhitePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseFirstEndpointPermissionChanged(ResourceType.White, newPermission);
-            });
-            FirstEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseFirstEndpointPermissionChanged(ResourceType.Blue, newPermission);
-            });
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                var cachedResourceType = resourceType;
+                var materialForResource = MaterialsForResourceTypes[resourceType];
 
-            SecondEndpointFoodPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseSecondEndpointPermissionChanged(ResourceType.Food, newPermission);
-            });
-            SecondEndpointYellowPermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseSecondEndpointPermissionChanged(ResourceType.Yellow, newPermission);
-            });
-            SecondEndpointWhitePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseSecondEndpointPermissionChanged(ResourceType.White, newPermission);
-            });
-            SecondEndpointBluePermissionToggle.onValueChanged.AddListener(delegate(bool newPermission) {
-                RaiseSecondEndpointPermissionChanged(ResourceType.Blue, newPermission);
-            });
+                var firstEndpointToggle = FirstEndpointTogglesForResourceTypes[resourceType];
+                if(firstEndpointToggle != null) {
+                    firstEndpointToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                        RaiseFirstEndpointPermissionChanged(cachedResourceType, newPermission);
+                    });
+                    var endpointColors = firstEndpointToggle.colors;
+                    endpointColors.normalColor = materialForResource != null ? materialForResource.color : Color.white;
+                }
 
-            IsRequestingFoodToggle.onValueChanged.AddListener(delegate(bool isRequesting){
-                RaiseResourceRequestedForUpkeep(ResourceType.Food, isRequesting);
-            });
+                var secondEndpointToggle = SecondEndpointTogglesForResourceTypes[resourceType];
+                if(secondEndpointToggle != null) {
+                    secondEndpointToggle.onValueChanged.AddListener(delegate(bool newPermission) {
+                        RaiseSecondEndpointPermissionChanged(cachedResourceType, newPermission);
+                    });
+                    var endpointColors = secondEndpointToggle.colors;
+                    endpointColors.normalColor = materialForResource != null ? materialForResource.color : Color.white;
+                }
 
-            IsRequestingYellowToggle.onValueChanged.AddListener(delegate(bool isRequesting){
-                RaiseResourceRequestedForUpkeep(ResourceType.Yellow, isRequesting);
-            });
-
-            IsRequestingWhiteToggle.onValueChanged.AddListener(delegate(bool isRequesting){
-                RaiseResourceRequestedForUpkeep(ResourceType.White, isRequesting);
-            });
-
-            IsRequestingBlueToggle.onValueChanged.AddListener(delegate(bool isRequesting){
-                RaiseResourceRequestedForUpkeep(ResourceType.Blue, isRequesting);
-            });
+                var upkeepRequestToggle = UpkeepRequestTogglesForResourceTypes[resourceType];
+                if(upkeepRequestToggle != null) {
+                    upkeepRequestToggle.onValueChanged.AddListener(delegate(bool isBeingRequested) {
+                        RaiseResourceRequestedForUpkeep(cachedResourceType, isBeingRequested);
+                    });
+                    var upkeepColors = upkeepRequestToggle.colors;
+                    upkeepColors.normalColor = materialForResource != null ? materialForResource.color : Color.white;
+                }
+            }
         }
 
         protected override void DoOnDeactivate() {
@@ -129,20 +144,22 @@ namespace Assets.UI.Highways {
 
             PriorityInput.onEndEdit.RemoveAllListeners();
 
-            FirstEndpointFoodPermissionToggle.onValueChanged.RemoveAllListeners();
-            FirstEndpointYellowPermissionToggle.onValueChanged.RemoveAllListeners();
-            FirstEndpointWhitePermissionToggle.onValueChanged.RemoveAllListeners();
-            FirstEndpointBluePermissionToggle.onValueChanged.RemoveAllListeners();
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                var firstEndpointToggle = FirstEndpointTogglesForResourceTypes[resourceType];
+                if(firstEndpointToggle != null) {
+                    firstEndpointToggle.onValueChanged.RemoveAllListeners();
+                }
 
-            SecondEndpointFoodPermissionToggle.onValueChanged.RemoveAllListeners();
-            SecondEndpointYellowPermissionToggle.onValueChanged.RemoveAllListeners();
-            SecondEndpointWhitePermissionToggle.onValueChanged.RemoveAllListeners();
-            SecondEndpointBluePermissionToggle.onValueChanged.RemoveAllListeners();
+                var secondEndpointToggle = SecondEndpointTogglesForResourceTypes[resourceType];
+                if(secondEndpointToggle != null) {
+                    secondEndpointToggle.onValueChanged.RemoveAllListeners();
+                }
 
-            IsRequestingFoodToggle.onValueChanged.RemoveAllListeners();
-            IsRequestingYellowToggle.onValueChanged.RemoveAllListeners();
-            IsRequestingWhiteToggle.onValueChanged.RemoveAllListeners();
-            IsRequestingBlueToggle.onValueChanged.RemoveAllListeners();
+                var upkeepRequestToggle = UpkeepRequestTogglesForResourceTypes[resourceType];
+                if(upkeepRequestToggle != null) {
+                    upkeepRequestToggle.onValueChanged.RemoveAllListeners();
+                }
+            }
         }
 
         public override void UpdateDisplay() {
@@ -150,20 +167,23 @@ namespace Assets.UI.Highways {
                 PriorityInput.text = CurrentSummary.Priority.ToString();
                 EfficiencyField.text = CurrentSummary.Efficiency.ToString();
 
-                FirstEndpointFoodPermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Food];
-                FirstEndpointYellowPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Yellow];
-                FirstEndpointWhitePermissionToggle.isOn  = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.White];
-                FirstEndpointBluePermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue];
+                foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                    var firstEndpointToggle = FirstEndpointTogglesForResourceTypes[resourceType];
+                    if(firstEndpointToggle != null) {
+                        firstEndpointToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[resourceType];
+                    }
 
-                SecondEndpointFoodPermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Food];
-                SecondEndpointYellowPermissionToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.Yellow];
-                SecondEndpointWhitePermissionToggle.isOn  = CurrentSummary.ResourcePermissionsForEndpoint2[ResourceType.White];
-                SecondEndpointBluePermissionToggle.isOn   = CurrentSummary.ResourcePermissionsForEndpoint1[ResourceType.Blue];
+                    var secondEndpointToggle = SecondEndpointTogglesForResourceTypes[resourceType];
+                    if(secondEndpointToggle != null) {
+                        secondEndpointToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[resourceType];
+                    }
 
-                IsRequestingFoodToggle.isOn   = CurrentSummary.IsRequestingFoodUpkeep;
-                IsRequestingYellowToggle.isOn = CurrentSummary.IsRequestingYellowUpkeep;
-                IsRequestingWhiteToggle.isOn  = CurrentSummary.IsRequestingWhiteUpkeep;
-                IsRequestingBlueToggle.isOn   = CurrentSummary.IsRequestingBlueUpkeep;
+                    var upkeepRequestToggle = UpkeepRequestTogglesForResourceTypes[resourceType];
+                    if(upkeepRequestToggle != null) {
+                        upkeepRequestToggle.isOn = CurrentSummary.IsRequestingUpkeepForResource[resourceType];
+                    }
+                }
+
             }
         }
 
@@ -173,20 +193,22 @@ namespace Assets.UI.Highways {
             PriorityInput.text = "0";
             EfficiencyField.text = "0";
 
-            FirstEndpointFoodPermissionToggle.isOn   = false;
-            FirstEndpointYellowPermissionToggle.isOn = false;
-            FirstEndpointWhitePermissionToggle.isOn  = false;
-            FirstEndpointBluePermissionToggle.isOn   = false;
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                var firstEndpointToggle = FirstEndpointTogglesForResourceTypes[resourceType];
+                if(firstEndpointToggle != null) {
+                    firstEndpointToggle.isOn = false;
+                }
 
-            SecondEndpointFoodPermissionToggle.isOn   = false;            
-            SecondEndpointYellowPermissionToggle.isOn = false;            
-            SecondEndpointWhitePermissionToggle.isOn  = false;
-            SecondEndpointBluePermissionToggle.isOn   = false;
+                var secondEndpointToggle = SecondEndpointTogglesForResourceTypes[resourceType];
+                if(secondEndpointToggle != null) {
+                    secondEndpointToggle.isOn = false;
+                }
 
-            IsRequestingFoodToggle.isOn   = false;
-            IsRequestingYellowToggle.isOn = false;
-            IsRequestingWhiteToggle.isOn  = false;
-            IsRequestingBlueToggle.isOn   = false;
+                var upkeepRequestToggle = UpkeepRequestTogglesForResourceTypes[resourceType];
+                if(upkeepRequestToggle != null) {
+                    upkeepRequestToggle.isOn = false;
+                }
+            }
         }
 
         #endregion

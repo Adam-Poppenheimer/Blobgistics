@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using Assets.Blobs;
 using Assets.BlobSites;
 using Assets.Map;
+
+using Assets.UI.Blobs;
 
 namespace Assets.ConstructionZones.ForTesting {
 
@@ -27,6 +30,10 @@ namespace Assets.ConstructionZones.ForTesting {
 
         #region from ConstructionProjectBase
 
+        public override bool IsValidAtLocation(MapNodeBase location) {
+            return true;
+        }
+
         public override void ExecuteBuild(MapNodeBase location) {
             if(BuildExecuted != null) {
                 BuildExecuted(this, EventArgs.Empty);
@@ -43,7 +50,7 @@ namespace Assets.ConstructionZones.ForTesting {
             }
         }
 
-        public override string GetCostSummaryString() {
+        public override ResourceDisplayInfo GetCostInfo() {
             throw new NotImplementedException();
         }
 

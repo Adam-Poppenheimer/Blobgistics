@@ -48,16 +48,16 @@ namespace Assets.Societies.ForTesting {
         private MapNodeBase _location;
 
         public override UIControlBase UIControl {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return null; }
         }
 
         public override SocietyFactoryBase ParentFactory {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return _parentFactory; }
         }
+        public void SetParentFactory(SocietyFactoryBase value) {
+            _parentFactory = value;
+        }
+        private SocietyFactoryBase _parentFactory;
 
         #endregion
 

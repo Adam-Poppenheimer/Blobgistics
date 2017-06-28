@@ -10,13 +10,15 @@ using Assets.BlobSites;
 using Assets.Map;
 using Assets.HighwayManager;
 
+using Assets.UI.Blobs;
+
 namespace Assets.ConstructionZones {
 
     public class HighwayManagerConstructionProject : ConstructionProjectBase {
 
         #region instance fields and properties
 
-        [SerializeField] private ResourceSummary Cost;
+        [SerializeField] private IntPerResourceDictionary Cost;
 
         [SerializeField] private HighwayManagerFactoryBase HighwayManagerFactory;
 
@@ -25,6 +27,10 @@ namespace Assets.ConstructionZones {
         #region instance methods
 
         #region from ConstructionProjectBase
+
+        public override bool IsValidAtLocation(MapNodeBase location) {
+            return location.Terrain != TerrainType.Mountains;
+        }
 
         public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
             return Cost.IsContainedWithinBlobSite(site);
@@ -40,8 +46,8 @@ namespace Assets.ConstructionZones {
             site.SetPlacementPermissionsAndCapacity(Cost);
         }
 
-        public override string GetCostSummaryString() {
-            return Cost.GetSummaryString();
+        public override ResourceDisplayInfo GetCostInfo() {
+            return new ResourceDisplayInfo(Cost);
         }
 
         #endregion

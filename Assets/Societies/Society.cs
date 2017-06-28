@@ -42,6 +42,7 @@ namespace Assets.Societies {
             RefreshAppearance();
             RefreshBlobSitePermissionsAndCapacities();
             DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
+            RaiseCurrentComplexityChanged(_currentComplexity);
         }
         [SerializeField] private ComplexityDefinitionBase _currentComplexity;
 
@@ -51,9 +52,10 @@ namespace Assets.Societies {
         [SerializeField, HideInInspector] private bool needsAreSatisfied = true;
 
         public override float SecondsOfUnsatisfiedNeeds {
-            get { return secondsOfUnsatisfiedNeeds; }
+            get { return _secondsOfUnsatisfiedNeeds; }
+            set { _secondsOfUnsatisfiedNeeds = value; }
         }
-        [SerializeField, HideInInspector] private float secondsOfUnsatisfiedNeeds;
+        [SerializeField, HideInInspector] private float _secondsOfUnsatisfiedNeeds;
 
         public override float SecondsUntilComplexityDescent {
             get {
@@ -67,9 +69,12 @@ namespace Assets.Societies {
 
         public override bool AscensionIsPermitted {
             get { return _ascensionIsPermitted; }
-            set { _ascensionIsPermitted = value; }
+            set {
+                _ascensionIsPermitted = value;
+                RefreshBlobSitePermissionsAndCapacities();
+            }
         }
-        private bool _ascensionIsPermitted = true;
+        private bool _ascensionIsPermitted = false;
 
         public override MapNodeBase Location {
             get { return PrivateData.Location; }
@@ -196,16 +201,16 @@ namespace Assets.Societies {
                 var needsSatisfiedThisCycle = PerformNeedsConsumptionCycle();
                 if(needsSatisfiedThisCycle) {
                     needsAreSatisfied = true;
-                    secondsOfUnsatisfiedNeeds = 0f;
+                    SecondsOfUnsatisfiedNeeds = 0f;
                 }else if(NeedsAreSatisfied){
                     needsAreSatisfied = false;
-                    secondsOfUnsatisfiedNeeds = 0;
+                    SecondsOfUnsatisfiedNeeds = 0;
                 }
                 CurrentNeedConsumptionTimer -= CurrentComplexity.SecondsToFullyConsumeNeeds;
             }
 
             if(!NeedsAreSatisfied) {
-                secondsOfUnsatisfiedNeeds += secondsPassed;
+                SecondsOfUnsatisfiedNeeds += secondsPassed;
             }
         }
 
@@ -280,16 +285,37 @@ namespace Assets.Societies {
 
         #endregion
 
+        private ComplexityDefinitionBase GetBestAscentCandidate() {
+            foreach(var complexity in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
+                if( complexity.PermittedTerrains.Contains(Location.Terrain) &&
+                    complexity.CostToAscendInto.IsContainedWithinBlobSite(PrivateData.Location.BlobSite)
+                ){
+                    return complexity;
+                }
+            }
+            return null;
+        }
+
+        private ComplexityDefinitionBase GetBestDescentCandidate() {
+            foreach(var complexity in ActiveComplexityLadder.GetDescentTransitions(CurrentComplexity)) {
+                if(complexity.PermittedTerrains.Contains(PrivateData.Location.Terrain)) {
+                    return complexity;
+                }
+            }
+            return null;
+        }
+
         private bool CanAscendComplexityLadder() {
-            var complexityAbove = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
-            return CurrentComplexity.IsPermittedToAscend && AscensionIsPermitted && complexityAbove != null &&
-                complexityAbove.CostOfAscent.IsContainedWithinBlobSite(PrivateData.Location.BlobSite);
+            var complexitiesAbove = ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity);
+            if(AscensionIsPermitted && SecondsOfUnsatisfiedNeeds <= 0) {
+                return GetBestAscentCandidate() != null;
+            }
+            return false;
         }
 
         private void AscendComplexityLadder() {
             if(CanAscendComplexityLadder()) {
-                var complexityAbove = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
-                SetCurrentComplexity(complexityAbove);
+                SetCurrentComplexity(GetBestAscentCandidate());
                 PrivateData.Location.BlobSite.ClearContents();
                 RefreshAppearance();
                 RefreshBlobSitePermissionsAndCapacities();
@@ -299,124 +325,131 @@ namespace Assets.Societies {
         }
 
         private bool CanDescendComplexityLadder() {
-            var descentTransition = ActiveComplexityLadder.GetDescentTransition(CurrentComplexity);
-            return descentTransition != null && !NeedsAreSatisfied && Mathf.Approximately(0f, SecondsUntilComplexityDescent);
+            var descentCandidate = GetBestDescentCandidate();
+            return !NeedsAreSatisfied && Mathf.Approximately(0f, SecondsUntilComplexityDescent);
         }
 
         private void DescendComplexityLadder() {
             if(CanDescendComplexityLadder()) {
-                var complexityBelow = ActiveComplexityLadder.GetDescentTransition(CurrentComplexity);
-                SetCurrentComplexity(complexityBelow);
-                PrivateData.Location.BlobSite.ClearContents();
-                secondsOfUnsatisfiedNeeds = 0f;
-                needsAreSatisfied = true;
+                var descentCandidate = GetBestDescentCandidate();
 
-                RefreshAppearance();
-                RefreshBlobSitePermissionsAndCapacities();
+                if(descentCandidate != null) {
+                    SetCurrentComplexity(GetBestDescentCandidate());
+
+                    PrivateData.Location.BlobSite.ClearContents();
+                    SecondsOfUnsatisfiedNeeds = 0f;
+                    needsAreSatisfied = true;
+
+                    RefreshAppearance();
+                    RefreshBlobSitePermissionsAndCapacities();
+                }else {
+                    PrivateData.ParentFactory.DestroySociety(this);
+                }
             }else {
                 throw new SocietyException("Society cannot descend its ComplexityLadder");
             }
         }
 
         private void RefreshBlobSitePermissionsAndCapacities() {
+            Location.BlobSite.ClearPermissionsAndCapacity();
             ConsumptionProfile.Clear();
             ProductionProfile.Clear();
             DefaultProfile.Clear();
 
-            var capacityDict = new Dictionary<ResourceType, int>();
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
 
-            //Production
-            foreach(var resourceType in CurrentComplexity.Production) {
-                if(CurrentComplexity.Production[resourceType] > 0) {
-                    int valueInDict;
-                    capacityDict.TryGetValue(resourceType, out valueInDict);
-                    valueInDict += (int)(CurrentComplexity.Production[resourceType] * CurrentComplexity.ProductionCapacityCoefficient);
-                    capacityDict[resourceType] = valueInDict;
+                ProductionProfile.SetPlacementPermission(resourceType, true);
+                ProductionProfile.SetExtractionPermission(resourceType, true);
+                ConsumptionProfile.SetExtractionPermission(resourceType, true);
 
-                    ProductionProfile.SetPlacementPermission(resourceType, true);
-                    DefaultProfile.SetPlacementPermission(resourceType, false);
-                    DefaultProfile.SetExtractionPermission(resourceType, true);
-                }
-            }
-
-            //Ascent Cost
-            var ascentComplexity = ActiveComplexityLadder.GetAscentTransition(CurrentComplexity);
-            if(ascentComplexity != null) {
-                var ascentCost = ascentComplexity.CostOfAscent;
-                foreach(var resourceType in ascentCost) {
-                    if(ascentCost[resourceType] > 0) {
-                        int valueInDict;
-                        capacityDict.TryGetValue(resourceType, out valueInDict);
-                        valueInDict += ascentCost[resourceType];
-                        capacityDict[resourceType] = valueInDict;
-
-                        DefaultProfile.SetPlacementPermission(resourceType, true);
-                        DefaultProfile.SetExtractionPermission(resourceType, true);
-                    }
-                    
-                }
-            }
-
-            //Needs
-            foreach(var resourceType in CurrentComplexity.Needs) {
-                if(CurrentComplexity.Needs[resourceType] > 0) {
-                    int valueInDict;
-                    capacityDict.TryGetValue(resourceType, out valueInDict);
-                    valueInDict += (int)(CurrentComplexity.Needs[resourceType] * CurrentComplexity.NeedsCapacityCoefficient);
-                    capacityDict[resourceType] = valueInDict;
-
-                    ConsumptionProfile.SetPlacementPermission(resourceType, true);
-                    ConsumptionProfile.SetExtractionPermission(resourceType, true);
+                if(AscensionIsPermitted && DoesSomeValidAscensionRequireResource(resourceType)) {
                     DefaultProfile.SetPlacementPermission(resourceType, true);
                     DefaultProfile.SetExtractionPermission(resourceType, false);
+
+                    int capacityForResource = GetGreatestAscensionStockpileOfResource(resourceType);
+
+                    DefaultProfile.SetCapacity(resourceType, capacityForResource);
+                    DefaultProfile.TotalCapacity += capacityForResource;
+                    ProductionProfile.SetCapacity(resourceType, capacityForResource);
+                    ProductionProfile.TotalCapacity += capacityForResource;
+
+                }else if(DoesNeedOrSomeWantRequireResource(resourceType)){
+                    DefaultProfile.SetPlacementPermission(resourceType, true);
+                    DefaultProfile.SetExtractionPermission(resourceType, false);
+
+                    int capacityForResource = GetGreatestNeedOrWantStockpileOfResource(resourceType);
+
+                    DefaultProfile.SetCapacity(resourceType, capacityForResource);
+                    DefaultProfile.TotalCapacity += capacityForResource;
+                    ProductionProfile.SetCapacity(resourceType, capacityForResource);
+                    ProductionProfile.TotalCapacity += capacityForResource;
+
+                }else if(CurrentComplexity.Production[resourceType] > 0) {
+                    DefaultProfile.SetPlacementPermission(resourceType, false);
+                    DefaultProfile.SetExtractionPermission(resourceType, true);
+
+                    int capacityForResource = CurrentComplexity.Production[resourceType] * (int)CurrentComplexity.ProductionCapacityCoefficient;
+
+                    DefaultProfile.SetCapacity(resourceType, capacityForResource);
+                    DefaultProfile.TotalCapacity += capacityForResource;
+
+                    ProductionProfile.SetCapacity(resourceType, capacityForResource);
+                    ProductionProfile.TotalCapacity += capacityForResource;
+                }
+
+            }
+
+            DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
+        }
+
+        private bool DoesSomeValidAscensionRequireResource(ResourceType resourceType) {
+            foreach(var ascension in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
+                if(ascension.PermittedTerrains.Contains(Location.Terrain) && ascension.CostToAscendInto[resourceType] > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private int GetGreatestAscensionStockpileOfResource(ResourceType resourceType) {
+            int retval = 0;
+
+            foreach(var ascension in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
+                if(ascension.PermittedTerrains.Contains(Location.Terrain)) {
+                    retval = Math.Max(retval, ascension.CostToAscendInto[resourceType]);
                 }
             }
 
-            //Wants
-            Dictionary<ResourceType, int> maximumWantsByResource = new Dictionary<ResourceType, int>();
-            foreach(var wantSummary in CurrentComplexity.Wants) {
-                foreach(var resourceType in wantSummary) {
-                    int currentBiggestForResourceType;
-                    maximumWantsByResource.TryGetValue(resourceType, out currentBiggestForResourceType);
-                    maximumWantsByResource[resourceType] = Math.Max(
-                        currentBiggestForResourceType,
-                        (int)(wantSummary[resourceType] * CurrentComplexity.WantsCapacityCoefficient)
-                    );
+            return retval;
+        }
 
-                    if(wantSummary[resourceType] > 0) {
-                        DefaultProfile.SetPlacementPermission(resourceType, true);
-                        DefaultProfile.SetExtractionPermission(resourceType, false);
-
-                        ProductionProfile.SetPlacementPermission(resourceType, true);
-                        ProductionProfile.SetExtractionPermission(resourceType, true);
+        private bool DoesNeedOrSomeWantRequireResource(ResourceType resourceType) {
+            if(CurrentComplexity.Needs[resourceType] > 0) {
+                return true;
+            }else {
+                foreach(var want in CurrentComplexity.Wants) {
+                    if(want[resourceType] > 0) {
+                        return true;
                     }
                 }
+                return false;
+            }
+        }
+
+        private int GetGreatestNeedOrWantStockpileOfResource(ResourceType resourceType) {
+            int retval = CurrentComplexity.Needs[resourceType] * (int)CurrentComplexity.NeedsCapacityCoefficient;
+
+            foreach(var want in CurrentComplexity.Wants) {
+                retval = Math.Max(retval, want[resourceType] * (int)CurrentComplexity.WantsCapacityCoefficient);
             }
 
-            foreach(var wantSummaryKVPair in maximumWantsByResource) {
-                int valueInDict;
-                capacityDict.TryGetValue(wantSummaryKVPair.Key, out valueInDict);
-                valueInDict += wantSummaryKVPair.Value;
-                capacityDict[wantSummaryKVPair.Key] = valueInDict;
-            }
-
-            int totalCapacity = 0;
-            foreach(var capacityKVPair in capacityDict) {
-                totalCapacity += capacityKVPair.Value;
-                ProductionProfile.SetCapacity (capacityKVPair.Key, capacityKVPair.Value);
-                ConsumptionProfile.SetCapacity(capacityKVPair.Key, capacityKVPair.Value);
-                DefaultProfile.SetCapacity    (capacityKVPair.Key, capacityKVPair.Value);
-            }
-
-            ProductionProfile.SetTotalCapacity(totalCapacity);
-            ConsumptionProfile.SetTotalCapacity(totalCapacity);
-            DefaultProfile.SetTotalCapacity(totalCapacity);
+            return retval;
         }
 
         private void RefreshAppearance() {
             var meshRenderer = GetComponent<MeshRenderer>();
             if(meshRenderer != null) {
-                meshRenderer.sharedMaterial = CurrentComplexity.MaterialForSociety;
+                meshRenderer.material = CurrentComplexity.MaterialForSociety;
             }
         }
 

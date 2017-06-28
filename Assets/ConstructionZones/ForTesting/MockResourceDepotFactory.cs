@@ -5,10 +5,25 @@ using System.Text;
 
 using Assets.ResourceDepots;
 using Assets.Map;
+using System.Collections.ObjectModel;
 
 namespace Assets.ConstructionZones.ForTesting {
 
     public class MockResourceDepotFactory : ResourceDepotFactoryBase {
+
+        #region instance fields and properties
+
+        #region from ResourceDepotFactoryBase
+
+        public override ReadOnlyCollection<ResourceDepotBase> ResourceDepots {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        #endregion
 
         #region events
 

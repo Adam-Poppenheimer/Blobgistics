@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -11,6 +12,12 @@ using Assets.Highways;
 namespace Assets.HighwayManager {
 
     public abstract class HighwayManagerFactoryBase : MonoBehaviour {
+
+        #region instance fields and properties
+
+        public abstract ReadOnlyCollection<HighwayManagerBase> Managers { get; }
+
+        #endregion
 
         #region instance methods
 
@@ -27,9 +34,6 @@ namespace Assets.HighwayManager {
 
         public abstract void DestroyHighwayManager    (HighwayManagerBase manager);
         public abstract void UnsubscribeHighwayManager(HighwayManagerBase manager);
-
-        public abstract void SubscribeHighway  (BlobHighwayBase highway);
-        public abstract void UnsubscribeHighway(BlobHighwayBase highway);
 
         public abstract void TickAllManangers(float secondsPassed);
 

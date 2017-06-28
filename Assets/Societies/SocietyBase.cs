@@ -22,12 +22,24 @@ namespace Assets.Societies {
         public abstract ComplexityLadderBase ActiveComplexityLadder { get; }
 
         public abstract bool  NeedsAreSatisfied { get; }
-        public abstract float SecondsOfUnsatisfiedNeeds { get; }
+        public abstract float SecondsOfUnsatisfiedNeeds { get; set; }
         public abstract float SecondsUntilComplexityDescent { get; }
 
         public abstract bool AscensionIsPermitted { get; set; }
 
         public abstract MapNodeBase Location { get; }
+
+        #endregion
+
+        #region events
+
+        public event EventHandler<ComplexityDefinitionEventArgs> CurrentComplexityChanged;
+
+        protected void RaiseCurrentComplexityChanged(ComplexityDefinitionBase newComplexity) {
+            if(CurrentComplexityChanged != null) {
+                CurrentComplexityChanged(this, new ComplexityDefinitionEventArgs(newComplexity));
+            }
+        }
 
         #endregion
 

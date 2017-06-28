@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 using Assets.BlobSites;
 using Assets.Core;
 
 namespace Assets.Map {
 
-    [Serializable]
+    [ExecuteInEditMode]
+    [SelectionBase]
     public class MapEdge : MapEdgeBase {
 
         #region instance fields and properties
@@ -23,20 +23,14 @@ namespace Assets.Map {
         }
 
         public override MapNodeBase FirstNode {
-            get { return _firstNode; }
+            get { return firstNode; }
         }
-        public void SetFirstNode(MapNodeBase value) {
-            _firstNode = value;
-        }
-        [SerializeField] private MapNodeBase _firstNode;
+        [SerializeField] private MapNodeBase firstNode;
 
         public override MapNodeBase SecondNode {
-            get { return _secondNode; }
+            get { return secondNode; }
         }
-        public void SetSecondNode(MapNodeBase value) {
-            _secondNode = value;
-        }
-        [SerializeField] private MapNodeBase _secondNode;
+        [SerializeField] private MapNodeBase secondNode;
 
         public override BlobSiteBase BlobSite {
             get { return _blobSite; }
@@ -46,7 +40,73 @@ namespace Assets.Map {
         }
         [SerializeField] private BlobSiteBase _blobSite;
 
+        public override MapGraphBase ParentGraph {
+            get { return _parentGraph; }
+            set {
+                _parentGraph = value;
+                if(_parentGraph == null) {
+                    DestroyOnNextUpdate = true;
+                }else {
+                    DestroyOnNextUpdate = false;
+                }
+            }
+        }
+        [SerializeField] private MapGraphBase _parentGraph;
+
         #endregion
+
+        public Transform DisplayComponent {
+            get { return _displayComponent; }
+            set { _displayComponent = value; }
+        }
+        [SerializeField] private Transform _displayComponent;
+
+        private bool DestroyOnNextUpdate = false;
+
+        #endregion
+
+        #region instance methods
+
+        #region Unity event methods
+
+        private void Start() {
+            var graphAbove = GetComponentInParent<MapGraphBase>();
+            if(graphAbove != null) {
+                graphAbove.SubscribeMapEdge(this);
+            }
+        }
+
+        private void Update() {
+            if(DestroyOnNextUpdate) {
+                DestroyImmediate(gameObject);
+            }
+        }
+
+        private void OnDestroy() {
+            if(ParentGraph != null) {
+                ParentGraph.UnsubscribeMapEdge(this);
+            }
+        }
+
+        #endregion
+
+        #region from MapEdgeBase
+
+        public override void RefreshOrientation() {
+            if(firstNode != null && secondNode != null) {
+                EdgeOrientationUtil.AlignTransformWithEndpoints(transform, firstNode.transform.position, secondNode.transform.position, false);
+                EdgeOrientationUtil.AlignTransformWithEndpoints(DisplayComponent, firstNode.transform.position, secondNode.transform.position, true);
+                RaiseOrientationRefreshed();
+            }
+        }
+
+        #endregion
+
+        public void SetNodes(MapNodeBase firstNode, MapNodeBase secondNode) {
+            this.firstNode = firstNode;
+            this.secondNode = secondNode;
+            RefreshOrientation();
+        }
 
         #endregion
 

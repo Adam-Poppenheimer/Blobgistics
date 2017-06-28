@@ -39,18 +39,18 @@ namespace Assets.BlobDistributors.ForTesting {
         }
         private ResourceBlobFactoryBase _blobFactory;
 
-        private BlobSitePrivateData BlobSitePrivateData {
+        private BlobSiteConfiguration BlobSitePrivateData {
             get {
                 if(_blobSitePrivateData == null) {
                     var hostingObject = new GameObject();
-                    _blobSitePrivateData = hostingObject.AddComponent<BlobSitePrivateData>();
+                    _blobSitePrivateData = hostingObject.AddComponent<BlobSiteConfiguration>();
                     _blobSitePrivateData.SetConnectionCircleRadius(2f);
                     _blobSitePrivateData.SetAlignmentStrategy(gameObject.AddComponent<BoxyBlobAlignmentStrategy>());
                 }
                 return _blobSitePrivateData;
             }
         }
-        private BlobSitePrivateData _blobSitePrivateData = null;
+        private BlobSiteConfiguration _blobSitePrivateData = null;
 
         #endregion
 
@@ -58,28 +58,35 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #region from MapGraphBase
 
-        public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override MapEdgeBase BuildMapEdge(MapNodeBase first, MapNodeBase second) {
             var hostingObject = new GameObject();
             var newEdge = hostingObject.AddComponent<MapEdge>();
-            newEdge.SetFirstNode(first);
-            newEdge.SetSecondNode(second);
+
+            newEdge.DisplayComponent = new GameObject().transform;
+            newEdge.SetNodes(first, second);
 
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
-            newBlobSite.PrivateData = hostingObject.AddComponent<MockBlobSitePrivateData>();
+            newBlobSite.Configuration = hostingObject.AddComponent<MockBlobSitePrivateData>();
             newEdge.SetBlobSite(newBlobSite);
             edges.Add(newEdge);
+
+            return newEdge;
         }
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
             var hostingObject = new GameObject();
             var newNode = hostingObject.AddComponent<MockMapNode>();
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
-            newBlobSite.PrivateData = BlobSitePrivateData;
+            newBlobSite.Configuration = BlobSitePrivateData;
 
             newNode.SetBlobSite(newBlobSite);
 
             nodes.Add(newNode);
             return newNode;
+        }
+
+        public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
+            throw new NotImplementedException();
         }
 
         public override void SubscribeNode(MapNodeBase node) {
@@ -116,25 +123,20 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool HasEdge(MapNodeBase first, MapNodeBase second) {
-            throw new NotImplementedException();
-        }
-
-        public override bool RemoveNode(MapNodeBase nodeToRemove) {
-            var retval = nodes.Remove(nodeToRemove);
+        public override void UnsubscribeNode(MapNodeBase nodeToRemove) {
+            nodes.Remove(nodeToRemove);
             DestroyImmediate(nodeToRemove.gameObject);
-            return retval;
         }
 
-        public override bool RemoveUndirectedEdge(MapEdgeBase edge) {
+        public override void DestroyMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override void DestroyMapEdge(MapNodeBase first, MapNodeBase second) {
             throw new NotImplementedException();
         }
 
-        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
+        public override void UnsubscribeMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
@@ -143,6 +145,19 @@ namespace Assets.BlobDistributors.ForTesting {
         }
 
         public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
+            throw new NotImplementedException();
+        }
+
+        public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
+            Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroyNode(MapNodeBase node) {
+            throw new NotImplementedException();
+        }
+
+        public override void SubscribeMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 

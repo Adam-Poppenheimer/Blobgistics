@@ -7,6 +7,7 @@ using UnityEngine;
 
 using Assets.Map;
 using Assets.Core;
+using System.Collections.ObjectModel;
 
 namespace Assets.ResourceDepots {
 
@@ -14,6 +15,15 @@ namespace Assets.ResourceDepots {
     public class ResourceDepotFactory : ResourceDepotFactoryBase {
 
         #region instance fields and properties
+
+        #region from ResourceDepotFactoryBase
+
+        public override ReadOnlyCollection<ResourceDepotBase> ResourceDepots {
+            get { return resourceDepots.AsReadOnly(); }
+        }
+        [SerializeField] private List<ResourceDepotBase> resourceDepots = new List<ResourceDepotBase>();
+
+        #endregion
 
         public UIControlBase UIControl {
             get { return _uiControl; }
@@ -24,7 +34,7 @@ namespace Assets.ResourceDepots {
         [SerializeField] private GameObject ResourceDepotPrefab;
         [SerializeField] private ResourceDepotProfile StartingProfile;
 
-        [SerializeField, HideInInspector] private List<ResourceDepotBase> InstantiatedDepots = new List<ResourceDepotBase>();
+        
 
         #endregion
 
@@ -33,15 +43,15 @@ namespace Assets.ResourceDepots {
         #region from ResourceDepotFactoryBase
 
         public override ResourceDepotBase GetDepotOfID(int id) {
-            return InstantiatedDepots.Find(depot => depot.ID == id);
+            return resourceDepots.Find(depot => depot.ID == id);
         }
 
         public override ResourceDepotBase GetDepotAtLocation(MapNodeBase location) {
-            return InstantiatedDepots.Find(depot => depot.Location == location);
+            return resourceDepots.Find(depot => depot.Location == location);
         }
 
         public override bool HasDepotAtLocation(MapNodeBase location) {
-            return InstantiatedDepots.Exists(depot => depot.Location == location);
+            return resourceDepots.Exists(depot => depot.Location == location);
         }
 
         public override ResourceDepotBase ConstructDepotAt(MapNodeBase location) {
@@ -70,8 +80,9 @@ namespace Assets.ResourceDepots {
 
             newDepot.transform.SetParent(location.transform, false);
             newDepot.name = "ResourceDepot at " + location.name;
+            newDepot.gameObject.SetActive(true);
 
-            InstantiatedDepots.Add(newDepot);
+            resourceDepots.Add(newDepot);
 
             newDepot.RefreshBlobSite();
             return newDepot;
@@ -83,7 +94,7 @@ namespace Assets.ResourceDepots {
         }
 
         public override void UnsubscribeDepot(ResourceDepotBase depot) {
-            InstantiatedDepots.Remove(depot);
+            resourceDepots.Remove(depot);
             depot.Location.BlobSite.ClearContents();
             depot.Location.BlobSite.ClearPermissionsAndCapacity();
         }

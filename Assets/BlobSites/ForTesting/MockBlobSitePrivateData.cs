@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.BlobSites.ForTesting {
 
-    public class MockBlobSitePrivateData : BlobSitePrivateDataBase {
+    public class MockBlobSitePrivateData : BlobSiteConfigurationBase {
 
         #region instance fields and properties
 

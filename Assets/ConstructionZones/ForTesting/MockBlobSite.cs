@@ -32,11 +32,7 @@ namespace Assets.ConstructionZones.ForTesting {
             }
         }
 
-        public override float ConnectionCircleRadius {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public override BlobSiteConfigurationBase Configuration { get; set; }
 
         #endregion
 
@@ -178,7 +174,7 @@ namespace Assets.ConstructionZones.ForTesting {
             PlacementPermissions[type] = isPermitted;
         }
 
-        public override void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary) {
+        public override void SetPlacementPermissionsAndCapacity(IntPerResourceDictionary placementSummary) {
             throw new NotImplementedException();
         }
 

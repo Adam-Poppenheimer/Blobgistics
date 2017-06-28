@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Assets.Blobs;
+using Assets.Map;
 using UnityCustomUtilities.Extensions;
 using UnityEngine;
 
@@ -22,47 +24,39 @@ namespace Assets.Societies.ForTesting {
         }
         private float _complexityDescentDuration = 1f;
 
-        public override string Name {
-            get { return _name; }
-        }
-        public void SetName(string value) {
-            _name = value;
-        }
-        private string _name = "DEFAULT";
-
-        public override ResourceSummary Needs {
+        public override IntPerResourceDictionary Needs {
             get {
                 if(_needs == null) {
-                    _needs = ResourceSummary.BuildResourceSummary(gameObject);
+                    _needs = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _needs;
             }
         }
-        public void SetNeeds(ResourceSummary value) {
+        public void SetNeeds(IntPerResourceDictionary value) {
             _needs = value;
         }
-        private ResourceSummary _needs = null;
+        private IntPerResourceDictionary _needs = null;
 
-        public override ResourceSummary Production {
+        public override IntPerResourceDictionary Production {
             get {
                 if(_production == null) {
-                    _production = ResourceSummary.BuildResourceSummary(gameObject);
+                    _production = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _production;
             }
         }
-        public void SetProduction(ResourceSummary value) {
+        public void SetProduction(IntPerResourceDictionary value) {
             _production = value;
         }
-        private ResourceSummary _production = null;
+        private IntPerResourceDictionary _production = null;
 
-        public override IEnumerable<ResourceSummary> Wants {
+        public override IEnumerable<IntPerResourceDictionary> Wants {
             get { return _wants; }
         }
-        public void SetWants(IEnumerable<ResourceSummary> value) {
+        public void SetWants(IEnumerable<IntPerResourceDictionary> value) {
             _wants = value;
         }
-        private IEnumerable<ResourceSummary> _wants = new List<ResourceSummary>();
+        private IEnumerable<IntPerResourceDictionary> _wants = new List<IntPerResourceDictionary>();
 
         public override uint ProductionCapacityCoefficient {
             get { return _productionCapacityCoefficient; }
@@ -104,28 +98,34 @@ namespace Assets.Societies.ForTesting {
         }
         private float _secondsToFullyConsumeNeeds = 1f;
 
-        public override ResourceSummary CostOfAscent {
+        public override IntPerResourceDictionary CostToAscendInto {
             get {
                 if(_costOfAscent == null) {
-                    _costOfAscent = ResourceSummary.BuildResourceSummary(gameObject);
+                    _costOfAscent = IntPerResourceDictionary.BuildSummary(gameObject);
                 }
                 return _costOfAscent;
             }
         }
-        public void SetCostOfAscent(ResourceSummary value) {
+        public void SetCostOfAscent(IntPerResourceDictionary value) {
             _costOfAscent = value;
         }
-        private ResourceSummary _costOfAscent = null;
-
-        public override bool IsPermittedToAscend {
-            get { return _isPermittedToAscend; }
-        }
-        public void SetIsPermittedToAscend(bool value) {
-            _isPermittedToAscend = value;
-        }
-        private bool _isPermittedToAscend = true;
+        private IntPerResourceDictionary _costOfAscent = null;
 
         public override Material MaterialForSociety {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<TerrainType> PermittedTerrains {
+            get { return _permittedTerrains.AsReadOnly(); }
+        }
+        public void SetPermittedTerrains(List<TerrainType> value) {
+            _permittedTerrains = value;
+        }
+        private List<TerrainType> _permittedTerrains = new List<TerrainType>();
+
+        public override int Score {
             get {
                 throw new NotImplementedException();
             }

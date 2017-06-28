@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Assets.Highways.ForTesting {
 
-    public class MockBlobSitePrivateData : BlobSitePrivateDataBase {
+    public class MockBlobSiteConfiguration : BlobSiteConfigurationBase {
 
         #region instance fields and properties
 

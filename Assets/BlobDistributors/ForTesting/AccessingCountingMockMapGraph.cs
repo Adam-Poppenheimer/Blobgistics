@@ -44,11 +44,15 @@ namespace Assets.BlobDistributors.ForTesting {
 
         #region from MapGraphBase
 
-        public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override MapEdgeBase BuildMapEdge(MapNodeBase first, MapNodeBase second) {
             throw new NotImplementedException();
         }
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
+            throw new NotImplementedException();
+        }
+
+        public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
             throw new NotImplementedException();
         }
 
@@ -72,23 +76,19 @@ namespace Assets.BlobDistributors.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override bool HasEdge(MapNodeBase first, MapNodeBase second) {
+        public override void UnsubscribeNode(MapNodeBase nodeToRemove) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveNode(MapNodeBase nodeToRemove) {
+        public override void DestroyMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveUndirectedEdge(MapEdgeBase edge) {
+        public override void DestroyMapEdge(MapNodeBase first, MapNodeBase second) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second) {
-            throw new NotImplementedException();
-        }
-
-        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
+        public override void UnsubscribeMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
@@ -97,6 +97,19 @@ namespace Assets.BlobDistributors.ForTesting {
         }
 
         public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
+            throw new NotImplementedException();
+        }
+
+        public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
+            Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
+            throw new NotImplementedException();
+        }
+
+        public override void SubscribeMapEdge(MapEdgeBase edge) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroyNode(MapNodeBase node) {
             throw new NotImplementedException();
         }
 

@@ -34,6 +34,9 @@ namespace Assets.Core {
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
+        private Dictionary<BlobHighwayBase, Material> OldMaterialOfHighlightedHighway =
+            new Dictionary<BlobHighwayBase, Material>();
+
         #endregion
 
         #region instance methods
@@ -51,7 +54,7 @@ namespace Assets.Core {
                 Debug.LogErrorFormat(MapNodeIDErrorMessage, node2ID);
                 return false;
             }else {
-                return MapGraph.HasEdge(node1, node2) && HighwayFactory.CanConstructHighwayBetween(node1, node2);
+                return MapGraph.GetEdge(node1, node2) != null && HighwayFactory.CanConstructHighwayBetween(node1, node2);
             }
         }
 
@@ -109,12 +112,7 @@ namespace Assets.Core {
         public override void SetHighwayUpkeepRequest(int highwayID, ResourceType resourceToChange, bool isBeingRequested) {
             var highwayToChange = HighwayFactory.GetHighwayOfID(highwayID);
             if(highwayToChange != null) {
-                switch(resourceToChange) {
-                    case ResourceType.Food:   highwayToChange.IsRequestingFood   = isBeingRequested; break;
-                    case ResourceType.Yellow: highwayToChange.IsRequestingYellow = isBeingRequested; break;
-                    case ResourceType.White:  highwayToChange.IsRequestingWhite  = isBeingRequested; break;
-                    case ResourceType.Blue:   highwayToChange.IsRequestingBlue   = isBeingRequested; break;
-                }
+                highwayToChange.SetUpkeepRequestedForResource(resourceToChange, isBeingRequested);
             }else {
                 Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
             }

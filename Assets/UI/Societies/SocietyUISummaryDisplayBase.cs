@@ -11,12 +11,11 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Societies {
 
-    public abstract class SocietyUISummaryDisplayBase : IntelligentPanel {
+    public abstract class SocietyUISummaryDisplayBase : IntelligentPanelBase {
 
         #region instance fields and properties
 
         public abstract SocietyUISummary CurrentSummary { get; set; }
-        public abstract bool CanBeDestroyed { get; set; }
 
         #endregion
 

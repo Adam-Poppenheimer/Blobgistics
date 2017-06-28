@@ -88,7 +88,7 @@ namespace Assets.Core.Editor {
             var highwayControl = BuildMockHighwayControl();
 
             int lastIDPassed = -1;
-            ResourceType lastResourceTypeChanged = ResourceType.Blue;
+            ResourceType lastResourceTypeChanged = ResourceType.HiTechGoods;
             bool lastPermissionGiven = false;
             highwayControl.SetHighwayPullingPermissionOnFirstEndpointForResourceCalled += delegate (int id, ResourceType typeChanged, bool newPermission) {
                 lastIDPassed = id;
@@ -127,7 +127,7 @@ namespace Assets.Core.Editor {
             var highwayControl = BuildMockHighwayControl();
 
             int lastIDPassed = -1;
-            ResourceType lastResourceTypeChanged = ResourceType.Blue;
+            ResourceType lastResourceTypeChanged = ResourceType.HiTechGoods;
             bool lastPermissionGiven = false;
             highwayControl.SetHighwayPullingPermissionOnSecondEndpointForResourceCalled += delegate (int id, ResourceType typeChanged, bool newPermission) {
                 lastIDPassed = id;
@@ -160,7 +160,7 @@ namespace Assets.Core.Editor {
             var highwayControl = BuildMockHighwayControl();
 
             int lastIDPassed = -1;
-            ResourceType lastResourceTypeChanged = ResourceType.Blue;
+            ResourceType lastResourceTypeChanged = ResourceType.HiTechGoods;
             bool lastRequestMade = false;
             highwayControl.SetHighwayUpkeepRequestCalled += delegate(int id, ResourceType type, bool isRequested) {
                 lastIDPassed = id;
@@ -186,25 +186,25 @@ namespace Assets.Core.Editor {
             Assert.IsTrue(lastRequestMade, "HighwayControl was passed an incorrect isBeingRequested");
 
             lastIDPassed = -1;
-            lastResourceTypeChanged = ResourceType.Blue;
+            lastResourceTypeChanged = ResourceType.HiTechGoods;
 
-            highwayDisplay.RaiseUpkeepRequestedEvent(ResourceType.Yellow, false);
+            highwayDisplay.RaiseUpkeepRequestedEvent(ResourceType.Textiles, false);
 
             Assert.AreEqual(summaryToPush.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
-            Assert.AreEqual(ResourceType.Yellow, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+            Assert.AreEqual(ResourceType.Textiles, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
             Assert.IsFalse(lastRequestMade, "HighwayControl was passed an incorrect isBeingRequested");
 
             lastIDPassed = -1;
-            lastResourceTypeChanged = ResourceType.Blue;
+            lastResourceTypeChanged = ResourceType.HiTechGoods;
 
-            highwayDisplay.RaiseUpkeepRequestedEvent(ResourceType.White, true);
+            highwayDisplay.RaiseUpkeepRequestedEvent(ResourceType.ServiceGoods, true);
 
             Assert.AreEqual(summaryToPush.ID, lastIDPassed, "HighwayControl was passed an incorrect ID");
-            Assert.AreEqual(ResourceType.White, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
+            Assert.AreEqual(ResourceType.ServiceGoods, lastResourceTypeChanged, "HighwayControl was passed an incorrect ResourceType");
             Assert.IsTrue(lastRequestMade, "HighwayControl was passed an incorrect isBeingRequested");
 
             lastIDPassed = -1;
-            lastResourceTypeChanged = ResourceType.Blue;
+            lastResourceTypeChanged = ResourceType.HiTechGoods;
         }
 
         #endregion

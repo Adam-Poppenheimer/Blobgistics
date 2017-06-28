@@ -44,18 +44,13 @@ namespace Assets.Core.ForTesting {
             get { return GetInstanceID(); }
         }
 
-        public override bool IsRequestingBlue { get; set; }
-
-        public override bool IsRequestingFood { get; set; }
-
-        public override bool IsRequestingWhite { get; set; }
-
-        public override bool IsRequestingYellow { get; set; }
-
         public override int Priority { get; set; }
 
-        public override BlobHighwayProfileBase Profile {
+        public override BlobHighwayProfile Profile {
             get {
+                throw new NotImplementedException();
+            }
+            set {
                 throw new NotImplementedException();
             }
         }
@@ -65,6 +60,36 @@ namespace Assets.Core.ForTesting {
         }
         public MapNodeBase secondEndpoint;
 
+        public override ResourceBlobFactoryBase BlobFactory {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override BlobHighwayFactoryBase ParentFactory {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override UIControlBase UIControl {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         private Dictionary<ResourceType, bool> FirstEndpointPermissions = 
@@ -73,11 +98,18 @@ namespace Assets.Core.ForTesting {
         private Dictionary<ResourceType, bool> SecondEndpointPermissions =
             new Dictionary<ResourceType, bool>();
 
+        private Dictionary<ResourceType, bool> UpkeepsRequested =
+            new Dictionary<ResourceType, bool>();
+
         #endregion
 
         #region instance methods
 
         #region from BlobHighwayBase
+
+        public override void SetEndpoints(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            throw new NotImplementedException();
+        }
 
         public override bool CanPullFromFirstEndpoint() {
             throw new NotImplementedException();
@@ -119,10 +151,20 @@ namespace Assets.Core.ForTesting {
             SecondEndpointPermissions[type] = isPermitted;
         }
 
+        public override bool GetUpkeepRequestedForResource(ResourceType type) {
+            bool retval;
+            UpkeepsRequested.TryGetValue(type, out retval);
+            return retval;
+        }
+
+        public override void SetUpkeepRequestedForResource(ResourceType type, bool isBeingRequested) {
+            UpkeepsRequested[type] = isBeingRequested;
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

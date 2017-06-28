@@ -204,8 +204,8 @@ namespace Assets.Highways.Editor {
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
 
-            var greenBlob = BuildRealResourceBlob(ResourceType.Yellow);
-            var blueBlob  = BuildRealResourceBlob(ResourceType.White );
+            var greenBlob = BuildRealResourceBlob(ResourceType.Textiles);
+            var blueBlob  = BuildRealResourceBlob(ResourceType.ServiceGoods );
 
             //Execution
             var canPushGreen = tubeToTest.CanPushBlobInto(greenBlob);
@@ -324,12 +324,12 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.Yellow, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Textiles, true);
 
             ResourceBlobBase[] blobsToManipulate = new ResourceBlobBase[] {
                 BuildRealResourceBlob(ResourceType.Food),
                 BuildRealResourceBlob(ResourceType.Food),
-                BuildRealResourceBlob(ResourceType.Yellow),
+                BuildRealResourceBlob(ResourceType.Textiles),
                 BuildRealResourceBlob(ResourceType.Food),
                 BuildRealResourceBlob(ResourceType.Food),
             };
@@ -359,12 +359,12 @@ namespace Assets.Highways.Editor {
             tubeToTest.TransportSpeedPerSecond = 1f;
 
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.Yellow, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Textiles, true);
 
             ResourceBlobBase[] blobsToManipulate = new ResourceBlobBase[] {
                 BuildRealResourceBlob(ResourceType.Food),
                 BuildRealResourceBlob(ResourceType.Food),
-                BuildRealResourceBlob(ResourceType.Yellow),
+                BuildRealResourceBlob(ResourceType.Textiles),
                 BuildRealResourceBlob(ResourceType.Food),
                 BuildRealResourceBlob(ResourceType.Food),
             };
@@ -387,14 +387,14 @@ namespace Assets.Highways.Editor {
 
             //Execution
             tubeToTest.SetPermissionForResourceType(ResourceType.Food, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.Yellow, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.White, true);
-            tubeToTest.SetPermissionForResourceType(ResourceType.White, false);
+            tubeToTest.SetPermissionForResourceType(ResourceType.Textiles, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.ServiceGoods, true);
+            tubeToTest.SetPermissionForResourceType(ResourceType.ServiceGoods, false);
 
             //Validation
             Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Food),   "Food is not permitted");
-            Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Yellow), "Yellow is not permitted");
-            Assert.False(tubeToTest.GetPermissionForResourceType(ResourceType.White), "White is falsely permitted");
+            Assert.That(tubeToTest.GetPermissionForResourceType(ResourceType.Textiles), "Textiles is not permitted");
+            Assert.False(tubeToTest.GetPermissionForResourceType(ResourceType.ServiceGoods), "ServiceGoods is falsely permitted");
         }
 
         #endregion
@@ -543,6 +543,7 @@ namespace Assets.Highways.Editor {
         private BlobTube BuildBlobTube(MockBlobTubePrivateData privateData) {
             var newBlobTube = privateData.gameObject.AddComponent<BlobTube>();
             newBlobTube.PrivateData = privateData;
+            newBlobTube.PermissionsForBlobTypes = newBlobTube.gameObject.AddComponent<BoolPerResourceDictionary>();
             return newBlobTube;
         }
 

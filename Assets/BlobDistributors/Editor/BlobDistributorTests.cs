@@ -1,7 +1,6 @@
 ﻿using System;
 
 using UnityEngine;
-using UnityEditor;
 
 using NUnit.Framework;
 
@@ -418,9 +417,9 @@ namespace Assets.BlobDistributors.Editor {
             upNode.BlobSite.SetCapacityForResourceType(ResourceType.Food, 30);
             upNode.BlobSite.TotalCapacity = 100;
 
-            mapGraph.AddUndirectedEdge(centerNode, leftNode);
-            mapGraph.AddUndirectedEdge(centerNode, rightNode);
-            mapGraph.AddUndirectedEdge(centerNode, upNode);
+            mapGraph.BuildMapEdge(centerNode, leftNode);
+            mapGraph.BuildMapEdge(centerNode, rightNode);
+            mapGraph.BuildMapEdge(centerNode, upNode);
         }
 
         private void SetUpHighwayFactory(BlobHighwayFactoryBase highwayFactory,
@@ -437,11 +436,10 @@ namespace Assets.BlobDistributors.Editor {
         }
 
         private BlobHighwayProfile BuildBlobHighwayProfile(float blobSpeedPerSecond, int capacity, float blobPullCooldownInSeconds) {
-            var hostingObject = new GameObject();
-            var newProfile = hostingObject.AddComponent<BlobHighwayProfile>();
-            newProfile.SetBlobSpeedPerSecond(blobSpeedPerSecond);
-            newProfile.SetCapacity(capacity);
-            newProfile.SetBlobPullCooldownInSeconds(blobPullCooldownInSeconds);
+            var newProfile = new BlobHighwayProfile();
+            newProfile.BlobSpeedPerSecond = blobSpeedPerSecond;
+            newProfile.Capacity = capacity;
+            newProfile.BlobPullCooldownInSeconds = blobPullCooldownInSeconds;
             return newProfile;
         }
 

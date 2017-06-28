@@ -32,8 +32,12 @@ namespace Assets.ResourceDepots.ForTesting {
             }
         }
 
-        public override float ConnectionCircleRadius {
+        public override BlobSiteConfigurationBase Configuration {
             get {
+                throw new NotImplementedException();
+            }
+
+            set {
                 throw new NotImplementedException();
             }
         }
@@ -155,7 +159,7 @@ namespace Assets.ResourceDepots.ForTesting {
             PlacementPermissions[type] = isPermitted;
         }
 
-        public override void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary) {
+        public override void SetPlacementPermissionsAndCapacity(IntPerResourceDictionary placementSummary) {
             throw new NotImplementedException();
         }
 

@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Blobs;
+using System.Collections.ObjectModel;
 
 namespace Assets.Societies.ForTesting {
 
@@ -13,47 +14,31 @@ namespace Assets.Societies.ForTesting {
 
         #region instance fields and properties
 
-        public int StartingIndex { get; set; }
-
-        public List<ComplexityDefinitionBase> AscentChain {
-            get { return _ascentChain; }
-            set { _ascentChain = value; }
-        }
-
-        private List<ComplexityDefinitionBase> _ascentChain = new List<ComplexityDefinitionBase>() { null };
-
+        public List<ComplexityDefinitionBase> AscentChain;
+        public int StartingIndex;
+        
         #endregion
 
         #region instance methods
 
         #region from IComplexityLadder
 
-        public override ComplexityDefinitionBase GetAscentTransition(ComplexityDefinitionBase currentComplexity) {
-            if(AscentChain == null) {
-                return null;
-            }
-            var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
-            if(indexOfCurrent == -1 || indexOfCurrent == AscentChain.Count - 1) {
-                return null;
+        public override ReadOnlyCollection<ComplexityDefinitionBase> GetAscentTransitions(ComplexityDefinitionBase currentComplexity) {
+            int indexOfCurrent = AscentChain.IndexOf(currentComplexity);
+            if(indexOfCurrent < 0 || indexOfCurrent == AscentChain.Count - 1) {
+                return new List<ComplexityDefinitionBase>().AsReadOnly();
             }else {
-                return AscentChain[indexOfCurrent + 1];
+                return new List<ComplexityDefinitionBase>() { AscentChain[indexOfCurrent + 1] }.AsReadOnly();
             }
         }
 
-        public override ComplexityDefinitionBase GetDescentTransition(ComplexityDefinitionBase currentComplexity) {
-            if(AscentChain == null) {
-                return null;
-            }
-            var indexOfCurrent = AscentChain.FindIndex(x => x == currentComplexity);
-            if(indexOfCurrent > 0) {
-                return AscentChain[indexOfCurrent - 1];
+        public override ReadOnlyCollection<ComplexityDefinitionBase> GetDescentTransitions(ComplexityDefinitionBase currentComplexity) {
+            int indexOfCurrent = AscentChain.IndexOf(currentComplexity);
+            if(indexOfCurrent < 0 || indexOfCurrent == 0) {
+                return new List<ComplexityDefinitionBase>().AsReadOnly();
             }else {
-                return null;
+                return new List<ComplexityDefinitionBase>() { AscentChain[indexOfCurrent - 1] }.AsReadOnly();
             }
-        }
-
-        public override ComplexityDefinitionBase GetStartingComplexity() {
-            return AscentChain[StartingIndex];
         }
 
         public override bool ContainsComplexity(ComplexityDefinitionBase complexity) {

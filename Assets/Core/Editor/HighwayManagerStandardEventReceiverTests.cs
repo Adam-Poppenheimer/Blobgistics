@@ -28,8 +28,9 @@ namespace Assets.Core.Editor {
             receiverToTest.HighwayManagerDisplay = managerDisplay;
             receiverToTest.HighwayManagerControl = managerControl;
 
-            var summaryToPush = new HighwayManagerUISummary();
-            summaryToPush.ID = 42;
+            var mockManager = BuildMockHighwayManager();
+            mockManager.SetID(42);
+            var summaryToPush = new HighwayManagerUISummary(mockManager);
 
             //Execution
             receiverToTest.PushSelectEvent(summaryToPush, null);
@@ -54,8 +55,9 @@ namespace Assets.Core.Editor {
             receiverToTest.HighwayManagerDisplay = managerDisplay;
             receiverToTest.HighwayManagerControl = managerControl;
 
-            var summaryToPush = new HighwayManagerUISummary();
-            summaryToPush.ID = 42;
+            var mockManager = BuildMockHighwayManager();
+            mockManager.SetID(42);
+            var summaryToPush = new HighwayManagerUISummary(mockManager);
 
             managerDisplay.CurrentSummary = summaryToPush;
             managerDisplay.Activate();
@@ -82,8 +84,9 @@ namespace Assets.Core.Editor {
             receiverToTest.HighwayManagerDisplay = managerDisplay;
             receiverToTest.HighwayManagerControl = managerControl;
 
-            var summaryToPush = new HighwayManagerUISummary();
-            summaryToPush.ID = 42;
+            var mockManager = BuildMockHighwayManager();
+            mockManager.SetID(42);
+            var summaryToPush = new HighwayManagerUISummary(mockManager);
 
             managerDisplay.CurrentSummary = summaryToPush;
             managerDisplay.Activate();
@@ -109,6 +112,10 @@ namespace Assets.Core.Editor {
 
         private HighwayManagerStandardEventReceiver BuildHighwayManagerReceiver() {
             return (new GameObject()).AddComponent<HighwayManagerStandardEventReceiver>();
+        }
+
+        private MockHighwayManager BuildMockHighwayManager() {
+            return (new GameObject()).AddComponent<MockHighwayManager>();
         }
 
         #endregion

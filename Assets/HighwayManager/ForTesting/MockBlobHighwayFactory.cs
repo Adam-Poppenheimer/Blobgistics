@@ -18,10 +18,10 @@ namespace Assets.HighwayManager.ForTesting {
         #region from BlobHighwayFactoryBase
 
         public override ReadOnlyCollection<BlobHighwayBase> Highways {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return highways.AsReadOnly(); }
         }
+
+        private List<BlobHighwayBase> highways = new List<BlobHighwayBase>();
 
         #endregion
 
@@ -38,14 +38,16 @@ namespace Assets.HighwayManager.ForTesting {
         public override BlobHighwayBase ConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             var hostingObject = new GameObject();
             var newHighway = hostingObject.AddComponent<MockBlobHighway>();
-            newHighway.SetFirstEndpoint(firstEndpoint);
-            newHighway.SetSecondEndpoint(secondEndpoint);
-            RaiseHighwayConstructed(newHighway);
+            newHighway.SetEndpoints(firstEndpoint, secondEndpoint);
+            highways.Add(newHighway);
+
+            RaiseHighwaySubscribed(newHighway);
             return newHighway;
         }
 
         public override void DestroyHighway(BlobHighwayBase highway) {
-            RaiseHighwayBeingDestroyed(highway);
+            highways.Remove(highway);
+            RaiseHighwayUnsubscribed(highway);
             DestroyImmediate(highway.gameObject);
         }
 
@@ -58,6 +60,14 @@ namespace Assets.HighwayManager.ForTesting {
         }
 
         public override bool HasHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
+            throw new NotImplementedException();
+        }
+
+        public override void SubscribeHighway(BlobHighwayBase highway) {
+            throw new NotImplementedException();
+        }
+
+        public override void UnsubscribeHighway(BlobHighwayBase highway) {
             throw new NotImplementedException();
         }
 

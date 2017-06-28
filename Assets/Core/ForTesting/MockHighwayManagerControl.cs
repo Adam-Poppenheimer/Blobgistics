@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Assets.Highways;
 
 namespace Assets.Core.ForTesting {
 
@@ -23,10 +24,14 @@ namespace Assets.Core.ForTesting {
             }
         }
 
+        public override IEnumerable<BlobHighwayUISummary> GetHighwaysManagedByManagerOfID(int managerID) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

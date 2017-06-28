@@ -33,18 +33,24 @@ namespace Assets.Core.ForTesting {
 
         #region from MapGraphBase
 
-        public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override MapEdgeBase BuildMapEdge(MapNodeBase first, MapNodeBase second) {
             var newEdge = (new GameObject()).AddComponent<MockMapEdge>();
             newEdge.firstNode = first;
             newEdge.secondNode = second;
 
             edges.Add(newEdge);
+
+            return newEdge;
         }
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
             var newNode = (new GameObject()).AddComponent<MockMapNode>();
             nodes.Add(newNode);
             return newNode;
+        }
+
+        public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
+            throw new NotImplementedException();
         }
 
         public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
@@ -72,27 +78,23 @@ namespace Assets.Core.ForTesting {
             return nodes.Where(node => node.ID == id).FirstOrDefault();
         }
 
-        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
-            throw new NotImplementedException();
-        }
-
         public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
             throw new NotImplementedException();
         }
 
-        public override bool HasEdge(MapNodeBase first, MapNodeBase second) {
-            return GetEdge(first, second) != null;
-        }
-
-        public override bool RemoveNode(MapNodeBase nodeToRemove) {
+        public override void UnsubscribeNode(MapNodeBase nodeToRemove) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveUndirectedEdge(MapEdgeBase edge) {
+        public override void DestroyMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
-        public override bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override void DestroyMapEdge(MapNodeBase first, MapNodeBase second) {
+            throw new NotImplementedException();
+        }
+
+        public override void UnsubscribeMapEdge(MapEdgeBase edge) {
             throw new NotImplementedException();
         }
 
@@ -100,10 +102,23 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
+            Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
+            throw new NotImplementedException();
+        }
+
+        public override void DestroyNode(MapNodeBase node) {
+            throw new NotImplementedException();
+        }
+
+        public override void SubscribeMapEdge(MapEdgeBase edge) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

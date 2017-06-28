@@ -10,7 +10,7 @@ using Assets.HighwayManager;
 
 namespace Assets.UI.HighwayManager {
 
-    public abstract class HighwayManagerSummaryDisplayBase : IntelligentPanel {
+    public abstract class HighwayManagerSummaryDisplayBase : IntelligentPanelBase {
 
         #region instance fields and properties
 

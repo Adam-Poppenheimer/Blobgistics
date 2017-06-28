@@ -29,38 +29,6 @@ namespace Assets.HighwayManager {
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
-        public override float EfficiencyGainFromFood {
-            get { return _efficiencyGainFromFood; }
-        }
-        public void SetEfficiencyGainFromFood(float value) {
-            _efficiencyGainFromFood = value;
-        }
-        [SerializeField] private float _efficiencyGainFromFood = 1f;
-
-        public override float EfficiencyGainFromYellow {
-            get { return _efficiencyGainFromYellow; }
-        }
-        public void SetEfficiencyGainFromYellow(float value) {
-            _efficiencyGainFromYellow = value;
-        }
-        [SerializeField] private float _efficiencyGainFromYellow;
-
-        public override float EfficiencyGainFromWhite {
-            get { return _efficiencyGainFromWhite; }
-        }
-        public void SetEfficiencyGainFromWhite(float value) {
-            _efficiencyGainFromWhite = value;
-        }
-        [SerializeField] private float _efficiencyGainFromWhite = 1f;
-
-        public override float EfficiencyGainFromBlue {
-            get { return _efficiencyGainFromBlue; }
-        }
-        public void SetEfficiencyGainFromBlue(float value) {
-            _efficiencyGainFromBlue = value;
-        }
-        [SerializeField] private float _efficiencyGainFromBlue = 1f;
-
         public override int NeedStockpileCoefficient {
             get { return _needStockpileCoefficient; }
         }
@@ -92,6 +60,15 @@ namespace Assets.HighwayManager {
             _uiControl = value;
         }
         [SerializeField] private UIControlBase _uiControl;
+
+        public override IntPerResourceDictionary EfficiencyGainFromResource {
+            get { return _efficiencyGainFromResource; }
+        }
+        public void SetEfficiencyGainFromResource(IntPerResourceDictionary value) {
+            _efficiencyGainFromResource = value;
+        }
+        [SerializeField] private IntPerResourceDictionary _efficiencyGainFromResource;
+
     }
 
 }

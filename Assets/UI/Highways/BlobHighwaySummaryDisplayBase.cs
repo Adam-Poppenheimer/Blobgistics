@@ -12,7 +12,7 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Highways {
 
-    public abstract class BlobHighwaySummaryDisplayBase : IntelligentPanel {
+    public abstract class BlobHighwaySummaryDisplayBase : IntelligentPanelBase {
 
         #region instance fields and properties
 
@@ -41,12 +41,6 @@ namespace Assets.UI.Highways {
 
         protected void RaiseResourceRequestedForUpkeep(ResourceType type, bool isBeingRequested) {
             RaiseEvent(ResourceRequestedForUpkeep, new UpkeepRequestEventArgs(type, isBeingRequested));
-        }
-
-        protected void RaiseEvent<T>(EventHandler<T> handler, T e) where T : EventArgs{
-            if(handler != null) {
-                handler(this, e);
-            }
         }
 
         #endregion

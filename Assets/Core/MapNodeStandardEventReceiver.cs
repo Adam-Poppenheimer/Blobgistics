@@ -55,6 +55,12 @@ namespace Assets.Core {
         }
         [SerializeField] private ConstructionPanelBase _constructionPanel;
 
+        [SerializeField] private AudioSource HighwayDrawingAudio;
+        [SerializeField] private float HighwayDrawingVolumeWhileMoving;
+        [SerializeField] private float AudioDeltaPerSecond;
+
+        private bool ReceivedDragEventLastFrame = false;
+
         #endregion
 
         #region instance methods
@@ -71,6 +77,21 @@ namespace Assets.Core {
             }
         }
 
+        private void Update() {
+            if(ReceivedDragEventLastFrame) {
+                ReceivedDragEventLastFrame = false;
+                HighwayDrawingAudio.volume = Math.Min(
+                    HighwayDrawingVolumeWhileMoving,
+                    HighwayDrawingAudio.volume + AudioDeltaPerSecond * Time.deltaTime
+                );
+            }else {
+                HighwayDrawingAudio.volume = Math.Max(
+                    0,
+                    HighwayDrawingAudio.volume - AudioDeltaPerSecond * Time.deltaTime
+                );
+            }
+        }
+
         #endregion
 
         #region from TargetedEventReceiverBase<MapNodeUISummary>
@@ -79,10 +100,13 @@ namespace Assets.Core {
             HighwayGhost.Clear();
             HighwayGhost.FirstEndpoint = source;
             HighwayGhost.Activate();
+            HighwayDrawingAudio.volume = HighwayDrawingVolumeWhileMoving;
+            HighwayDrawingAudio.Play();
         }
 
         public override void PushDragEvent(MapNodeUISummary source, PointerEventData eventData) {
             HighwayGhost.UpdateWithEventData(eventData);
+            ReceivedDragEventLastFrame = true;
         }
 
         public override void PushEndDragEvent(MapNodeUISummary source, PointerEventData eventData) {
@@ -96,6 +120,7 @@ namespace Assets.Core {
             }
             HighwayGhost.Clear();
             HighwayGhost.Deactivate();
+            HighwayDrawingAudio.Stop();
         }
 
         public override void PushPointerClickEvent(MapNodeUISummary source, PointerEventData eventData) { }

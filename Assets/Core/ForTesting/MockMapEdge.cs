@@ -33,6 +33,20 @@ namespace Assets.Core.ForTesting {
         }
         public MapNodeBase secondNode;
 
+        public override MapGraphBase ParentGraph { get; set; }
+
+        #endregion
+
+        #endregion
+
+        #region instance methods
+
+        #region from MapEdgeBase
+
+        public override void RefreshOrientation() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

@@ -14,6 +14,7 @@ using Assets.Highways;
 
 namespace Assets.Map {
 
+    [ExecuteInEditMode]
     public class MapGraph : MapGraphBase {
 
         #region instance fields and properties
@@ -21,34 +22,16 @@ namespace Assets.Map {
         #region from MapGraphBase
 
         public override ReadOnlyCollection<MapNodeBase> Nodes {
-            get { return NodeSet.AsReadOnly(); }
+            get { return nodes.AsReadOnly(); }
         }
-        [SerializeField, HideInInspector] private List<MapNodeBase> NodeSet = new List<MapNodeBase>();
+        private List<MapNodeBase> nodes = new List<MapNodeBase>();
 
         public override ReadOnlyCollection<MapEdgeBase> Edges {
-            get { return EdgeSet.AsReadOnly(); }
+            get { return edges.AsReadOnly(); }
         }
-        [SerializeField, HideInInspector] private List<MapEdgeBase> EdgeSet = new List<MapEdgeBase>();
+        private List<MapEdgeBase> edges = new List<MapEdgeBase>();
 
         #endregion
-
-        public BlobSiteFactoryBase BlobSiteFactory {
-            get {
-                if(_blobSiteFactory == null) {
-                    throw new InvalidOperationException("BlobSiteFactory is uninitialized");
-                } else {
-                    return _blobSiteFactory;
-                }
-            }
-            set {
-                if(value == null) {
-                    throw new ArgumentNullException("value");
-                } else {
-                    _blobSiteFactory = value;
-                }
-            }
-        }
-        [SerializeField] private BlobSiteFactoryBase _blobSiteFactory;
 
         public UIControlBase UIControl {
             get { return _uiControl; }
@@ -56,32 +39,71 @@ namespace Assets.Map {
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        public TerrainMaterialRegistry TerrainMaterialRegistry {
+            get { return _terrainMaterialRegistry; }
+            set { _terrainMaterialRegistry = value; }
+        }
+        [SerializeField] private TerrainMaterialRegistry _terrainMaterialRegistry;
+
+        public TerrainGrid TerrainTileGrid {
+            get { return _terrainTileGrid; }
+            set { _terrainTileGrid = value; }
+        }
+        [SerializeField] private TerrainGrid _terrainTileGrid;
+
+        public MapGraphAlgorithmSetBase AlgorithmSet {
+            get { return _algorithmSet; }
+            set { _algorithmSet = value; }
+        }
+        [SerializeField] private MapGraphAlgorithmSetBase _algorithmSet;
+
+        public BlobSiteConfigurationBase BlobSiteConfiguration {
+            get { return _blobSiteConfiguration; }
+            set { _blobSiteConfiguration = value; }
+        }
+        [SerializeField] private BlobSiteConfigurationBase _blobSiteConfiguration;
+
         [SerializeField] private GameObject NodePrefab;
         [SerializeField] private GameObject EdgePrefab;
 
-        private MapNodeShortestPathLogicBase ShortestPathLogic = MapNodeShortestPathLogic.Instance;
-
-        private DictionaryOfLists<MapNodeBase, MapNodeBase> NeighborsOfNode {
-            get {
-                if(_neighborsOfNode == null) {
-                    _neighborsOfNode = new DictionaryOfLists<MapNodeBase, MapNodeBase>();
-                    foreach(var edge in EdgeSet) {
-                        _neighborsOfNode.AddElementToList(edge.FirstNode, edge.SecondNode);
-                        _neighborsOfNode.AddElementToList(edge.SecondNode, edge.FirstNode);
-                    }
-                }
-                return _neighborsOfNode;
-            }
-        }
-        private DictionaryOfLists<MapNodeBase, MapNodeBase> _neighborsOfNode = null;
+        private DictionaryOfLists<MapNodeBase, MapNodeBase> NeighborsOfNode = 
+            new DictionaryOfLists<MapNodeBase, MapNodeBase>();
 
         #endregion
 
         #region instance methods
 
+        #region Unity event methods
+
+        private void OnDestroy() {
+            foreach(var node in new List<MapNodeBase>(nodes)) {
+                UnsubscribeNode(node);
+            }
+            foreach(var edge in new List<MapEdgeBase>(edges)) {
+                UnsubscribeMapEdge(edge);
+            }
+            nodes.Clear();
+            edges.Clear();
+        }
+
+        private void Start() {
+            foreach(var node in GetComponentsInChildren<MapNodeBase>()) {
+                SubscribeNode(node);
+            }
+            foreach(var edge in GetComponentsInChildren<MapEdgeBase>()) {
+                SubscribeMapEdge(edge);
+            }
+        }
+
+        #endregion
+
         #region from MapGraphBase
 
         public override MapNodeBase BuildNode(Vector3 localPosition) {
+            return BuildNode(localPosition, TerrainType.Grassland);
+        }
+
+        public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
             MapNode newNode = null;
             if(NodePrefab != null) {
                 var nodeObject = Instantiate(NodePrefab, this.transform, false) as GameObject;
@@ -92,31 +114,81 @@ namespace Assets.Map {
             }else {
                 var hostingObject = new GameObject();
                 newNode = hostingObject.AddComponent<MapNode>();
+                newNode.SetBlobSite(newNode.gameObject.AddComponent<BlobSite>());
             }
 
-            newNode.transform.SetParent(this.transform, false);
+            newNode.Terrain = startingTerrain;
             newNode.transform.localPosition = localPosition;
-            newNode.SetManagingGraph(this);
-            newNode.SetBlobSite(BlobSiteFactory.ConstructBlobSite(newNode.gameObject));
-            newNode.UIControl = UIControl;
+            newNode.transform.SetParent(this.transform);
 
             SubscribeNode(newNode);
+
             return newNode;
         }
 
+        public override void DestroyNode(MapNodeBase node) {
+            if(node == null) {
+                throw new ArgumentNullException("node");
+            }
+            UnsubscribeNode(node);
+            DestroyImmediate(node.gameObject);
+        }
+
         public override void SubscribeNode(MapNodeBase node) {
-            if(!NodeSet.Contains(node)) {
-                NodeSet.Add(node);
+            if(node == null) {
+                throw new ArgumentNullException("node");
+            }
+            if(!nodes.Contains(node)) {
+                nodes.Add(node);
+
+                node.ParentGraph = this;
+                node.UIControl = UIControl;
+                node.BlobSite.Configuration = BlobSiteConfiguration;
+                node.TerrainMaterialRegistry = TerrainMaterialRegistry;
+                node.TerrainGrid = TerrainTileGrid;
+
+                node.TransformChanged += Node_TransformChanged;
+
                 node.name = string.Format("Node [{0}]", node.ID);
+
+                node.ClearAssociatedTiles();
             }
         }
 
-        public override void AddUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override void UnsubscribeNode(MapNodeBase nodeToRemove) {
+            if(nodeToRemove == null) {
+                throw new ArgumentNullException("node");
+            }
+
+            nodeToRemove.TransformChanged -= Node_TransformChanged;
+
+            bool existedInGraph = nodes.Remove(nodeToRemove);
+            if(existedInGraph && edges != null) {
+                var edgesToRemove = new List<MapEdgeBase>(edges.Where(delegate(MapEdgeBase edge){
+                    return edge.FirstNode == nodeToRemove || edge.SecondNode == nodeToRemove;
+                }));
+                foreach(var edge in edgesToRemove){
+                    if(edge != null) {
+                        UnsubscribeMapEdge(edge);
+                    }
+                }
+            }
+            nodeToRemove.ParentGraph = null;
+            nodeToRemove.UIControl = null;
+            nodeToRemove.TerrainMaterialRegistry = null;
+            if(nodeToRemove.BlobSite != null) {
+                nodeToRemove.BlobSite.Configuration = null;
+            }
+
+            RaiseMapNodeUnsubscribed(nodeToRemove);
+        }
+
+        public override MapEdgeBase BuildMapEdge(MapNodeBase first, MapNodeBase second) {
             if(first == null) {
                 throw new ArgumentNullException("first");
             }else if(second == null) {
                 throw new ArgumentNullException("second");
-            }else if(HasEdge(first, second)) {
+            }else if(GetEdge(first, second) != null) {
                 throw new MapGraphException("There already exists and edge between these two MapNodes");
             }
 
@@ -127,86 +199,82 @@ namespace Assets.Map {
             }else {
                 var hostingObject = new GameObject();
                 newEdge = hostingObject.AddComponent<MapEdge>();
+                newEdge.DisplayComponent = new GameObject().transform;
+                newEdge.SetBlobSite(newEdge.gameObject.AddComponent<BlobSite>());
             }
 
-            var outerHost = new GameObject();
-
-            newEdge.transform.SetParent(outerHost.transform, false);
-            outerHost.transform.SetParent(this.transform, false);
-            EdgeOrientationUtil.AlignTransformWithEndpoints(outerHost.transform, first.transform.position, second.transform.position, false);
-            EdgeOrientationUtil.AlignTransformWithEndpoints(newEdge.transform, first.transform.position, second.transform.position, true);
             newEdge.transform.position += Vector3.forward;
 
-            newEdge.SetFirstNode(first);
-            newEdge.SetSecondNode(second);
-            newEdge.SetBlobSite(BlobSiteFactory.ConstructBlobSite(outerHost.gameObject));
-            outerHost.gameObject.name = string.Format("Edge [{0}]", newEdge.ID);
+            newEdge.SetNodes(first, second);
+
             newEdge.gameObject.name = string.Format("Edge [{0}]", newEdge.ID);
 
-            EdgeSet.Add(newEdge);
-            NeighborsOfNode.AddElementToList(first, second);
-            NeighborsOfNode.AddElementToList(second, first);
+            newEdge.transform.SetParent(first.transform.parent);
+            SubscribeMapEdge(newEdge);
+
+            return newEdge;
         }
 
-        public override bool RemoveUndirectedEdge(MapNodeBase first, MapNodeBase second) {
+        public override void DestroyMapEdge(MapNodeBase first, MapNodeBase second) {
             if(first == null) {
                 throw new ArgumentNullException("first");
             }else if(second == null) {
                 throw new ArgumentNullException("second");
             }
 
-            if(HasEdge(first, second)) {
-                return RemoveUndirectedEdge(GetEdge(first, second));
-            }else {
-                return false;
+            var edgeToDestroy = GetEdge(first, second);
+            if(edgeToDestroy != null) {
+                DestroyMapEdge(edgeToDestroy);
             }
             
         }
 
-        public override bool RemoveUndirectedEdge(MapEdgeBase edge) {
-            var retval = EdgeSet.Remove(edge);
+        public override void DestroyMapEdge(MapEdgeBase edge) {
+            if(edge == null) {
+                throw new ArgumentNullException("edge");
+            }
+            UnsubscribeMapEdge(edge);
+
+            DestroyImmediate(edge.gameObject);
+        }
+
+        public override void SubscribeMapEdge(MapEdgeBase edge) {
+            if(edge == null) {
+                throw new ArgumentNullException("edge");
+            }
+            if(!edges.Contains(edge)) {
+                edges.Add(edge);
+
+                NeighborsOfNode.AddElementToList(edge.FirstNode,  edge.SecondNode);
+                NeighborsOfNode.AddElementToList(edge.SecondNode, edge.FirstNode );
+                edge.ParentGraph = this;
+                if(edge.BlobSite != null) {
+                    edge.BlobSite.Configuration = BlobSiteConfiguration;
+                }
+                edge.gameObject.SetActive(true);
+            }
+        }
+
+        public override void UnsubscribeMapEdge(MapEdgeBase edge) {
+            if(edge == null) {
+                throw new ArgumentNullException("edge");
+            }
+            edges.Remove(edge);
             if(NeighborsOfNode.ContainsKey(edge.FirstNode)) {
                 NeighborsOfNode[edge.FirstNode ].Remove(edge.SecondNode);
             }
             if(NeighborsOfNode.ContainsKey(edge.SecondNode)) {
                 NeighborsOfNode[edge.SecondNode].Remove(edge.FirstNode );
             }
-            if(Application.isPlaying) {
-                Destroy(edge.transform.parent.gameObject);
-            }else {
-                DestroyImmediate(edge.transform.parent.gameObject);
+            edge.ParentGraph = null;
+            if(edge.BlobSite != null) {
+                edge.BlobSite.Configuration = null;
             }
-            return retval;
-        }
-
-        public override bool RemoveNode(MapNodeBase nodeToRemove) {
-            if(nodeToRemove == null) {
-                throw new ArgumentNullException("node");
-            }
-            bool existedInGraph = NodeSet.Remove(nodeToRemove);
-            if(existedInGraph && EdgeSet != null) {
-                var edgesToRemove = new List<MapEdgeBase>(EdgeSet.Where(delegate(MapEdgeBase edge){
-                    return edge.FirstNode == nodeToRemove || edge.SecondNode == nodeToRemove;
-                }));
-                foreach(var edge in edgesToRemove){
-                    RemoveUndirectedEdge(edge);
-                }
-            }
-            
-            return existedInGraph;
+            RaiseMapEdgeUnsubscribed(edge);
         }
 
         public override MapNodeBase GetNodeOfID(int id) {
-            return NodeSet.Find(node => node.ID == id);
-        }
-
-        public  override bool HasEdge(MapNodeBase first, MapNodeBase second) {
-            if(first == null) {
-                throw new ArgumentNullException("first");
-            }else if(second == null) {
-                throw new ArgumentNullException("second");
-            }
-            return EdgeSet.Where(ConstructEdgeExistsTest(first, second)).Count() > 0;
+            return nodes.Find(node => node.ID == id);
         }
 
         public override MapEdgeBase GetEdge(MapNodeBase first, MapNodeBase second) {
@@ -214,14 +282,15 @@ namespace Assets.Map {
                 throw new ArgumentNullException("first");
             }else if(second == null) {
                 throw new ArgumentNullException("second");
-            }else if(!HasEdge(first, second)) {
-                throw new MapGraphException("This MapGraph has no edge between the specified MapNodes");
             }
-            var validEdges = EdgeSet.Where(ConstructEdgeExistsTest(first, second));
-            return validEdges.First();
+            var validEdges = edges.Where(ConstructEdgeExistsTest(first, second));
+            return validEdges.FirstOrDefault();
         }
 
         public  override IEnumerable<MapNodeBase> GetNeighborsOfNode(MapNodeBase node) {
+            if(node == null) {
+                throw new ArgumentNullException("node");
+            }
             List<MapNodeBase> neighbors;
             NeighborsOfNode.TryGetValue(node, out neighbors);
             if(neighbors == null) {
@@ -232,6 +301,9 @@ namespace Assets.Map {
         }
 
         public override IEnumerable<MapEdgeBase> GetEdgesAttachedToNode(MapNodeBase node) {
+            if(node == null) {
+                throw new ArgumentNullException("node");
+            }
             var retval = new List<MapEdgeBase>();
             foreach(var neighbor in GetNeighborsOfNode(node)) {
                 retval.Add(GetEdge(node, neighbor));
@@ -239,39 +311,35 @@ namespace Assets.Map {
             return retval;
         }
 
-        public override List<NodeDistanceSearchResults> GetNodesWithinDistanceOfEdge(MapEdgeBase edge, uint distanceInEdges) {
-            var retval = new List<NodeDistanceSearchResults>();
-            foreach(var nodeToCheck in Nodes) {
-                int distanceFromFirst = GetDistanceBetweenNodes(edge.FirstNode, nodeToCheck);
-                int distanceFromSecond = GetDistanceBetweenNodes(edge.SecondNode, nodeToCheck);
-                if(distanceFromFirst <= distanceInEdges || distanceFromSecond <= distanceInEdges) {
-                    retval.Add(new NodeDistanceSearchResults(nodeToCheck, Math.Min(distanceFromFirst, distanceFromSecond)));
-                }
+        public override int GetDistanceBetweenNodes(MapNodeBase nodeOne, MapNodeBase nodeTwo) {
+            if(nodeOne == null) {
+                throw new ArgumentNullException("node1");
+            }else if(nodeTwo == null) {
+                throw new ArgumentNullException("node2");
             }
-            return retval;
+            return AlgorithmSet.GetDistanceBetweenNodes(nodeOne, nodeTwo, Nodes);
         }
 
-        public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2) {
-            return ShortestPathLogic.GetDistanceBetweenNodes(node1, node2, Nodes);
+        public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase nodeOne, MapNodeBase nodeTwo) {
+            if(nodeOne == null) {
+                throw new ArgumentNullException("start");
+            }else if(nodeTwo == null) {
+                throw new ArgumentNullException("end");
+            }
+            return AlgorithmSet.GetShortestPathBetweenNodes(nodeOne, nodeTwo, Nodes);
         }
 
-        public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase start, MapNodeBase end) {
-            return ShortestPathLogic.GetShortestPathBetweenNodes(start, end, Nodes);
+        public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
+            Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
+            if(edgeOfOrigin == null) {
+                throw new ArgumentNullException("edgeOfOrigin");
+            }else if(condition == null) {
+                throw new ArgumentNullException("condition");
+            }
+            return AlgorithmSet.GetNearestNodeToEdgeWhere(edgeOfOrigin, condition, maxDistance);
         }
 
         #endregion
-
-        private void GetNodesWithinDistanceOfNode(MapNodeBase node, uint distanceInEdges, ref HashSet<MapNodeBase> results) {
-            if(results.Contains(node) || distanceInEdges == 0) {
-                return;
-            }
-            results.Add(node);
-            foreach(var neighbor in GetNeighborsOfNode(node)) {
-                if(!results.Contains(neighbor)) {
-                    GetNodesWithinDistanceOfNode(neighbor, --distanceInEdges, ref results);
-                }
-            }
-        }
 
         private Func<MapEdgeBase, bool> ConstructEdgeExistsTest(MapNodeBase first, MapNodeBase second) {
             return delegate(MapEdgeBase edge) {
@@ -280,6 +348,13 @@ namespace Assets.Map {
                     ( edge.SecondNode == first && edge.FirstNode  == second )
                 );
             };
+        }
+
+        private void Node_TransformChanged(object sender, EventArgs e) {
+            var node = sender as MapNodeBase;
+            foreach(var edge in GetEdgesAttachedToNode(node)) {
+                edge.RefreshOrientation();
+            }
         }
 
         #endregion

@@ -10,11 +10,23 @@ using Assets.Highways;
 using Assets.Map;
 using Assets.Core;
 
+using UnityCustomUtilities.Extensions;
+using System.Collections.ObjectModel;
+
 namespace Assets.HighwayManager {
 
     public class HighwayManagerFactory : HighwayManagerFactoryBase {
 
         #region instance fields and properties
+
+        #region from HighwayManagerFactoryBase
+
+        public override ReadOnlyCollection<HighwayManagerBase> Managers {
+            get { return managers.AsReadOnly(); }
+        }
+        [SerializeField, HideInInspector] private List<HighwayManagerBase> managers = new List<HighwayManagerBase>();
+
+        #endregion
 
         public uint ManagementRadius {
             get { return _managementRadius; }
@@ -32,13 +44,13 @@ namespace Assets.HighwayManager {
             get { return _highwayFactory; }
             set {
                 if(_highwayFactory != null) {
-                    _highwayFactory.HighwayConstructed    -= HighwayFactory_HighwayConstructed;
-                    _highwayFactory.HighwayBeingDestroyed -= HighwayFactory_HighwayBeingDestroyed;
+                    _highwayFactory.HighwaySubscribed    -= HighwayFactory_HighwayConstructed;
+                    _highwayFactory.HighwayUnsubscribed -= HighwayFactory_HighwayBeingDestroyed;
                 }
                 _highwayFactory = value;
                 if(_highwayFactory != null) {
-                    _highwayFactory.HighwayConstructed    += HighwayFactory_HighwayConstructed;
-                    _highwayFactory.HighwayBeingDestroyed += HighwayFactory_HighwayBeingDestroyed;
+                    _highwayFactory.HighwaySubscribed    += HighwayFactory_HighwayConstructed;
+                    _highwayFactory.HighwayUnsubscribed += HighwayFactory_HighwayBeingDestroyed;
                 }
             }
         }
@@ -52,13 +64,11 @@ namespace Assets.HighwayManager {
 
         [SerializeField] private GameObject ManagerPrefab;
 
-        [SerializeField, HideInInspector] private List<HighwayManagerBase> InstantiatedManagers = new List<HighwayManagerBase>();
+        private DictionaryOfLists<HighwayManagerBase, BlobHighwayBase> HighwaysServedByManager =
+            new DictionaryOfLists<HighwayManagerBase, BlobHighwayBase>();
 
-        private Dictionary<HighwayManagerBase, List<BlobHighwayBase>> HighwaysServedByManager =
-            new Dictionary<HighwayManagerBase, List<BlobHighwayBase>>();
-
-        private List<BlobHighwayBase> UnservedHighways = 
-            new List<BlobHighwayBase>();
+        private Dictionary<BlobHighwayBase, HighwayManagerBase> ManagerServingHighway = 
+            new Dictionary<BlobHighwayBase, HighwayManagerBase>();
 
         #endregion
 
@@ -67,11 +77,11 @@ namespace Assets.HighwayManager {
         #region Unity event methods
 
         private void Start() {
-            HighwayFactory.HighwayConstructed    -= HighwayFactory_HighwayConstructed;
-            HighwayFactory.HighwayBeingDestroyed -= HighwayFactory_HighwayBeingDestroyed;
+            HighwayFactory.HighwaySubscribed    -= HighwayFactory_HighwayConstructed;
+            HighwayFactory.HighwayUnsubscribed -= HighwayFactory_HighwayBeingDestroyed;
 
-            HighwayFactory.HighwayConstructed    += HighwayFactory_HighwayConstructed;
-            HighwayFactory.HighwayBeingDestroyed += HighwayFactory_HighwayBeingDestroyed;
+            HighwayFactory.HighwaySubscribed    += HighwayFactory_HighwayConstructed;
+            HighwayFactory.HighwayUnsubscribed += HighwayFactory_HighwayBeingDestroyed;
         }
 
         #endregion
@@ -79,38 +89,36 @@ namespace Assets.HighwayManager {
         #region from HighwayManagerFactoryBase
 
         public override HighwayManagerBase GetHighwayManagerOfID(int id) {
-            return InstantiatedManagers.Find(manager => manager.ID == id);
+            return managers.Find(manager => manager.ID == id);
         }
 
         public override IEnumerable<BlobHighwayBase> GetHighwaysServedByManager(HighwayManagerBase manager) {
             if(manager == null) {
                 throw new ArgumentNullException("manager");
             }
-            return HighwaysServedByManager[manager];
+            List<BlobHighwayBase> highwaysServed;
+            HighwaysServedByManager.TryGetValue(manager, out highwaysServed);
+            if(highwaysServed != null) {
+                return highwaysServed;
+            }else {
+                return new List<BlobHighwayBase>();
+            }
         }
 
         public override HighwayManagerBase GetManagerServingHighway(BlobHighwayBase highway) {
             if(highway == null) {
                 throw new ArgumentNullException("highway");
             }
-
-            var edgeWithHighway = MapGraph.GetEdge(highway.FirstEndpoint, highway.SecondEndpoint);
-            var distanceResults = MapGraph.GetNodesWithinDistanceOfEdge(edgeWithHighway, ManagementRadius);
-            distanceResults.Sort((x, y) => x.Distance - y.Distance);
-            foreach(var distanceResult in distanceResults) {
-                var managerAtLocation = GetHighwayManagerAtLocation(distanceResult.Node);
-                if(managerAtLocation != null) {
-                    return managerAtLocation;
-                }
-            }
-            return null;
+            HighwayManagerBase retval;
+            ManagerServingHighway.TryGetValue(highway, out retval);
+            return retval;
         }
 
         public override HighwayManagerBase GetHighwayManagerAtLocation(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
             }
-            return InstantiatedManagers.Find(manager => manager.Location == location);
+            return managers.Find(manager => manager.Location == location);
         }
 
         public override bool CanConstructHighwayManagerAtLocation(MapNodeBase location) {
@@ -142,9 +150,9 @@ namespace Assets.HighwayManager {
             newManager.SetLocation(location);
             newManager.PrivateData = ManagerPrivateData;
 
-            InstantiatedManagers.Add(newManager);
+            managers.Add(newManager);
 
-            RefreshServiceDict(newManager);
+            RefreshServiceDict();
             return newManager;
         }
 
@@ -164,34 +172,13 @@ namespace Assets.HighwayManager {
             if(manager == null) {
                 throw new ArgumentNullException("manager");
             }
-            InstantiatedManagers.Remove(manager);
-            HighwaysServedByManager.Remove(manager);
-        }
-
-        public override void SubscribeHighway(BlobHighwayBase highway) {
-            if(highway == null) {
-                throw new ArgumentNullException("highway");
-            }
-            var servingManager = GetManagerServingHighway(highway);
-            if(servingManager == null) {
-                UnservedHighways.Add(highway);
-            }else if(!HighwaysServedByManager[servingManager].Contains(highway)) {
-                HighwaysServedByManager[servingManager].Add(highway);
-            }
-        }
-
-        public override void UnsubscribeHighway(BlobHighwayBase highway) {
-            if(highway == null) {
-                throw new ArgumentNullException("highway");
-            }
-            foreach(var listOfServedHighways in HighwaysServedByManager.Values) {
-                listOfServedHighways.Remove(highway);
-            }
-            UnservedHighways.Remove(highway);
+            managers.Remove(manager);
+            HighwaysServedByManager.RemoveList(manager);
+            RefreshServiceDict();
         }
 
         public override void TickAllManangers(float secondsPassed) {
-            foreach(var manager in InstantiatedManagers) {
+            foreach(var manager in managers) {
                 manager.TickConsumption(secondsPassed);
             }
         }
@@ -199,20 +186,29 @@ namespace Assets.HighwayManager {
         #endregion
 
         private void HighwayFactory_HighwayConstructed(object sender, BlobHighwayEventArgs e) {
-            SubscribeHighway(e.Highway);
+            RefreshServiceDict();
         }
 
         private void HighwayFactory_HighwayBeingDestroyed(object sender, BlobHighwayEventArgs e) {
-            UnsubscribeHighway(e.Highway);
+            RefreshServiceDict();
         }
 
-        private void RefreshServiceDict(HighwayManager manager) {
-            HighwaysServedByManager[manager] = new List<BlobHighwayBase>();
+        private void RefreshServiceDict() {
+            HighwaysServedByManager.Clear();
 
-            foreach(var highway in new List<BlobHighwayBase>(UnservedHighways)) {
-                if(GetManagerServingHighway(highway) == manager) {
-                    HighwaysServedByManager[manager].Add(highway);
-                    UnservedHighways.Remove(highway);
+            foreach(var highway in HighwayFactory.Highways) {
+                var edgeOfHighway = MapGraph.GetEdge(highway.FirstEndpoint, highway.SecondEndpoint);
+
+                var summaryOfClosestNodeWithManager = MapGraph.GetNearestNodeToEdgeWhere(edgeOfHighway, delegate(MapNodeBase node) {
+                    return GetHighwayManagerAtLocation(node) != null;
+                }, (int)ManagementRadius);
+
+                var managerAtLocation = summaryOfClosestNodeWithManager != null ? GetHighwayManagerAtLocation(summaryOfClosestNodeWithManager.Node) : null;
+
+                ManagerServingHighway[highway] = managerAtLocation;
+
+                if(managerAtLocation != null) { 
+                    HighwaysServedByManager.AddElementToList(managerAtLocation, highway);
                 }
             }
         }

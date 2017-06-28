@@ -18,15 +18,13 @@ namespace Assets.BlobSites {
 
         public int TotalCapacity { get; set; }
 
-        public BlobAlignmentStrategyBase AlignmentStrategy { get; set; }
+        public abstract BlobSiteConfigurationBase Configuration { get; set; }
 
         public abstract int TotalSpaceLeft { get; }
 
         public abstract bool IsAtCapacity { get; }
 
         public abstract ReadOnlyCollection<ResourceBlobBase> Contents { get; }
-
-        public abstract float ConnectionCircleRadius { get; }
 
         #endregion
 
@@ -90,7 +88,7 @@ namespace Assets.BlobSites {
 
         public abstract bool GetIsAtCapacityForResource(ResourceType type);
 
-        public abstract void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary);
+        public abstract void SetPlacementPermissionsAndCapacity(IntPerResourceDictionary placementSummary);
 
         public abstract void ClearPermissionsAndCapacity();
 

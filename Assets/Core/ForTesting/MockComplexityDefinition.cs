@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Assets.Blobs;
+using Assets.Map;
 using Assets.Societies;
 using UnityEngine;
 
@@ -20,13 +22,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override ResourceSummary CostOfAscent {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override bool IsPermittedToAscend {
+        public override IntPerResourceDictionary CostToAscendInto {
             get {
                 throw new NotImplementedException();
             }
@@ -38,13 +34,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override string Name {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override ResourceSummary Needs {
+        public override IntPerResourceDictionary Needs {
             get {
                 throw new NotImplementedException();
             }
@@ -56,7 +46,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override ResourceSummary Production {
+        public override IntPerResourceDictionary Production {
             get {
                 throw new NotImplementedException();
             }
@@ -80,7 +70,7 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override IEnumerable<ResourceSummary> Wants {
+        public override IEnumerable<IntPerResourceDictionary> Wants {
             get {
                 throw new NotImplementedException();
             }
@@ -92,10 +82,22 @@ namespace Assets.Core.ForTesting {
             }
         }
 
+        public override ReadOnlyCollection<TerrainType> PermittedTerrains {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int Score {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

@@ -106,15 +106,10 @@ namespace Assets.HighwayManager {
         #endregion
 
         private void PerformConsumptionOnce() {
-            int totalNeedCount = 0;
-            int runningConsumptionTotal = 0;
-            lastCalculatedUpkeep.Clear();
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                lastCalculatedUpkeep[resourceType] = 0;
-            }
-
             var highwaysBeingManaged = new List<BlobHighwayBase>(PrivateData.ParentFactory.GetHighwaysServedByManager(this));
             highwaysBeingManaged.Sort((x, y) => x.Priority - y.Priority);
+
+            RecalculateUpkeep(highwaysBeingManaged);
 
             PrepareBlobSiteForConsumption(highwaysBeingManaged);
 
@@ -123,66 +118,51 @@ namespace Assets.HighwayManager {
             foreach(var highway in highwaysBeingManaged) {
                 highway.Efficiency = 1f;
 
-                if(highway.IsRequestingFood && blobSite.CanExtractBlobOfType(ResourceType.Food)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Food));
-                    ++lastCalculatedUpkeep[ResourceType.Food];
-                    highway.Efficiency += PrivateData.EfficiencyGainFromFood;
-                }
-
-                if(highway.IsRequestingYellow && blobSite.CanExtractBlobOfType(ResourceType.Yellow)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Yellow));
-                    ++lastCalculatedUpkeep[ResourceType.Yellow];
-                    highway.Efficiency += PrivateData.EfficiencyGainFromYellow;
-                }
-
-                if(highway.IsRequestingWhite && blobSite.CanExtractBlobOfType(ResourceType.White)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.White));
-                    ++lastCalculatedUpkeep[ResourceType.White];
-                    highway.Efficiency += PrivateData.EfficiencyGainFromWhite;
-                }
-
-                if(highway.IsRequestingBlue && blobSite.CanExtractBlobOfType(ResourceType.Blue)) {
-                    PrivateData.BlobFactory.DestroyBlob(blobSite.ExtractBlobOfType(ResourceType.Blue));
-                    ++lastCalculatedUpkeep[ResourceType.Blue];
-                    highway.Efficiency += PrivateData.EfficiencyGainFromBlue;
+                foreach(var resourceType in lastCalculatedUpkeep.Keys) {
+                    if(highway.GetUpkeepRequestedForResource(resourceType) && blobSite.CanExtractBlobOfType(resourceType)) {
+                        var blobToDestroy = blobSite.ExtractBlobOfType(resourceType);
+                        PrivateData.BlobFactory.DestroyBlob(blobToDestroy);
+                        highway.Efficiency += PrivateData.EfficiencyGainFromResource[resourceType];
+                    }
                 }
             }
 
             RevertBlobSiteToNormal(highwaysBeingManaged);
         }
 
+        private void RecalculateUpkeep(List<BlobHighwayBase> highwaysBeingManaged) {
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                lastCalculatedUpkeep[resourceType] = 0;
+                foreach(var highway in highwaysBeingManaged) {
+                    if(highway.GetUpkeepRequestedForResource(resourceType)) {
+                        ++lastCalculatedUpkeep[resourceType];
+                    }
+                }
+            }
+        }
+
         private void PrepareBlobSiteForConsumption(IEnumerable<BlobHighwayBase> highwaysBeingManaged) {
             var blobSite = Location.BlobSite;
+            blobSite.ClearPermissionsAndCapacity();
 
-            foreach(var highway in highwaysBeingManaged) {
-                if(highway.IsRequestingFood)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.Food,   true); }
-                if(highway.IsRequestingYellow) { blobSite.SetExtractionPermissionForResourceType(ResourceType.Yellow, true); }
-                if(highway.IsRequestingWhite)  { blobSite.SetExtractionPermissionForResourceType(ResourceType.White,  true); }
-                if(highway.IsRequestingBlue)   { blobSite.SetExtractionPermissionForResourceType(ResourceType.Blue,   true); }
+            foreach(var resourceType in lastCalculatedUpkeep.Keys) {
+                int upkeepForResource = lastCalculatedUpkeep[resourceType];
+                blobSite.SetExtractionPermissionForResourceType(resourceType, true);
+                blobSite.SetCapacityForResourceType(resourceType, upkeepForResource);
+                blobSite.TotalCapacity += upkeepForResource;
             }
         }
 
         private void RevertBlobSiteToNormal(IEnumerable<BlobHighwayBase> highwaysBeingManaged) {
             var blobSite = Location.BlobSite;
-            var newCapacityDict = new Dictionary<ResourceType, int>();
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                newCapacityDict[resourceType] = 0;
-            }
+            blobSite.ClearPermissionsAndCapacity();
 
-            foreach(var highway in highwaysBeingManaged) {
-                if(highway.IsRequestingFood  ) { ++newCapacityDict[ResourceType.Food  ]; }
-                if(highway.IsRequestingYellow) { ++newCapacityDict[ResourceType.Yellow]; }
-                if(highway.IsRequestingWhite ) { ++newCapacityDict[ResourceType.White ]; }
-                if(highway.IsRequestingBlue  ) { ++newCapacityDict[ResourceType.Blue  ]; }
+            foreach(var resourceType in lastCalculatedUpkeep.Keys) {
+                int upkeepForResource = lastCalculatedUpkeep[resourceType];
+                blobSite.SetPlacementPermissionForResourceType(resourceType, true);
+                blobSite.SetCapacityForResourceType(resourceType, upkeepForResource);
+                blobSite.TotalCapacity += upkeepForResource;
             }
-
-            int totalCapacity = 0;
-            foreach(var capacityPair in newCapacityDict) {
-                int valueStockpiled = capacityPair.Value * PrivateData.NeedStockpileCoefficient;
-                blobSite.SetCapacityForResourceType(capacityPair.Key, valueStockpiled);
-                totalCapacity += valueStockpiled;
-            }
-            blobSite.TotalCapacity = totalCapacity;
         }
         
         #endregion

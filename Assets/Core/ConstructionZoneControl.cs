@@ -106,9 +106,11 @@ namespace Assets.Core {
 
             var node = MapGraph.GetNodeOfID(nodeID);
             if(node != null) {
-                if( ConstructionZoneFactory.HasConstructionZoneAtLocation(node) ||
+                if(
+                    ConstructionZoneFactory.HasConstructionZoneAtLocation(node) ||
                     ResourceDepotFactory.HasDepotAtLocation(node) ||
-                    SocietyFactory.HasSocietyAtLocation(node)
+                    SocietyFactory.HasSocietyAtLocation(node) ||
+                    HighwayManagerFactory.GetHighwayManagerAtLocation(node) != null
                 ){
                     return new List<ConstructionProjectUISummary>();
                 }

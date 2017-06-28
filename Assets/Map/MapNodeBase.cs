@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
 using UnityEngine;
 
 using Assets.BlobSites;
+using Assets.Core;
+
+using UnityCustomUtilities.Grids;
 
 namespace Assets.Map {
 
@@ -15,11 +19,33 @@ namespace Assets.Map {
 
         public abstract int ID { get; }
 
-        public abstract MapGraphBase ManagingGraph { get; }
+        public abstract MapGraphBase ParentGraph { get; set; }
 
         public abstract BlobSiteBase BlobSite { get; }
 
         public abstract IEnumerable<MapNodeBase> Neighbors { get; }
+
+        public abstract TerrainType Terrain { get; set; }
+
+        public abstract UIControlBase UIControl { get; set; }
+
+        public abstract TerrainMaterialRegistry TerrainMaterialRegistry { get; set; }
+
+        public abstract TerrainGridBase TerrainGrid { get; set; }
+
+        public abstract ReadOnlyCollection<TerrainHexTile> AssociatedTiles { get; }
+
+        #endregion
+
+        #region events
+
+        public event EventHandler<EventArgs> TransformChanged;
+
+        protected void RaiseTransformChanged() {
+            if(TransformChanged != null) {
+                TransformChanged(this, EventArgs.Empty);
+            }
+        }
 
         #endregion
 
@@ -32,6 +58,13 @@ namespace Assets.Map {
         }
 
         #endregion
+
+        public abstract void ClearAssociatedTiles();
+
+        public abstract void AddAssociatedTile(TerrainHexTile tile);
+
+        public abstract void RefreshOutline();
+          
 
         #endregion
 

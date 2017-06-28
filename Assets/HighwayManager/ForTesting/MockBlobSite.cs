@@ -33,11 +33,7 @@ namespace Assets.HighwayManager.ForTesting {
             }
         }
 
-        public override float ConnectionCircleRadius {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public override BlobSiteConfigurationBase Configuration { get; set; }
 
         #endregion
 
@@ -74,7 +70,7 @@ namespace Assets.HighwayManager.ForTesting {
         public override bool CanExtractBlobOfType(ResourceType type) {
             bool isPermitted;
             ExtractionPermissions.TryGetValue(type, out isPermitted);
-            return isPermitted && contents.Find(blob => blob.BlobType == type);
+            return isPermitted && (contents.Find(blob => blob.BlobType == type) != null);
         }
 
         public override bool CanPlaceBlobInto(ResourceBlobBase blob) {
@@ -92,7 +88,9 @@ namespace Assets.HighwayManager.ForTesting {
         }
 
         public override void ClearPermissionsAndCapacity() {
-            throw new NotImplementedException();
+            ExtractionPermissions.Clear();
+            PlacementPermissions.Clear();
+            Capacities.Clear();
         }
 
         public override ResourceBlobBase ExtractAnyBlob() {
@@ -109,7 +107,7 @@ namespace Assets.HighwayManager.ForTesting {
                 contents.Remove(blobToRemove);
                 return blobToRemove;
             }else {
-                return null;
+                throw new InvalidOperationException(string.Format("Attempted to extract a blob of type {0}, but no such blob exists", type));
             }
         }
 
@@ -161,15 +159,13 @@ namespace Assets.HighwayManager.ForTesting {
             PlacementPermissions[type] = isPermitted;
         }
 
-        public override void SetPlacementPermissionsAndCapacity(ResourceSummary placementSummary) {
+        public override void SetPlacementPermissionsAndCapacity(IntPerResourceDictionary placementSummary) {
             throw new NotImplementedException();
         }
 
         #endregion
 
         #endregion
-        
-
         
     }
 
