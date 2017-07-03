@@ -12,29 +12,25 @@ namespace Assets.Societies {
 
         #region instance fields and properties
 
-        public List<ComplexityDefinitionBase> TierOneComplexities {
-            get { return _tierOneComplexities; }
-            set { _tierOneComplexities = value; }
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierOneComplexities {
+            get { return tierOneComplexities.AsReadOnly(); }
         }
-        [SerializeField] private List<ComplexityDefinitionBase> _tierOneComplexities;
+        [SerializeField] private List<ComplexityDefinitionBase> tierOneComplexities;
 
-        public List<ComplexityDefinitionBase> TierTwoComplexities {
-            get { return _tierTwoComplexities; }
-            set { _tierTwoComplexities = value; }
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierTwoComplexities {
+            get { return tierTwoComplexities.AsReadOnly(); }
         }
-        [SerializeField] private List<ComplexityDefinitionBase> _tierTwoComplexities;
+        [SerializeField] private List<ComplexityDefinitionBase> tierTwoComplexities;
 
-        public List<ComplexityDefinitionBase> TierThreeComplexities {
-            get { return _tierThreeComplexities; }
-            set { _tierThreeComplexities = value; }
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierThreeComplexities {
+            get { return tierThreeComplexities.AsReadOnly(); }
         }
-        [SerializeField] private List<ComplexityDefinitionBase> _tierThreeComplexities;
+        [SerializeField] private List<ComplexityDefinitionBase> tierThreeComplexities;
 
-        public List<ComplexityDefinitionBase> TierFourComplexities {
-            get { return _tierFourComplexities; }
-            set { _tierFourComplexities = value; }
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierFourComplexities {
+            get { return tierFourComplexities.AsReadOnly(); }
         }
-        [SerializeField] private List<ComplexityDefinitionBase> _tierFourComplexities;
+        [SerializeField] private List<ComplexityDefinitionBase> tierFourComplexities;
 
         private List<ComplexityDefinitionBase> EmptyComplexityList = new List<ComplexityDefinitionBase>();
 
@@ -43,24 +39,24 @@ namespace Assets.Societies {
         #region instance methods
 
         public override ReadOnlyCollection<ComplexityDefinitionBase> GetAscentTransitions(ComplexityDefinitionBase currentComplexity) {
-            if(TierOneComplexities.Contains(currentComplexity)){
-                return TierTwoComplexities.AsReadOnly();
-            }else if(TierTwoComplexities.Contains(currentComplexity)) {
-                return TierThreeComplexities.AsReadOnly();
-            }else if(TierThreeComplexities.Contains(currentComplexity)) {
-                return TierFourComplexities.AsReadOnly();
+            if(tierOneComplexities.Contains(currentComplexity)){
+                return tierTwoComplexities.AsReadOnly();
+            }else if(tierTwoComplexities.Contains(currentComplexity)) {
+                return tierThreeComplexities.AsReadOnly();
+            }else if(tierThreeComplexities.Contains(currentComplexity)) {
+                return tierFourComplexities.AsReadOnly();
             }else {
                 return EmptyComplexityList.AsReadOnly();
             }
         }
 
         public override ReadOnlyCollection<ComplexityDefinitionBase> GetDescentTransitions(ComplexityDefinitionBase currentComplexity) {
-            if(TierFourComplexities.Contains(currentComplexity)) {
-                return TierThreeComplexities.AsReadOnly();
-            }else if(TierThreeComplexities.Contains(currentComplexity)) {
-                return TierTwoComplexities.AsReadOnly();
-            }else if(TierTwoComplexities.Contains(currentComplexity)) {
-                return TierOneComplexities.AsReadOnly();
+            if(tierFourComplexities.Contains(currentComplexity)) {
+                return tierThreeComplexities.AsReadOnly();
+            }else if(tierThreeComplexities.Contains(currentComplexity)) {
+                return tierTwoComplexities.AsReadOnly();
+            }else if(tierTwoComplexities.Contains(currentComplexity)) {
+                return tierOneComplexities.AsReadOnly();
             }else {
                 return EmptyComplexityList.AsReadOnly();
             }
@@ -68,10 +64,10 @@ namespace Assets.Societies {
 
         public override bool ContainsComplexity(ComplexityDefinitionBase complexity) {
             return (
-                TierOneComplexities.Contains  (complexity) || 
-                TierTwoComplexities.Contains  (complexity) ||
-                TierThreeComplexities.Contains(complexity) || 
-                TierFourComplexities.Contains (complexity)
+                tierOneComplexities.Contains  (complexity) || 
+                tierTwoComplexities.Contains  (complexity) ||
+                tierThreeComplexities.Contains(complexity) || 
+                tierFourComplexities.Contains (complexity)
             );
         }
 

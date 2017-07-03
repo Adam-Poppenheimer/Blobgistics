@@ -11,8 +11,34 @@ namespace Assets.Scoring {
 
         #region instance fields and properties
 
-        public abstract int ScoreToWin { get; set; }
+        public abstract int TierOneSocietiesToWin   { get; set; }
+        public abstract int TierTwoSocietiesToWin   { get; set; }
+        public abstract int TierThreeSocietiesToWin { get; set; }
+        public abstract int TierFourSocietiesToWin  { get; set; }
+
+        public abstract int CurrentTierOneSocieties   { get; protected set; }
+        public abstract int CurrentTierTwoSocieties   { get; protected set; }
+        public abstract int CurrentTierThreeSocieties { get; protected set; }
+        public abstract int CurrentTierFourSocieties  { get; protected set; }
+
+        public abstract float SecondsOfStabilityToWin { get; set; }
+
         public abstract bool IsCheckingForVictory { get; set; }
+
+        public abstract bool VictoryClockIsTicking { get; protected set; }
+        public abstract float CurrentVictoryClockValue { get; set; }
+
+        #endregion
+
+        #region events
+
+        public event EventHandler<EventArgs> VictoryProgressRefreshed;
+
+        protected void RaiseVictoryProgressRefreshed() {
+            if(VictoryProgressRefreshed != null) {
+                VictoryProgressRefreshed(this, EventArgs.Empty);
+            }
+        }
 
         #endregion
 

@@ -55,7 +55,7 @@ namespace Assets.Map.Editor {
         private void OnFocus() {
             if(EditorWindowDependencyPusher.SessionManager.CurrentSession == null) {
                 EditorWindowDependencyPusher.SessionManager.CurrentSession = new SerializableSession(
-                    "New Map", "Place a description here", 42);
+                    "New Map", "Place a description here");
             }
             Refresh();
         }
@@ -90,9 +90,13 @@ namespace Assets.Map.Editor {
 
             EditorGUI.BeginDisabledGroup(currentSession == null || string.IsNullOrEmpty(currentSession.Name));
 
-            currentSession.Name        = EditorGUILayout.DelayedTextField("Name", currentSession.Name);
+            currentSession.Name        = EditorGUILayout.TextField("Name", currentSession.Name);
             currentSession.Description = EditorGUILayout.TextArea(currentSession.Description, EditorStyles.textArea);
-            currentSession.ScoreToWin  = EditorGUILayout.DelayedIntField("Score to Win", currentSession.ScoreToWin);
+
+            currentSession.TierOneSocietiesToWin   = EditorGUILayout.IntField("Tier One Societies to Win",   currentSession.TierOneSocietiesToWin  );
+            currentSession.TierTwoSocietiesToWin   = EditorGUILayout.IntField("Tier Two Societies to Win",   currentSession.TierTwoSocietiesToWin  );
+            currentSession.TierThreeSocietiesToWin = EditorGUILayout.IntField("Tier Three Societies to Win", currentSession.TierThreeSocietiesToWin);
+            currentSession.TierFourSocietiesToWin  = EditorGUILayout.IntField("Tier Four Societies to Win",  currentSession.TierFourSocietiesToWin );
 
             if(GUILayout.Button("Save current map to file")) {
                 EditorWindowDependencyPusher.SessionManager.PushRuntimeIntoCurrentSession();

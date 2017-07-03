@@ -16,7 +16,7 @@ namespace Assets.Scoring.ForTesting {
         public override SerializableSession CurrentSession {
             get {
                 if(_currentSession == null) {
-                    _currentSession = new SerializableSession("Name", "Description", 100);
+                    _currentSession = new SerializableSession("Name", "Description");
                 }
                 return _currentSession;
             }

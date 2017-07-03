@@ -23,7 +23,115 @@ namespace Assets.Session.ForTesting {
             }
         }
 
-        public override int ScoreToWin { get; set; }
+        public override int TierFourSocietiesToWin {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int TierOneSocietiesToWin {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int TierThreeSocietiesToWin {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int TierTwoSocietiesToWin {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int CurrentTierFourSocieties {
+            get {
+                throw new NotImplementedException();
+            }
+
+            protected set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int CurrentTierOneSocieties {
+            get {
+                throw new NotImplementedException();
+            }
+
+            protected set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int CurrentTierThreeSocieties {
+            get {
+                throw new NotImplementedException();
+            }
+
+            protected set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override int CurrentTierTwoSocieties {
+            get {
+                throw new NotImplementedException();
+            }
+
+            protected set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override float SecondsOfStabilityToWin {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override bool VictoryClockIsTicking {
+            get {
+                throw new NotImplementedException();
+            }
+
+            protected set {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override float CurrentVictoryClockValue {
+            get {
+                throw new NotImplementedException();
+            }
+
+            set {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 

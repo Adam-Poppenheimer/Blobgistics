@@ -54,7 +54,7 @@ namespace Assets.HighwayManager {
 
         #region instance methods
 
-        #region Unity event methods
+        #region Unity message methods
 
         private void Start() {
             var blobSite = Location.BlobSite;
@@ -63,6 +63,8 @@ namespace Assets.HighwayManager {
                 blobSite.SetPlacementPermissionForResourceType(resourceType, true);
             }
         }
+
+
 
         #endregion
 

@@ -119,6 +119,13 @@ namespace Assets.Session {
             }
             ClearRuntime();
 
+            if(VictoryManager != null) {
+                VictoryManager.TierOneSocietiesToWin   = CurrentSession.TierOneSocietiesToWin;
+                VictoryManager.TierTwoSocietiesToWin   = CurrentSession.TierTwoSocietiesToWin;
+                VictoryManager.TierThreeSocietiesToWin = CurrentSession.TierThreeSocietiesToWin;
+                VictoryManager.TierFourSocietiesToWin  = CurrentSession.TierFourSocietiesToWin;
+            }
+
             var mapNodeIDMapping = LoadMapNodes(CurrentSession);
             var mapEdgeIDMapping = LoadMapEdges(CurrentSession, mapNodeIDMapping);
 
@@ -130,10 +137,6 @@ namespace Assets.Session {
             LoadSocieties        (CurrentSession, mapNodeIDMapping);
             LoadTerrainData      (CurrentSession);
             LoadCameraData       (CurrentSession);
-
-            if(VictoryManager != null) {
-                VictoryManager.ScoreToWin = CurrentSession.ScoreToWin;
-            }
         }
 
         private void PushMapGraphIntoSession(SerializableSession session) {

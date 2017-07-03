@@ -32,6 +32,30 @@ namespace Assets.Core.ForTesting {
         }
         private ComplexityDefinitionBase _ascensionComplexity;
 
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierOneComplexities {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierTwoComplexities {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierThreeComplexities {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierFourComplexities {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #region instance methods

@@ -25,11 +25,10 @@ namespace Assets.Session {
         }
         [SerializeField, DataMember()] private string _description;
 
-        public int ScoreToWin {
-            get { return _scoreToWin; }
-            set { _scoreToWin = value; }
-        }
-        [SerializeField, DataMember()] private int _scoreToWin;
+        [SerializeField, DataMember()] public int TierOneSocietiesToWin;
+        [SerializeField, DataMember()] public int TierTwoSocietiesToWin;
+        [SerializeField, DataMember()] public int TierThreeSocietiesToWin;
+        [SerializeField, DataMember()] public int TierFourSocietiesToWin;
 
         [DataMember()] public List<SerializableMapNodeData>          MapNodes;
         [DataMember()] public List<SerializableMapEdgeData>          MapEdges;
@@ -47,10 +46,9 @@ namespace Assets.Session {
 
         #region constructors
 
-        public SerializableSession(string name, string description, int scoreToWin) {
+        public SerializableSession(string name, string description) {
             Name = name;
             Description = description;
-            ScoreToWin = scoreToWin;
 
             MapNodes          = new List<SerializableMapNodeData>();
             MapEdges          = new List<SerializableMapEdgeData>();

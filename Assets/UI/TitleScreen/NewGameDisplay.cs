@@ -19,12 +19,15 @@ namespace Assets.UI.TitleScreen {
 
         [SerializeField] private Text MapNameField;
         [SerializeField] private Text MapDescriptionField;
-        [SerializeField] private Text MapScoreToWinField;
+        [SerializeField] private Text MapTierOneSocietiesToWinField;
+        [SerializeField] private Text MapTierTwoSocietiesToWinField;
+        [SerializeField] private Text MapTierThreeSocietiesToWinField;
+        [SerializeField] private Text MapTierFourSocietiesToWinField;
 
         [SerializeField] private Text PrerequisiteMapsField;
         [SerializeField] private string PrerequisitesRequiredMessage;
 
-        [SerializeField] private RectTransform MapScoreToWinSection;
+        [SerializeField] private RectTransform MapVictoryConditionsSection;
 
         [SerializeField] private RectTransform  AvailableMapsSection;
         [SerializeField] private GameObject     MapSummaryPrefab;
@@ -94,8 +97,12 @@ namespace Assets.UI.TitleScreen {
                 MapDescriptionField.text = SelectedSession.Description;
                 MapDescriptionField.gameObject.SetActive(true);
 
-                MapScoreToWinField.text = SelectedSession.ScoreToWin.ToString();
-                MapScoreToWinSection.gameObject.SetActive(true);
+                MapTierOneSocietiesToWinField.text   = SelectedSession.TierOneSocietiesToWin.ToString();
+                MapTierTwoSocietiesToWinField.text   = SelectedSession.TierTwoSocietiesToWin.ToString();
+                MapTierThreeSocietiesToWinField.text = SelectedSession.TierThreeSocietiesToWin.ToString();
+                MapTierFourSocietiesToWinField.text  = SelectedSession.TierFourSocietiesToWin.ToString();
+
+                MapVictoryConditionsSection.gameObject.SetActive(true);
 
                 if(MapPermissionManager.GetMapIsPermittedToBePlayed(SelectedSession.Name)) {
                     PrerequisiteMapsField.gameObject.SetActive(false);
@@ -121,8 +128,12 @@ namespace Assets.UI.TitleScreen {
                 MapDescriptionField.text = "";
                 MapDescriptionField.gameObject.SetActive(false);
 
-                MapScoreToWinField.text = "";
-                MapScoreToWinSection.gameObject.SetActive(false);
+                MapTierOneSocietiesToWinField.text   = "";
+                MapTierTwoSocietiesToWinField.text   = "";
+                MapTierThreeSocietiesToWinField.text = "";
+                MapTierFourSocietiesToWinField.text  = "";
+
+                MapVictoryConditionsSection.gameObject.SetActive(false);
 
                 StartGameButton.interactable = false;
             }

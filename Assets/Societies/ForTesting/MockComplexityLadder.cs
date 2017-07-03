@@ -14,9 +14,37 @@ namespace Assets.Societies.ForTesting {
 
         #region instance fields and properties
 
+        #region from ComplexityLadderBase
+
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierOneComplexities {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierTwoComplexities {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierThreeComplexities {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override ReadOnlyCollection<ComplexityDefinitionBase> TierFourComplexities {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
         public List<ComplexityDefinitionBase> AscentChain;
         public int StartingIndex;
-        
+
         #endregion
 
         #region instance methods

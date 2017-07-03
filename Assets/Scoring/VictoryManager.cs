@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using UnityEngine;
 
 using Assets.Core;
 using Assets.Session;
-using Assets.Scoring.ForTesting;
+using Assets.Societies;
 
 using UnityCustomUtilities.Extensions;
 
@@ -17,23 +18,50 @@ namespace Assets.Scoring {
 
         #region instance fields and properties
 
-        public PlayerScorerBase PlayerScorer {
-            get { return _playerScorer; }
-            set {
-                if(_playerScorer != null) {
-                    _playerScorer.ScoreChanged -= PlayerScorer_ScoreChanged;
-                }
-                _playerScorer = value;
-                if(_playerScorer != null) {
-                    _playerScorer.ScoreChanged += PlayerScorer_ScoreChanged;
-                }
-            }
-        }
-        [SerializeField] private PlayerScorerBase _playerScorer;
+        #region from VictoryManagerBase
 
-        public override int ScoreToWin { get; set; }
+        public override int TierOneSocietiesToWin {
+            get { return _tierOneSocietiesToWin; }
+            set { _tierOneSocietiesToWin = value; }
+        }
+        [SerializeField] private int _tierOneSocietiesToWin;
+
+        public override int TierTwoSocietiesToWin {
+            get { return _tierTwoSocietiesToWin; }
+            set { _tierTwoSocietiesToWin = value; }
+        }
+        [SerializeField] private int _tierTwoSocietiesToWin;
+
+        public override int TierThreeSocietiesToWin {
+            get { return _tierThreeSocietiesToWin; }
+            set { _tierThreeSocietiesToWin = value; }
+        }
+        [SerializeField] private int _tierThreeSocietiesToWin;
+
+        public override int TierFourSocietiesToWin {
+            get { return _tierFourSocietiesToWin; }
+            set { _tierFourSocietiesToWin = value; }
+        }
+        [SerializeField] private int _tierFourSocietiesToWin;
+
+        public override int CurrentTierOneSocieties   { get; protected set; }
+        public override int CurrentTierTwoSocieties   { get; protected set; }
+        public override int CurrentTierThreeSocieties { get; protected set; }
+        public override int CurrentTierFourSocieties  { get; protected set; }
+
+        public override float SecondsOfStabilityToWin {
+            get { return _secondsOfStabilityToWin; }
+            set { _secondsOfStabilityToWin = value; }
+        }
+        [SerializeField] private float _secondsOfStabilityToWin;
 
         public override bool IsCheckingForVictory { get; set; }
+
+        public override bool VictoryClockIsTicking { get; protected set; }
+
+        public override float CurrentVictoryClockValue { get; set; }
+
+        #endregion
 
         public UIControlBase UIControl {
             get { return _uiControl; }
@@ -59,6 +87,18 @@ namespace Assets.Scoring {
         }
         [SerializeField] private MapPermissionManagerBase _mapPermissionManager;
 
+        public SocietyFactoryBase SocietyFactory {
+            get { return _societyFactory; }
+            set { _societyFactory = value; }
+        }
+        [SerializeField] private SocietyFactoryBase _societyFactory;
+
+        public ComplexityLadderBase ActiveLadder {
+            get { return _activeLadder; }
+            set { _activeLadder = value; }
+        }
+        [SerializeField] private ComplexityLadderBase _activeLadder;
+
         #endregion
 
         #region instance methods
@@ -66,10 +106,41 @@ namespace Assets.Scoring {
         #region Unity message methods
 
         private void Start() {
-            if(PlayerScorer != null) {
-                PlayerScorer.ScoreChanged -= PlayerScorer_ScoreChanged;
+            if(SocietyFactory != null) {
+                foreach(var society in SocietyFactory.Societies) {
+                    society.NeedsAreSatisfiedChanged -= Society_NeedsAreSatisfiedChanged;
+                    society.NeedsAreSatisfiedChanged += Society_NeedsAreSatisfiedChanged;
 
-                PlayerScorer.ScoreChanged += PlayerScorer_ScoreChanged;
+                    society.CurrentComplexityChanged -= Society_CurrentComplexityChanged;
+                    society.CurrentComplexityChanged += Society_CurrentComplexityChanged;
+                }
+                SocietyFactory.SocietySubscribed += SocietyFactory_SocietySubscribed;
+                SocietyFactory.SocietyUnsubscribed += SocietyFactory_SocietyUnsubscribed;
+                RefreshVictoryProgress();
+            }
+            VictoryClockIsTicking = false;
+        }
+
+        private void Update() {
+            if(IsCheckingForVictory && VictoryClockIsTicking && GetVictoryConditionsAreSatisfied()) {
+                CurrentVictoryClockValue += Time.deltaTime;
+                if(CurrentVictoryClockValue >= SecondsOfStabilityToWin) {
+                    TriggerVictory();
+                }
+            }else {
+                CurrentVictoryClockValue = 0f;
+            }
+        }
+
+        private void OnDestroy() {
+            IsCheckingForVictory = false;
+            if(SocietyFactory == null) {
+                foreach(var society in SocietyFactory.Societies) {
+                    society.NeedsAreSatisfiedChanged -= Society_NeedsAreSatisfiedChanged;
+                    society.CurrentComplexityChanged   -= Society_CurrentComplexityChanged;
+                }
+                SocietyFactory.SocietySubscribed   -= SocietyFactory_SocietySubscribed;
+                SocietyFactory.SocietyUnsubscribed -= SocietyFactory_SocietyUnsubscribed;
             }
         }
 
@@ -87,19 +158,82 @@ namespace Assets.Scoring {
             SimulationControl.PerformVictoryTasks();
             UIControl.PerformVictoryTasks();
             MapPermissionManager.FlagMapAsHavingBeenWon(SessionManager.CurrentSession.Name);
+            VictoryClockIsTicking = false;
+            CurrentVictoryClockValue = 0f;
             IsCheckingForVictory = false;
         }
 
         #endregion
 
-        private void PlayerScorer_ScoreChanged(object sender, IntEventArgs e) {
-            if(IsCheckingForVictory && e.Value >= ScoreToWin) {
-                TriggerVictory();
+        private void RefreshVictoryProgress() {
+            CurrentTierOneSocieties   = 0;
+            CurrentTierTwoSocieties   = 0;
+            CurrentTierThreeSocieties = 0;
+            CurrentTierFourSocieties  = 0;
+
+            var allSocietiesHaveSatisfiedNeeds = true;
+
+            foreach(var society in SocietyFactory.Societies) {
+                if(ActiveLadder.TierOneComplexities.Contains(society.CurrentComplexity)) {
+                    ++CurrentTierOneSocieties;
+                }else if(ActiveLadder.TierTwoComplexities.Contains(society.CurrentComplexity)) {
+                    ++CurrentTierTwoSocieties;
+                }else if(ActiveLadder.TierThreeComplexities.Contains(society.CurrentComplexity)) {
+                    ++CurrentTierThreeSocieties;
+                }else if(ActiveLadder.TierFourComplexities.Contains(society.CurrentComplexity)) {
+                    ++CurrentTierFourSocieties;
+                }
+                allSocietiesHaveSatisfiedNeeds &= society.NeedsAreSatisfied;
+            }
+            if(GetVictoryConditionsAreSatisfied() && allSocietiesHaveSatisfiedNeeds) {
+                VictoryClockIsTicking = true;
+            }else {
+                VictoryClockIsTicking = false;
+            }
+            RaiseVictoryProgressRefreshed();
+        }
+
+        private bool GetVictoryConditionsAreSatisfied() {
+            return (
+                CurrentTierOneSocieties   >= TierOneSocietiesToWin   &&
+                CurrentTierTwoSocieties   >= TierTwoSocietiesToWin   &&
+                CurrentTierThreeSocieties >= TierThreeSocietiesToWin &&
+                CurrentTierFourSocieties  >= TierFourSocietiesToWin
+            );
+        }
+
+        private void CheckVictory() {
+            if(IsCheckingForVictory) {
+                RefreshVictoryProgress();
+            }
+        }
+
+        private void SocietyFactory_SocietyUnsubscribed(object sender, SocietyEventArgs e) {
+            e.Society.CurrentComplexityChanged -= Society_CurrentComplexityChanged;
+            e.Society.NeedsAreSatisfiedChanged -= Society_NeedsAreSatisfiedChanged;
+            CheckVictory();
+        }
+
+        private void SocietyFactory_SocietySubscribed(object sender, SocietyEventArgs e) {
+            e.Society.CurrentComplexityChanged += Society_CurrentComplexityChanged;
+            e.Society.NeedsAreSatisfiedChanged += Society_NeedsAreSatisfiedChanged;
+            CheckVictory();
+        }
+
+        private void Society_CurrentComplexityChanged(object sender, ComplexityDefinitionEventArgs e) {
+            CheckVictory();
+        }
+
+        private void Society_NeedsAreSatisfiedChanged(object sender, BoolEventArgs e) {
+            if(!e.Value) {
+                VictoryClockIsTicking = false;
+            }else {
+                RefreshVictoryProgress();
             }
         }
 
         #endregion
-        
+
     }
 
 }

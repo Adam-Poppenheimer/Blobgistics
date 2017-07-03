@@ -75,7 +75,7 @@ namespace Assets.Session.Editor {
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("Empty Session", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("Empty Session", "Description");
             managerToTest.PullRuntimeFromCurrentSession();
 
             //Validation
@@ -89,7 +89,7 @@ namespace Assets.Session.Editor {
         }
 
         [Test]
-        public void OnRuntimePulledFromSession_VictoryManagerScoreToWinIsSetProperly() {
+        public void OnRuntimePulledFromSession_VictoryManagerPropertiesAreSetProperly() {
             //Setup
             var mapGraph                = BuildMockMapGraph();
             var highwayFactory          = BuildMockHighwayFactory();
@@ -110,12 +110,7 @@ namespace Assets.Session.Editor {
             managerToTest.MainCamera              = BuildCamera();
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
-            //Execution
-            managerToTest.CurrentSession = new SerializableSession("Empty Session", "Description", 42);
-            managerToTest.PullRuntimeFromCurrentSession();
-
-            //Validation
-            Assert.AreEqual(managerToTest.CurrentSession.ScoreToWin, victoryManager.ScoreToWin);
+            throw new NotImplementedException();
         }
 
         [Test]
@@ -146,7 +141,7 @@ namespace Assets.Session.Editor {
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
@@ -218,7 +213,7 @@ namespace Assets.Session.Editor {
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
@@ -272,7 +267,7 @@ namespace Assets.Session.Editor {
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
@@ -316,7 +311,7 @@ namespace Assets.Session.Editor {
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
@@ -360,7 +355,7 @@ namespace Assets.Session.Editor {
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
@@ -439,7 +434,7 @@ namespace Assets.Session.Editor {
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
@@ -507,7 +502,7 @@ namespace Assets.Session.Editor {
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
@@ -544,7 +539,7 @@ namespace Assets.Session.Editor {
             var cameraToPushInto = BuildCamera();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MainCamera = cameraToPushInto;
@@ -598,7 +593,7 @@ namespace Assets.Session.Editor {
             managerToTest.BlobFactory             = BuildMockBlobFactory();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.MapGraph = mapGraphToPushTo;
@@ -634,7 +629,7 @@ namespace Assets.Session.Editor {
             var terrainGridToPushInto = BuildMockTerrainGrid();
 
             //Execution
-            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description", 42);
+            managerToTest.CurrentSession = new SerializableSession("sessionPulled", "Description");
             managerToTest.PushRuntimeIntoCurrentSession();
 
             managerToTest.TerrainGrid = terrainGridToPushInto;

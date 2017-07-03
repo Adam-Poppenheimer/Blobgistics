@@ -20,7 +20,6 @@ namespace Assets.Scoring.Editor {
         [Test]
         public void OnTriggerVictoryCalled_PerformVictoryTasksIsCalledOnSimulationControl_AndUIControl() {
             //Setup
-            var playerScorer      = BuildMockPlayerScorer();
             var uiControl         = BuildMockUIControl();
             var simulationControl = BuildMockSimulationControl();
             var sessionManager    = BuildMockSessionManager();
@@ -32,7 +31,6 @@ namespace Assets.Scoring.Editor {
             };
 
             var managerToTest = BuildVictoryManager();
-            managerToTest.PlayerScorer         = playerScorer;
             managerToTest.UIControl            = uiControl;
             managerToTest.SimulationControl    = simulationControl;
             managerToTest.SessionManager       = sessionManager;
@@ -48,7 +46,6 @@ namespace Assets.Scoring.Editor {
         [Test]
         public void OnTriggerDefeatCalled_PerformDefeatTasksIsCalledOnSimulationControl_AndUIControl() {
             //Setup
-            var playerScorer      = BuildMockPlayerScorer();
             var uiControl         = BuildMockUIControl();
             var simulationControl = BuildMockSimulationControl();
             var sessionManager    = BuildMockSessionManager();
@@ -60,7 +57,6 @@ namespace Assets.Scoring.Editor {
             };
 
             var managerToTest = BuildVictoryManager();
-            managerToTest.PlayerScorer         = playerScorer;
             managerToTest.UIControl            = uiControl;
             managerToTest.SimulationControl    = simulationControl;
             managerToTest.SessionManager       = sessionManager;
@@ -75,39 +71,8 @@ namespace Assets.Scoring.Editor {
         }
 
         [Test]
-        public void OnPlayerScorerGeneratesAWinningScore_AndManagerIsCheckingForVictory_TriggerVictoryIsCalled() {
-            //Setup
-            var playerScorer      = BuildMockPlayerScorer();
-            var uiControl         = BuildMockUIControl();
-            var simulationControl = BuildMockSimulationControl();
-            var sessionManager    = BuildMockSessionManager();
-            var permissionManager = BuildMockMapPermissionManager();
-
-            bool performVictoryTasksWasCalled = false;
-            uiControl.PerformVictoryTasksCalled += delegate(object sender, EventArgs e) {
-                performVictoryTasksWasCalled = true;
-            };
-
-            var managerToTest = BuildVictoryManager();
-            managerToTest.ScoreToWin = 50;
-            managerToTest.IsCheckingForVictory = true;
-            managerToTest.PlayerScorer         = playerScorer;
-            managerToTest.UIControl            = uiControl;
-            managerToTest.SimulationControl    = simulationControl;
-            managerToTest.SessionManager       = sessionManager;
-            managerToTest.MapPermissionManager = permissionManager;
-
-            //Execution
-            playerScorer.SetTotalScore(managerToTest.ScoreToWin);
-
-            //Validation
-            Assert.IsTrue(performVictoryTasksWasCalled);
-        }
-
-        [Test]
         public void WhenVictoryIsAchieved_MapPermissionManagers_FlagMapAsHavingBeenWonIsCalled_OnTheNameOfTheCurrentSession() {
             //Setup
-            var playerScorer      = BuildMockPlayerScorer();
             var uiControl         = BuildMockUIControl();
             var simulationControl = BuildMockSimulationControl();
             var sessionManager    = BuildMockSessionManager();
@@ -116,20 +81,38 @@ namespace Assets.Scoring.Editor {
             sessionManager.CurrentSession.Name = "Test Session Name";
 
             var managerToTest = BuildVictoryManager();
-            managerToTest.ScoreToWin = 50;
             managerToTest.IsCheckingForVictory = true;
-            managerToTest.PlayerScorer         = playerScorer;
             managerToTest.UIControl            = uiControl;
             managerToTest.SimulationControl    = simulationControl;
             managerToTest.SessionManager       = sessionManager;
             managerToTest.MapPermissionManager = permissionManager;
 
             //Execution
-            playerScorer.SetTotalScore(managerToTest.ScoreToWin);
+            managerToTest.TriggerVictory();
 
             //Validation
             Assert.AreEqual(sessionManager.CurrentSession.Name, permissionManager.LastMapFlaggedAsHavingBeenWon,
                 "PermissionManager has been given an incorrect map name, or no name at all");
+        }
+
+        [Test]
+        public void OnSocietyFactorySubscribesNewSociety_ManagerUpdatesAccordingly() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void OnSocietyFactoryUnsubscribesSociety_ManagerUpdatesAccordingly() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void OnSocietyChangesComplexity_ManagerUpdatesAccordingly() {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void OnVictoryConditionsMet_AndIsCheckingForVictory_ManagerTriggersVictory() {
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -146,10 +129,6 @@ namespace Assets.Scoring.Editor {
 
         private MockSimulationControl BuildMockSimulationControl() {
             return (new GameObject()).AddComponent<MockSimulationControl>();
-        }
-
-        private MockPlayerScorer BuildMockPlayerScorer() {
-            return (new GameObject()).AddComponent<MockPlayerScorer>();
         }
 
         private MockMapPermissionManager BuildMockMapPermissionManager() {

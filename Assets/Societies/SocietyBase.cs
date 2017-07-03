@@ -34,10 +34,17 @@ namespace Assets.Societies {
         #region events
 
         public event EventHandler<ComplexityDefinitionEventArgs> CurrentComplexityChanged;
+        public event EventHandler<BoolEventArgs> NeedsAreSatisfiedChanged;
 
         protected void RaiseCurrentComplexityChanged(ComplexityDefinitionBase newComplexity) {
             if(CurrentComplexityChanged != null) {
                 CurrentComplexityChanged(this, new ComplexityDefinitionEventArgs(newComplexity));
+            }
+        }
+
+        protected void RaiseNeedsAreSatisfiedChanged(bool needsAreSatisfied) {
+            if(NeedsAreSatisfiedChanged != null) {
+                NeedsAreSatisfiedChanged(this, new BoolEventArgs(needsAreSatisfied));
             }
         }
 

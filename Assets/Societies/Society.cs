@@ -202,9 +202,11 @@ namespace Assets.Societies {
                 if(needsSatisfiedThisCycle) {
                     needsAreSatisfied = true;
                     SecondsOfUnsatisfiedNeeds = 0f;
+                    RaiseNeedsAreSatisfiedChanged(needsAreSatisfied);
                 }else if(NeedsAreSatisfied){
                     needsAreSatisfied = false;
                     SecondsOfUnsatisfiedNeeds = 0;
+                    RaiseNeedsAreSatisfiedChanged(needsAreSatisfied);
                 }
                 CurrentNeedConsumptionTimer -= CurrentComplexity.SecondsToFullyConsumeNeeds;
             }
@@ -339,6 +341,7 @@ namespace Assets.Societies {
                     PrivateData.Location.BlobSite.ClearContents();
                     SecondsOfUnsatisfiedNeeds = 0f;
                     needsAreSatisfied = true;
+                    RaiseNeedsAreSatisfiedChanged(needsAreSatisfied);
 
                     RefreshAppearance();
                     RefreshBlobSitePermissionsAndCapacities();
