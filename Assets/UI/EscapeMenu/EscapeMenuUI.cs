@@ -12,7 +12,9 @@ namespace Assets.UI.EscapeMenu {
 
         #region instance fields and properties
 
-        [SerializeField] private SaveSessionDisplay SaveSessionDisplay;
+        [SerializeField] private EscapeMenuSaveSessionDisplay SaveSessionDisplay;
+        [SerializeField] private EscapeMenuLoadSessionDisplay LoadSessionDisplay;
+
         [SerializeField] private RectTransform OptionsDisplay;
 
         #endregion
@@ -20,10 +22,24 @@ namespace Assets.UI.EscapeMenu {
         #region events
 
         public event EventHandler<EventArgs> GameResumeRequested;
+        public event EventHandler<EventArgs> GameExitRequested;
+        public event EventHandler<EventArgs> ReturnToMainMenuRequested;
 
         protected void RaiseGameResumeRequested() {
             if(GameResumeRequested != null) {
-                GameResumeRequested(null, EventArgs.Empty);
+                GameResumeRequested(this, EventArgs.Empty);
+            }
+        }
+
+        protected void RaiseGameExitRequested() {
+            if(GameExitRequested != null) {
+                GameExitRequested(this, EventArgs.Empty);
+            }
+        }
+
+        protected void RaiseReturnToMainMenuRequested() {
+            if(ReturnToMainMenuRequested != null) {
+                ReturnToMainMenuRequested(this, EventArgs.Empty);
             }
         }
 
@@ -35,6 +51,9 @@ namespace Assets.UI.EscapeMenu {
 
         private void Start() {
             SaveSessionDisplay.DeactivationRequested += SaveSessionDisplay_DeactivationRequested;
+            LoadSessionDisplay.DeactivationRequested += LoadSessionDisplay_DeactivationRequested;
+
+            LoadSessionDisplay.MapLoaded += LoadSessionDisplay_MapLoaded;
         }
 
         private void OnEnable() {
@@ -43,6 +62,7 @@ namespace Assets.UI.EscapeMenu {
 
         private void OnDisable() {
             DeactivateSaveSessionDisplay();
+            DeactivateLoadSessionDisplay();
         }
 
         private void Update() {
@@ -60,6 +80,8 @@ namespace Assets.UI.EscapeMenu {
         #endregion
 
         public void ActivateOptionsDisplay() {
+            DeactivateSaveSessionDisplay();
+            DeactivateLoadSessionDisplay();
             if(OptionsDisplay != null) {
                 OptionsDisplay.gameObject.SetActive(true);
             }
@@ -72,14 +94,30 @@ namespace Assets.UI.EscapeMenu {
         }
 
         public void ActivateSaveSessionDisplay() {
+            DeactivateOptionsDisplay();
+            DeactivateLoadSessionDisplay();
             if(SaveSessionDisplay != null) {
-                SaveSessionDisplay.gameObject.SetActive(true);
+                SaveSessionDisplay.Activate();
             }
         }
 
         public void DeactivateSaveSessionDisplay() {
             if(SaveSessionDisplay != null) {
-                SaveSessionDisplay.gameObject.SetActive(false);
+                SaveSessionDisplay.Deactivate();
+            }
+        }
+
+        public void ActivateLoadSessionDisplay() {
+            DeactivateOptionsDisplay();
+            DeactivateSaveSessionDisplay();
+            if(LoadSessionDisplay != null) {
+                LoadSessionDisplay.Activate();
+            }
+        }
+
+        public void DeactivateLoadSessionDisplay() {
+            if(LoadSessionDisplay != null) {
+                LoadSessionDisplay.Deactivate();
             }
         }
 
@@ -87,9 +125,24 @@ namespace Assets.UI.EscapeMenu {
             RaiseGameResumeRequested();
         }
 
+        public void RaiseExitRequest() {
+            RaiseGameExitRequested();
+        }
+
+        public void RaiseReturnToMainMenuRequest() {
+            RaiseReturnToMainMenuRequested();
+        }
+
         private void SaveSessionDisplay_DeactivationRequested(object sender, EventArgs e) {
-            DeactivateSaveSessionDisplay();
             ActivateOptionsDisplay();
+        }
+
+        private void LoadSessionDisplay_DeactivationRequested(object sender, EventArgs e) {
+            ActivateOptionsDisplay();
+        }
+
+        private void LoadSessionDisplay_MapLoaded(object sender, EventArgs e) {
+            RaiseResumeRequest();
         }
 
         #endregion

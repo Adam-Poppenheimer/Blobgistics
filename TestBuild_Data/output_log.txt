@@ -1,0 +1,46 @@
+Mono path[0] = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Managed'
+Mono path[1] = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Mono'
+Mono config path = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Mono/etc'
+PlayerConnection initialized from D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55168
+Multi-casting "[IP] 192.168.2.102 [Port] 55168 [Flags] 3 [Guid] 2706610894 [EditorId] 1891018948 [Version] 1048832 [Id] WindowsPlayer(TheDanputer) [Debug] 1" to [225.0.0.222:54997]...
+Waiting for connection from host on [0.0.0.0:55168]...
+PlayerConnection accepted from [192.168.2.102] handle:0x278
+Started listening to [0.0.0.0:55168]
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56894
+PlayerConnection already initialized - listening to [0.0.0.0:55168]
+Player data archive not found at `D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/data.unity3d`, using local filesystemInitialize engine version: 5.6.2f1 (a2913c821e27)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA Quadro 4000 (ID=0x6dd)
+    Vendor:   NVIDIA
+    VRAM:     2000 MB
+    Driver:   21.21.13.7735
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityCustomUtilities.dll (this message is harmless)
+Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityCustomUtilities.dll into Unity Child Domain
+- Completed reload, in  0.048 seconds
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 3600x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.Runtime.Serialization.dll (this message is harmless)
+UnloadTime: 1.490338 ms
+Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.Xml.dll (this message is harmless)
+Setting up 4 worker threads for Enlighten.
+  Thread -> id: 3a60 -> priority: 1 
+  Thread -> id: 2fcc -> priority: 1 
+  Thread -> id: 1820 -> priority: 1 
+  Thread -> id: 2aa0 -> priority: 1 
+Waiting for finish

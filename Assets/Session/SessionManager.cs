@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Assets.Blobs;
+using Assets.BlobSites;
 using Assets.Map;
 using Assets.ConstructionZones;
 using Assets.HighwayManager;
@@ -210,13 +211,17 @@ namespace Assets.Session {
 
             foreach(var nodeData in session.MapNodes) {
                 var successorNode = MapGraph.BuildNode(nodeData.LocalPosition, nodeData.LandType);
+
+                BlobSitePermissionProfile.AllPermissiveProfile.InsertProfileIntoBlobSite(successorNode.BlobSite);
+                foreach(var stockpilePair in nodeData.ResourceStockpileOfType) {
+                    for(int i = 0; i < stockpilePair.Value; ++i) {
+                        successorNode.BlobSite.PlaceBlobInto(BlobFactory.BuildBlob(stockpilePair.Key, successorNode.transform.position));
+                    }
+                }
+
+                successorNode.BlobSite.ClearPermissionsAndCapacity();
                 if(nodeData.CurrentBlobSitePermissionProfile != null) {
                     nodeData.CurrentBlobSitePermissionProfile.InsertProfileIntoBlobSite(successorNode.BlobSite);
-                    foreach(var stockpilePair in nodeData.ResourceStockpileOfType) {
-                        for(int i = 0; i < stockpilePair.Value; ++i) {
-                            successorNode.BlobSite.PlaceBlobInto(BlobFactory.BuildBlob(stockpilePair.Key, successorNode.transform.position));
-                        }
-                    }
                 }
                 mapNodeIDMapping[nodeData.ID] = successorNode;
             }

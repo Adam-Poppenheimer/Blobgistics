@@ -89,6 +89,8 @@ namespace Assets.Core {
             TitleScreenUI.GameExitRequested += TitleScreenUI_GameExitRequested;
 
             EscapeMenuUI.GameResumeRequested += EscapeMenuUI_GameResumeRequested;
+            EscapeMenuUI.GameExitRequested += EscapeMenuUI_GameExitRequested;
+            EscapeMenuUI.ReturnToMainMenuRequested += EscapeMenuUI_ReturnToMainMenuRequested;
 
             VictorySplashScreen.ReturnToTitleScreenRequested += VictorySplashScreen_ReturnToTitleScreenRequested;
         }
@@ -205,6 +207,10 @@ namespace Assets.Core {
 
         #endregion
 
+        private void ExitGame() {
+            Application.Quit();
+        }
+
         private void TitleScreenUI_GameStartRequested(object sender, EventArgs e) {
             TitleScreenUI.Deactivate();
             foreach(var hudElement in HUDElements) {
@@ -214,12 +220,26 @@ namespace Assets.Core {
         }
 
         private void TitleScreenUI_GameExitRequested(object sender, EventArgs e) {
-            Debug.Log("Exit Requested");
+            ExitGame();
         }
 
         private void EscapeMenuUI_GameResumeRequested(object sender, EventArgs e) {
             EscapeMenuUI.gameObject.SetActive(false);
             SimulationControl.Resume();
+        }
+
+        private void EscapeMenuUI_GameExitRequested(object sender, EventArgs e) {
+            ExitGame();
+        }
+
+        private void EscapeMenuUI_ReturnToMainMenuRequested(object sender, EventArgs e) {
+            EscapeMenuUI.gameObject.SetActive(false);
+            foreach(var hudElement in HUDElements) {
+                hudElement.Deactivate();
+            }
+            SimulationControl.Pause();
+            TitleScreenUI.Activate();
+            TitleScreenUI.ActivateOptionsDisplay();
         }
 
         private void VictorySplashScreen_ReturnToTitleScreenRequested(object sender, EventArgs e) {

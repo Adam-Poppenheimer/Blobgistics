@@ -13,6 +13,26 @@ namespace Assets.BlobSites {
     [Serializable, DataContract]
     public class BlobSitePermissionProfile {
 
+        #region static fields and properties
+
+        public static BlobSitePermissionProfile AllPermissiveProfile {
+            get {
+                if(_allPermissiveProfile == null) {
+                    _allPermissiveProfile = new BlobSitePermissionProfile();
+                    foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                        _allPermissiveProfile.SetPlacementPermission(resourceType, true);
+                        _allPermissiveProfile.SetExtractionPermission(resourceType, true);
+                        _allPermissiveProfile.SetCapacity(resourceType, int.MaxValue);
+                    }
+                    _allPermissiveProfile.SetTotalCapacity(int.MaxValue);
+                }
+                return _allPermissiveProfile;
+            }
+        }
+        private static BlobSitePermissionProfile _allPermissiveProfile = null;
+
+        #endregion
+
         #region instance fields and properties
 
         [DataMember()]

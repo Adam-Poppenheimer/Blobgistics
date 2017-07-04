@@ -23,6 +23,8 @@ namespace Assets.UI.TitleScreen {
         [SerializeField] private ExitGameDisplay    ExitGameDisplay;
         [SerializeField] private RectTransform      OptionsDisplay;
 
+        [SerializeField] private PanningZoomingCameraLogic MainCameraLogic;
+
         #endregion
 
         #region events
@@ -61,6 +63,14 @@ namespace Assets.UI.TitleScreen {
             DeactivateExitGameDisplay();
 
             ActivateOptionsDisplay();
+        }
+
+        private void OnEnable() {
+            MainCameraLogic.IsReceivingInput = false;
+        }
+
+        private void OnDisable() {
+            MainCameraLogic.IsReceivingInput = true;
         }
 
         #endregion
