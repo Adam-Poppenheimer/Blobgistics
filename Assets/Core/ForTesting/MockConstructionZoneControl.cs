@@ -46,10 +46,14 @@ namespace Assets.Core.ForTesting {
             return PermittedProjects;
         }
 
+        public override IEnumerable<ConstructionProjectUISummary> GetAllConstructionZoneProjects() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

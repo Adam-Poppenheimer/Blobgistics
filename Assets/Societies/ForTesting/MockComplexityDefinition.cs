@@ -111,7 +111,7 @@ namespace Assets.Societies.ForTesting {
         }
         private IntPerResourceDictionary _costOfAscent = null;
 
-        public override Material MaterialForSociety {
+        public override Color ColorForSociety {
             get {
                 throw new NotImplementedException();
             }
@@ -125,7 +125,13 @@ namespace Assets.Societies.ForTesting {
         }
         private List<TerrainType> _permittedTerrains = new List<TerrainType>();
 
-        public override int Score {
+        public override Sprite SpriteForSociety {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override Color ColorForBackground {
             get {
                 throw new NotImplementedException();
             }

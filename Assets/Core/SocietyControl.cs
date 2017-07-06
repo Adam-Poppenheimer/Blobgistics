@@ -47,7 +47,7 @@ namespace Assets.Core {
             }
         }
 
-        public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
+        public override void SetGeneralAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
             var societyToChange = SocietyFactory.GetSocietyOfID(societyID);
             if(societyToChange != null) {
                 societyToChange.AscensionIsPermitted = ascensionPermitted;
@@ -56,10 +56,19 @@ namespace Assets.Core {
             }
         }
 
+        public override void SetSpecificAscensionPermissionForSociety(int societyID, ComplexityDefinitionBase complexity, bool ascensionPermitted) {
+            var societyToChange = SocietyFactory.GetSocietyOfID(societyID);
+            if(societyToChange != null) {
+                societyToChange.SetAscensionPermissionForComplexity(complexity, ascensionPermitted);
+            }else {
+                Debug.LogErrorFormat(SocietyIDErrorMessage, societyID);
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

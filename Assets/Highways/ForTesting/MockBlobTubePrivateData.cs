@@ -13,7 +13,7 @@ namespace Assets.Highways.ForTesting {
 
         #region from BlobTubePrivateDataBase
 
-        public override float MeshNonLengthDimensions {
+        public override float TubeWidth {
             get {
                 throw new NotImplementedException();
             }

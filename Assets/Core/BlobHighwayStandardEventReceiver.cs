@@ -23,7 +23,6 @@ namespace Assets.Core {
                 if(_highwayDisplay != null) {
                     _highwayDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                     _highwayDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-                    _highwayDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
                     _highwayDisplay.ResourceRequestedForUpkeep              -= HighwayDisplay_ResourceRequestedForUpkeep;
                         
                 }
@@ -31,7 +30,6 @@ namespace Assets.Core {
                 if(_highwayDisplay != null) {
                     _highwayDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                     _highwayDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-                    _highwayDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
                     _highwayDisplay.ResourceRequestedForUpkeep              += HighwayDisplay_ResourceRequestedForUpkeep;
                 }
             }
@@ -54,12 +52,10 @@ namespace Assets.Core {
             if(HighwaySummaryDisplay != null) {
                 HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                 HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-                HighwaySummaryDisplay.PriorityChanged                         -= HighwaySummaryDisplay_PriorityChanged;
                 HighwaySummaryDisplay.ResourceRequestedForUpkeep              -= HighwayDisplay_ResourceRequestedForUpkeep;
 
                 HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  += HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                 HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged += HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;
-                HighwaySummaryDisplay.PriorityChanged                         += HighwaySummaryDisplay_PriorityChanged;
                 HighwaySummaryDisplay.ResourceRequestedForUpkeep              += HighwayDisplay_ResourceRequestedForUpkeep;
             }
         }

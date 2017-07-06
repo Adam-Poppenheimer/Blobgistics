@@ -28,7 +28,7 @@ namespace Assets.Session.ForTesting {
             }
         }
 
-        public override Material MaterialForSociety {
+        public override Color ColorForSociety {
             get {
                 throw new NotImplementedException();
             }
@@ -64,12 +64,6 @@ namespace Assets.Session.ForTesting {
             }
         }
 
-        public override int Score {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public override float SecondsToFullyConsumeNeeds {
             get {
                 throw new NotImplementedException();
@@ -94,10 +88,22 @@ namespace Assets.Session.ForTesting {
             }
         }
 
+        public override Sprite SpriteForSociety {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        public override Color ColorForBackground {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

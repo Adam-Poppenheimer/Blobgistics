@@ -74,6 +74,9 @@ namespace Assets.Core {
 
                 ConstructionPanel.DeactivationRequested += ConstructionPanel_DeactivationRequested;
                 ConstructionPanel.ConstructionRequested += ConstructionPanel_ConstructionRequested;
+
+                ConstructionPanel.SetPermittedProjects(ConstructionZoneControl.GetAllConstructionZoneProjects());
+                ConstructionPanel.SetPermittedProjects(new List<ConstructionProjectUISummary>());
             }
         }
 

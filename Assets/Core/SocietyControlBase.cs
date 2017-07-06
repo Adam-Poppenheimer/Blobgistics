@@ -13,7 +13,9 @@ namespace Assets.Core {
 
         #region instance methods
 
-        public abstract void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted);
+        public abstract void SetGeneralAscensionPermissionForSociety(int societyID, bool ascensionPermitted);
+
+        public abstract void SetSpecificAscensionPermissionForSociety(int societyID, ComplexityDefinitionBase complexity, bool ascensionPermitted);
 
         public abstract void DestroySociety(int societyID);
 

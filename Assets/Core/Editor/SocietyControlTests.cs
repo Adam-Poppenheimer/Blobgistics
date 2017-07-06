@@ -60,10 +60,10 @@ namespace Assets.Core.Editor {
             var society3 = societyFactory.ConstructSocietyAt(node3, societyFactory.StandardComplexityLadder, societyFactory.DefaultComplexityDefinition);
 
             //Execution
-            controlToTest.SetAscensionPermissionForSociety(society1.ID, false);
-            controlToTest.SetAscensionPermissionForSociety(society2.ID, false);
-            controlToTest.SetAscensionPermissionForSociety(society2.ID, true);
-            controlToTest.SetAscensionPermissionForSociety(society3.ID, true);
+            controlToTest.SetGeneralAscensionPermissionForSociety(society1.ID, false);
+            controlToTest.SetGeneralAscensionPermissionForSociety(society2.ID, false);
+            controlToTest.SetGeneralAscensionPermissionForSociety(society2.ID, true);
+            controlToTest.SetGeneralAscensionPermissionForSociety(society3.ID, true);
 
             //Validation
             Assert.IsFalse(society1.AscensionIsPermitted, "Society1 falsely permits ascension");
@@ -93,7 +93,7 @@ namespace Assets.Core.Editor {
             lastMessage = null;
 
             Assert.DoesNotThrow(delegate() {
-                controlToTest.SetAscensionPermissionForSociety(42, false);
+                controlToTest.SetGeneralAscensionPermissionForSociety(42, false);
             }, "SetAscensionPermissionForSociety threw an exception");
 
             lastMessage = insertionHandler.StoredMessages.LastOrDefault();

@@ -19,6 +19,11 @@ namespace Assets.UI.Societies {
         public ComplexityDefinitionBase ComplexityToDisplay { get; set; }
         public bool IsCandidateForShift { get; set; }
 
+        public Toggle AscensionPermissionToggle {
+            get { return _ascensionPermissionToggle; }
+        }
+        [SerializeField] private Toggle _ascensionPermissionToggle;
+
         [SerializeField] private Text NameField;
         [SerializeField] private Text PermittedTerrainsField;
         [SerializeField] private ResourceDisplay CostField;

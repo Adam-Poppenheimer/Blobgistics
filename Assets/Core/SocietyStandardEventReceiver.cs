@@ -27,13 +27,15 @@ namespace Assets.Core {
             get { return _societySummaryDisplay; }
             set {
                 if(_societySummaryDisplay != null) {
-                    _societySummaryDisplay.DestructionRequested -= SocietySummaryDisplay_DestructionRequested;
-                    _societySummaryDisplay.AscensionPermissionChangeRequested -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                    _societySummaryDisplay.DestructionRequested                      -= SocietySummaryDisplay_DestructionRequested;
+                    _societySummaryDisplay.AscensionPermissionChangeRequested        -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                    _societySummaryDisplay.ComplexityAscentPermissionChangeRequested -= SocietySummaryDisplay_ComplexityAscentPermissionChangeRequested;
                 }
                 _societySummaryDisplay = value;
                 if(_societySummaryDisplay != null) {
-                    _societySummaryDisplay.DestructionRequested += SocietySummaryDisplay_DestructionRequested;
-                    _societySummaryDisplay.AscensionPermissionChangeRequested += SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                    _societySummaryDisplay.DestructionRequested                      += SocietySummaryDisplay_DestructionRequested;
+                    _societySummaryDisplay.AscensionPermissionChangeRequested        += SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                    _societySummaryDisplay.ComplexityAscentPermissionChangeRequested += SocietySummaryDisplay_ComplexityAscentPermissionChangeRequested;
                 }
             }
         }
@@ -47,11 +49,13 @@ namespace Assets.Core {
 
         private void Awake() {
             if(SocietySummaryDisplay != null) {
-                SocietySummaryDisplay.DestructionRequested               -= SocietySummaryDisplay_DestructionRequested;
-                SocietySummaryDisplay.AscensionPermissionChangeRequested -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                SocietySummaryDisplay.DestructionRequested                      -= SocietySummaryDisplay_DestructionRequested;
+                SocietySummaryDisplay.AscensionPermissionChangeRequested        -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                SocietySummaryDisplay.ComplexityAscentPermissionChangeRequested -= SocietySummaryDisplay_ComplexityAscentPermissionChangeRequested;
 
-                SocietySummaryDisplay.DestructionRequested               += SocietySummaryDisplay_DestructionRequested;
-                SocietySummaryDisplay.AscensionPermissionChangeRequested += SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                SocietySummaryDisplay.DestructionRequested                      += SocietySummaryDisplay_DestructionRequested;
+                SocietySummaryDisplay.AscensionPermissionChangeRequested        += SocietySummaryDisplay_AscensionPermissionChangeRequested;
+                SocietySummaryDisplay.ComplexityAscentPermissionChangeRequested += SocietySummaryDisplay_ComplexityAscentPermissionChangeRequested;
             }
         }
 
@@ -96,7 +100,13 @@ namespace Assets.Core {
         }
 
         private void SocietySummaryDisplay_AscensionPermissionChangeRequested(object sender, BoolEventArgs e) {
-            SocietyControl.SetAscensionPermissionForSociety(SocietySummaryDisplay.CurrentSummary.ID, e.Value);
+            SocietyControl.SetGeneralAscensionPermissionForSociety(SocietySummaryDisplay.CurrentSummary.ID, e.Value);
+        }
+
+        private void SocietySummaryDisplay_ComplexityAscentPermissionChangeRequested(object sender, ComplexityAscentPermissionEventArgs e) {
+            SocietyControl.SetSpecificAscensionPermissionForSociety(
+                SocietySummaryDisplay.CurrentSummary.ID, e.Complexity, e.AscensionIsPermitted
+            );
         }
 
         #endregion

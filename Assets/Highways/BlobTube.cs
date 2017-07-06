@@ -156,13 +156,9 @@ namespace Assets.Highways {
 
             distanceBetweenEndpoints = Vector3.Distance(sourceLocation, targetLocation);
 
-            var meshFilter = GetComponent<MeshFilter>();
-            if(meshFilter != null) {
-                meshFilter.mesh = BoxMeshBuilder.BuildMesh(
-                    distanceBetweenEndpoints,
-                    PrivateData.MeshNonLengthDimensions,
-                    PrivateData.MeshNonLengthDimensions
-                );
+            var spriteRenderer = GetComponent<SpriteRenderer>();
+            if(spriteRenderer != null) {
+                spriteRenderer.size = new Vector2(distanceBetweenEndpoints, PrivateData.TubeWidth);
             }
         }
 

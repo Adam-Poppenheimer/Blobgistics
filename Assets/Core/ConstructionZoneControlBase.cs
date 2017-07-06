@@ -13,6 +13,8 @@ namespace Assets.Core {
 
         #region instance methods
 
+        public abstract IEnumerable<ConstructionProjectUISummary> GetAllConstructionZoneProjects();
+
         public abstract IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID);
 
         public abstract bool CanCreateConstructionZoneOnNode(int nodeID, string buildingName);

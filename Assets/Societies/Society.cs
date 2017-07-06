@@ -29,7 +29,11 @@ namespace Assets.Societies {
 
         public override ComplexityLadderBase ActiveComplexityLadder {
             get {
-                return PrivateData.ActiveComplexityLadder;
+                if(PrivateData != null) {
+                    return PrivateData.ActiveComplexityLadder;
+                }else {
+                    return null;
+                }
             }
         }
         [SerializeField, HideInInspector] private ComplexityLadderBase _activeComplexityLadder;
@@ -44,7 +48,7 @@ namespace Assets.Societies {
             DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
             RaiseCurrentComplexityChanged(_currentComplexity);
         }
-        [SerializeField] private ComplexityDefinitionBase _currentComplexity;
+        [SerializeField, HideInInspector] private ComplexityDefinitionBase _currentComplexity;
 
         public override bool NeedsAreSatisfied {
             get { return needsAreSatisfied; }
@@ -88,12 +92,27 @@ namespace Assets.Societies {
         }
         [SerializeField, HideInInspector] private SocietyPrivateDataBase _privateData;
 
+        public AudioSource DestroyAudio {
+            get { return _destroyAudio; }
+            set { _destroyAudio = value; }
+        }
+        [SerializeField] private AudioSource _destroyAudio;
+
+        [SerializeField] private SpriteRenderer ForegroundRenderer;
+        [SerializeField] private SpriteRenderer BackgroundRenderer;
+
+        [SerializeField] private AudioSource ComplexificationAudio;
+        [SerializeField] private AudioSource DecomplexificationAudio;
+
         [SerializeField, HideInInspector] private float CurrentProductionTimer  = 0f;
         [SerializeField, HideInInspector] private float CurrentNeedConsumptionTimer = 0f;
 
         private BlobSitePermissionProfile ConsumptionProfile = new BlobSitePermissionProfile();
         private BlobSitePermissionProfile ProductionProfile = new BlobSitePermissionProfile();
         private BlobSitePermissionProfile DefaultProfile = new BlobSitePermissionProfile();
+
+        private Dictionary<ComplexityDefinitionBase, bool> AscensionPermissionsForComplexity =
+            new Dictionary<ComplexityDefinitionBase, bool>();
 
         #endregion
 
@@ -135,6 +154,9 @@ namespace Assets.Societies {
                 if(PrivateData.UIControl != null) {
                     PrivateData.UIControl.PushObjectDestroyedEvent(new SocietyUISummary(this));
                 }
+            }
+            if(DestroyAudio != null && !DestroyAudio.isPlaying) {
+                DestroyAudio.Play();
             }
         }
 
@@ -285,17 +307,38 @@ namespace Assets.Societies {
             return false;
         }
 
+        public override bool GetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity) {
+            bool retval = false;
+            AscensionPermissionsForComplexity.TryGetValue(complexity, out retval);
+            return retval;
+        }
+
+        public override void SetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity, bool isPermitted) {
+            AscensionPermissionsForComplexity[complexity] = isPermitted;
+        }
+
         #endregion
 
         private ComplexityDefinitionBase GetBestAscentCandidate() {
             foreach(var complexity in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
-                if( complexity.PermittedTerrains.Contains(Location.Terrain) &&
-                    complexity.CostToAscendInto.IsContainedWithinBlobSite(PrivateData.Location.BlobSite)
+                if( 
+                    complexity.PermittedTerrains.Contains(Location.Terrain) &&
+                    complexity.CostToAscendInto.IsContainedWithinBlobSite(PrivateData.Location.BlobSite) &&
+                    GetAscensionPermissionForComplexity(complexity)
                 ){
                     return complexity;
                 }
             }
             return null;
+        }
+
+        private bool HasResourcesInCommon(IntPerResourceDictionary resourcesOne, IntPerResourceDictionary resourcesTwo) {
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                if(resourcesOne[resourceType] != 0 && resourcesTwo[resourceType] != 0) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private ComplexityDefinitionBase GetBestDescentCandidate() {
@@ -321,6 +364,9 @@ namespace Assets.Societies {
                 PrivateData.Location.BlobSite.ClearContents();
                 RefreshAppearance();
                 RefreshBlobSitePermissionsAndCapacities();
+                if(ComplexificationAudio != null) {
+                    ComplexificationAudio.Play();
+                }
             }else {
                 throw new SocietyException("Society cannot ascend its complexity ladder");
             }
@@ -345,6 +391,10 @@ namespace Assets.Societies {
 
                     RefreshAppearance();
                     RefreshBlobSitePermissionsAndCapacities();
+
+                    if(DecomplexificationAudio != null) {
+                        DecomplexificationAudio.Play();
+                    }
                 }else {
                     PrivateData.ParentFactory.DestroySociety(this);
                 }
@@ -450,9 +500,12 @@ namespace Assets.Societies {
         }
 
         private void RefreshAppearance() {
-            var meshRenderer = GetComponent<MeshRenderer>();
-            if(meshRenderer != null) {
-                meshRenderer.material = CurrentComplexity.MaterialForSociety;
+            if(ForegroundRenderer != null) {
+                ForegroundRenderer.sprite = CurrentComplexity.SpriteForSociety;
+                ForegroundRenderer.color = CurrentComplexity.ColorForSociety;
+            }
+            if(BackgroundRenderer != null) {
+                BackgroundRenderer.color = CurrentComplexity.ColorForBackground;
             }
         }
 

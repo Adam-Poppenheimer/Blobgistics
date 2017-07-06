@@ -170,7 +170,7 @@ namespace Assets.UI.Societies {
             }
             while(AscentComplexityShiftDisplays.Count < CurrentSummary.AscentComplexities.Count) {
                 var newTextPrefab = Instantiate(AscentComplexityShiftDisplayPrefab);
-                newTextPrefab.transform.SetParent(AscentComplexitySection);
+                newTextPrefab.transform.SetParent(AscentComplexitySection, false);
                 AscentComplexityShiftDisplays.Add(newTextPrefab.GetComponent<ComplexityShiftDisplay>());
             }
 
@@ -185,6 +185,11 @@ namespace Assets.UI.Societies {
                 }else {
                     shiftSummary.IsCandidateForShift = false;
                 }
+
+                shiftSummary.AscensionPermissionToggle.isOn = CurrentSummary.GetAscensionPermissionForComplexity(ascentComplexity);
+                shiftSummary.AscensionPermissionToggle.onValueChanged.AddListener(delegate(bool newValue) {
+                    RaiseComplexityAscentPermissionChangeRequested(ascentComplexity, newValue);
+                });
 
                 shiftSummary.RefreshDisplay();
             }

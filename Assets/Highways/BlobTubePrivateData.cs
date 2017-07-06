@@ -11,7 +11,7 @@ namespace Assets.Highways {
 
         #region instance fields and properties
 
-        public override float MeshNonLengthDimensions {
+        public override float TubeWidth {
             get { return _meshNonLengthDimensions; }
         }
         [SerializeField] private float _meshNonLengthDimensions;

@@ -30,7 +30,7 @@ namespace Assets.Scoring.ForTesting {
             }
         }
 
-        public override Material MaterialForSociety {
+        public override Color ColorForSociety {
             get {
                 throw new NotImplementedException();
             }
@@ -90,10 +90,17 @@ namespace Assets.Scoring.ForTesting {
             }
         }
 
-        public override int Score {
-            get { return score; }
+        public override Sprite SpriteForSociety {
+            get {
+                throw new NotImplementedException();
+            }
         }
-        public int score;
+
+        public override Color ColorForBackground {
+            get {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 

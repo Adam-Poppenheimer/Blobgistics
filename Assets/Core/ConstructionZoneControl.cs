@@ -101,6 +101,14 @@ namespace Assets.Core {
             }
         }
 
+        public override IEnumerable<ConstructionProjectUISummary> GetAllConstructionZoneProjects() {
+            var retval = new List<ConstructionProjectUISummary>();
+            foreach(var project in ConstructionZoneFactory.GetAvailableProjects()) {
+                retval.Add(new ConstructionProjectUISummary(project));
+            }
+            return retval;
+        }
+
         public override IEnumerable<ConstructionProjectUISummary> GetAllPermittedConstructionZoneProjectsOnNode(int nodeID) {
             var retval = new List<ConstructionProjectUISummary>();
 

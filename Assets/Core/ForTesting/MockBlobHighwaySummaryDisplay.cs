@@ -38,10 +38,6 @@ namespace Assets.Core.ForTesting {
 
         #endregion
 
-        public void ChangePriority(int newPriority) {
-            RaisePriorityChanged(newPriority);
-        }
-
         public void ChangeFirstEndpointPermission(ResourceType type, bool isNowPermitted) {
             RaiseFirstEndpointPermissionChanged(type, isNowPermitted);
         }

@@ -31,7 +31,6 @@ namespace Assets.UI.Highways {
 
         #endregion
 
-        [SerializeField] private InputField PriorityInput;
         [SerializeField] private Text EfficiencyField;
 
         [SerializeField] private RectTransform CommonActionsPane;
@@ -96,15 +95,6 @@ namespace Assets.UI.Highways {
 
         protected override void DoOnActivate() {
             AlignPermissionPanes();
-            
-            PriorityInput.onEndEdit.AddListener(delegate(string value) {
-                int newPriority;
-                if(Int32.TryParse(value, out newPriority)) {
-                    RaisePriorityChanged(newPriority);
-                }else {
-                    PriorityInput.text = CurrentSummary.ToString();
-                }
-            });
 
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                 var cachedResourceType = resourceType;
@@ -142,8 +132,6 @@ namespace Assets.UI.Highways {
         protected override void DoOnDeactivate() {
             gameObject.SetActive(false);
 
-            PriorityInput.onEndEdit.RemoveAllListeners();
-
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                 var firstEndpointToggle = FirstEndpointTogglesForResourceTypes[resourceType];
                 if(firstEndpointToggle != null) {
@@ -164,7 +152,6 @@ namespace Assets.UI.Highways {
 
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
-                PriorityInput.text = CurrentSummary.Priority.ToString();
                 EfficiencyField.text = CurrentSummary.Efficiency.ToString();
 
                 foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
@@ -190,7 +177,6 @@ namespace Assets.UI.Highways {
         public override void ClearDisplay() {
             CurrentSummary = null;
 
-            PriorityInput.text = "0";
             EfficiencyField.text = "0";
 
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {

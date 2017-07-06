@@ -45,37 +45,6 @@ namespace Assets.Core.Editor {
         }
 
         [Test]
-        public void OnSummaryRaisesPriorityChangedEvent_ProperPriorityChangeRequestIsSentToSimulationControl() {
-            //Setup
-            var summaryWithin = new BlobHighwayUISummary();
-            summaryWithin.ID = 14;
-            summaryWithin.Priority = 15;
-
-            var highwayDisplay = BuildMockHighwaySummaryDisplay();
-            highwayDisplay.CurrentSummary = summaryWithin;
-
-            var highwayControl = BuildMockHighwayControl();
-
-            int idOfChangeRequest = -1;
-            int priorityOfChangeRequest = -1;
-            highwayControl.SetHighwayPriorityCalled += delegate(int id, int newPriority) {
-                idOfChangeRequest = id;
-                priorityOfChangeRequest = newPriority;
-            };
-
-            var receiverToTest = BuildHighwayReceiver();
-            receiverToTest.HighwaySummaryDisplay = highwayDisplay;
-            receiverToTest.HighwayControl = highwayControl;
-
-            //Execution
-            highwayDisplay.ChangePriority(30);
-
-            //Validation
-            Assert.AreEqual(summaryWithin.ID, idOfChangeRequest, "HighwayControl was passed an incorrect ID or none at all");
-            Assert.AreEqual(30, priorityOfChangeRequest, "HighwayControl was passed an incorrect priority or none at all");
-        }
-
-        [Test]
         public void OnSummaryDisplayRaisesFirstEndpointPermissionChangedEvent_ProperPermissionChangeRequestSentToSimulationControl() {
             //Setup
             var summaryWithin = new BlobHighwayUISummary();

@@ -22,14 +22,10 @@ namespace Assets.UI.Highways {
 
         #region events
 
-        public event EventHandler<IntEventArgs> PriorityChanged;
-
         public event EventHandler<ResourcePermissionEventArgs> FirstEndpointResourcePermissionChanged;
         public event EventHandler<ResourcePermissionEventArgs> SecondEndpointResourcePermissionChanged;
 
         public event EventHandler<UpkeepRequestEventArgs> ResourceRequestedForUpkeep;
-
-        protected void RaisePriorityChanged(int newPriority) { RaiseEvent(PriorityChanged, new IntEventArgs(newPriority)); }
 
         protected void RaiseFirstEndpointPermissionChanged(ResourceType typeChanged, bool isNowPermitted) {
             RaiseEvent(FirstEndpointResourcePermissionChanged, new ResourcePermissionEventArgs(typeChanged, isNowPermitted));

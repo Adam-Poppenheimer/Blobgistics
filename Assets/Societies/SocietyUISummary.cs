@@ -70,6 +70,14 @@ namespace Assets.Societies {
 
         #endregion
 
+        #region instance methods
+
+        public bool GetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity) {
+            return SocietyToSummarize.GetAscensionPermissionForComplexity(complexity);
+        }
+
+        #endregion
+
     }
 
 }

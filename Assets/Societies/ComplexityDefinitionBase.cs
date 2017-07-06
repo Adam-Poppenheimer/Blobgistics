@@ -32,9 +32,9 @@ namespace Assets.Societies {
 
         public abstract ReadOnlyCollection<TerrainType> PermittedTerrains { get; }
 
-        public abstract Material MaterialForSociety { get; }
-
-        public abstract int Score { get; }
+        public abstract Sprite SpriteForSociety { get; }
+        public abstract Color ColorForSociety { get; }
+        public abstract Color ColorForBackground { get; }
 
         #endregion
 

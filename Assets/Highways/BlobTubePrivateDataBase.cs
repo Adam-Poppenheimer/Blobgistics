@@ -10,7 +10,7 @@ namespace Assets.Highways {
 
         #region instance fields and properties
 
-        public abstract float MeshNonLengthDimensions { get; }
+        public abstract float TubeWidth { get; }
         public abstract ResourceBlobFactoryBase BlobFactory { get; }
 
         #endregion

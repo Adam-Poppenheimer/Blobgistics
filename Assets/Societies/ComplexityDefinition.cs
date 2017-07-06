@@ -112,13 +112,29 @@ namespace Assets.Societies {
         }
         [SerializeField] private float _complexityDescentDuration = 10f;
 
-        public override Material MaterialForSociety {
-            get { return _materialForSociety; }
+        public override Sprite SpriteForSociety {
+            get { return _spriteForSociety; }
         }
-        public void SetMaterialForSociety(Material value) {
-            _materialForSociety = value;
+        public void SetColorForSociety(Sprite value) {
+            _spriteForSociety = value;
         }
-        [SerializeField] private Material _materialForSociety;
+        [SerializeField] private Sprite _spriteForSociety;
+
+        public override Color ColorForSociety {
+            get { return _colorForSociety; }
+        }
+        public void SetColorForSociety(Color value) {
+            _colorForSociety = value;
+        }
+        [SerializeField] private Color _colorForSociety;
+
+        public override Color ColorForBackground {
+            get { return _colorForBackground; }
+        }
+        public void SetColorForBackground(Color value) {
+            _colorForBackground = value;
+        }
+        [SerializeField] private Color _colorForBackground;
 
         public override ReadOnlyCollection<TerrainType> PermittedTerrains {
             get { return _permittedTerrains.AsReadOnly(); }
@@ -127,14 +143,6 @@ namespace Assets.Societies {
             _permittedTerrains = value;
         }
         [SerializeField] private List<TerrainType> _permittedTerrains;
-
-        public override int Score {
-            get { return _score; }
-        }
-        public void SetPermittedTerrains(int value) {
-            _score = value;
-        }
-        [SerializeField] private int _score;
 
         #endregion
 

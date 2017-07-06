@@ -26,34 +26,40 @@ namespace Assets.Societies.Editor {
         #region from Editor
 
         public override void OnInspectorGUI() {
+            DrawDefaultInspector();
             var currentComplexity = TargetedSociety.CurrentComplexity;
 
-            EditorGUILayout.LabelField("Current Complexity");
+            EditorGUILayout.LabelField(string.Format("Current Complexity: {0}",
+                currentComplexity != null ? currentComplexity.name : "None"));
+
+            EditorGUI.EndDisabledGroup();
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Ascent Transitions");
-            foreach(var ascentTransition in TargetedSociety.ActiveComplexityLadder.GetAscentTransitions(TargetedSociety.CurrentComplexity)) {
-                EditorGUI.BeginDisabledGroup(!ascentTransition.PermittedTerrains.Contains(TargetedSociety.Location.Terrain));
-                if(GUILayout.Button(ascentTransition.name)) {
-                    TargetedSociety.SetCurrentComplexity(ascentTransition);
+            if(TargetedSociety.ActiveComplexityLadder != null) {
+                EditorGUILayout.LabelField("Ascent Transitions");
+                foreach(var ascentTransition in TargetedSociety.ActiveComplexityLadder.GetAscentTransitions(TargetedSociety.CurrentComplexity)) {
+                    EditorGUI.BeginDisabledGroup(!ascentTransition.PermittedTerrains.Contains(TargetedSociety.Location.Terrain));
+                    if(GUILayout.Button(ascentTransition.name)) {
+                        TargetedSociety.SetCurrentComplexity(ascentTransition);
+                    }
+                    EditorGUI.EndDisabledGroup();
                 }
-                EditorGUI.EndDisabledGroup();
-            }
 
-            EditorGUILayout.Space();
+                EditorGUILayout.Space();
 
 
 
-            EditorGUILayout.Space();
+                EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Descent Transitions");
-            foreach(var descentTransition in TargetedSociety.ActiveComplexityLadder.GetDescentTransitions(TargetedSociety.CurrentComplexity)) {
-                EditorGUI.BeginDisabledGroup(!descentTransition.PermittedTerrains.Contains(TargetedSociety.Location.Terrain));
-                if(GUILayout.Button(descentTransition.name)) {
-                    TargetedSociety.SetCurrentComplexity(descentTransition);
+                EditorGUILayout.LabelField("Descent Transitions");
+                foreach(var descentTransition in TargetedSociety.ActiveComplexityLadder.GetDescentTransitions(TargetedSociety.CurrentComplexity)) {
+                    EditorGUI.BeginDisabledGroup(!descentTransition.PermittedTerrains.Contains(TargetedSociety.Location.Terrain));
+                    if(GUILayout.Button(descentTransition.name)) {
+                        TargetedSociety.SetCurrentComplexity(descentTransition);
+                    }
+                    EditorGUI.EndDisabledGroup();
                 }
-                EditorGUI.EndDisabledGroup();
             }
         }
 

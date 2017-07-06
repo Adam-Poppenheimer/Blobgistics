@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-
+using Assets.Societies;
 
 namespace Assets.Core.ForTesting {
 
@@ -26,16 +25,20 @@ namespace Assets.Core.ForTesting {
             }
         }
 
-        public override void SetAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
+        public override void SetGeneralAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
             if(OnAscensionPermissionChangeRequested != null) {
                 OnAscensionPermissionChangeRequested(societyID, ascensionPermitted);
             }
         }
 
+        public override void SetSpecificAscensionPermissionForSociety(int societyID, ComplexityDefinitionBase complexity, bool ascensionPermitted) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

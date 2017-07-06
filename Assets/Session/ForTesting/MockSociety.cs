@@ -70,6 +70,14 @@ namespace Assets.Session.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override bool GetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity) {
+            throw new NotImplementedException();
+        }
+
+        public override void SetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity, bool isPermitted) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

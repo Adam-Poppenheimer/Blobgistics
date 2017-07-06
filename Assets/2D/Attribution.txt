@@ -4,3 +4,8 @@
 mine.png icon: Icon made by Vectors Market (http://www.vectorsmarket.com, link seems to be broken) from www.flaticon.com
 log.png icon: Icon made by Those Icons (?) from www.flaticon.com
 tick-thread-spool: Icon made by Freepik (http://www.freepik.com) from www.flaticon.com
+01tizeta_asphalts.png: Sprite provided no attribution instructions
+factory-building.png: Icon made by SimpleIcon (http://www.simpleicon.com) from www.flaticon.com
+warehouse.png: Icon made by Freepik (http://www.freepik.com) from www.flaticon.com
+winch.png: Icon made by Freepik (http://www.freepik.com) from www.flaticon.com
+centralized-connections.png: Icon made by Freepik (http://www.freepik.com) from www.flaticon.com

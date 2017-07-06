@@ -57,6 +57,9 @@ namespace Assets.Societies {
 
         public abstract IReadOnlyDictionary<ResourceType, int> GetResourcesUntilSocietyAscent();
 
+        public abstract bool GetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity);
+        public abstract void SetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity, bool isPermitted);
+
         #endregion
 
     }

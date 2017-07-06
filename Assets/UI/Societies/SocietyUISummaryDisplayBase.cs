@@ -23,6 +23,7 @@ namespace Assets.UI.Societies {
 
         public event EventHandler<EventArgs> DestructionRequested;
         public event EventHandler<BoolEventArgs> AscensionPermissionChangeRequested;
+        public event EventHandler<ComplexityAscentPermissionEventArgs> ComplexityAscentPermissionChangeRequested;
 
         protected void RaiseDestructionRequested() {
             if(DestructionRequested != null) {
@@ -33,6 +34,14 @@ namespace Assets.UI.Societies {
         protected void RaiseAscensionPermissionChangeRequested(bool ascensionPermitted) {
             if(AscensionPermissionChangeRequested != null) {
                 AscensionPermissionChangeRequested(this, new BoolEventArgs(ascensionPermitted));
+            }
+        }
+
+        protected void RaiseComplexityAscentPermissionChangeRequested(ComplexityDefinitionBase complexity, bool permittedToAscend) {
+            if(ComplexityAscentPermissionChangeRequested != null) {
+                ComplexityAscentPermissionChangeRequested(this,
+                    new ComplexityAscentPermissionEventArgs(complexity, permittedToAscend)
+                );
             }
         }
 
