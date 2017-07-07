@@ -14,6 +14,7 @@ using Assets.ConstructionZones;
 using Assets.BlobDistributors;
 using Assets.HighwayManager;
 using Assets.Generator;
+using Assets.Scoring;
 
 namespace Assets.Core {
 
@@ -51,6 +52,12 @@ namespace Assets.Core {
         }
         [SerializeField] private ResourceGeneratorFactory _generatorFactory;
 
+        public VictoryManagerBase VictoryManager {
+            get { return _victoryManager; }
+            set { _victoryManager = value; }
+        }
+        [SerializeField] private VictoryManagerBase _victoryManager;
+
         private bool IsPaused = false;
 
         #endregion
@@ -79,10 +86,12 @@ namespace Assets.Core {
 
         public override void Pause() {
             IsPaused = true;
+            VictoryManager.Pause();
         }
 
         public override void Resume() {
             IsPaused = false;
+            VictoryManager.Unpause();
         }
 
         public override void PerformVictoryTasks() {

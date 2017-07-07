@@ -40,7 +40,13 @@ namespace Assets.ConstructionZones {
             get { return _uiControl; }
             set { _uiControl = value; }
         }
-        [SerializeField] private UIControlBase _uiControl;        
+        [SerializeField] private UIControlBase _uiControl;
+        
+        public AudioSource ProjectCompletionAudio {
+            get { return _projectCompletionAudio; }
+            set { _projectCompletionAudio = value; }
+        }
+        [SerializeField] private AudioSource _projectCompletionAudio;      
 
         #endregion
 
@@ -107,6 +113,7 @@ namespace Assets.ConstructionZones {
             newConstructionZone.CurrentProject = project;
             newConstructionZone.ParentFactory = this;
             newConstructionZone.UIControl = UIControl;
+            newConstructionZone.ProjectCompletionAudio = ProjectCompletionAudio;
 
             newConstructionZone.name = "ConstructionZone for " + project.name;
             newConstructionZone.gameObject.SetActive(true);

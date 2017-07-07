@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -41,6 +42,8 @@ namespace Assets.Session {
         }
         [SerializeField] private string _victoryDataExtension;
 
+        [SerializeField] private string RegistryAssetBundleName;
+
         public ReadOnlyCollection<SerializableSession> LoadedSavedGames {
             get { return loadedSavedGames.AsReadOnly(); }
         }
@@ -53,6 +56,18 @@ namespace Assets.Session {
 
         private DirectoryInfo SavedGameDirectory;
         private DirectoryInfo MapDirectory;
+
+        #endregion
+
+        #region events
+
+        public event EventHandler<SerializableSessionEventArgs> MapAsynchronouslyAdded;
+
+        protected void RaiseMapAsynchronouslyAdded(SerializableSession session) {
+            if(MapAsynchronouslyAdded != null) {
+                MapAsynchronouslyAdded(this, new SerializableSessionEventArgs(session));
+            }
+        }
 
         #endregion
 
@@ -109,13 +124,35 @@ namespace Assets.Session {
                 throw new SessionException("Cannot refresh loaded maps: MapStoragePath must not be empty");
             }
             loadedMaps.Clear();
-            MapDirectory = Directory.CreateDirectory(Application.streamingAssetsPath + @"\" + MapStoragePath);
+            if(Application.platform == RuntimePlatform.WebGLPlayer) {
+                StartCoroutine(PerformMapRegistryTasks());
+            }else {
+                MapDirectory = Directory.CreateDirectory(Application.streamingAssetsPath + @"\" + MapStoragePath);
 
-            foreach(var file in MapDirectory.GetFiles("*.xml")) {
-                if(file.Extension.Equals(".xml")) {
-                    loadedMaps.Add(LoadSessionFromFile(file));
+                foreach(var file in MapDirectory.GetFiles("*.xml")) {
+                    if(file.Extension.Equals(".xml")) {
+                        loadedMaps.Add(LoadSessionFromFile(file));
+                    }
                 }
             }
+        }
+
+        private IEnumerator PerformMapRegistryTasks() {
+            var registryWWW = new WWW(string.Format("{0}/{1}/{2}", Application.streamingAssetsPath, MapStoragePath, RegistryAssetBundleName));
+            yield return registryWWW;
+            var mapRegistry = registryWWW.assetBundle.LoadAsset("MapRegistry") as MapFileDirectoryRegistry;
+
+            foreach(var mapName in mapRegistry.MapNamesWithExtensions) {
+                StartCoroutine(PerformWWWMapDeserializationTasks(mapName));
+            }
+        }
+
+        private IEnumerator PerformWWWMapDeserializationTasks(string mapName) {
+            var mapWWW = new WWW(string.Format("{0}/{1}/{2}", Application.streamingAssetsPath, MapStoragePath, mapName));
+            yield return mapWWW;
+            var sessionInFile = LoadSessionFromBytes(mapWWW.bytes);
+            loadedMaps.Add(sessionInFile);
+            RaiseMapAsynchronouslyAdded(sessionInFile);
         }
 
         public void WriteVictoryDataToFile(List<string> victoryData) {
@@ -161,20 +198,30 @@ namespace Assets.Session {
         private SerializableSession LoadSessionFromFile(FileInfo file) {
             using(FileStream fileStream = file.OpenRead()) {
                 using(var xmlReader = XmlDictionaryReader.CreateTextReader(fileStream, new XmlDictionaryReaderQuotas())) {
-                    try {
-                        var knownTypes = new List<Type> {
-                            typeof(Dictionary<ResourceType, bool>), typeof(Dictionary<ResourceType, int>),
-                            typeof(SerializableVector3)
-                        };
-
-                        var contractSerializer = new DataContractSerializer(typeof(SerializableSession), knownTypes);
-                        var sessionInFile = (SerializableSession)contractSerializer.ReadObject(xmlReader, true);
-                        return sessionInFile;
-                    }catch(SerializationException e) {
-                        Debug.LogError("Failed to deserialize. Reason given: " + e.Message);
-                        throw;
-                    }
+                    return LoadSession(xmlReader);
                 }
+            }
+        }
+
+        private SerializableSession LoadSessionFromBytes(Byte[] bytes) {
+            using(var xmlReader = XmlDictionaryReader.CreateTextReader(bytes, XmlDictionaryReaderQuotas.Max)) {
+                return LoadSession(xmlReader);
+            }
+        }
+
+        private SerializableSession LoadSession(XmlDictionaryReader xmlReader) {
+            try {
+                var knownTypes = new List<Type> {
+                    typeof(Dictionary<ResourceType, bool>), typeof(Dictionary<ResourceType, int>),
+                    typeof(SerializableVector3)
+                };
+
+                var contractSerializer = new DataContractSerializer(typeof(SerializableSession), knownTypes);
+                var sessionInFile = (SerializableSession)contractSerializer.ReadObject(xmlReader, true);
+                return sessionInFile;
+            }catch(SerializationException e) {
+                Debug.LogError("Failed to deserialize. Reason given: " + e.Message);
+                throw;
             }
         }
 

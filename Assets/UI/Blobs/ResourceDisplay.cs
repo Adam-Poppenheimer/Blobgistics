@@ -54,7 +54,7 @@ namespace Assets.UI.Blobs {
 
                 if(displayForResource == null) {
                     displayForResource = Instantiate(ColoredDisplayPrefab.gameObject).GetComponent<ResourceTypeColoredCountDisplay>();
-                    displayForResource.transform.SetParent(TransformToPinUnder);
+                    displayForResource.transform.SetParent(TransformToPinUnder, false);
                     displayForResource.gameObject.SetActive(true);
 
                     displayForResource.MaterialsForResourceTypes = MaterialsForResourceTypes;
@@ -88,7 +88,7 @@ namespace Assets.UI.Blobs {
 
                 if(displayForResource == null) {
                     displayForResource = Instantiate(ColoredDisplayPrefab.gameObject).GetComponent<ResourceTypeColoredCountDisplay>();
-                    displayForResource.transform.SetParent(TransformToPinUnder);
+                    displayForResource.transform.SetParent(TransformToPinUnder, false);
                     displayForResource.gameObject.SetActive(true);
 
                     displayForResource.MaterialsForResourceTypes = MaterialsForResourceTypes;

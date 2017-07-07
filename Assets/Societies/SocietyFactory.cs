@@ -72,8 +72,6 @@ namespace Assets.Societies {
 
         [SerializeField] private GameObject SocietyPrefab;
 
-        [SerializeField] private AudioSource SocietyDestoryAudio;
-
         #endregion
 
         #region instance methods
@@ -149,7 +147,6 @@ namespace Assets.Societies {
             newPrivateData.SetParentFactory(this);
 
             newSociety.PrivateData = newPrivateData;
-            newSociety.DestroyAudio = SocietyDestoryAudio;
             newSociety.SetCurrentComplexity(startingComplexity);
             newSociety.transform.SetParent(location.transform, false);
             newSociety.name = "Society at " + location.name;

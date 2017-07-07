@@ -149,6 +149,14 @@ namespace Assets.Session.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override void Pause() {
+            throw new NotImplementedException();
+        }
+
+        public override void Unpause() {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

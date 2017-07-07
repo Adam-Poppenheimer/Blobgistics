@@ -71,6 +71,12 @@ namespace Assets.ConstructionZones {
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        public AudioSource ProjectCompletionAudio {
+            get { return _projectCompletionAudio; }
+            set { _projectCompletionAudio = value; }
+        }
+        [SerializeField] private AudioSource _projectCompletionAudio;
+
         #endregion
 
         #region instance methods
@@ -120,6 +126,11 @@ namespace Assets.ConstructionZones {
                 Location.BlobSite.BlobPlacedInto -= BlobSite_BlobPlacedInto;
                 CurrentProject.ExecuteBuild(Location);
                 projectHasBeenCompleted = true;
+
+                if(ProjectCompletionAudio != null && !ProjectCompletionAudio.isPlaying) {
+                    ProjectCompletionAudio.Play();
+                }
+                
                 ParentFactory.DestroyConstructionZone(this);
             }
         }

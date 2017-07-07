@@ -92,12 +92,6 @@ namespace Assets.Societies {
         }
         [SerializeField, HideInInspector] private SocietyPrivateDataBase _privateData;
 
-        public AudioSource DestroyAudio {
-            get { return _destroyAudio; }
-            set { _destroyAudio = value; }
-        }
-        [SerializeField] private AudioSource _destroyAudio;
-
         [SerializeField] private SpriteRenderer ForegroundRenderer;
         [SerializeField] private SpriteRenderer BackgroundRenderer;
 
@@ -154,9 +148,6 @@ namespace Assets.Societies {
                 if(PrivateData.UIControl != null) {
                     PrivateData.UIControl.PushObjectDestroyedEvent(new SocietyUISummary(this));
                 }
-            }
-            if(DestroyAudio != null && !DestroyAudio.isPlaying) {
-                DestroyAudio.Play();
             }
         }
 

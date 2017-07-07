@@ -127,8 +127,8 @@ namespace Assets.UI.Societies {
                 shiftSummary.gameObject.SetActive(false);
             }
             while(DescentComplexityShiftDisplays.Count < CurrentSummary.DescentComplexities.Count) {
-                var newTextPrefab = Instantiate(AscentComplexityShiftDisplayPrefab);
-                newTextPrefab.transform.SetParent(DescentComplexitySection);
+                var newTextPrefab = Instantiate(DescentComplexityShiftDisplayPrefab);
+                newTextPrefab.transform.SetParent(DescentComplexitySection, false);
                 DescentComplexityShiftDisplays.Add(newTextPrefab.GetComponent<ComplexityShiftDisplay>());
             }
 

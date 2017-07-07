@@ -65,14 +65,10 @@ namespace Assets.UI.TitleScreen {
         #region Unity message methods
 
         private void Start() {
+            FileSystemLiason.MapAsynchronouslyAdded += FileSystemLiason_MapAsynchronouslyAdded;
             FileSystemLiason.RefreshLoadedMaps();
             foreach(var session in FileSystemLiason.LoadedMaps) {
-                var newSummary = Instantiate(MapSummaryPrefab).GetComponent<SerializableSessionSummary>();
-                newSummary.transform.SetParent(AvailableMapsSection);
-                newSummary.LoadSession(session);
-                newSummary.gameObject.SetActive(true);
-                var cachedCurrentSession = session;
-                newSummary.GetComponent<Button>().onClick.AddListener(delegate() { SetSelectedSession(cachedCurrentSession); });
+                EstablishRecordForSession(session);
             }
 
             BackButton.onClick.AddListener(delegate() { RaiseDeactivationRequested(); });
@@ -86,6 +82,15 @@ namespace Assets.UI.TitleScreen {
         }
 
         #endregion
+
+        private void EstablishRecordForSession(SerializableSession session) {
+            var newSummary = Instantiate(MapSummaryPrefab).GetComponent<SerializableSessionSummary>();
+            newSummary.transform.SetParent(AvailableMapsSection, false);
+            newSummary.LoadSession(session);
+            newSummary.gameObject.SetActive(true);
+            var cachedCurrentSession = session;
+            newSummary.GetComponent<Button>().onClick.AddListener(delegate() { SetSelectedSession(cachedCurrentSession); });
+        }
 
         private void SetSelectedSession(SerializableSession newSession) {
             if(newSession != null) {
@@ -146,6 +151,10 @@ namespace Assets.UI.TitleScreen {
                 VictoryManager.IsCheckingForVictory = true;
                 RaiseMapLoaded();
             }
+        }
+
+        private void FileSystemLiason_MapAsynchronouslyAdded(object sender, SerializableSessionEventArgs e) {
+            EstablishRecordForSession(e.Session);
         }
 
         #endregion

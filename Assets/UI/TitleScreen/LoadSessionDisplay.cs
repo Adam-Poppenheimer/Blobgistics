@@ -92,7 +92,7 @@ namespace Assets.UI.TitleScreen {
             FileSystemLiaison.RefreshLoadedSavedGames();
             for(int i = InstantiatedRecords.Count; i < FileSystemLiaison.LoadedSavedGames.Count; ++i) {
                 var newRecord = Instantiate(SessionRecordPrefab.gameObject).GetComponent<SessionRecord>();
-                newRecord.transform.SetParent(LocationToPlaceRecords);
+                newRecord.transform.SetParent(LocationToPlaceRecords, false);
                 newRecord.MainButton.onClick.AddListener(delegate() {
                     SelectedRecord = newRecord;
                 });

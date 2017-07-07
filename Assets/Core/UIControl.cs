@@ -66,6 +66,8 @@ namespace Assets.Core {
         [SerializeField] private EscapeMenuUI EscapeMenuUI;
         [SerializeField] private VictorySplashScreen VictorySplashScreen;
 
+        [SerializeField] private PanningZoomingCameraLogic CameraLogic;
+
         [SerializeField] private List<PanelBase> HUDElements = new List<PanelBase>();
 
         private Dictionary<Type, List<TargetedEventReceiverBase>> EventReceiversByType =
@@ -105,6 +107,7 @@ namespace Assets.Core {
                 if(!EscapeMenuUI.gameObject.activeInHierarchy) {
                     SimulationControl.Pause();
                     EscapeMenuUI.gameObject.SetActive(true);
+                    CameraLogic.IsReceivingInput = false;
                 }
             }
         }
@@ -225,6 +228,7 @@ namespace Assets.Core {
 
         private void EscapeMenuUI_GameResumeRequested(object sender, EventArgs e) {
             EscapeMenuUI.gameObject.SetActive(false);
+            CameraLogic.IsReceivingInput = true;
             SimulationControl.Resume();
         }
 

@@ -47,6 +47,9 @@ namespace Assets.Scoring {
         public abstract void TriggerVictory();
         public abstract void TriggerDefeat();
 
+        public abstract void Pause();
+        public abstract void Unpause();
+
         #endregion
 
     }

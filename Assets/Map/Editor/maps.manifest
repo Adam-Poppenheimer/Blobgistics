@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 2051301732
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 97678bab2ee4847e483d38416eb2f219
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: a875d03ce603eac4a222977ddc9e941d
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: 11500000, guid: 32661bed49efdb24eab4290614c3370a, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/Map/MapRegistry.asset
+Dependencies: []

@@ -61,6 +61,8 @@ namespace Assets.Scoring {
 
         public override float CurrentVictoryClockValue { get; set; }
 
+        private bool IsPaused = false;
+
         #endregion
 
         public UIControlBase UIControl {
@@ -123,9 +125,11 @@ namespace Assets.Scoring {
 
         private void Update() {
             if(IsCheckingForVictory && VictoryClockIsTicking && GetVictoryConditionsAreSatisfied()) {
-                CurrentVictoryClockValue += Time.deltaTime;
-                if(CurrentVictoryClockValue >= SecondsOfStabilityToWin) {
-                    TriggerVictory();
+                if(!IsPaused) {
+                    CurrentVictoryClockValue += Time.deltaTime;
+                    if(CurrentVictoryClockValue >= SecondsOfStabilityToWin) {
+                        TriggerVictory();
+                    }
                 }
             }else {
                 CurrentVictoryClockValue = 0f;
@@ -161,6 +165,14 @@ namespace Assets.Scoring {
             VictoryClockIsTicking = false;
             CurrentVictoryClockValue = 0f;
             IsCheckingForVictory = false;
+        }
+
+        public override void Pause() {
+            IsPaused = true;
+        }
+
+        public override void Unpause() {
+            IsPaused = false;
         }
 
         #endregion
