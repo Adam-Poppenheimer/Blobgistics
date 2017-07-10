@@ -227,7 +227,7 @@ namespace Assets.Map {
             }
 
             var pointArray = pointList.ToArray();
-            TerrainOutlineRenderer.SetVertexCount(pointArray.Length);
+            TerrainOutlineRenderer.positionCount = pointArray.Length;
             TerrainOutlineRenderer.SetPositions(pointArray);
         }
 
