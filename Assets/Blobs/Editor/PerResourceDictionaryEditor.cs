@@ -37,7 +37,7 @@ namespace Assets.Blobs.Editor {
                 if(CountListProperty.arraySize > (int)resourceType) {
                     EditorGUILayout.PropertyField(
                         CountListProperty.GetArrayElementAtIndex((int)resourceType),
-                        new GUIContent(resourceType.ToString())
+                        new GUIContent(resourceType.GetDescription())
                     );
                 }
             }

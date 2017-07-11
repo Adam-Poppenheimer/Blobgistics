@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Assets.Scoring;
+using Assets.Societies;
 
 namespace Assets.Session.ForTesting {
 
@@ -154,6 +155,14 @@ namespace Assets.Session.ForTesting {
         }
 
         public override void Unpause() {
+            throw new NotImplementedException();
+        }
+
+        public override SocietyBase GetMostPressingUnstableSociety() {
+            throw new NotImplementedException();
+        }
+
+        public override bool HasAllRequisiteSocieties() {
             throw new NotImplementedException();
         }
 

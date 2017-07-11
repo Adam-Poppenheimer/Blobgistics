@@ -47,7 +47,7 @@ namespace Assets.Core {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
             if(SocietySummaryDisplay != null) {
                 SocietySummaryDisplay.DestructionRequested                      -= SocietySummaryDisplay_DestructionRequested;
                 SocietySummaryDisplay.AscensionPermissionChangeRequested        -= SocietySummaryDisplay_AscensionPermissionChangeRequested;
@@ -104,9 +104,12 @@ namespace Assets.Core {
         }
 
         private void SocietySummaryDisplay_ComplexityAscentPermissionChangeRequested(object sender, ComplexityAscentPermissionEventArgs e) {
-            SocietyControl.SetSpecificAscensionPermissionForSociety(
-                SocietySummaryDisplay.CurrentSummary.ID, e.Complexity, e.AscensionIsPermitted
-            );
+            if(SocietySummaryDisplay.CurrentSummary != null) {
+                SocietyControl.SetSpecificAscensionPermissionForSociety(
+                    SocietySummaryDisplay.CurrentSummary.ID, e.Complexity, e.AscensionIsPermitted
+                );
+            }
+            
         }
 
         #endregion

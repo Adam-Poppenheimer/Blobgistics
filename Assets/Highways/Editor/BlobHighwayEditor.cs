@@ -64,7 +64,7 @@ namespace Assets.Highways.Editor {
                 EditorGUILayout.BeginHorizontal();
 
                 var arrayProperty = FirstEndpointPullingPermissionProperty.GetArrayElementAtIndex((int)resourceType);
-                arrayProperty.boolValue = EditorGUILayout.Toggle(resourceType.ToString(), arrayProperty.boolValue);
+                arrayProperty.boolValue = EditorGUILayout.Toggle(resourceType.GetDescription(), arrayProperty.boolValue);
 
                 EditorGUILayout.EndHorizontal();
             }
@@ -76,7 +76,7 @@ namespace Assets.Highways.Editor {
                 EditorGUILayout.BeginHorizontal();
 
                 var arrayProperty = SecondEndpointPullingPermissionProperty.GetArrayElementAtIndex((int)resourceType);
-                arrayProperty.boolValue = EditorGUILayout.Toggle(resourceType.ToString(), arrayProperty.boolValue);
+                arrayProperty.boolValue = EditorGUILayout.Toggle(resourceType.GetDescription(), arrayProperty.boolValue);
 
                 EditorGUILayout.EndHorizontal();
             }

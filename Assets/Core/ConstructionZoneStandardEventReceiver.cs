@@ -45,7 +45,7 @@ namespace Assets.Core {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
             if(ConstructionZoneSummaryDisplay != null) {
                 ConstructionZoneSummaryDisplay.DeactivationRequested                -= ConstructionZoneSummaryDisplay_CloseRequested;
                 ConstructionZoneSummaryDisplay.ConstructionZoneDestructionRequested -= ConstructionZoneSummaryDisplay_ConstructionZoneDestructionRequested;

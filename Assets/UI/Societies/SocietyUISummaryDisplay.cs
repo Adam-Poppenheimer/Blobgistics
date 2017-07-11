@@ -111,6 +111,7 @@ namespace Assets.UI.Societies {
 
             foreach(var display in AscentComplexityShiftDisplays) {
                 display.gameObject.SetActive(false);
+                display.AscensionPermissionToggle.isOn = false;
             }
 
             foreach(var display in DescentComplexityShiftDisplays) {

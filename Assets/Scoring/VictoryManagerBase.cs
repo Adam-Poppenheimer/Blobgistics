@@ -5,6 +5,8 @@ using System.Text;
 
 using UnityEngine;
 
+using Assets.Societies;
+
 namespace Assets.Scoring {
 
     public abstract class VictoryManagerBase : MonoBehaviour {
@@ -49,6 +51,9 @@ namespace Assets.Scoring {
 
         public abstract void Pause();
         public abstract void Unpause();
+
+        public abstract bool HasAllRequisiteSocieties();
+        public abstract SocietyBase GetMostPressingUnstableSociety(); 
 
         #endregion
 

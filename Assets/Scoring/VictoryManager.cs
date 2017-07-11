@@ -175,6 +175,25 @@ namespace Assets.Scoring {
             IsPaused = false;
         }
 
+        public override bool HasAllRequisiteSocieties() {
+            return (
+                CurrentTierOneSocieties   >= TierOneSocietiesToWin   &&
+                CurrentTierTwoSocieties   >= TierTwoSocietiesToWin   &&
+                CurrentTierThreeSocieties >= TierThreeSocietiesToWin &&
+                CurrentTierFourSocieties  >= TierFourSocietiesToWin
+            );
+        }
+
+        public override SocietyBase GetMostPressingUnstableSociety() {
+            var unstableSocieties = new List<SocietyBase>(SocietyFactory.Societies.Where(society => !society.NeedsAreSatisfied));
+            unstableSocieties.Sort(delegate(SocietyBase societyOne, SocietyBase societyTwo) {
+                var societyOneTier = societyOne.ActiveComplexityLadder.GetTierOfComplexity(societyOne.CurrentComplexity);
+                var societyTwoTier = societyTwo.ActiveComplexityLadder.GetTierOfComplexity(societyTwo.CurrentComplexity);
+                return societyTwoTier.CompareTo(societyOneTier);
+            });
+            return unstableSocieties.FirstOrDefault();
+        }
+
         #endregion
 
         private void RefreshVictoryProgress() {

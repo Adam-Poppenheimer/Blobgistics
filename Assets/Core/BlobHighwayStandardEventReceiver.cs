@@ -48,7 +48,7 @@ namespace Assets.Core {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
             if(HighwaySummaryDisplay != null) {
                 HighwaySummaryDisplay.FirstEndpointResourcePermissionChanged  -= HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged;
                 HighwaySummaryDisplay.SecondEndpointResourcePermissionChanged -= HighwaySummaryDisplay_SecondEndpointResourcePermissionChanged;

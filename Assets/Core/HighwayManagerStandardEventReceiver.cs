@@ -43,7 +43,7 @@ namespace Assets.Core {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
             if(HighwayManagerDisplay != null) {
                 HighwayManagerDisplay.DestructionRequested -= HighwayManagerDisplay_DestructionRequested;
 

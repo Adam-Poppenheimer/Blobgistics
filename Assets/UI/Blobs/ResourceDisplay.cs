@@ -82,7 +82,7 @@ namespace Assets.UI.Blobs {
             FlexibleCostPreamble.gameObject.SetActive(true);
             FlexibleCostPreamble.text = string.Format(PreambleText, countNeeded);
 
-            foreach(var resourceType in typesAccepted) {
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                 ResourceTypeColoredCountDisplay displayForResource;
                 DisplayOfResourceTypes.TryGetValue(resourceType, out displayForResource);
 
@@ -100,9 +100,13 @@ namespace Assets.UI.Blobs {
                 displayForResource.DisplayMaterial           = true;
                 displayForResource.DisplayName               = DisplayResourceName;
 
-                displayForResource.gameObject.SetActive(true);
-                displayForResource.transform.SetAsLastSibling();
-                displayForResource.DisplayCountOfResourceType(resourceType, 0);
+                if(typesAccepted.Contains(resourceType)) {
+                    displayForResource.gameObject.SetActive(true);
+                    displayForResource.transform.SetAsLastSibling();
+                    displayForResource.DisplayCountOfResourceType(resourceType, 0);
+                }else {
+                    displayForResource.gameObject.SetActive(false);
+                }
             }
         }
 

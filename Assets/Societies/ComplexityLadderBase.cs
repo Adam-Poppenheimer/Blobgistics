@@ -26,6 +26,8 @@ namespace Assets.Societies {
 
         public abstract bool ContainsComplexity(ComplexityDefinitionBase complexity);
 
+        public abstract int GetTierOfComplexity(ComplexityDefinitionBase complexity);
+
         #endregion
 
     }

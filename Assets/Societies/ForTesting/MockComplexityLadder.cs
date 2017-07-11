@@ -73,6 +73,10 @@ namespace Assets.Societies.ForTesting {
             return AscentChain.Contains(complexity);
         }
 
+        public override int GetTierOfComplexity(ComplexityDefinitionBase complexity) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

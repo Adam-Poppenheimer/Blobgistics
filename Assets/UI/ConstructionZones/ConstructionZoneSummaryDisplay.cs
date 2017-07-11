@@ -33,7 +33,7 @@ namespace Assets.UI.ConstructionZones {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
             if(DestroyButton != null) {
                 DestroyButton.onClick.AddListener(delegate() {
                     RaiseDestructionRequested();

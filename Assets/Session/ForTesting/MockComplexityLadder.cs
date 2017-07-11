@@ -54,10 +54,14 @@ namespace Assets.Session.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override int GetTierOfComplexity(ComplexityDefinitionBase complexity) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

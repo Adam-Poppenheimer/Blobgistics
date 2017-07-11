@@ -82,10 +82,14 @@ namespace Assets.Core.ForTesting {
             }
         }
 
+        public override int GetTierOfComplexity(ComplexityDefinitionBase complexity) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
-        
+
     }
 
 }

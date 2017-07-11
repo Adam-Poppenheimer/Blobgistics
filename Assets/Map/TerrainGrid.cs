@@ -14,6 +14,8 @@ namespace Assets.Map {
 
         #region instance fields and properties
 
+        #region from TerrainGridBase
+
         public override int Radius {
             get { return _radius; }
             set { _radius = value; }
@@ -25,6 +27,16 @@ namespace Assets.Map {
             set { _maxAcquisitionDistance = value; }
         }
         [SerializeField] private float _maxAcquisitionDistance;
+
+        public override Rect Bounds {
+            get {
+                return bounds;
+            }
+        }
+
+        private Rect bounds = new Rect();
+
+        #endregion
 
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
@@ -49,6 +61,7 @@ namespace Assets.Map {
             foreach(var mapNode in MapGraph.Nodes) {
                 mapNode.ClearAssociatedTiles();
             }
+            RefreshLocalBounds();
         }
 
         public override void CreateMap() {
@@ -63,6 +76,8 @@ namespace Assets.Map {
                 CoordsToHex[tile.Coordinates] = tile;
                 HexToCoords[tile] = tile.Coordinates;
             }
+
+            RefreshLocalBounds();
         }
 
         public override void RefreshMapTerrains() {
@@ -131,6 +146,33 @@ namespace Assets.Map {
             }else {
                 DestroyImmediate(tile.gameObject);
             }
+        }
+
+        private void RefreshLocalBounds() {
+
+
+            if(tiles.Count < 0) {
+                bounds = new Rect();
+                return;
+            }
+            float xMin = float.PositiveInfinity;
+            float xMax = float.NegativeInfinity;
+            float yMin = float.PositiveInfinity;
+            float yMax = float.NegativeInfinity;
+
+            foreach(var tile in tiles) {
+                var meshRenderer = tile.GetComponent<MeshRenderer>();
+                xMin = Mathf.Min(xMin, meshRenderer.bounds.min.x);
+                xMax = Mathf.Max(xMax, meshRenderer.bounds.max.x);
+
+                yMin = Mathf.Min(yMin, meshRenderer.bounds.min.y);
+                yMax = Mathf.Max(yMax, meshRenderer.bounds.max.y);
+            }
+
+            bounds.xMin = xMin;
+            bounds.xMax = xMax;
+            bounds.yMin = yMin;
+            bounds.yMax = yMax;
         }
 
         #endregion

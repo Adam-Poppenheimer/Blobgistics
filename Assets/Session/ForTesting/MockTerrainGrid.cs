@@ -7,6 +7,7 @@ using System.Text;
 using Assets.Map;
 
 using UnityCustomUtilities.Grids;
+using UnityEngine;
 
 namespace Assets.Session.ForTesting {
 
@@ -19,6 +20,12 @@ namespace Assets.Session.ForTesting {
         public override float MaxAcquisitionDistance { get; set; }
 
         public override int Radius { get; set; }
+
+        public override Rect Bounds {
+            get {
+                throw new NotImplementedException();
+            }
+        }
 
         #endregion
 

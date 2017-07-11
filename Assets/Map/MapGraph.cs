@@ -119,7 +119,7 @@ namespace Assets.Map {
 
             newNode.Terrain = startingTerrain;
             newNode.transform.localPosition = localPosition;
-            newNode.transform.SetParent(this.transform);
+            newNode.transform.SetParent(this.transform, false);
 
             SubscribeNode(newNode);
 

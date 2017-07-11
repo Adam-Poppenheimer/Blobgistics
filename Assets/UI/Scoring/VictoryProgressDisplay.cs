@@ -14,24 +14,60 @@ namespace Assets.UI.Scoring {
 
     public class VictoryProgressDisplay : PanelBase {
 
+        #region internal types
+
+        private enum VictoryDisplayPanelType {
+            VictoryCountdown,
+            RequisitesNotAchieved,
+            UnstableSociety
+        }
+
+        #endregion
+
         #region instance fields and properties
 
         [SerializeField] private VictoryManagerBase VictoryManager;
 
+        [SerializeField] private RectTransform TierOneSection;
         [SerializeField] private Text CurrentTierOneSocietiesField;
         [SerializeField] private Text TierOneSocietiesToWinField;
 
+        [SerializeField] private RectTransform TierTwoSection;
         [SerializeField] private Text CurrentTierTwoSocietiesField;
         [SerializeField] private Text TierTwoSocietiesToWinField;
 
+        [SerializeField] private RectTransform TierThreeSection;
         [SerializeField] private Text CurrentTierThreeSocietiesField;
         [SerializeField] private Text TierThreeSocietiesToWinField;
 
+        [SerializeField] private RectTransform TierFourSection;
         [SerializeField] private Text CurrentTierFourSocietiesField;
         [SerializeField] private Text TierFourSocietiesToWinField;
 
         [SerializeField] private RectTransform CountdownToVictorySection;
         [SerializeField] private Text TimeLeftUntilVictoryField;
+
+        [SerializeField] private RectTransform RequisiteSocietiesNotAchievedSection;
+
+        [SerializeField] private RectTransform UnstableSocietySection;
+        [SerializeField] private Text UnstableSocietyNameField;
+
+        private VictoryDisplayPanelType ActivePanel {
+            get { return _activePanel; }
+            set {
+                CountdownToVictorySection.gameObject.SetActive           (false);
+                RequisiteSocietiesNotAchievedSection.gameObject.SetActive(false);
+                UnstableSocietySection.gameObject.SetActive              (false);
+                _activePanel = value;
+                switch(_activePanel) {
+                    case VictoryDisplayPanelType.VictoryCountdown:      CountdownToVictorySection.gameObject.SetActive           (true); break;
+                    case VictoryDisplayPanelType.RequisitesNotAchieved: RequisiteSocietiesNotAchievedSection.gameObject.SetActive(true); break;
+                    case VictoryDisplayPanelType.UnstableSociety:       UnstableSocietySection.gameObject.SetActive              (true); break;
+                    default: break;
+                }
+            }
+        }
+        private VictoryDisplayPanelType _activePanel;
 
         #endregion
 
@@ -41,11 +77,19 @@ namespace Assets.UI.Scoring {
 
         private void Update() {
             if(VictoryManager.VictoryClockIsTicking) {
-                CountdownToVictorySection.gameObject.SetActive(true);
+                ActivePanel = VictoryDisplayPanelType.VictoryCountdown;
                 var timeLeftUntilVictory = VictoryManager.SecondsOfStabilityToWin - VictoryManager.CurrentVictoryClockValue;
                 TimeLeftUntilVictoryField.text = timeLeftUntilVictory.ToString("#.0");
+
+            }else if(VictoryManager.HasAllRequisiteSocieties()){
+                ActivePanel = VictoryDisplayPanelType.UnstableSociety;
+                var mostPressingUnstableSociety = VictoryManager.GetMostPressingUnstableSociety();
+                if(mostPressingUnstableSociety != null) {
+                    UnstableSocietyNameField.text = mostPressingUnstableSociety.CurrentComplexity.name;
+                }
+
             }else {
-                CountdownToVictorySection.gameObject.SetActive(false);
+                ActivePanel = VictoryDisplayPanelType.RequisitesNotAchieved;
             }
         }
 
@@ -67,47 +111,39 @@ namespace Assets.UI.Scoring {
 
         public override void UpdateDisplay() {
             if(VictoryManager.TierOneSocietiesToWin > 0) {
-                CurrentTierOneSocietiesField.gameObject.SetActive(true);
-                TierOneSocietiesToWinField.gameObject.SetActive(true);
+                TierOneSection.gameObject.SetActive(true);
 
                 CurrentTierOneSocietiesField.text = VictoryManager.CurrentTierOneSocieties.ToString();
                 TierOneSocietiesToWinField.text   = VictoryManager.TierOneSocietiesToWin.ToString();
             }else {
-                CurrentTierOneSocietiesField.gameObject.SetActive(false);
-                TierOneSocietiesToWinField.gameObject.SetActive(false);
+                TierOneSection.gameObject.SetActive(false);
             }
 
             if(VictoryManager.TierTwoSocietiesToWin > 0) {
-                CurrentTierTwoSocietiesField.gameObject.SetActive(true);
-                TierTwoSocietiesToWinField.gameObject.SetActive(true);
+                TierTwoSection.gameObject.SetActive(true);
 
                 CurrentTierTwoSocietiesField.text = VictoryManager.CurrentTierTwoSocieties.ToString();
                 TierTwoSocietiesToWinField.text   = VictoryManager.TierTwoSocietiesToWin.ToString();
             }else {
-                CurrentTierTwoSocietiesField.gameObject.SetActive(false);
-                TierTwoSocietiesToWinField.gameObject.SetActive(false);
+                TierTwoSection.gameObject.SetActive(false);
             }
 
             if(VictoryManager.TierThreeSocietiesToWin > 0) {
-                CurrentTierThreeSocietiesField.gameObject.SetActive(true);
-                TierThreeSocietiesToWinField.gameObject.SetActive(true);
+                TierThreeSection.gameObject.SetActive(true);
 
                 CurrentTierThreeSocietiesField.text = VictoryManager.CurrentTierThreeSocieties.ToString();
                 TierThreeSocietiesToWinField.text   = VictoryManager.TierThreeSocietiesToWin.ToString();
             }else {
-                CurrentTierThreeSocietiesField.gameObject.SetActive(false);
-                TierThreeSocietiesToWinField.gameObject.SetActive(false);
+                TierThreeSection.gameObject.SetActive(false);
             }
 
             if(VictoryManager.TierFourSocietiesToWin > 0) {
-                CurrentTierFourSocietiesField.gameObject.SetActive(true);
-                TierFourSocietiesToWinField.gameObject.SetActive(true);
+                TierFourSection.gameObject.SetActive(true);
 
                 CurrentTierFourSocietiesField.text = VictoryManager.CurrentTierFourSocieties.ToString();
                 TierFourSocietiesToWinField.text   = VictoryManager.TierFourSocietiesToWin.ToString();
             }else {
-                CurrentTierFourSocietiesField.gameObject.SetActive(false);
-                TierFourSocietiesToWinField.gameObject.SetActive(false);
+                TierFourSection.gameObject.SetActive(false);
             }
         }
 

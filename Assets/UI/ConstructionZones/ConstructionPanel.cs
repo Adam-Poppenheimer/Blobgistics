@@ -32,7 +32,7 @@ namespace Assets.UI.ConstructionZones {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
             foreach(var projectButton in ConstructionProjectButtons) {
                 if(projectButton != null) {
                     var cachedButtonName = projectButton.name;

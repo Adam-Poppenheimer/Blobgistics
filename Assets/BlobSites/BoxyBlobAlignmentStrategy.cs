@@ -19,7 +19,7 @@ namespace Assets.BlobSites {
         [SerializeField, Range(0f, 10000)] private int BlobsPerRow = 5;
         [SerializeField, Range(0f, 10000)] private int BlobsPerColumn = 5;
 
-        private Vector2 CenteringVector;
+        [SerializeField] private Vector2 CenteringVector;
 
         #endregion
 

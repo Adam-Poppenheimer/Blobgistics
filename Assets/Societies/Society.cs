@@ -114,6 +114,8 @@ namespace Assets.Societies {
 
         #region Unity event methods
 
+        #if UNITY_EDITOR
+
         private void Awake() {
             if(PrivateData != null && PrivateData.ParentFactory != null) {
                 var parentFactory = PrivateData.ParentFactory;
@@ -124,6 +126,8 @@ namespace Assets.Societies {
                 }
             }
         }
+
+        #endif
 
         private void Start() {
             if(CurrentComplexity != null && Location != null) {

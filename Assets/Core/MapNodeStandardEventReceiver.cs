@@ -67,7 +67,7 @@ namespace Assets.Core {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
             if(ConstructionPanel != null) {
                 ConstructionPanel.DeactivationRequested -= ConstructionPanel_DeactivationRequested;
                 ConstructionPanel.ConstructionRequested -= ConstructionPanel_ConstructionRequested;

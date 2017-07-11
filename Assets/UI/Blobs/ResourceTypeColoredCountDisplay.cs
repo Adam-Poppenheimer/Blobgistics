@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 using Assets.Blobs;
 
+using UnityCustomUtilities.Extensions;
+
 namespace Assets.UI.Blobs {
 
     public class ResourceTypeColoredCountDisplay : MonoBehaviour {
@@ -57,7 +59,7 @@ namespace Assets.UI.Blobs {
                     Debug.LogError("Cannot display name: ResourceNameField is null");
                     return;
                 }
-                ResourceNameField.text = type.ToString();
+                ResourceNameField.text = type.GetDescription();
                 ResourceNameField.gameObject.SetActive(true);
             }else if(ResourceNameField != null) {
                 ResourceNameField.gameObject.SetActive(false);

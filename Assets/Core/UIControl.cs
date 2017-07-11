@@ -67,6 +67,7 @@ namespace Assets.Core {
         [SerializeField] private VictorySplashScreen VictorySplashScreen;
 
         [SerializeField] private PanningZoomingCameraLogic CameraLogic;
+        [SerializeField] private TerrainGridBase TerrainGrid;
 
         [SerializeField] private List<PanelBase> HUDElements = new List<PanelBase>();
 
@@ -79,7 +80,7 @@ namespace Assets.Core {
 
         #region Unity message methods
 
-        private void Awake() {
+        private void Start() {
             EventReceiversByType[typeof(MapNodeUISummary         )] = MapNodeEventReceivers;
             EventReceiversByType[typeof(BlobHighwayUISummary     )] = HighwayEventReceivers;
             EventReceiversByType[typeof(SocietyUISummary         )] = SocietyEventReceivers;
@@ -95,9 +96,7 @@ namespace Assets.Core {
             EscapeMenuUI.ReturnToMainMenuRequested += EscapeMenuUI_ReturnToMainMenuRequested;
 
             VictorySplashScreen.ReturnToTitleScreenRequested += VictorySplashScreen_ReturnToTitleScreenRequested;
-        }
 
-        private void Start() {
             SimulationControl.Pause();
             TitleScreenUI.gameObject.SetActive(true);
         }
@@ -110,6 +109,7 @@ namespace Assets.Core {
                     CameraLogic.IsReceivingInput = false;
                 }
             }
+            CameraLogic.Bounds = TerrainGrid.Bounds;
         }
 
         #endregion

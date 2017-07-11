@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,19 +7,19 @@ using System.Text;
 namespace Assets.Blobs {
 
     public enum ResourceType {
-        Food,
-        Wood,
-        Ore,
-        Cotton,
+        [Description("Food"  )] Food,
+        [Description("Wood"  )] Wood,
+        [Description("Ore"   )] Ore,
+        [Description("Cotton")] Cotton,
 
-        Textiles,
-        Steel,
-        Lumber,
+        [Description("Textiles")] Textiles,
+        [Description("Steel"   )] Steel,
+        [Description("Lumber"  )] Lumber,
 
-        ServiceGoods,
-        HeavyMachinery,
+        [Description("Service Goods"  )] ServiceGoods,
+        [Description("Heavy Machinery")] HeavyMachinery,
 
-        HiTechGoods
+        [Description("Hi-Tech Goods")] HiTechGoods
     }
 
 }

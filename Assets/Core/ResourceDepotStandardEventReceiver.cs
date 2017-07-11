@@ -41,7 +41,7 @@ namespace Assets.Core {
 
         #region Unity event methods
 
-        private void Awake() {
+        private void Start() {
             if(DepotSummaryDisplay != null) {
                 DepotSummaryDisplay.DestructionRequested -= DepotSummaryDisplay_DestructionRequested;
 

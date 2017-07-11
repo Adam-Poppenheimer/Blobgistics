@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 using UnityCustomUtilities.Grids;
 
 namespace Assets.Map {
@@ -14,6 +16,8 @@ namespace Assets.Map {
         public abstract int Radius { get; set; }
 
         public abstract float MaxAcquisitionDistance { get; set; }
+
+        public abstract Rect Bounds { get; }
 
         #endregion
 

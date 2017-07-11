@@ -71,6 +71,20 @@ namespace Assets.Societies {
             );
         }
 
+        public override int GetTierOfComplexity(ComplexityDefinitionBase complexity) {
+            if(tierFourComplexities.Contains(complexity)) {
+                return 4;
+            }else if(tierThreeComplexities.Contains(complexity)) {
+                return 3;
+            }else if(tierTwoComplexities.Contains(complexity)) {
+                return 2;
+            }else if(tierOneComplexities.Contains(complexity)){
+                return 1;
+            }else {
+                return -1;
+            }
+        }
+
         #endregion
 
     }

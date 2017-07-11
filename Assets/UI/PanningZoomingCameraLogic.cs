@@ -13,6 +13,8 @@ namespace Assets.UI {
 
         public bool IsReceivingInput { get; set; }
 
+        public Rect Bounds { get; set; }
+
         [SerializeField] private Camera CameraToControl;
         [SerializeField] private float  KeyboardMovementCoefficient = 1f;
 
@@ -21,6 +23,9 @@ namespace Assets.UI {
 
         [SerializeField] private float BaseSecondsToZoom = 1f;
         [SerializeField] private float ScrollWheelZoomCoefficient = 10f;
+
+        [SerializeField] private float ScreenCenterOffsetFromBoundsX = 0f;
+        [SerializeField] private float ScreenCenterOffsetFromBoundsY = 0f;
 
         private float CurrentScrollVelocity = 0f;
         private float DesiredSize;
@@ -59,6 +64,8 @@ namespace Assets.UI {
             verticalInput   *= DesiredSize / StartingSize;
 
             CameraToControl.transform.Translate(new Vector3(horizontalInput, verticalInput, 0f));
+
+            ConstrainCameraToBounds();
         }
 
         private void HandleZooming() {
@@ -67,6 +74,21 @@ namespace Assets.UI {
             
             CameraToControl.orthographicSize = Mathf.SmoothDamp(CameraToControl.orthographicSize, DesiredSize,
                 ref CurrentScrollVelocity, BaseSecondsToZoom);
+        }
+
+        private void ConstrainCameraToBounds() {
+            var cameraPosition = CameraToControl.transform.position;
+
+            var cameraXMin = Bounds.xMin - ScreenCenterOffsetFromBoundsX;
+            var cameraXMax = Bounds.xMax + ScreenCenterOffsetFromBoundsX;
+
+            var cameraYMin = Bounds.yMin - ScreenCenterOffsetFromBoundsY;
+            var cameraYMax = Bounds.yMax + ScreenCenterOffsetFromBoundsY;
+
+            cameraPosition.x = Mathf.Clamp(cameraPosition.x, cameraXMin, cameraXMax);
+            cameraPosition.y = Mathf.Clamp(cameraPosition.y, cameraYMin, cameraYMax);
+
+            CameraToControl.transform.position = cameraPosition;
         }
 
         #endregion
