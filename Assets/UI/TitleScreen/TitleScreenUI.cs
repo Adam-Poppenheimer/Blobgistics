@@ -22,8 +22,33 @@ namespace Assets.UI.TitleScreen {
         [SerializeField] private LoadSessionDisplay LoadSessionDisplay;
         [SerializeField] private ExitGameDisplay    ExitGameDisplay;
         [SerializeField] private RectTransform      OptionsDisplay;
+        [SerializeField] private PanelBase          CreditsAndAttributionDisplay;
 
         [SerializeField] private PanningZoomingCameraLogic MainCameraLogic;
+
+        public TitleScreenActiveDisplayType CurrentActiveDisplay {
+            get { return _currentActiveDisplay; }
+            set {
+                NewGameDisplay.gameObject.SetActive    (false);
+                LoadSessionDisplay.gameObject.SetActive(false);
+                ExitGameDisplay.gameObject.SetActive   (false);
+                OptionsDisplay.gameObject.SetActive    (false);
+                CreditsAndAttributionDisplay.Deactivate();
+
+                _currentActiveDisplay = value;
+
+                switch(_currentActiveDisplay) {
+                    case TitleScreenActiveDisplayType.NewGame:               NewGameDisplay.gameObject.SetActive    (true); break;
+                    case TitleScreenActiveDisplayType.LoadSession:           LoadSessionDisplay.gameObject.SetActive(true); break;
+                    case TitleScreenActiveDisplayType.ExitGame:              ExitGameDisplay.gameObject.SetActive   (true); break;
+                    case TitleScreenActiveDisplayType.Options:               OptionsDisplay.gameObject.SetActive    (true); break;
+                    case TitleScreenActiveDisplayType.CreditsAndAttribution: CreditsAndAttributionDisplay.Activate();       break;
+                    case TitleScreenActiveDisplayType.None: break;
+                    default: break;
+                }
+            }
+        }
+        private TitleScreenActiveDisplayType _currentActiveDisplay;
 
         #endregion
 
@@ -53,16 +78,14 @@ namespace Assets.UI.TitleScreen {
         private void Start() {
             NewGameDisplay.DeactivationRequested += NewGameDisplay_DeactivationRequested;
             NewGameDisplay.MapLoaded += NewGameDisplay_MapLoaded;
-            DeactivateNewGameDisplay();
 
             LoadSessionDisplay.DeactivationRequested += LoadSessionDisplay_DeactivationRequested;
             LoadSessionDisplay.SessionLoaded += LoadSessionDisplay_SessionLoaded;
 
             ExitGameDisplay.ExitConfirmed += ExitGameDisplay_ExitConfirmed;
             ExitGameDisplay.ExitRejected += ExitGameDisplay_ExitRejected;
-            DeactivateExitGameDisplay();
 
-            ActivateOptionsDisplay();
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.Options;
         }
 
         private void OnEnable() {
@@ -76,91 +99,49 @@ namespace Assets.UI.TitleScreen {
         #endregion
 
         public void ActivateNewGameDisplay() {
-            if(NewGameDisplay != null) {
-                DeactivateOptionsDisplay();
-                NewGameDisplay.gameObject.SetActive(true);
-            }else {
-                Debug.LogErrorFormat(DisplayErrorMessage, "NewGameDisplay");
-            }
-        }
-
-        public void DeactivateNewGameDisplay() {
-            if(NewGameDisplay != null) {
-                NewGameDisplay.gameObject.SetActive(false);
-            }
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.NewGame;
         }
 
         public void ActivateLoadSessionDisplay() {
-            if(LoadSessionDisplay != null) {
-                DeactivateOptionsDisplay();
-                LoadSessionDisplay.gameObject.SetActive(true);
-            }else {
-                Debug.LogErrorFormat(DisplayErrorMessage, "LoadSessionDisplay");
-            }
-        }
-
-        public void DeactivateLoadSessionDisplay() {
-            if(LoadSessionDisplay != null) {
-                LoadSessionDisplay.gameObject.SetActive(false);
-            }
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.LoadSession;
         }
 
         public void ActivateExitGameDisplay() {
-            if(ExitGameDisplay != null) {
-                DeactivateOptionsDisplay();
-                ExitGameDisplay.gameObject.SetActive(true);
-            }else {
-                Debug.LogErrorFormat(DisplayErrorMessage, "ExitGameDisplay");
-            }
-        }
-
-        public void DeactivateExitGameDisplay() {
-            if(ExitGameDisplay != null){
-                ExitGameDisplay.gameObject.SetActive(false);
-            }
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.ExitGame;
         }
 
         public void ActivateOptionsDisplay() {
-            if(OptionsDisplay != null){
-                OptionsDisplay.gameObject.SetActive(true);
-            }else {
-                Debug.LogErrorFormat(DisplayErrorMessage, "ActivateOptionsDisplay");
-            }
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.Options;
         }
 
-        public void DeactivateOptionsDisplay() {
-            if(OptionsDisplay != null){
-                OptionsDisplay.gameObject.SetActive(false);
-            }
+        public void ActivateCreditsAndAttributionDisplay() {
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.CreditsAndAttribution;
         }
 
         private void NewGameDisplay_DeactivationRequested(object sender, EventArgs e) {
-            DeactivateNewGameDisplay();
-            ActivateOptionsDisplay();
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.Options;
         }
 
         private void NewGameDisplay_MapLoaded(object sender, EventArgs e) {
-            DeactivateNewGameDisplay();
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.None;
             RaiseGameStartRequested();
         }
 
         private void ExitGameDisplay_ExitRejected(object sender, EventArgs e) {
-            DeactivateExitGameDisplay();
-            ActivateOptionsDisplay();
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.Options;
         }
 
         private void ExitGameDisplay_ExitConfirmed(object sender, EventArgs e) {
-            DeactivateExitGameDisplay();
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.None;
             RaiseGameExitRequested();
         }
 
         private void LoadSessionDisplay_DeactivationRequested(object sender, EventArgs e) {
-            DeactivateLoadSessionDisplay();
-            ActivateOptionsDisplay();
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.Options;
         }
 
         private void LoadSessionDisplay_SessionLoaded(object sender, EventArgs e) {
-            DeactivateLoadSessionDisplay();
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.None;
             RaiseGameStartRequested();
         }
 

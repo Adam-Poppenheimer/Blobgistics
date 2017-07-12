@@ -40,6 +40,9 @@ namespace Assets.Session.ForTesting {
             get {
                 throw new NotImplementedException();
             }
+            protected set {
+                throw new NotImplementedException();
+            }
         }
 
         public override float SecondsOfUnsatisfiedNeeds { get; set; }

@@ -51,9 +51,19 @@ namespace Assets.Societies {
         [SerializeField, HideInInspector] private ComplexityDefinitionBase _currentComplexity;
 
         public override bool NeedsAreSatisfied {
-            get { return needsAreSatisfied; }
+            get { return _needsAreSatisfied; }
+            protected set {
+                _needsAreSatisfied = value;
+                if(UnsatisfiedNeedsIcon == null) {
+                    return;
+                }else if(_needsAreSatisfied) {
+                    UnsatisfiedNeedsIcon.gameObject.SetActive(false);
+                }else {
+                    UnsatisfiedNeedsIcon.gameObject.SetActive(true);
+                }
+            }
         }
-        [SerializeField, HideInInspector] private bool needsAreSatisfied = true;
+        [SerializeField, HideInInspector] private bool _needsAreSatisfied = true;
 
         public override float SecondsOfUnsatisfiedNeeds {
             get { return _secondsOfUnsatisfiedNeeds; }
@@ -94,6 +104,8 @@ namespace Assets.Societies {
 
         [SerializeField] private SpriteRenderer ForegroundRenderer;
         [SerializeField] private SpriteRenderer BackgroundRenderer;
+
+        [SerializeField] private RectTransform UnsatisfiedNeedsIcon;
 
         [SerializeField] private AudioSource ComplexificationAudio;
         [SerializeField] private AudioSource DecomplexificationAudio;
@@ -217,13 +229,13 @@ namespace Assets.Societies {
             while(CurrentNeedConsumptionTimer >= CurrentComplexity.SecondsToFullyConsumeNeeds) {
                 var needsSatisfiedThisCycle = PerformNeedsConsumptionCycle();
                 if(needsSatisfiedThisCycle) {
-                    needsAreSatisfied = true;
+                    NeedsAreSatisfied = true;
                     SecondsOfUnsatisfiedNeeds = 0f;
-                    RaiseNeedsAreSatisfiedChanged(needsAreSatisfied);
+                    RaiseNeedsAreSatisfiedChanged(NeedsAreSatisfied);
                 }else if(NeedsAreSatisfied){
-                    needsAreSatisfied = false;
+                    NeedsAreSatisfied = false;
                     SecondsOfUnsatisfiedNeeds = 0;
-                    RaiseNeedsAreSatisfiedChanged(needsAreSatisfied);
+                    RaiseNeedsAreSatisfiedChanged(NeedsAreSatisfied);
                 }
                 CurrentNeedConsumptionTimer -= CurrentComplexity.SecondsToFullyConsumeNeeds;
             }
@@ -381,8 +393,8 @@ namespace Assets.Societies {
 
                     PrivateData.Location.BlobSite.ClearContents();
                     SecondsOfUnsatisfiedNeeds = 0f;
-                    needsAreSatisfied = true;
-                    RaiseNeedsAreSatisfiedChanged(needsAreSatisfied);
+                    NeedsAreSatisfied = true;
+                    RaiseNeedsAreSatisfiedChanged(NeedsAreSatisfied);
 
                     RefreshAppearance();
                     RefreshBlobSitePermissionsAndCapacities();

@@ -243,13 +243,13 @@ namespace Assets.Core {
             }
             SimulationControl.Pause();
             TitleScreenUI.Activate();
-            TitleScreenUI.ActivateOptionsDisplay();
+            TitleScreenUI.CurrentActiveDisplay = TitleScreenActiveDisplayType.Options;
         }
 
         private void VictorySplashScreen_ReturnToTitleScreenRequested(object sender, EventArgs e) {
             VictorySplashScreen.Deactivate();
             TitleScreenUI.Activate();
-            TitleScreenUI.ActivateOptionsDisplay();
+            TitleScreenUI.CurrentActiveDisplay = TitleScreenActiveDisplayType.Options;
         }
 
         #endregion

@@ -54,6 +54,9 @@ namespace Assets.Scoring.ForTesting {
             get {
                 throw new NotImplementedException();
             }
+            protected set {
+                throw new NotImplementedException();
+            }
         }
 
         public override float SecondsOfUnsatisfiedNeeds {

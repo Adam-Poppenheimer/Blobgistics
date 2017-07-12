@@ -1,5 +1,5 @@
-188374-city icon pack: Icons made by Zlatko Najdenovski (http://pixelbazaar.com/preview, link seems to be broken) from www.flaticon.com
-474121-town icon pack: Icons made by Made (?) from www.flaticon.com
+188374-city icon pack / cityscape.png: Icons made by Zlatko Najdenovski (http://pixelbazaar.com/preview, link seems to be broken) from www.flaticon.com
+474121-town icon pack / 012-buildings-8.png: Icons made by Made (?) from www.flaticon.com
 181857-village icon pack: Icons made by Zlatko Najdenovski (http://pixelbazaar.com/preview, link seems to be broken) from www.flaticon.com
 mine.png icon: Icon made by Vectors Market (http://www.vectorsmarket.com, link seems to be broken) from www.flaticon.com
 log.png icon: Icon made by Those Icons (?) from www.flaticon.com
@@ -9,3 +9,4 @@ factory-building.png: Icon made by SimpleIcon (http://www.simpleicon.com) from w
 warehouse.png: Icon made by Freepik (http://www.freepik.com) from www.flaticon.com
 winch.png: Icon made by Freepik (http://www.freepik.com) from www.flaticon.com
 centralized-connections.png: Icon made by Freepik (http://www.freepik.com) from www.flaticon.com
+warning.png: Icon made by Gregor Cresnar(no attribution link provided) from www.flaticon.com

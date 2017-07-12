@@ -21,7 +21,7 @@ namespace Assets.Societies {
         public abstract ComplexityDefinitionBase CurrentComplexity  { get; }
         public abstract ComplexityLadderBase ActiveComplexityLadder { get; }
 
-        public abstract bool  NeedsAreSatisfied { get; }
+        public abstract bool  NeedsAreSatisfied { get; protected set; }
         public abstract float SecondsOfUnsatisfiedNeeds { get; set; }
         public abstract float SecondsUntilComplexityDescent { get; }
 
