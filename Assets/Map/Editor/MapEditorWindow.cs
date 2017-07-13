@@ -88,7 +88,7 @@ namespace Assets.Map.Editor {
 
             var currentSession = EditorWindowDependencyPusher.SessionManager.CurrentSession;
 
-            EditorGUI.BeginDisabledGroup(currentSession == null || string.IsNullOrEmpty(currentSession.Name));
+            EditorGUI.BeginDisabledGroup(currentSession == null);
 
             currentSession.Name        = EditorGUILayout.TextField("Name", currentSession.Name);
             currentSession.Description = EditorGUILayout.TextArea(currentSession.Description, EditorStyles.textArea);
@@ -98,12 +98,16 @@ namespace Assets.Map.Editor {
             currentSession.TierThreeSocietiesToWin = EditorGUILayout.IntField("Tier Three Societies to Win", currentSession.TierThreeSocietiesToWin);
             currentSession.TierFourSocietiesToWin  = EditorGUILayout.IntField("Tier Four Societies to Win",  currentSession.TierFourSocietiesToWin );
 
+            EditorGUI.BeginDisabledGroup(currentSession == null ||string.IsNullOrEmpty(currentSession.Name));
+
             if(GUILayout.Button("Save current map to file")) {
                 EditorWindowDependencyPusher.SessionManager.PushRuntimeIntoCurrentSession();
                 EditorWindowDependencyPusher.FileSystemLiaison.WriteMapToFile(currentSession);
                 AssetDatabase.Refresh();
                 Refresh();
             }
+
+            EditorGUI.EndDisabledGroup();
 
             EditorGUI.EndDisabledGroup();
 

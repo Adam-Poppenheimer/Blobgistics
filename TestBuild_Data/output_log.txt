@@ -2,13 +2,12 @@ Mono path[0] = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Managed'
 Mono path[1] = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Mono'
 Mono config path = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Mono/etc'
 PlayerConnection initialized from D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data (debug = 0)
-PlayerConnection initialized network socket : 0.0.0.0 55059
-Multi-casting "[IP] 192.168.2.102 [Port] 55059 [Flags] 3 [Guid] 591454508 [EditorId] 327015321 [Version] 1048832 [Id] WindowsPlayer(TheDanputer) [Debug] 1" to [225.0.0.222:54997]...
-Waiting for connection from host on [0.0.0.0:55059]...
-PlayerConnection accepted from [192.168.2.102] handle:0x25c
-Started listening to [0.0.0.0:55059]
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56508
-PlayerConnection already initialized - listening to [0.0.0.0:55059]
+PlayerConnection initialized network socket : 0.0.0.0 55012
+Multi-casting "[IP] 192.168.2.101 [Port] 55012 [Flags] 3 [Guid] 1604048639 [EditorId] 3601649059 [Version] 1048832 [Id] WindowsPlayer(TheDanputer) [Debug] 0" to [225.0.0.222:54997]...
+Waiting for connection from host on [0.0.0.0:55012]...
+PlayerConnection accepted from [192.168.2.101] handle:0x25c
+Started listening to [0.0.0.0:55012]
+PlayerConnection already initialized - listening to [0.0.0.0:55012]
 Player data archive not found at `D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/data.unity3d`, using local filesystemInitialize engine version: 5.6.2f1 (a2913c821e27)
 GfxDevice: creating device client; threaded=1
 Direct3D:
@@ -28,7 +27,7 @@ Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\Uni
 Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityCustomUtilities.dll (this message is harmless)
 Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityCustomUtilities.dll into Unity Child Domain
-- Completed reload, in  0.051 seconds
+- Completed reload, in  0.027 seconds
 Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.dll (this message is harmless)
 Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.Runtime.Serialization.dll (this message is harmless)
@@ -37,10 +36,14 @@ desktop: 1920x1080 60Hz; virtual: 3600x1080 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 1.176945 ms
+UnloadTime: 1.135185 ms
+Skipping profile frame. Receiver can not keep up with the amount of data sent
+ 
+(Filename: C:\buildslave\unity\build\Runtime/Network/PlayerCommunicator/GeneralConnection.cpp Line: 373)
+
 Setting up 4 worker threads for Enlighten.
-  Thread -> id: 2f50 -> priority: 1 
-  Thread -> id: 608c -> priority: 1 
-  Thread -> id: 4850 -> priority: 1 
-  Thread -> id: 5360 -> priority: 1 
+  Thread -> id: 1e38 -> priority: 1 
+  Thread -> id: 57a0 -> priority: 1 
+  Thread -> id: 14e4 -> priority: 1 
+  Thread -> id: 5be4 -> priority: 1 
 Waiting for finish

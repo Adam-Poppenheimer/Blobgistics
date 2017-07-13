@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.Profiling;
 
-using Assets.Map;
-using Assets.Highways;
 using Assets.Blobs;
 using Assets.Societies;
-using Assets.ResourceDepots;
-using Assets.ConstructionZones;
 using Assets.BlobDistributors;
 using Assets.HighwayManager;
 using Assets.Generator;
@@ -77,7 +74,11 @@ namespace Assets.Core {
         public override void TickSimulation(float secondsPassed) {
             if(!IsPaused) {
                 if(SocietyFactory        != null) SocietyFactory.TickSocieties          (secondsPassed);
+
+                Profiler.BeginSample("BlobDistributor Ticking");
                 if(BlobDistributor       != null) BlobDistributor.Tick                  (secondsPassed);
+                Profiler.EndSample();
+
                 if(BlobFactory           != null) BlobFactory.TickAllBlobs              (secondsPassed);
                 if(HighwayManagerFactory != null) HighwayManagerFactory.TickAllManangers(secondsPassed);
                 if(GeneratorFactory      != null) GeneratorFactory.TickAllGenerators    (secondsPassed);

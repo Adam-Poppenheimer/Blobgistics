@@ -71,6 +71,8 @@ namespace Assets.UI.TitleScreen {
                 EstablishRecordForSession(session);
             }
 
+            SortAndEnableMapSummaries();
+
             BackButton.onClick.AddListener(delegate() { RaiseDeactivationRequested(); });
             PrerequisiteMapsField.gameObject.SetActive(false);
 
@@ -81,7 +83,20 @@ namespace Assets.UI.TitleScreen {
             SetSelectedSession(null);
         }
 
+        private void OnEnable() {
+            SortAndEnableMapSummaries();
+        }
+
         #endregion
+
+        public void StartGameWithSelectedMap() {
+            if(SelectedSession != null) {
+                SessionManager.CurrentSession = SelectedSession;
+                SessionManager.PullRuntimeFromCurrentSession();
+                VictoryManager.IsCheckingForVictory = true;
+                RaiseMapLoaded();
+            }
+        }
 
         private void EstablishRecordForSession(SerializableSession session) {
             var newSummary = Instantiate(MapSummaryPrefab).GetComponent<SerializableSessionSummary>();
@@ -89,7 +104,9 @@ namespace Assets.UI.TitleScreen {
             newSummary.LoadSession(session);
             newSummary.gameObject.SetActive(true);
             var cachedCurrentSession = session;
-            newSummary.GetComponent<Button>().onClick.AddListener(delegate() { SetSelectedSession(cachedCurrentSession); });
+
+            var summaryButton = newSummary.GetComponent<Button>();
+            summaryButton.onClick.AddListener(delegate() { SetSelectedSession(cachedCurrentSession); });            
         }
 
         private void SetSelectedSession(SerializableSession newSession) {
@@ -144,17 +161,40 @@ namespace Assets.UI.TitleScreen {
             }
         }
 
-        public void StartGameWithSelectedMap() {
-            if(SelectedSession != null) {
-                SessionManager.CurrentSession = SelectedSession;
-                SessionManager.PullRuntimeFromCurrentSession();
-                VictoryManager.IsCheckingForVictory = true;
-                RaiseMapLoaded();
+        private void FileSystemLiason_MapAsynchronouslyAdded(object sender, SerializableSessionEventArgs e) {
+            EstablishRecordForSession(e.Session);
+        }
+
+        private void SortAndEnableMapSummaries() {
+            var sessionSummaries = new List<SerializableSessionSummary>(GetComponentsInChildren<SerializableSessionSummary>());
+            sessionSummaries.Sort((summaryOne, summaryTwo) => SessionComparer(summaryOne.CurrentSession, summaryTwo.CurrentSession));
+
+            foreach(var sessionSummary in sessionSummaries) {
+                sessionSummary.transform.SetSiblingIndex(sessionSummaries.IndexOf(sessionSummary));
+                if(MapPermissionManager.GetMapIsPermittedToBePlayed(sessionSummary.CurrentSession.Name)) {
+                    sessionSummary.SelectionButton.interactable = true;
+                }else {
+                    sessionSummary.SelectionButton.interactable = false;
+                }
             }
         }
 
-        private void FileSystemLiason_MapAsynchronouslyAdded(object sender, SerializableSessionEventArgs e) {
-            EstablishRecordForSession(e.Session);
+        private int SessionComparer(SerializableSession sessionOne, SerializableSession sessionTwo) {
+            bool firstIsPermitted = MapPermissionManager.GetMapIsPermittedToBePlayed(sessionOne.Name);
+            bool secondIsPermitted = MapPermissionManager.GetMapIsPermittedToBePlayed(sessionTwo.Name);
+            if(firstIsPermitted == secondIsPermitted) {
+                if(MapPermissionManager.GetAllMapsRequiredToPlayMap(sessionOne.Name).Contains(sessionTwo.Name)) {
+                    return 1;
+                }else if(MapPermissionManager.GetAllMapsRequiredToPlayMap(sessionTwo.Name).Contains(sessionOne.Name)) {
+                    return -1;
+                }else {
+                    return 0;
+                }
+            }else if(firstIsPermitted){
+                return -1;
+            }else {
+                return 1;
+            }
         }
 
         #endregion

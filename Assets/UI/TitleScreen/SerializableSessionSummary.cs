@@ -11,6 +11,16 @@ namespace Assets.UI.TitleScreen {
 
         #region instance fields and properties
 
+        public SerializableSession CurrentSession {
+            get { return currentSession; }
+        }
+        [SerializeField] private SerializableSession currentSession;
+
+        public Button SelectionButton {
+            get { return _selectionButton; }
+        }
+        [SerializeField] private Button _selectionButton;
+
         [SerializeField] private Text MapNameField;
 
         #endregion
@@ -18,6 +28,7 @@ namespace Assets.UI.TitleScreen {
         #region instance methods
 
         public void LoadSession(SerializableSession session) {
+            currentSession = session;
             MapNameField.text = session.Name;
         }
 

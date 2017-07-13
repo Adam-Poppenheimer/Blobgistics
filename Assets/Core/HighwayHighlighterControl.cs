@@ -33,9 +33,9 @@ namespace Assets.Core {
 
                 var tubesBeneathHighway = highwayToHighlight.GetComponentsInChildren<BlobTubeBase>();
                 foreach(var tube in tubesBeneathHighway) {
-                    var meshRenderer = tube.GetComponent<MeshRenderer>();
-                    if(meshRenderer != null) {
-                        meshRenderer.sharedMaterial = BlobTubeHighlightedMaterial;
+                    var spriteRenderer = tube.GetComponent<SpriteRenderer>();
+                    if(spriteRenderer != null) {
+                        spriteRenderer.sharedMaterial = BlobTubeHighlightedMaterial;
                     }
                 }
             }
@@ -60,7 +60,7 @@ namespace Assets.Core {
             if(HighlightedHighways.Remove(highway)) {
                 var tubesBeneathHighway = highway.GetComponentsInChildren<BlobTubeBase>();
                 foreach(var tube in tubesBeneathHighway) {
-                    var meshRenderer = tube.GetComponent<MeshRenderer>();
+                    var meshRenderer = tube.GetComponent<SpriteRenderer>();
                     if(meshRenderer != null) {
                         meshRenderer.sharedMaterial = BlobTubeUnhighlightedMaterial;
                     }

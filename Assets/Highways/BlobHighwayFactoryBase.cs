@@ -52,6 +52,8 @@ namespace Assets.Highways {
 
         public abstract void DestroyHighway(BlobHighwayBase highway);
 
+        public abstract IEnumerable<BlobHighwayBase> GetHighwaysAttachedToNode(MapNodeBase node);
+
         #endregion
 
     }

@@ -6,10 +6,13 @@ using System.Text;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Profiling;
 
 using Assets.Map;
 using Assets.Blobs;
 using Assets.Core;
+
+using UnityCustomUtilities.Extensions;
 
 namespace Assets.Highways {
 
@@ -65,6 +68,9 @@ namespace Assets.Highways {
 
         [SerializeField] private GameObject HighwayPrefab;
 
+        private DictionaryOfLists<MapNodeBase, BlobHighwayBase> HighwaysAdjacentToNode =
+            new DictionaryOfLists<MapNodeBase, BlobHighwayBase>();
+
         #endregion
 
         #region instance methods
@@ -102,12 +108,12 @@ namespace Assets.Highways {
                 throw new ArgumentNullException("secondEndpoint");
             }
 
-            return AllConstructedHighways.Where(delegate(BlobHighwayBase highway) {
+            return AllConstructedHighways.Exists(delegate(BlobHighwayBase highway) {
                 return (
                     (highway.FirstEndpoint == firstEndpoint  && highway.SecondEndpoint == secondEndpoint) ||
                     (highway.FirstEndpoint == secondEndpoint && highway.SecondEndpoint == firstEndpoint )
                 );
-            }).Count() > 0;
+            });
         }
 
         public override BlobHighwayBase GetHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
@@ -119,17 +125,12 @@ namespace Assets.Highways {
                 throw new BlobHighwayException("There exists no highway between these two points");
             }
 
-            var highwayQuery = AllConstructedHighways.Where(delegate(BlobHighwayBase highway) {
+            return AllConstructedHighways.Where(delegate(BlobHighwayBase highway) {
                 return (
                     (highway.FirstEndpoint == firstEndpoint  && highway.SecondEndpoint == secondEndpoint) ||
                     (highway.FirstEndpoint == secondEndpoint && highway.SecondEndpoint == firstEndpoint )
                 );
-            });
-            if(highwayQuery.Count() > 0) {
-                return highwayQuery.First();
-            }else {
-                return null;
-            }
+            }).FirstOrDefault();
         }
 
         public override bool CanConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
@@ -193,6 +194,8 @@ namespace Assets.Highways {
             highway.BlobFactory = BlobFactory;
 
             AllConstructedHighways.Add(highway);
+            HighwaysAdjacentToNode.AddElementToList(highway.FirstEndpoint, highway);
+            HighwaysAdjacentToNode.AddElementToList(highway.SecondEndpoint, highway);
 
             if(EventSystem.current != null) {
                 EventSystem.current.SetSelectedGameObject(highway.gameObject);
@@ -221,7 +224,30 @@ namespace Assets.Highways {
                 throw new ArgumentNullException("highway");
             }
             AllConstructedHighways.Remove(highway);
+            if(HighwaysAdjacentToNode.ContainsKey(highway.FirstEndpoint)) {
+                HighwaysAdjacentToNode[highway.FirstEndpoint].Remove(highway);
+            }
+            if(HighwaysAdjacentToNode.ContainsKey(highway.SecondEndpoint)) {
+                HighwaysAdjacentToNode[highway.SecondEndpoint].Remove(highway);
+            }
+
             RaiseHighwayUnsubscribed(highway);
+        }
+
+        public override IEnumerable<BlobHighwayBase> GetHighwaysAttachedToNode(MapNodeBase node) {
+            if(HighwaysAdjacentToNode == null) {
+                HighwaysAdjacentToNode = new DictionaryOfLists<MapNodeBase, BlobHighwayBase>();
+                foreach(var highway in Highways) {
+                    HighwaysAdjacentToNode.AddElementToList(highway.FirstEndpoint, highway);
+                    HighwaysAdjacentToNode.AddElementToList(highway.SecondEndpoint, highway);
+                }
+            }
+            List<BlobHighwayBase> retval;
+            if(HighwaysAdjacentToNode.TryGetValue(node, out retval)) {
+                return retval;
+            }else {
+                return new List<BlobHighwayBase>();
+            }
         }
 
         #endregion

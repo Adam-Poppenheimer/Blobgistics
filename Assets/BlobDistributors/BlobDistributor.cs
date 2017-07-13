@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.Profiling;
 
 using Assets.Map;
 using Assets.Highways;
@@ -60,19 +61,13 @@ namespace Assets.BlobDistributors {
 
         public override void Tick(float secondsPassed) {
             foreach(var activeNode in MapGraph.Nodes) {
+                var adjacentHighways = HighwayFactory.GetHighwaysAttachedToNode(activeNode);
 
-                var adjacentEdges = new List<MapEdgeBase>(MapGraph.GetEdgesAttachedToNode(activeNode));
-                DistributeFromSiteToEdges(activeNode.BlobSite, adjacentEdges, secondsPassed);
-
-                var adjacentHighways = new List<BlobHighwayBase>();
-                foreach(var neighboringNode in MapGraph.GetNeighborsOfNode(activeNode)) {
-                    if(HighwayFactory.HasHighwayBetween(activeNode, neighboringNode)) {
-                        adjacentHighways.Add(HighwayFactory.GetHighwayBetween(activeNode, neighboringNode));
-                    }
-                }
-                if(activeNode.BlobSite.Contents.Count > 0 && adjacentHighways.Count > 0) {
+                Profiler.BeginSample("Highway Distribution");
+                if(activeNode.BlobSite.Contents.Count > 0 && adjacentHighways.Count() > 0) {
                     DistributeFromSiteToHighways(activeNode.BlobSite, adjacentHighways, secondsPassed);
                 }
+                Profiler.EndSample();
             }
         }
 
@@ -131,7 +126,7 @@ namespace Assets.BlobDistributors {
             }
         }
 
-        private void DistributeFromSiteToHighways(BlobSiteBase site, List<BlobHighwayBase> adjacentHighways, float secondsPassed) {
+        private void DistributeFromSiteToHighways(BlobSiteBase site, IEnumerable<BlobHighwayBase> adjacentHighways, float secondsPassed) {
 
             var dictionaryOfPriorities = new SortedDictionary<int, List<BlobHighwayBase>>();
             foreach(var highway in adjacentHighways) {
@@ -153,6 +148,7 @@ namespace Assets.BlobDistributors {
 
         private void PerformRoundRobinDistributionOnHighways(BlobSiteBase site, List<BlobHighwayBase> highways,
             ref BlobHighwayBase lastHighwayServed, float secondsPassed) {
+            Profiler.BeginSample("Round-Robin Distribution");
 
             if(!PullTimerForBlobHighwayOnSite.ContainsKey(site)) {
                 PullTimerForBlobHighwayOnSite[site] = new Dictionary<BlobHighwayBase, float>();
@@ -200,6 +196,8 @@ namespace Assets.BlobDistributors {
                 PullTimerForBlobHighwayOnSite[site][highway] = 
                     Mathf.Clamp(PullTimerForBlobHighwayOnSite[site][highway], 0f, highway.BlobPullCooldownInSeconds);
             }
+
+            Profiler.EndSample();
         }
 
         private bool AttemptPull(BlobHighwayBase highwayToPull, BlobSiteBase site) {

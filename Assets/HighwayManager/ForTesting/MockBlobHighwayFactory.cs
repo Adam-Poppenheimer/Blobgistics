@@ -71,6 +71,10 @@ namespace Assets.HighwayManager.ForTesting {
             throw new NotImplementedException();
         }
 
+        public override IEnumerable<BlobHighwayBase> GetHighwaysAttachedToNode(MapNodeBase node) {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
