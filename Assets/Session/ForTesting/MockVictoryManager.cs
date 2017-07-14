@@ -24,45 +24,13 @@ namespace Assets.Session.ForTesting {
             }
         }
 
-        public override int TierFourSocietiesToWin {
-            get {
-                throw new NotImplementedException();
-            }
+        public override int TierFourSocietiesToWin { get; set; }
 
-            set {
-                throw new NotImplementedException();
-            }
-        }
+        public override int TierOneSocietiesToWin { get; set; }
 
-        public override int TierOneSocietiesToWin {
-            get {
-                throw new NotImplementedException();
-            }
+        public override int TierThreeSocietiesToWin { get; set; }
 
-            set {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override int TierThreeSocietiesToWin {
-            get {
-                throw new NotImplementedException();
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
-        }
-
-        public override int TierTwoSocietiesToWin {
-            get {
-                throw new NotImplementedException();
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
-        }
+        public override int TierTwoSocietiesToWin { get; set; }
 
         public override int CurrentTierFourSocieties {
             get {

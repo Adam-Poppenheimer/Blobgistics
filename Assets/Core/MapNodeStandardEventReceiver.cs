@@ -103,8 +103,10 @@ namespace Assets.Core {
             HighwayGhost.Clear();
             HighwayGhost.FirstEndpoint = source;
             HighwayGhost.Activate();
-            HighwayDrawingAudio.volume = HighwayDrawingVolumeWhileMoving;
-            HighwayDrawingAudio.Play();
+            if(HighwayDrawingAudio != null) {
+                HighwayDrawingAudio.volume = HighwayDrawingVolumeWhileMoving;
+                HighwayDrawingAudio.Play();
+            }
         }
 
         public override void PushDragEvent(MapNodeUISummary source, PointerEventData eventData) {
@@ -123,7 +125,9 @@ namespace Assets.Core {
             }
             HighwayGhost.Clear();
             HighwayGhost.Deactivate();
-            HighwayDrawingAudio.Stop();
+            if(HighwayDrawingAudio != null) {
+                HighwayDrawingAudio.Stop();
+            }
         }
 
         public override void PushPointerClickEvent(MapNodeUISummary source, PointerEventData eventData) { }

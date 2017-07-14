@@ -30,6 +30,10 @@ namespace Assets.UI.Session {
 
         [SerializeField] private Text NameField;
 
+        [SerializeField] private Image MainImage;
+        [SerializeField] private Color HighlightedColor;
+        [SerializeField] private Color UnhighlightedColor;
+
         #endregion
 
         #region instance methods
@@ -40,14 +44,15 @@ namespace Assets.UI.Session {
             }else {
                 NameField.text = "--";
             }
+            MainImage.color = UnhighlightedColor;
         }
 
         public void Highlight() {
-            
+            MainImage.color = HighlightedColor;
         }
 
         public void Unhighlight() {
-
+            MainImage.color = UnhighlightedColor;
         }
 
         #endregion

@@ -110,7 +110,26 @@ namespace Assets.Session.Editor {
             managerToTest.MainCamera              = BuildCamera();
             managerToTest.TerrainGrid             = BuildMockTerrainGrid();
 
-            throw new NotImplementedException();
+            var sessionToPull = new SerializableSession("Session to Pull", "Description");
+            sessionToPull.TierOneSocietiesToWin   = 1;
+            sessionToPull.TierTwoSocietiesToWin   = 2;
+            sessionToPull.TierThreeSocietiesToWin = 3;
+            sessionToPull.TierFourSocietiesToWin  = 4;
+
+
+            //Execution
+            managerToTest.CurrentSession = sessionToPull;
+            managerToTest.PullRuntimeFromCurrentSession();
+
+            //Validation
+            Assert.AreEqual(sessionToPull.TierOneSocietiesToWin, victoryManager.TierOneSocietiesToWin,
+                "VictoryManager was given an incorrect TierOneSocietiesToWin");
+            Assert.AreEqual(sessionToPull.TierTwoSocietiesToWin, victoryManager.TierTwoSocietiesToWin,
+                "VictoryManager was given an incorrect TierTwoSocietiesToWin");
+            Assert.AreEqual(sessionToPull.TierThreeSocietiesToWin, victoryManager.TierThreeSocietiesToWin,
+                "VictoryManager was given an incorrect TierThreeSocietiesToWin");
+            Assert.AreEqual(sessionToPull.TierFourSocietiesToWin, victoryManager.TierFourSocietiesToWin,
+                "VictoryManager was given an incorrect TierFourSocietiesToWin");
         }
 
         [Test]

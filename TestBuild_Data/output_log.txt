@@ -1,14 +1,4 @@
-Mono path[0] = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Managed'
-Mono path[1] = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Mono'
-Mono config path = 'D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/Mono/etc'
-PlayerConnection initialized from D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data (debug = 0)
-PlayerConnection initialized network socket : 0.0.0.0 55012
-Multi-casting "[IP] 192.168.2.101 [Port] 55012 [Flags] 3 [Guid] 1604048639 [EditorId] 3601649059 [Version] 1048832 [Id] WindowsPlayer(TheDanputer) [Debug] 0" to [225.0.0.222:54997]...
-Waiting for connection from host on [0.0.0.0:55012]...
-PlayerConnection accepted from [192.168.2.101] handle:0x25c
-Started listening to [0.0.0.0:55012]
-PlayerConnection already initialized - listening to [0.0.0.0:55012]
-Player data archive not found at `D:/Games/Prototypes/Strategy-Blobs/TestBuild_Data/data.unity3d`, using local filesystemInitialize engine version: 5.6.2f1 (a2913c821e27)
+Initialize engine version: 5.6.2f1 (a2913c821e27)
 GfxDevice: creating device client; threaded=1
 Direct3D:
     Version:  Direct3D 11.0 [level 11.0]
@@ -27,7 +17,7 @@ Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\Uni
 Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityCustomUtilities.dll (this message is harmless)
 Loading D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\UnityCustomUtilities.dll into Unity Child Domain
-- Completed reload, in  0.027 seconds
+- Completed reload, in  0.056 seconds
 Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.dll (this message is harmless)
 Platform assembly: D:\Games\Prototypes\Strategy-Blobs\TestBuild_Data\Managed\System.Runtime.Serialization.dll (this message is harmless)
@@ -36,14 +26,9 @@ desktop: 1920x1080 60Hz; virtual: 3600x1080 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 1.135185 ms
-Skipping profile frame. Receiver can not keep up with the amount of data sent
- 
-(Filename: C:\buildslave\unity\build\Runtime/Network/PlayerCommunicator/GeneralConnection.cpp Line: 373)
-
+UnloadTime: 1.081165 ms
 Setting up 4 worker threads for Enlighten.
-  Thread -> id: 1e38 -> priority: 1 
-  Thread -> id: 57a0 -> priority: 1 
-  Thread -> id: 14e4 -> priority: 1 
-  Thread -> id: 5be4 -> priority: 1 
-Waiting for finish
+  Thread -> id: 523c -> priority: 1 
+  Thread -> id: 25c8 -> priority: 1 
+  Thread -> id: 4350 -> priority: 1 
+  Thread -> id: 4600 -> priority: 1 

@@ -91,7 +91,10 @@ namespace Assets.Scoring {
 
         public SocietyFactoryBase SocietyFactory {
             get { return _societyFactory; }
-            set { _societyFactory = value; }
+            set {
+                _societyFactory = value;
+                RefreshSocietyFactoryConnections();
+            }
         }
         [SerializeField] private SocietyFactoryBase _societyFactory;
 
@@ -108,32 +111,12 @@ namespace Assets.Scoring {
         #region Unity message methods
 
         private void Start() {
-            if(SocietyFactory != null) {
-                foreach(var society in SocietyFactory.Societies) {
-                    society.NeedsAreSatisfiedChanged -= Society_NeedsAreSatisfiedChanged;
-                    society.NeedsAreSatisfiedChanged += Society_NeedsAreSatisfiedChanged;
-
-                    society.CurrentComplexityChanged -= Society_CurrentComplexityChanged;
-                    society.CurrentComplexityChanged += Society_CurrentComplexityChanged;
-                }
-                SocietyFactory.SocietySubscribed += SocietyFactory_SocietySubscribed;
-                SocietyFactory.SocietyUnsubscribed += SocietyFactory_SocietyUnsubscribed;
-                RefreshVictoryProgress();
-            }
+            RefreshSocietyFactoryConnections();
             VictoryClockIsTicking = false;
         }
 
         private void Update() {
-            if(IsCheckingForVictory && VictoryClockIsTicking && GetVictoryConditionsAreSatisfied()) {
-                if(!IsPaused) {
-                    CurrentVictoryClockValue += Time.deltaTime;
-                    if(CurrentVictoryClockValue >= SecondsOfStabilityToWin) {
-                        TriggerVictory();
-                    }
-                }
-            }else {
-                CurrentVictoryClockValue = 0f;
-            }
+            Tick(Time.deltaTime);
         }
 
         private void OnDestroy() {
@@ -196,6 +179,19 @@ namespace Assets.Scoring {
 
         #endregion
 
+        public void Tick(float secondsPassed) {
+            if(IsCheckingForVictory && VictoryClockIsTicking && GetVictoryConditionsAreSatisfied()) {
+                if(!IsPaused) {
+                    CurrentVictoryClockValue += secondsPassed;
+                    if(CurrentVictoryClockValue >= SecondsOfStabilityToWin) {
+                        TriggerVictory();
+                    }
+                }
+            }else {
+                CurrentVictoryClockValue = 0f;
+            }
+        }
+
         private void RefreshVictoryProgress() {
             CurrentTierOneSocieties   = 0;
             CurrentTierTwoSocieties   = 0;
@@ -235,6 +231,21 @@ namespace Assets.Scoring {
 
         private void CheckVictory() {
             if(IsCheckingForVictory) {
+                RefreshVictoryProgress();
+            }
+        }
+
+        private void RefreshSocietyFactoryConnections() {
+            if(SocietyFactory != null) {
+                foreach(var society in SocietyFactory.Societies) {
+                    society.NeedsAreSatisfiedChanged -= Society_NeedsAreSatisfiedChanged;
+                    society.NeedsAreSatisfiedChanged += Society_NeedsAreSatisfiedChanged;
+
+                    society.CurrentComplexityChanged -= Society_CurrentComplexityChanged;
+                    society.CurrentComplexityChanged += Society_CurrentComplexityChanged;
+                }
+                SocietyFactory.SocietySubscribed += SocietyFactory_SocietySubscribed;
+                SocietyFactory.SocietyUnsubscribed += SocietyFactory_SocietyUnsubscribed;
                 RefreshVictoryProgress();
             }
         }

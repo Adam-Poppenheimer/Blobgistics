@@ -499,6 +499,8 @@ namespace Assets.Societies.Editor {
                 BuildSocietyFactory(StandardBlobFactory));
 
             var societyToTest = BuildSociety(privateData, currentComplexity);
+            societyToTest.AscensionIsPermitted = true;
+            societyToTest.SetAscensionPermissionForComplexity(ascentComplexity, true);
 
             //Execution
             societyToTest.Location.BlobSite.PlaceBlobInto(BuildResourceBlob(ResourceType.Food));
@@ -723,6 +725,8 @@ namespace Assets.Societies.Editor {
                 BuildSocietyFactory(StandardBlobFactory));
 
             var societyToTest = BuildSociety(privateData, currentComplexity);
+            societyToTest.AscensionIsPermitted = true;
+            societyToTest.SetAscensionPermissionForComplexity(ascentComplexity, true);
 
             //Execution
             

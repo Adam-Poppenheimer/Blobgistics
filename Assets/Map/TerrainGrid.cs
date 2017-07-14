@@ -149,8 +149,6 @@ namespace Assets.Map {
         }
 
         private void RefreshLocalBounds() {
-
-
             if(tiles.Count < 0) {
                 bounds = new Rect();
                 return;
@@ -162,11 +160,13 @@ namespace Assets.Map {
 
             foreach(var tile in tiles) {
                 var meshRenderer = tile.GetComponent<MeshRenderer>();
-                xMin = Mathf.Min(xMin, meshRenderer.bounds.min.x);
-                xMax = Mathf.Max(xMax, meshRenderer.bounds.max.x);
+                if(meshRenderer != null) {
+                    xMin = Mathf.Min(xMin, meshRenderer.bounds.min.x);
+                    xMax = Mathf.Max(xMax, meshRenderer.bounds.max.x);
 
-                yMin = Mathf.Min(yMin, meshRenderer.bounds.min.y);
-                yMax = Mathf.Max(yMax, meshRenderer.bounds.max.y);
+                    yMin = Mathf.Min(yMin, meshRenderer.bounds.min.y);
+                    yMax = Mathf.Max(yMax, meshRenderer.bounds.max.y);
+                }
             }
 
             bounds.xMin = xMin;

@@ -79,7 +79,13 @@ namespace Assets.BlobDistributors.ForTesting {
         }
 
         public override IEnumerable<BlobHighwayBase> GetHighwaysAttachedToNode(MapNodeBase node) {
-            throw new NotImplementedException();
+            var retval = new List<BlobHighwayBase>();
+            foreach(var highway in highways) {
+                if(highway.FirstEndpoint == node || highway.SecondEndpoint == node) {
+                    retval.Add(highway);
+                }
+            }
+            return retval;
         }
 
         #endregion

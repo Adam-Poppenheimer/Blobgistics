@@ -18,10 +18,9 @@ namespace Assets.Scoring.ForTesting {
         #region from SocietyBase
 
         public override ComplexityLadderBase ActiveComplexityLadder {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return activeComplexityLadder; }
         }
+        public ComplexityLadderBase activeComplexityLadder;
 
         public override bool AscensionIsPermitted {
             get {
@@ -36,7 +35,7 @@ namespace Assets.Scoring.ForTesting {
         public override ComplexityDefinitionBase CurrentComplexity {
             get { return currentComplexity; }
         }
-        private ComplexityDefinitionBase currentComplexity;
+        public ComplexityDefinitionBase currentComplexity;
 
         public override int ID {
             get {
@@ -51,13 +50,12 @@ namespace Assets.Scoring.ForTesting {
         }
 
         public override bool NeedsAreSatisfied {
-            get {
-                throw new NotImplementedException();
-            }
+            get { return needsAreSatisfied; }
             protected set {
                 throw new NotImplementedException();
             }
         }
+        public bool needsAreSatisfied;
 
         public override float SecondsOfUnsatisfiedNeeds {
             get {

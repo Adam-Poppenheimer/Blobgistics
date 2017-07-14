@@ -70,10 +70,12 @@ namespace Assets.UI.EscapeMenu {
                 if(SaveSessionDisplay.gameObject.activeInHierarchy) {
                     DeactivateSaveSessionDisplay();
                     ActivateOptionsDisplay();
+                }else if(LoadSessionDisplay.gameObject.activeInHierarchy) {
+                    DeactivateLoadSessionDisplay();
+                    ActivateOptionsDisplay();
                 }else {
                     RaiseGameResumeRequested();
                 }
-                
             }
         }
 

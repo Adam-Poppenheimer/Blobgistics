@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,7 @@ namespace Assets.UI.EscapeMenu {
         private void Start() {
             SaveSessionButton.onClick.AddListener(delegate() { PerformSaveOnNextUpdate = true; });
             CancelButton.onClick.AddListener(delegate() { RaiseDeactivationRequested(); });
+            FilenameInputField.onValidateInput += ValidateFilenameInput;
         }
 
         private void Update() {
@@ -85,6 +87,15 @@ namespace Assets.UI.EscapeMenu {
             SessionManager.PushRuntimeIntoCurrentSession();
             FileSystemLiaison.WriteSavedGameToFile(SessionManager.CurrentSession);
             RefreshSessionList();
+        }
+
+        private char ValidateFilenameInput(string input, int charIndex, char addedChar) {
+            var invalidCharacters = new string(Path.GetInvalidPathChars()) + new string(Path.GetInvalidFileNameChars());
+            if(invalidCharacters.Contains(addedChar)) {
+                return '\0';
+            }else {
+                return addedChar;
+            }
         }
 
         #endregion

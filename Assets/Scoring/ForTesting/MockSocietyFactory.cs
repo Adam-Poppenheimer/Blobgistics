@@ -76,7 +76,8 @@ namespace Assets.Scoring.ForTesting {
         }
 
         public override void SubscribeSociety(SocietyBase society) {
-            throw new NotImplementedException();
+            societies.Add(society);
+            RaiseSocietySubscribed(society);
         }
 
         public override void UnsubscribeSociety(SocietyBase societyBeingUnsubscribed) {
