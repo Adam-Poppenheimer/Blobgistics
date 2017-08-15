@@ -37,6 +37,8 @@ namespace Assets.Session {
         
         [SerializeField] private FileSystemLiaison FileSystemLiaison;
 
+        [SerializeField] private bool IgnorePermissions;
+
         [SerializeField] private List<MapPermissionData> MapPermissions;
 
         private List<string> LastCalculatedVictoryData;
@@ -70,6 +72,9 @@ namespace Assets.Session {
         }
 
         public override bool GetMapIsPermittedToBePlayed(string mapName) {
+            if(IgnorePermissions) {
+                return true;
+            }
             var permissionsForMap = MapPermissions.Where(permissions => permissions.MapName.Equals(mapName)).FirstOrDefault();
             if(permissionsForMap != null) {
                 foreach(var mapNameRequired in permissionsForMap.MapNamesRequiredToPlay) {
@@ -95,6 +100,9 @@ namespace Assets.Session {
         public override ReadOnlyCollection<string> GetMapsLeftToWinRequiredToPlayMap(string mapName) {
             var retval = new List<string>();
 
+            if(IgnorePermissions) {
+                return retval.AsReadOnly();
+            }
             var permissionsForMap = MapPermissions.Where(permissions => permissions.MapName.Equals(mapName)).FirstOrDefault();
             if(permissionsForMap != null) {
                 retval.AddRange(permissionsForMap.MapNamesRequiredToPlay.Where(requiredMap => !GetMapHasBeenWon(mapName)));
