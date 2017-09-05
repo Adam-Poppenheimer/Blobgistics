@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,20 @@ using UnityEngine;
 namespace Assets.Societies.ForTesting {
 
     public class MockResourceBlobFactory : ResourceBlobFactoryBase {
+
+        #region instance fields and properties
+
+        #region from ResourceBlobFactoryBase
+
+        public override ReadOnlyCollection<ResourceBlobBase> Blobs {
+            get {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+
+        #endregion
 
         #region instance methods
 

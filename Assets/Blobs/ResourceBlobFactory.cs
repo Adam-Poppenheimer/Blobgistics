@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 
 using UnityCustomUtilities.Extensions;
+using System.Collections.ObjectModel;
 
 namespace Assets.Blobs {
 
@@ -13,12 +14,18 @@ namespace Assets.Blobs {
 
         #region instance fields and properties
 
+        #region from ResourceBlobFactoryBase
+
+        public override ReadOnlyCollection<ResourceBlobBase> Blobs {
+            get { return blobs.AsReadOnly(); }
+        }
+        private List<ResourceBlobBase> blobs = new List<ResourceBlobBase>();
+
+        #endregion
+
         [SerializeField] private MaterialPerResourceDictionary MaterialsForResourceTypes;
 
         [SerializeField] private GameObject BlobPrefab = null;
-
-        private List<ResourceBlobBase> InstantiatedBlobs = 
-            new List<ResourceBlobBase>();
 
         #endregion
 
@@ -44,7 +51,7 @@ namespace Assets.Blobs {
             newBlob.gameObject.name = string.Format("Blob ({0})", typeOfResource);
             newBlob.ParentFactory = this;
 
-            InstantiatedBlobs.Add(newBlob);
+            blobs.Add(newBlob);
 
             return newBlob;
         }
@@ -59,11 +66,11 @@ namespace Assets.Blobs {
         }
 
         public override void UnsubscribeBlob(ResourceBlobBase blob) {
-            InstantiatedBlobs.Remove(blob);
+            blobs.Remove(blob);
         }
 
         public override void TickAllBlobs(float secondsPassed) {
-            var blobsToTick = new List<ResourceBlobBase>(InstantiatedBlobs);
+            var blobsToTick = new List<ResourceBlobBase>(blobs);
             foreach(var blob in blobsToTick) {
                 blob.Tick(secondsPassed);
             }

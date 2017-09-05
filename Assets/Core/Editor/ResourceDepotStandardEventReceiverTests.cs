@@ -72,11 +72,6 @@ namespace Assets.Core.Editor {
             var depotDisplay = BuildMockDepotDisplay();
             var depotControl = BuildMockResourceDepotControl();
 
-            int lastIDRequested = -1;
-            depotControl.DestroyResourceDepotOfIDCalled += delegate(int id) {
-                lastIDRequested = id;
-            };
-
             var receiverToTest = BuildDepotReceiver();
             receiverToTest.DepotSummaryDisplay = depotDisplay;
             receiverToTest.ResourceDepotControl = depotControl;

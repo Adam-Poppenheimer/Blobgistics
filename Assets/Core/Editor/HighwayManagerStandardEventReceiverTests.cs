@@ -75,11 +75,6 @@ namespace Assets.Core.Editor {
             var managerDisplay = BuildMockHighwayManagerDisplay();
             var managerControl = BuildMockManagerControl();
 
-            int lastIDRequested = -1;
-            managerControl.DestroyHighwayManagerOfIDCalled += delegate(int id) {
-                lastIDRequested = id;
-            };
-
             var receiverToTest = BuildHighwayManagerReceiver();
             receiverToTest.HighwayManagerDisplay = managerDisplay;
             receiverToTest.HighwayManagerControl = managerControl;

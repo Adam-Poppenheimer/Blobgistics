@@ -65,7 +65,7 @@ namespace Assets.ConstructionZones.Editor {
             };
 
             //Execution
-            var newConstructionZone = factoryToUse.BuildConstructionZone(locationToUse, projectToUse);
+            factoryToUse.BuildConstructionZone(locationToUse, projectToUse);
 
             //Validation
             Assert.That(siteWasSet);
@@ -273,7 +273,7 @@ namespace Assets.ConstructionZones.Editor {
 
             factoryToUse.AvailableProjects = new List<ConstructionProjectBase>() { easyProject };
 
-            var siteToTest = factoryToUse.BuildConstructionZone(locationToUse, easyProject);
+            factoryToUse.BuildConstructionZone(locationToUse, easyProject);
 
             //Execution
             locationToUse.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
@@ -300,7 +300,7 @@ namespace Assets.ConstructionZones.Editor {
 
             factoryToUse.AvailableProjects = new List<ConstructionProjectBase>() { easyProject };
 
-            var siteToTest = factoryToUse.BuildConstructionZone(locationToUse, easyProject);
+            factoryToUse.BuildConstructionZone(locationToUse, easyProject);
 
             //Execution
             locationToUse.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));
@@ -328,7 +328,7 @@ namespace Assets.ConstructionZones.Editor {
 
             factoryToUse.AvailableProjects = new List<ConstructionProjectBase>() { easyProject };
 
-            var siteToTest = factoryToUse.BuildConstructionZone(locationToUse, easyProject);
+            factoryToUse.BuildConstructionZone(locationToUse, easyProject);
 
             //Execution
             locationToUse.BlobSite.PlaceBlobInto(BuildBlob(ResourceType.Food));

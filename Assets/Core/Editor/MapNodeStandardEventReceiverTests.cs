@@ -330,10 +330,8 @@ namespace Assets.Core.Editor {
             var constructionZoneControl = BuildMockConstructionZoneControl();
             var constructionPanel = BuildMockConstructionPanel();
 
-            int lastIDRequested = -1;
             string lastProjectNameRequested = "";
             constructionZoneControl.CreateConstructionZoneOnNodeCalled += delegate(int id, string projectName) {
-                lastIDRequested = id;
                 lastProjectNameRequested = projectName;
             };
 

@@ -418,8 +418,8 @@ namespace Assets.HighwayManager.Editor {
             var location2 = BuildMockMapNode();
             var location3 = BuildMockMapNode();
 
-            var manager1 = factoryToTest.ConstructHighwayManagerAtLocation(location1);
-            var manager2 = factoryToTest.ConstructHighwayManagerAtLocation(location2);
+            factoryToTest.ConstructHighwayManagerAtLocation(location1);
+            factoryToTest.ConstructHighwayManagerAtLocation(location2);
 
             //Execution and validation
             Assert.IsFalse(factoryToTest.CanConstructHighwayManagerAtLocation(location1), "Falsely permits a HighwayManager at location1");
@@ -438,7 +438,7 @@ namespace Assets.HighwayManager.Editor {
 
             var location1 = BuildMockMapNode();
 
-            var manager1 = factoryToTest.ConstructHighwayManagerAtLocation(location1);
+            factoryToTest.ConstructHighwayManagerAtLocation(location1);
 
             //Execution and Validation
             Assert.Throws<HighwayManagerException>(delegate() {

@@ -10,12 +10,6 @@ namespace Assets.UI.TitleScreen {
 
     public class TitleScreenUI : PanelBase {
 
-        #region static fields and properties
-
-        private static string DisplayErrorMessage = "Failed to activate uninitialized display {0}";
-
-        #endregion
-
         #region instance fields and properties
 
         [SerializeField] private NewGameDisplay     NewGameDisplay;
@@ -23,6 +17,7 @@ namespace Assets.UI.TitleScreen {
         [SerializeField] private ExitGameDisplay    ExitGameDisplay;
         [SerializeField] private RectTransform      OptionsDisplay;
         [SerializeField] private PanelBase          CreditsAndAttributionDisplay;
+        [SerializeField] private PanelBase          HowToPlayDisplay;
 
         [SerializeField] private PanningZoomingCameraLogic MainCameraLogic;
 
@@ -34,6 +29,7 @@ namespace Assets.UI.TitleScreen {
                 ExitGameDisplay.gameObject.SetActive   (false);
                 OptionsDisplay.gameObject.SetActive    (false);
                 CreditsAndAttributionDisplay.Deactivate();
+                HowToPlayDisplay.Deactivate();
 
                 _currentActiveDisplay = value;
 
@@ -43,6 +39,7 @@ namespace Assets.UI.TitleScreen {
                     case TitleScreenActiveDisplayType.ExitGame:              ExitGameDisplay.gameObject.SetActive   (true); break;
                     case TitleScreenActiveDisplayType.Options:               OptionsDisplay.gameObject.SetActive    (true); break;
                     case TitleScreenActiveDisplayType.CreditsAndAttribution: CreditsAndAttributionDisplay.Activate();       break;
+                    case TitleScreenActiveDisplayType.Controls:             HowToPlayDisplay.Activate();                   break;
                     case TitleScreenActiveDisplayType.None: break;
                     default: break;
                 }
@@ -116,6 +113,10 @@ namespace Assets.UI.TitleScreen {
 
         public void ActivateCreditsAndAttributionDisplay() {
             CurrentActiveDisplay = TitleScreenActiveDisplayType.CreditsAndAttribution;
+        }
+
+        public void ActivateControlsDisplay() {
+            CurrentActiveDisplay = TitleScreenActiveDisplayType.Controls;
         }
 
         private void NewGameDisplay_DeactivationRequested(object sender, EventArgs e) {

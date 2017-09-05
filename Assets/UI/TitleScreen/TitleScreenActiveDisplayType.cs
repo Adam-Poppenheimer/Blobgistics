@@ -12,6 +12,7 @@ namespace Assets.UI.TitleScreen {
         ExitGame,
         Options,
         CreditsAndAttribution,
+        Controls,
         None
     }
 

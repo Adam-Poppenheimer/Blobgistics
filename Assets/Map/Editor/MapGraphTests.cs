@@ -177,8 +177,8 @@ namespace Assets.Map.Editor {
             var nodeTwo = graphToTest.BuildNode(Vector3.one);
             var nodeThree = graphToTest.BuildNode(Vector3.up);
 
-            var edgeBetweenOneAndTwo   = graphToTest.BuildMapEdge(nodeOne, nodeTwo  );
-            var edgeBetweenTwoAndThree = graphToTest.BuildMapEdge(nodeTwo, nodeThree);
+            graphToTest.BuildMapEdge(nodeOne, nodeTwo  );
+            graphToTest.BuildMapEdge(nodeTwo, nodeThree);
 
             //Execution
             graphToTest.DestroyMapEdge(nodeOne, nodeTwo);

@@ -358,7 +358,6 @@ namespace Assets.Societies {
         }
 
         private bool CanAscendComplexityLadder() {
-            var complexitiesAbove = ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity);
             if(AscensionIsPermitted && SecondsOfUnsatisfiedNeeds <= 0) {
                 return GetBestAscentCandidate() != null;
             }
@@ -380,7 +379,6 @@ namespace Assets.Societies {
         }
 
         private bool CanDescendComplexityLadder() {
-            var descentCandidate = GetBestDescentCandidate();
             return !NeedsAreSatisfied && Mathf.Approximately(0f, SecondsUntilComplexityDescent);
         }
 

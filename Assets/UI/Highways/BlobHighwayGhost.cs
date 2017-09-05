@@ -102,8 +102,6 @@ namespace Assets.UI.Highways {
                 endpoint2 = SecondEndpoint.BlobSite.GetPointOfConnectionFacingPoint(FirstEndpoint.Transform.position);
             }else {
                 endpoint2 = Camera.main.ScreenToWorldPoint((Vector3)lastEventData.position - new Vector3(0f, 0f, Camera.main.transform.position.z));
-
-                var directionToEndpoint2 = FirstEndpoint.BlobSite.Transform.position.GetDominantManhattanDirectionTo(endpoint2);
                 
                 endpoint1 = FirstEndpoint.BlobSite.GetPointOfConnectionFacingPoint(endpoint2);
             }

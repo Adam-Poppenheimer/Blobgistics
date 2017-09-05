@@ -204,6 +204,9 @@ namespace Assets.Session {
             foreach(var society in new List<SocietyBase>(SocietyFactory.Societies)) {
                 SocietyFactory.DestroySociety(society);
             }
+            foreach(var blob in new List<ResourceBlobBase>(BlobFactory.Blobs)) {
+                BlobFactory.DestroyBlob(blob);
+            }
         }
 
         private Dictionary<int, MapNodeBase> LoadMapNodes(SerializableSession session) {

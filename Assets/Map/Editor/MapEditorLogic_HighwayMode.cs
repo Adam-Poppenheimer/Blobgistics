@@ -116,9 +116,7 @@ namespace Assets.Map.Editor {
                     EditorWindowDependencyPusher.HighwayFactory.CanConstructHighwayBetween(edge.FirstNode, edge.SecondNode)) {
                     Handles.color = Color.green;
                     Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);
-                    var midpoint = (edge.FirstNode.transform.position + edge.SecondNode.transform.position ) / 2f;
                 }
-                
             }
         }
 

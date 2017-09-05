@@ -31,20 +31,20 @@ namespace Assets.Map.Editor {
             var nodeEight = mapGraph.BuildNode(Vector3.zero);
             var nodeNine  = mapGraph.BuildNode(Vector3.zero);
 
-            var edgeOneTwo     = mapGraph.BuildMapEdge(nodeOne,   nodeTwo  );
-            var edgeOneThree   = mapGraph.BuildMapEdge(nodeOne,   nodeThree);
-            var edgeTwoThree   = mapGraph.BuildMapEdge(nodeTwo,   nodeThree);
-            var edgeTwoFour    = mapGraph.BuildMapEdge(nodeTwo,   nodeFour );
-            var edgeTwoFive    = mapGraph.BuildMapEdge(nodeTwo,   nodeFive );
-            var edgeTwoSix     = mapGraph.BuildMapEdge(nodeTwo,   nodeSix  );
-            var edgeThreeFour  = mapGraph.BuildMapEdge(nodeThree, nodeFour );
-            var edgeFourFive   = mapGraph.BuildMapEdge(nodeFour,  nodeFive );
-            var edgeFiveSix    = mapGraph.BuildMapEdge(nodeFive,  nodeSix  );
-            var edgeFiveSeven  = mapGraph.BuildMapEdge(nodeFive,  nodeSeven);
-            var edgeFiveEight  = mapGraph.BuildMapEdge(nodeFive,  nodeEight);
-            var edgeSixSeven   = mapGraph.BuildMapEdge(nodeSix,   nodeSeven);
-            var edgeSevenEight = mapGraph.BuildMapEdge(nodeSeven, nodeEight);
-            var edgeEightNine  = mapGraph.BuildMapEdge(nodeEight, nodeNine );
+            mapGraph.BuildMapEdge(nodeOne,   nodeTwo  );
+            mapGraph.BuildMapEdge(nodeOne,   nodeThree);
+            mapGraph.BuildMapEdge(nodeTwo,   nodeThree);
+            mapGraph.BuildMapEdge(nodeTwo,   nodeFour );
+            mapGraph.BuildMapEdge(nodeTwo,   nodeFive );
+            mapGraph.BuildMapEdge(nodeTwo,   nodeSix  );
+            mapGraph.BuildMapEdge(nodeThree, nodeFour );
+            mapGraph.BuildMapEdge(nodeFour,  nodeFive );
+            mapGraph.BuildMapEdge(nodeFive,  nodeSix  );
+            mapGraph.BuildMapEdge(nodeFive,  nodeSeven);
+            mapGraph.BuildMapEdge(nodeFive,  nodeEight);
+            mapGraph.BuildMapEdge(nodeSix,   nodeSeven);
+            mapGraph.BuildMapEdge(nodeSeven, nodeEight);
+            mapGraph.BuildMapEdge(nodeEight, nodeNine );
 
             //Execution
             var distanceFromOneToNine = setToTest.GetDistanceBetweenNodes(nodeOne, nodeNine, mapGraph.Nodes);
@@ -105,20 +105,20 @@ namespace Assets.Map.Editor {
             nodeEight.name = "Node Eight";
             nodeNine.name  = "Node Nine";
 
-            var edgeOneTwo     = mapGraph.BuildMapEdge(nodeOne,   nodeTwo  );
-            var edgeOneThree   = mapGraph.BuildMapEdge(nodeOne,   nodeThree);
-            var edgeTwoThree   = mapGraph.BuildMapEdge(nodeTwo,   nodeThree);
-            var edgeTwoFour    = mapGraph.BuildMapEdge(nodeTwo,   nodeFour );
-            var edgeTwoFive    = mapGraph.BuildMapEdge(nodeTwo,   nodeFive );
-            var edgeTwoSix     = mapGraph.BuildMapEdge(nodeTwo,   nodeSix  );
-            var edgeThreeFour  = mapGraph.BuildMapEdge(nodeThree, nodeFour );
-            var edgeFourFive   = mapGraph.BuildMapEdge(nodeFour,  nodeFive );
-            var edgeFiveSix    = mapGraph.BuildMapEdge(nodeFive,  nodeSix  );
-            var edgeFiveSeven  = mapGraph.BuildMapEdge(nodeFive,  nodeSeven);
-            var edgeFiveEight  = mapGraph.BuildMapEdge(nodeFive,  nodeEight);
-            var edgeSixSeven   = mapGraph.BuildMapEdge(nodeSix,   nodeSeven);
-            var edgeSevenEight = mapGraph.BuildMapEdge(nodeSeven, nodeEight);
-            var edgeEightNine  = mapGraph.BuildMapEdge(nodeEight, nodeNine );
+            mapGraph.BuildMapEdge(nodeOne,   nodeTwo  );
+            mapGraph.BuildMapEdge(nodeOne,   nodeThree);
+            mapGraph.BuildMapEdge(nodeTwo,   nodeThree);
+            mapGraph.BuildMapEdge(nodeTwo,   nodeFour );
+            mapGraph.BuildMapEdge(nodeTwo,   nodeFive );
+            mapGraph.BuildMapEdge(nodeTwo,   nodeSix  );
+            mapGraph.BuildMapEdge(nodeThree, nodeFour );
+            mapGraph.BuildMapEdge(nodeFour,  nodeFive );
+            mapGraph.BuildMapEdge(nodeFive,  nodeSix  );
+            mapGraph.BuildMapEdge(nodeFive,  nodeSeven);
+            mapGraph.BuildMapEdge(nodeFive,  nodeEight);
+            mapGraph.BuildMapEdge(nodeSix,   nodeSeven);
+            mapGraph.BuildMapEdge(nodeSeven, nodeEight);
+            mapGraph.BuildMapEdge(nodeEight, nodeNine );
 
             //Execution
             var pathFromOneToNine = setToTest.GetShortestPathBetweenNodes(nodeOne, nodeNine, mapGraph.Nodes);
@@ -210,19 +210,19 @@ namespace Assets.Map.Editor {
             nodeEight.name = "Node Eight";
             nodeNine.name  = "Node Nine";
 
-            var edgeOneTwo     = mapGraph.BuildMapEdge(nodeOne,   nodeTwo  );
-            var edgeOneThree   = mapGraph.BuildMapEdge(nodeOne,   nodeThree);
-            var edgeTwoThree   = mapGraph.BuildMapEdge(nodeTwo,   nodeThree);
-            var edgeTwoFour    = mapGraph.BuildMapEdge(nodeTwo,   nodeFour );
+            mapGraph.BuildMapEdge(nodeOne,   nodeTwo  );
+            mapGraph.BuildMapEdge(nodeOne,   nodeThree);
+            mapGraph.BuildMapEdge(nodeTwo,   nodeThree);
+            mapGraph.BuildMapEdge(nodeTwo,   nodeFour );
             var edgeTwoFive    = mapGraph.BuildMapEdge(nodeTwo,   nodeFive );
-            var edgeTwoSix     = mapGraph.BuildMapEdge(nodeTwo,   nodeSix  );
-            var edgeThreeFour  = mapGraph.BuildMapEdge(nodeThree, nodeFour );
-            var edgeFourFive   = mapGraph.BuildMapEdge(nodeFour,  nodeFive );
+            mapGraph.BuildMapEdge(nodeTwo,   nodeSix  );
+            mapGraph.BuildMapEdge(nodeThree, nodeFour );
+            mapGraph.BuildMapEdge(nodeFour,  nodeFive );
             var edgeFiveSix    = mapGraph.BuildMapEdge(nodeFive,  nodeSix  );
-            var edgeFiveSeven  = mapGraph.BuildMapEdge(nodeFive,  nodeSeven);
-            var edgeFiveEight  = mapGraph.BuildMapEdge(nodeFive,  nodeEight);
-            var edgeSixSeven   = mapGraph.BuildMapEdge(nodeSix,   nodeSeven);
-            var edgeSevenEight = mapGraph.BuildMapEdge(nodeSeven, nodeEight);
+            mapGraph.BuildMapEdge(nodeFive,  nodeSeven);
+            mapGraph.BuildMapEdge(nodeFive,  nodeEight);
+            mapGraph.BuildMapEdge(nodeSix,   nodeSeven);
+            mapGraph.BuildMapEdge(nodeSeven, nodeEight);
             var edgeEightNine  = mapGraph.BuildMapEdge(nodeEight, nodeNine );
 
             //Execution
@@ -283,20 +283,20 @@ namespace Assets.Map.Editor {
             nodeEight.name = "Node Eight";
             nodeNine.name  = "Node Nine";
 
-            var edgeOneTwo     = mapGraph.BuildMapEdge(nodeOne,   nodeTwo  );
-            var edgeOneThree   = mapGraph.BuildMapEdge(nodeOne,   nodeThree);
-            var edgeTwoThree   = mapGraph.BuildMapEdge(nodeTwo,   nodeThree);
-            var edgeTwoFour    = mapGraph.BuildMapEdge(nodeTwo,   nodeFour );
-            var edgeTwoFive    = mapGraph.BuildMapEdge(nodeTwo,   nodeFive );
-            var edgeTwoSix     = mapGraph.BuildMapEdge(nodeTwo,   nodeSix  );
-            var edgeThreeFour  = mapGraph.BuildMapEdge(nodeThree, nodeFour );
-            var edgeFourFive   = mapGraph.BuildMapEdge(nodeFour,  nodeFive );
-            var edgeFiveSix    = mapGraph.BuildMapEdge(nodeFive,  nodeSix  );
-            var edgeFiveSeven  = mapGraph.BuildMapEdge(nodeFive,  nodeSeven);
-            var edgeFiveEight  = mapGraph.BuildMapEdge(nodeFive,  nodeEight);
-            var edgeSixSeven   = mapGraph.BuildMapEdge(nodeSix,   nodeSeven);
-            var edgeSevenEight = mapGraph.BuildMapEdge(nodeSeven, nodeEight);
-            var edgeEightNine  = mapGraph.BuildMapEdge(nodeEight, nodeNine );
+            mapGraph.BuildMapEdge(nodeOne,   nodeTwo  );
+            mapGraph.BuildMapEdge(nodeOne,   nodeThree);
+            mapGraph.BuildMapEdge(nodeTwo,   nodeThree);
+            mapGraph.BuildMapEdge(nodeTwo,   nodeFour );
+            mapGraph.BuildMapEdge(nodeTwo,   nodeFive );
+            mapGraph.BuildMapEdge(nodeTwo,   nodeSix  );
+            mapGraph.BuildMapEdge(nodeThree, nodeFour );
+            mapGraph.BuildMapEdge(nodeFour,  nodeFive );
+            mapGraph.BuildMapEdge(nodeFive,  nodeSix  );
+            mapGraph.BuildMapEdge(nodeFive,  nodeSeven);
+            mapGraph.BuildMapEdge(nodeFive,  nodeEight);
+            mapGraph.BuildMapEdge(nodeSix,   nodeSeven);
+            mapGraph.BuildMapEdge(nodeSeven, nodeEight);
+            mapGraph.BuildMapEdge(nodeEight, nodeNine );
 
             //Execution
             var nodeOneWithinDistanceFourOfNodeNine = setToTest.GetNearestNodeToNodeWhere(nodeNine, node => node == nodeOne, 4);

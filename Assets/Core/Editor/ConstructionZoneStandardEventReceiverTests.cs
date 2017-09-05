@@ -71,12 +71,7 @@ namespace Assets.Core.Editor {
         public void OnCloseRequestedEventRaised_ConstructionZoneDisplayIsDeactivated() {
             //Setup
             var constructionZoneDisplay = MockConstructionZoneSummaryDisplay();
-            var constructionZoneControl = BuildMockConstructionZoneControl();
-
-            int lastIDRequestedForDestruction = -1;
-            constructionZoneControl.DestroyConstructionZoneCalled += delegate(int id) {
-                lastIDRequestedForDestruction = id;
-            };
+            var constructionZoneControl = BuildMockConstructionZoneControl();;
 
             var receiverToTest = BuildConstructionZoneReceiver();
             receiverToTest.ConstructionZoneSummaryDisplay = constructionZoneDisplay;

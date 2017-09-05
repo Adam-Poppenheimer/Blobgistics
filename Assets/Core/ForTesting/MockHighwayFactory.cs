@@ -28,12 +28,6 @@ namespace Assets.Core.ForTesting {
 
         #endregion
 
-        #region events
-
-        public event EventHandler<FloatEventArgs> FactoryTicked;
-
-        #endregion
-
         #region instance methods
 
         #region from BlobHighwayFactoryBase

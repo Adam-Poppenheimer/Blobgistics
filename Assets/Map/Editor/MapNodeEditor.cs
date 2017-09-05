@@ -30,7 +30,7 @@ namespace Assets.Map.Editor {
                     Handles.DrawLine(edge.FirstNode.transform.position, edge.SecondNode.transform.position);
                     var midpoint = (edge.FirstNode.transform.position + edge.SecondNode.transform.position ) / 2f;
                     Handles.color = Color.red;
-                    if(Handles.Button(midpoint, Quaternion.identity, 0.25f, 0.25f, Handles.SphereCap)) {
+                    if(Handles.Button(midpoint, Quaternion.identity, 0.25f, 0.25f, Handles.SphereHandleCap)) {
                         TargetedNode.ParentGraph.DestroyMapEdge(edge);
                         break;
                     }

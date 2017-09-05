@@ -1,10 +1,17 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 
 using UnityEngine;
 
 namespace Assets.Blobs {
 
     public abstract class ResourceBlobFactoryBase : MonoBehaviour {
+
+        #region instance fields and properties
+
+        public abstract ReadOnlyCollection<ResourceBlobBase> Blobs { get; }
+
+        #endregion
 
         #region instance methods
 

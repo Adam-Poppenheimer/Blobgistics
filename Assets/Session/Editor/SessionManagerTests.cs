@@ -255,7 +255,7 @@ namespace Assets.Session.Editor {
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
             var nodeLeft   = mapGraphToPullFrom.BuildNode(Vector3.left,  TerrainType.Forest   );
             var nodeRight  = mapGraphToPullFrom.BuildNode(Vector3.right, TerrainType.Mountains);
-            var nodeUp     = mapGraphToPullFrom.BuildNode(Vector3.up,    TerrainType.Grassland);
+            mapGraphToPullFrom.BuildNode(Vector3.up,    TerrainType.Grassland);
 
             var zoneFactoryToPullFrom = BuildMockConstructionZoneFactory();
 
@@ -267,9 +267,9 @@ namespace Assets.Session.Editor {
                 projectOne, projectTwo, projectThree
             };
 
-            var constructionZoneOne   = zoneFactoryToPullFrom.BuildConstructionZone(nodeCenter, projectOne  );
-            var constructionZoneTwo   = zoneFactoryToPullFrom.BuildConstructionZone(nodeLeft,   projectTwo  );
-            var constructionZoneThree = zoneFactoryToPullFrom.BuildConstructionZone(nodeRight,  projectThree);
+            zoneFactoryToPullFrom.BuildConstructionZone(nodeCenter, projectOne  );
+            zoneFactoryToPullFrom.BuildConstructionZone(nodeLeft,   projectTwo  );
+            zoneFactoryToPullFrom.BuildConstructionZone(nodeRight,  projectThree);
 
             var mapGraphToPushTo = BuildMockMapGraph();
             var zoneFactoryToPushTo = BuildMockConstructionZoneFactory();
@@ -309,12 +309,12 @@ namespace Assets.Session.Editor {
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
             var nodeLeft   = mapGraphToPullFrom.BuildNode(Vector3.left,  TerrainType.Forest   );
             var nodeRight  = mapGraphToPullFrom.BuildNode(Vector3.right, TerrainType.Mountains);
-            var nodeUp     = mapGraphToPullFrom.BuildNode(Vector3.up,    TerrainType.Grassland);
+            mapGraphToPullFrom.BuildNode(Vector3.up,    TerrainType.Grassland);
 
             var managerFactoryToPullFrom = BuildMockHighwayManagerFactory();
-            var managerOne   = managerFactoryToPullFrom.ConstructHighwayManagerAtLocation(nodeCenter);
-            var managerTwo   = managerFactoryToPullFrom.ConstructHighwayManagerAtLocation(nodeLeft  );
-            var managerThree = managerFactoryToPullFrom.ConstructHighwayManagerAtLocation(nodeRight );
+            managerFactoryToPullFrom.ConstructHighwayManagerAtLocation(nodeCenter);
+            managerFactoryToPullFrom.ConstructHighwayManagerAtLocation(nodeLeft  );
+            managerFactoryToPullFrom.ConstructHighwayManagerAtLocation(nodeRight );
 
             var mapGraphToPushTo = BuildMockMapGraph();
             var managerFactoryToPushTo = BuildMockHighwayManagerFactory();
@@ -353,12 +353,12 @@ namespace Assets.Session.Editor {
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
             var nodeLeft   = mapGraphToPullFrom.BuildNode(Vector3.left,  TerrainType.Forest   );
             var nodeRight  = mapGraphToPullFrom.BuildNode(Vector3.right, TerrainType.Mountains);
-            var nodeUp     = mapGraphToPullFrom.BuildNode(Vector3.up,    TerrainType.Grassland);
+            mapGraphToPullFrom.BuildNode(Vector3.up,    TerrainType.Grassland);
 
             var depotFactoryToPullFrom = BuildMockResourceDepotFactory();
-            var depotOne   = depotFactoryToPullFrom.ConstructDepotAt(nodeCenter);
-            var depotTwo   = depotFactoryToPullFrom.ConstructDepotAt(nodeLeft  );
-            var depotThree = depotFactoryToPullFrom.ConstructDepotAt(nodeRight );
+            depotFactoryToPullFrom.ConstructDepotAt(nodeCenter);
+            depotFactoryToPullFrom.ConstructDepotAt(nodeLeft  );
+            depotFactoryToPullFrom.ConstructDepotAt(nodeRight );
 
             var mapGraphToPushTo = BuildMockMapGraph();
             var depotFactoryToPushTo = BuildMockResourceDepotFactory();
@@ -395,9 +395,9 @@ namespace Assets.Session.Editor {
             //Setup
             var mapGraphToPullFrom = BuildMockMapGraph();
             var nodeCenter = mapGraphToPullFrom.BuildNode(Vector3.zero,  TerrainType.Grassland);
-            var nodeLeft   = mapGraphToPullFrom.BuildNode(Vector3.left,  TerrainType.Forest   );
-            var nodeRight  = mapGraphToPullFrom.BuildNode(Vector3.right, TerrainType.Mountains);
-            var nodeUp     = mapGraphToPullFrom.BuildNode(Vector3.up,    TerrainType.Grassland);
+            mapGraphToPullFrom.BuildNode(Vector3.left,  TerrainType.Forest   );
+            mapGraphToPullFrom.BuildNode(Vector3.right, TerrainType.Mountains);
+            mapGraphToPullFrom.BuildNode(Vector3.up,    TerrainType.Grassland);
 
             var complexityOne   = BuildMockComplexityDefinition();
             complexityOne.gameObject.name = "Complexity One";

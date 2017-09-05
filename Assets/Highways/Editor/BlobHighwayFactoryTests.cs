@@ -218,8 +218,8 @@ namespace Assets.Highways.Editor {
             mapGraph.BuildMapEdge(middleNode, upNode);
 
             var highwayToLeft  = factoryToTest.ConstructHighwayBetween(middleNode, leftNode);
-            var highwayToRight = factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
-            var highwayToUp    = factoryToTest.ConstructHighwayBetween(middleNode, upNode);
+            factoryToTest.ConstructHighwayBetween(middleNode, rightNode);
+            factoryToTest.ConstructHighwayBetween(middleNode, upNode);
 
             //Execution and validation
             mapGraph.UnsubscribeNode(leftNode);
