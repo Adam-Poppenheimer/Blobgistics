@@ -6,6 +6,10 @@ using UnityEngine.Serialization;
 
 namespace Assets.UI{
 
+    /// <summary>
+    /// A slight modification to the StandaloneInputModule that disables clicking with the middle
+    /// mouse button. All other code is unchanged, and was part of Unity's source code, not mine.
+    /// </summary>
     [AddComponentMenu("Event/Modified Standalone Input Module")]
     public class ModifiedStandAloneInputModule : PointerInputModule {
 
@@ -16,18 +20,8 @@ namespace Assets.UI{
         private Vector2 m_LastMousePosition;
         private Vector2 m_MousePosition;
 
+        /// <inheritdoc/>
         protected ModifiedStandAloneInputModule() {}
-
-        [Obsolete("Mode is no longer needed on input module as it handles both mouse and keyboard simultaneously.", false)]
-        public enum InputMode {
-            Mouse,
-            Buttons
-        }
-
-        [Obsolete("Mode is no longer needed on input module as it handles both mouse and keyboard simultaneously.", false)]
-        public InputMode inputMode {
-            get { return InputMode.Mouse; }
-        }
 
         [SerializeField]
         private string m_HorizontalAxis = "Horizontal";
@@ -60,22 +54,26 @@ namespace Assets.UI{
         [FormerlySerializedAs("m_AllowActivationOnMobileDevice")]
         private bool m_ForceModuleActive;
 
+        /// <inheritdoc/>
         [Obsolete("allowActivationOnMobileDevice has been deprecated. Use forceModuleActive instead (UnityUpgradable) -> forceModuleActive")]
         public bool allowActivationOnMobileDevice {
             get { return m_ForceModuleActive; }
             set { m_ForceModuleActive = value; }
         }
 
+        /// <inheritdoc/>
         public bool forceModuleActive {
             get { return m_ForceModuleActive; }
             set { m_ForceModuleActive = value; }
         }
 
+        /// <inheritdoc/>
         public float inputActionsPerSecond {
             get { return m_InputActionsPerSecond; }
             set { m_InputActionsPerSecond = value; }
         }
 
+        /// <inheritdoc/>
         public float repeatDelay {
             get { return m_RepeatDelay; }
             set { m_RepeatDelay = value; }
@@ -97,21 +95,25 @@ namespace Assets.UI{
             set { m_VerticalAxis = value; }
         }
 
+        /// <inheritdoc/>
         public string submitButton {
             get { return m_SubmitButton; }
             set { m_SubmitButton = value; }
         }
 
+        /// <inheritdoc/>
         public string cancelButton {
             get { return m_CancelButton; }
             set { m_CancelButton = value; }
         }
 
+        /// <inheritdoc/>
         public override void UpdateModule() {
             m_LastMousePosition = m_MousePosition;
             m_MousePosition = Input.mousePosition;
         }
 
+        /// <inheritdoc/>
         public override bool IsModuleSupported() {
             // Check for mouse presence instead of whether touch is supported,
             // as you can connect mouse to a tablet and in that case we'd want
@@ -119,6 +121,7 @@ namespace Assets.UI{
             return m_ForceModuleActive || Input.mousePresent;
         }
 
+        /// <inheritdoc/>
         public override bool ShouldActivateModule() {
             if (!base.ShouldActivateModule())
                 return false;
@@ -133,6 +136,7 @@ namespace Assets.UI{
             return shouldActivate;
         }
 
+        /// <inheritdoc/>
         public override void ActivateModule() {
             base.ActivateModule();
             m_MousePosition = Input.mousePosition;
@@ -145,11 +149,13 @@ namespace Assets.UI{
             eventSystem.SetSelectedGameObject(toSelect, GetBaseEventData());
         }
 
+        /// <inheritdoc/>
         public override void DeactivateModule() {
             base.DeactivateModule();
             ClearSelection();
         }
 
+        /// <inheritdoc/>
         public override void Process() {
             bool usedEvent = SendUpdateEventToSelectedObject();
 
@@ -238,6 +244,7 @@ namespace Assets.UI{
             return axisEventData.used;
         }
 
+        /// <inheritdoc/>
         protected void ProcessMouseEvent() {
             ProcessMouseEvent(0);
         }
@@ -245,6 +252,11 @@ namespace Assets.UI{
         /// <summary>
         /// Process all mouse events.
         /// </summary>
+        /// <remarks>
+        /// This method is the only one that's been changed from StandAloneInputModule. We've removed
+        /// the ability to press with the middle mouse button, so that dragging the camera with the
+        /// middle mouse button doesn't deselect IntelligentPanelBases.
+        /// </remarks>
         protected void ProcessMouseEvent(int id) {
             var mouseData = GetMousePointerEventData(id);
             var leftButtonData = mouseData.GetButtonState(PointerEventData.InputButton.Left).eventData;
@@ -266,6 +278,7 @@ namespace Assets.UI{
             }
         }
 
+        /// <inheritdoc/>
         protected bool SendUpdateEventToSelectedObject() {
             if (eventSystem.currentSelectedGameObject == null)
                 return false;

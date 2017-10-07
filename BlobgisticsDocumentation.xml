@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Assembly-CSharp</name>
+    </assembly>
+    <members>
+        <member name="F:Assets.UI.ModifiedStandAloneInputModule.m_VerticalAxis">
+            <summary>
+            Name of the vertical axis for movement (if axis events are used).
+            </summary>
+        </member>
+        <member name="F:Assets.UI.ModifiedStandAloneInputModule.m_SubmitButton">
+            <summary>
+            Name of the submit button.
+            </summary>
+        </member>
+        <member name="F:Assets.UI.ModifiedStandAloneInputModule.m_CancelButton">
+            <summary>
+            Name of the submit button.
+            </summary>
+        </member>
+        <member name="P:Assets.UI.ModifiedStandAloneInputModule.horizontalAxis">
+            <summary>
+            Name of the horizontal axis for movement (if axis events are used).
+            </summary>
+        </member>
+        <member name="P:Assets.UI.ModifiedStandAloneInputModule.verticalAxis">
+            <summary>
+            Name of the vertical axis for movement (if axis events are used).
+            </summary>
+        </member>
+        <member name="M:Assets.UI.ModifiedStandAloneInputModule.SendSubmitEventToSelectedObject">
+            <summary>
+            Process submit keys.
+            </summary>
+        </member>
+        <member name="M:Assets.UI.ModifiedStandAloneInputModule.SendMoveEventToSelectedObject">
+            <summary>
+            Process keyboard events.
+            </summary>
+        </member>
+        <member name="M:Assets.UI.ModifiedStandAloneInputModule.ProcessMouseEvent(System.Int32)">
+            <summary>
+            Process all mouse events.
+            </summary>
+        </member>
+        <member name="M:Assets.UI.ModifiedStandAloneInputModule.ProcessMousePress(UnityEngine.EventSystems.PointerInputModule.MouseButtonEventData)">
+            <summary>
+            Process the current mouse press.
+            </summary>
+        </member>
+    </members>
+</doc>

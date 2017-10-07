@@ -15,6 +15,11 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Societies {
 
+    /// <summary>
+    /// The standard implementation of SocietyBase. Societies produce and consume
+    /// resources and can complexify or decomplexify into different kinds of societies.
+    /// They are also the metric for success in the game.
+    /// </summary>
     [ExecuteInEditMode]
     public class Society : SocietyBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler {
@@ -23,10 +28,12 @@ namespace Assets.Societies {
 
         #region from SocietyBase
 
+        /// <inheritdoc/>
         public override int ID {
             get { return GetInstanceID(); }
         }
 
+        /// <inheritdoc/>
         public override ComplexityLadderBase ActiveComplexityLadder {
             get {
                 if(PrivateData != null) {
@@ -38,9 +45,14 @@ namespace Assets.Societies {
         }
         [SerializeField, HideInInspector] private ComplexityLadderBase _activeComplexityLadder;
 
+        /// <inheritdoc/>
         public override ComplexityDefinitionBase CurrentComplexity {
             get { return _currentComplexity; }
         }
+        /// <summary>
+        /// The externalized Set method of CurrentComplexity.
+        /// </summary>
+        /// <param name="value">The new value of CurrentComplexity</param>
         public void SetCurrentComplexity(ComplexityDefinitionBase value) {
             _currentComplexity = value;
             RefreshAppearance();
@@ -50,6 +62,7 @@ namespace Assets.Societies {
         }
         [SerializeField, HideInInspector] private ComplexityDefinitionBase _currentComplexity;
 
+        /// <inheritdoc/>
         public override bool NeedsAreSatisfied {
             get { return _needsAreSatisfied; }
             protected set {
@@ -65,12 +78,14 @@ namespace Assets.Societies {
         }
         [SerializeField, HideInInspector] private bool _needsAreSatisfied = true;
 
+        /// <inheritdoc/>
         public override float SecondsOfUnsatisfiedNeeds {
             get { return _secondsOfUnsatisfiedNeeds; }
             set { _secondsOfUnsatisfiedNeeds = value; }
         }
         [SerializeField, HideInInspector] private float _secondsOfUnsatisfiedNeeds;
 
+        /// <inheritdoc/>
         public override float SecondsUntilComplexityDescent {
             get {
                 if(!NeedsAreSatisfied) {
@@ -81,6 +96,7 @@ namespace Assets.Societies {
             }
         }
 
+        /// <inheritdoc/>
         public override bool AscensionIsPermitted {
             get { return _ascensionIsPermitted; }
             set {
@@ -90,12 +106,15 @@ namespace Assets.Societies {
         }
         private bool _ascensionIsPermitted = false;
 
+        /// <inheritdoc/>
         public override MapNodeBase Location {
             get { return PrivateData.Location; }
         }
 
         #endregion
-
+        /// <summary>
+        /// A collection of dependencies necessary for Society to function.
+        /// </summary>
         public SocietyPrivateDataBase PrivateData {
             get { return _privateData; }
             set { _privateData = value; }
@@ -113,6 +132,12 @@ namespace Assets.Societies {
         [SerializeField, HideInInspector] private float CurrentProductionTimer  = 0f;
         [SerializeField, HideInInspector] private float CurrentNeedConsumptionTimer = 0f;
 
+        //Society has very complex placement and extraction policies that must be handled
+        //very carefully. Thus it needs different BlobSitePermissionProfiles at different
+        //stages in Society's execution. It could probably get away with a single default
+        //profile and then a fully-permissive one for consumption and production.
+
+        //DefaultProfile is the profile active for the majority of the gameplay.
         private BlobSitePermissionProfile ConsumptionProfile = new BlobSitePermissionProfile();
         private BlobSitePermissionProfile ProductionProfile = new BlobSitePermissionProfile();
         private BlobSitePermissionProfile DefaultProfile = new BlobSitePermissionProfile();
@@ -128,6 +153,9 @@ namespace Assets.Societies {
 
         #if UNITY_EDITOR
 
+        //If you copy just a society, it maintains its current node and can cause duplicate
+        //societies on the same node, which is not supported. This code addresses that
+        //possibility by deleting the society as soon as it realizes it's not alone.
         private void Awake() {
             if(PrivateData != null && PrivateData.ParentFactory != null) {
                 var parentFactory = PrivateData.ParentFactory;
@@ -171,34 +199,42 @@ namespace Assets.Societies {
 
         #region EventSystem interface implementations
 
+        /// <inheritdoc/>
         public void OnBeginDrag(PointerEventData eventData) {
             PrivateData.UIControl.PushBeginDragEvent(new SocietyUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnDrag(PointerEventData eventData) {
             PrivateData.UIControl.PushDragEvent(new SocietyUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnEndDrag(PointerEventData eventData) {
             PrivateData.UIControl.PushEndDragEvent(new SocietyUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnPointerClick(PointerEventData eventData) {
             EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
+        /// <inheritdoc/>
         public void OnPointerEnter(PointerEventData eventData) {
             PrivateData.UIControl.PushPointerEnterEvent(new SocietyUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnPointerExit(PointerEventData eventData) {
             PrivateData.UIControl.PushPointerExitEvent(new SocietyUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnSelect(BaseEventData eventData) {
             PrivateData.UIControl.PushSelectEvent(new SocietyUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnDeselect(BaseEventData eventData) {
             PrivateData.UIControl.PushDeselectEvent(new SocietyUISummary(this), eventData);
         }
@@ -207,10 +243,7 @@ namespace Assets.Societies {
 
         #region from SocietyBase
 
-        public override IReadOnlyDictionary<ResourceType, int> GetResourcesUntilSocietyAscent() {
-            throw new NotImplementedException();
-        }
-
+        /// <inheritdoc/>
         public override void TickConsumption(float secondsPassed) {
             ConsumptionProfile.InsertProfileIntoBlobSite(Location.BlobSite);
 
@@ -245,6 +278,8 @@ namespace Assets.Societies {
             }
         }
 
+        //Consumption will attempt to consume all of the blobs it can,
+        //Even once it knows there aren't enough to satisfy its needs.
         private bool PerformNeedsConsumptionCycle() {
             bool needsSatisfiedThisCycle = true;
 
@@ -263,6 +298,7 @@ namespace Assets.Societies {
             return needsSatisfiedThisCycle;
         }
 
+        /// <inheritdoc/>
         public override void TickProduction(float secondsPassed) {
             ProductionProfile.InsertProfileIntoBlobSite(Location.BlobSite);
 
@@ -275,6 +311,8 @@ namespace Assets.Societies {
             DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
         }
 
+        //Wants are resolved before production. If one of the want profiles was satisfied,
+        //production is increased by one during this cycle.
         private void PerformProductionCycle() {
             var hasSatisfiedSomeWants = PerformWantsConsumptionCycle();
             foreach(var resourceType in CurrentComplexity.Production) {
@@ -297,6 +335,9 @@ namespace Assets.Societies {
             }
         }
 
+        //There are multiple want summaries, any of which can be satisfied in order to 
+        //increase production. Once a single summary has been satisfied, others are
+        //not considered.
         private bool PerformWantsConsumptionCycle() {
             foreach(var wantSummary in CurrentComplexity.Wants) {
                 if(wantSummary.GetTotalResourceCount() == 0) {
@@ -314,18 +355,24 @@ namespace Assets.Societies {
             return false;
         }
 
+        /// <inheritdoc/>
         public override bool GetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity) {
             bool retval = false;
             AscensionPermissionsForComplexity.TryGetValue(complexity, out retval);
             return retval;
         }
 
+        /// <inheritdoc/>
         public override void SetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity, bool isPermitted) {
             AscensionPermissionsForComplexity[complexity] = isPermitted;
         }
 
         #endregion
 
+        //An ascent candidate must be valid on the Location's terrain,
+        //have the necessary resources present, and be specifically 
+        //permitted by the society in order to be an ascent candidate.
+        //This method takes the first such society that meets those qualifications.
         private ComplexityDefinitionBase GetBestAscentCandidate() {
             foreach(var complexity in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
                 if( 
@@ -348,6 +395,8 @@ namespace Assets.Societies {
             return false;
         }
 
+        //A descent candidate needs only be valid on the current Location's terrain.
+        //This method takes the first such candidate.
         private ComplexityDefinitionBase GetBestDescentCandidate() {
             foreach(var complexity in ActiveComplexityLadder.GetDescentTransitions(CurrentComplexity)) {
                 if(complexity.PermittedTerrains.Contains(PrivateData.Location.Terrain)) {
@@ -408,6 +457,26 @@ namespace Assets.Societies {
             }
         }
 
+        /*
+         * The default profile (which is active most of the time) must:
+         *  1. Accept placement of all needs, wants, and ascension costs
+         *  2. Refuse extraction of all needs, wants, and ascension costs
+         *  3. Accept extraction of all productions that are not needs, wants, or ascension costs
+         *  4. Refuse placement of all productions that are not needs, wants, or ascension costs
+         * 
+         * The production profile must:
+         *  1. Accept placement of all productions
+         *  2. Accept extraction of all wants
+         * 
+         * The consumption profile must:
+         *  1. Accept extraction of all needs
+         *  
+         * All profiles must use the stockpile coefficients to inform their capacities
+         * and total capacity.
+         * 
+         * This method could probably be refactored and simplified, or at the very least
+         * these policies could be revealed to the designer.
+         */
         private void RefreshBlobSitePermissionsAndCapacities() {
             Location.BlobSite.ClearPermissionsAndCapacity();
             ConsumptionProfile.Clear();

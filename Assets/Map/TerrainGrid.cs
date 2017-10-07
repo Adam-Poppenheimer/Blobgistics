@@ -9,6 +9,10 @@ using UnityCustomUtilities.Grids;
 
 namespace Assets.Map {
 
+    /// <summary>
+    /// The standard implementation of TerrainGridBase.
+    /// This is used in tandem with MapGraphBase to define and display a cohesive map.
+    /// </summary>
     [ExecuteInEditMode]
     public class TerrainGrid : TerrainGridBase {
 
@@ -16,28 +20,33 @@ namespace Assets.Map {
 
         #region from TerrainGridBase
 
+        /// <inheritdoc/>
         public override int Radius {
             get { return _radius; }
             set { _radius = value; }
         }
         [SerializeField] private int _radius;
 
+        /// <inheritdoc/>
         public override float MaxAcquisitionDistance {
             get { return _maxAcquisitionDistance; }
             set { _maxAcquisitionDistance = value; }
         }
         [SerializeField] private float _maxAcquisitionDistance;
 
+        /// <inheritdoc/>
         public override Rect Bounds {
             get {
                 return bounds;
             }
         }
-
         private Rect bounds = new Rect();
 
         #endregion
 
+        /// <summary>
+        /// The MapGraphBase whose nodes will receive associativity data from this TerrainGrid.
+        /// </summary>
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
             set { _mapGraph = value; }
@@ -51,6 +60,7 @@ namespace Assets.Map {
 
         #region instance methods
 
+        /// <inheritdoc/>
         public override void ClearMap() {
             for(int i = tiles.Count - 1; i >= 0; --i) {
                 DestroyHexTile(tiles[i]);
@@ -64,6 +74,7 @@ namespace Assets.Map {
             RefreshLocalBounds();
         }
 
+        /// <inheritdoc/>
         public override void CreateMap() {
             for(int q = -Radius; q <= Radius; ++q) {
                 int r1 = Math.Max(-Radius, -q - Radius);
@@ -80,6 +91,11 @@ namespace Assets.Map {
             RefreshLocalBounds();
         }
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// This method assigns every TerrainHexTile to its nearest MapNodeBase. It also tells every MapNodeBase 
+        /// whichTerrainHexTiles it should associate with, and then to refresh its outlines.
+        /// </remarks>
         public override void RefreshMapTerrains() {
             foreach(var node in MapGraph.Nodes) {
                 node.ClearAssociatedTiles();
@@ -112,9 +128,11 @@ namespace Assets.Map {
             }
         }
 
+        //Hex tiles are defined in Cubic coordinates. HexCoords and HexGridLayout are utility functions in
+        //UnityCustomUtilities.Grids that facilitate the proper orientation of hexagonal grids.
         private void ConstructHexTile(int q, int r) {
             var newHexCoords = new HexCoords(q, r, -q - r);
-            Vector2 locationOfNewHex = HexGridLayout.HexCoordsToPixel(Layout, newHexCoords);
+            Vector2 locationOfNewHex = HexGridLayout.HexCoordsToWorldSpace(Layout, newHexCoords);
 
             TerrainHexTile newHexTile;
             if(HexTilePrefab == null) {
@@ -148,6 +166,9 @@ namespace Assets.Map {
             }
         }
 
+        //The bounds of the TerrainGrid are just its minimum and maximum points. More complicated
+        //bounding calculation might be necessary to intelligently orient the camera in relation
+        //to the map.
         private void RefreshLocalBounds() {
             if(tiles.Count < 0) {
                 bounds = new Rect();

@@ -11,6 +11,9 @@ using Assets.BlobSites;
 
 namespace Assets.ConstructionZones {
 
+    /// <summary>
+    /// Defines and executes the construction of a resource depot.
+    /// </summary>
     public class ResourceDepotConstructionProject : FlexibleCostConstructionProjectBase {
 
         #region instance fields and properties
@@ -25,10 +28,12 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionProjectBase
 
+        /// <inheritdoc/>
         public override bool IsValidAtLocation(MapNodeBase location) {
             return PermittedTerrains.Contains(location.Terrain);
         }
 
+        /// <inheritdoc/>
         public override void ExecuteBuild(MapNodeBase location) {
             DepotFactory.ConstructDepotAt(location);
         }

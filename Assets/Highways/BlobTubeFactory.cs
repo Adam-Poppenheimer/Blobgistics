@@ -5,18 +5,25 @@ using System.Text;
 
 using UnityEngine;
 
-using Assets.Map;
 using Assets.Blobs;
-
-using UnityCustomUtilities.Extensions;
 
 namespace Assets.Highways {
 
+    /// <summary>
+    /// The standard implementation for BlobTubeFactoryBase.
+    /// </summary>
+    /// <remarks>
+    /// Note that this factory does not need the subscribe/unsubscribe pattern because it doesn't
+    /// manage or keep track of its tubes after they've been constructed.
+    /// </remarks>
     [ExecuteInEditMode]
     public class BlobTubeFactory : BlobTubeFactoryBase {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// The private data to configure new tubes with.
+        /// </summary>
         public BlobTubePrivateDataBase TubePrivateData {
             get {
                 if(_tubePrivateData == null) {
@@ -43,6 +50,7 @@ namespace Assets.Highways {
 
         #region from BlobTubeFactoryBase
 
+        /// <inheritdoc/>
         public override BlobTubeBase ConstructTube(Vector3 sourceLocation, Vector3 targetLocation) {
             BlobTube newTube = null;
 
@@ -64,6 +72,7 @@ namespace Assets.Highways {
             return newTube;
         }
 
+        /// <inheritdoc/>
         public override void DestroyTube(BlobTubeBase tube) {
             if(tube == null) {
                 throw new ArgumentNullException("tube");

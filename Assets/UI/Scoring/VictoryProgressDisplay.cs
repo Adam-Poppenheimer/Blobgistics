@@ -12,6 +12,11 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Scoring {
 
+    /// <summary>
+    /// Class that controls the victory progress display, which tells the player
+    /// how close they are to victory and what they need to accomplish in order to
+    /// win.
+    /// </summary>
     public class VictoryProgressDisplay : PanelBase {
 
         #region internal types
@@ -60,9 +65,9 @@ namespace Assets.UI.Scoring {
                 UnstableSocietySection.gameObject.SetActive              (false);
                 _activePanel = value;
                 switch(_activePanel) {
-                    case VictoryDisplayPanelType.VictoryCountdown:      CountdownToVictorySection.gameObject.SetActive           (true); break;
+                    case VictoryDisplayPanelType.VictoryCountdown:                 CountdownToVictorySection.gameObject.SetActive(true); break;
                     case VictoryDisplayPanelType.RequisitesNotAchieved: RequisiteSocietiesNotAchievedSection.gameObject.SetActive(true); break;
-                    case VictoryDisplayPanelType.UnstableSociety:       UnstableSocietySection.gameObject.SetActive              (true); break;
+                    case VictoryDisplayPanelType.UnstableSociety:                     UnstableSocietySection.gameObject.SetActive(true); break;
                     default: break;
                 }
             }
@@ -101,14 +106,21 @@ namespace Assets.UI.Scoring {
 
         #region from PanelBase
 
+        /// <inheritdoc/>
         protected override void DoOnActivate() {
             VictoryManager.VictoryProgressRefreshed += VictoryManager_VictoryProgressRefreshed;
         }
 
+        /// <inheritdoc/>
         protected override void DoOnDeactivate() {
             VictoryManager.VictoryProgressRefreshed -= VictoryManager_VictoryProgressRefreshed;
         }
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// The sections for each tier are only visible if VictoryManager requires more than
+        /// zero societies of that tier to win. By default, they are hidden if unneeded.
+        /// </remarks>
         public override void UpdateDisplay() {
             if(VictoryManager.TierOneSocietiesToWin > 0) {
                 TierOneSection.gameObject.SetActive(true);

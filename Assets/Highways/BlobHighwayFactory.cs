@@ -16,11 +16,27 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Highways {
 
+    /// <summary>
+    /// The standard implementation for BlobHighwayFactoryBase.
+    /// </summary>
     [ExecuteInEditMode]
     public class BlobHighwayFactory : BlobHighwayFactoryBase {
 
         #region instance fields and properties
 
+        #region from BlobHighwayFactoryBase
+
+        /// <inheritdoc/>
+        public override ReadOnlyCollection<BlobHighwayBase> Highways {
+            get { return AllConstructedHighways.AsReadOnly(); }
+        }
+        [SerializeField] private List<BlobHighwayBase> AllConstructedHighways = new List<BlobHighwayBase>();
+
+        #endregion
+
+        /// <summary>
+        /// The MapGraph this factory uses to find edges.
+        /// </summary>
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
             set {
@@ -37,34 +53,41 @@ namespace Assets.Highways {
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
+        /// <summary>
+        /// The tube factory this factory uses to initialize highways.
+        /// </summary>
         public BlobTubeFactoryBase BlobTubeFactory {
             get { return _blobTubeFactory; }
             set { _blobTubeFactory = value; }
         }
         [SerializeField] private BlobTubeFactoryBase _blobTubeFactory;
 
+        /// <summary>
+        /// The UIControl to be injected as a dependency into created highways.
+        /// </summary>
         public UIControlBase UIControl {
             get { return _uiControl; }
             set { _uiControl = value; }
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        /// <summary>
+        /// The BlobFactory to be injected as a dependency into created highways.
+        /// </summary>
         public ResourceBlobFactoryBase BlobFactory {
             get { return _blobFactory; }
             set { _blobFactory = value; }
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
+        /// <summary>
+        /// The profile used to configure created highways.
+        /// </summary>
         public BlobHighwayProfile HighwayProfile {
             get { return _highwayProfile; }
             set { _highwayProfile = value; }
         }
         [SerializeField] private BlobHighwayProfile _highwayProfile;
-
-        public override ReadOnlyCollection<BlobHighwayBase> Highways {
-            get { return AllConstructedHighways.AsReadOnly(); }
-        }
-        [SerializeField] private List<BlobHighwayBase> AllConstructedHighways = new List<BlobHighwayBase>();
 
         [SerializeField] private GameObject HighwayPrefab;
 
@@ -101,6 +124,7 @@ namespace Assets.Highways {
 
         #region from BlobHighwayFactoryBase
 
+        /// <inheritdoc/>
         public override bool HasHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             if(firstEndpoint == null) {
                 throw new ArgumentNullException("firstEndpoint");
@@ -116,6 +140,7 @@ namespace Assets.Highways {
             });
         }
 
+        /// <inheritdoc/>
         public override BlobHighwayBase GetHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             if(firstEndpoint == null) {
                 throw new ArgumentNullException("firstEndpoint");
@@ -133,6 +158,7 @@ namespace Assets.Highways {
             }).FirstOrDefault();
         }
 
+        /// <inheritdoc/>
         public override bool CanConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             if(firstEndpoint == null) {
                 throw new ArgumentNullException("firstEndpoint");
@@ -143,6 +169,7 @@ namespace Assets.Highways {
             return !HasHighwayBetween(firstEndpoint, secondEndpoint) && MapGraph.GetEdge(firstEndpoint, secondEndpoint) != null;
         }
 
+        /// <inheritdoc/>
         public override BlobHighwayBase ConstructHighwayBetween(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             if(firstEndpoint == null) {
                 throw new ArgumentNullException("firstEndpoint");
@@ -184,6 +211,7 @@ namespace Assets.Highways {
             return newHighway;
         }
 
+        /// <inheritdoc/>
         public override void SubscribeHighway(BlobHighwayBase highway) {
             if(highway == null) {
                 throw new ArgumentNullException("highway");
@@ -203,10 +231,12 @@ namespace Assets.Highways {
             RaiseHighwaySubscribed(highway);
         }
 
+        /// <inheritdoc/>
         public override BlobHighwayBase GetHighwayOfID(int id) {
             return AllConstructedHighways.Find(highway => highway.ID == id);
         }
 
+        /// <inheritdoc/>
         public override void DestroyHighway(BlobHighwayBase highway) {
             if(highway == null) {
                 throw new ArgumentNullException("highway");
@@ -219,6 +249,7 @@ namespace Assets.Highways {
             }
         }
 
+        /// <inheritdoc/>
         public override void UnsubscribeHighway(BlobHighwayBase highway) {
             if(highway == null) {
                 throw new ArgumentNullException("highway");
@@ -234,6 +265,7 @@ namespace Assets.Highways {
             RaiseHighwayUnsubscribed(highway);
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<BlobHighwayBase> GetHighwaysAttachedToNode(MapNodeBase node) {
             if(HighwaysAdjacentToNode == null) {
                 HighwaysAdjacentToNode = new DictionaryOfLists<MapNodeBase, BlobHighwayBase>();

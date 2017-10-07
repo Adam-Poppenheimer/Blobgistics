@@ -46,12 +46,6 @@ namespace Assets.Core.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void SetHighwayPriority(int highwayID, int newPriority) {
-            if(SetHighwayPriorityCalled != null) {
-                SetHighwayPriorityCalled(highwayID, newPriority);
-            }
-        }
-
         public override void SetHighwayPullingPermissionOnFirstEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
             if(SetHighwayPullingPermissionOnFirstEndpointForResourceCalled != null) {
                 SetHighwayPullingPermissionOnFirstEndpointForResourceCalled(highwayID, resourceType, isPermitted);

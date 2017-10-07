@@ -8,25 +8,39 @@ using UnityEngine;
 
 namespace Assets.Societies {
 
+    /// <summary>
+    /// The standard implementation of ComplexityLadderBase. This defines how societies
+    /// can ascend and descend from their current complexity.
+    /// </summary>
+    /// <remarks>
+    /// This implementation asserts that any society can complexify into any complexity one
+    /// above its current tier, and can descend into any complexity one below its current
+    /// tier. Given this implementation, ComplexityLadder might be redundant. It might make
+    /// more sense to put transition information on the complexities themselves.
+    /// </remarks>
     public class ComplexityLadder : ComplexityLadderBase {
 
         #region instance fields and properties
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ComplexityDefinitionBase> TierOneComplexities {
             get { return tierOneComplexities.AsReadOnly(); }
         }
         [SerializeField] private List<ComplexityDefinitionBase> tierOneComplexities;
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ComplexityDefinitionBase> TierTwoComplexities {
             get { return tierTwoComplexities.AsReadOnly(); }
         }
         [SerializeField] private List<ComplexityDefinitionBase> tierTwoComplexities;
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ComplexityDefinitionBase> TierThreeComplexities {
             get { return tierThreeComplexities.AsReadOnly(); }
         }
         [SerializeField] private List<ComplexityDefinitionBase> tierThreeComplexities;
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ComplexityDefinitionBase> TierFourComplexities {
             get { return tierFourComplexities.AsReadOnly(); }
         }
@@ -38,6 +52,7 @@ namespace Assets.Societies {
 
         #region instance methods
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ComplexityDefinitionBase> GetAscentTransitions(ComplexityDefinitionBase currentComplexity) {
             if(tierOneComplexities.Contains(currentComplexity)){
                 return tierTwoComplexities.AsReadOnly();
@@ -50,6 +65,7 @@ namespace Assets.Societies {
             }
         }
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ComplexityDefinitionBase> GetDescentTransitions(ComplexityDefinitionBase currentComplexity) {
             if(tierFourComplexities.Contains(currentComplexity)) {
                 return tierThreeComplexities.AsReadOnly();
@@ -62,6 +78,7 @@ namespace Assets.Societies {
             }
         }
 
+        /// <inheritdoc/>
         public override bool ContainsComplexity(ComplexityDefinitionBase complexity) {
             return (
                 tierOneComplexities.Contains  (complexity) || 
@@ -71,6 +88,7 @@ namespace Assets.Societies {
             );
         }
 
+        /// <inheritdoc/>
         public override int GetTierOfComplexity(ComplexityDefinitionBase complexity) {
             if(tierFourComplexities.Contains(complexity)) {
                 return 4;

@@ -13,12 +13,6 @@ namespace Assets.Core.ForTesting {
 
         #region from MapEdgeBase
 
-        public override BlobSiteBase BlobSite {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public override MapNodeBase FirstNode {
             get { return firstNode; }
         }

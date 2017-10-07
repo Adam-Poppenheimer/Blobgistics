@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 using Assets.Societies;
@@ -14,12 +12,17 @@ using Assets.UI.Blobs;
 
 namespace Assets.UI.Societies {
 
+    /// <summary>
+    /// The standard implementation of SocietyUISummaryDisplayBase, which gives players information
+    /// and commands regarding societies.
+    /// </summary>
     public class SocietyUISummaryDisplay : SocietyUISummaryDisplayBase {
 
         #region instance fields and properties
 
         #region from SocietyUISummaryDisplayBase
 
+        /// <inheritdoc/>
         public override SocietyUISummary CurrentSummary { get; set; }
 
         #endregion
@@ -57,6 +60,7 @@ namespace Assets.UI.Societies {
             MovePanelWithCamera = true;
         }
 
+        /// <inheritdoc/>
         protected override void DoOnUpdate() {
             UpdateDisplay();
         }
@@ -65,6 +69,7 @@ namespace Assets.UI.Societies {
 
         #region from IntelligentPanel
 
+        /// <inheritdoc/>
         protected override void DoOnActivate() {
             PermitAscensionToggle.onValueChanged.AddListener(delegate(bool newValue) {
                 RaiseAscensionPermissionChangeRequested(newValue);
@@ -77,11 +82,13 @@ namespace Assets.UI.Societies {
             DesiredWorldPosition = CurrentSummary.Transform.position;
         }
 
+        /// <inheritdoc/>
         protected override void DoOnDeactivate() {
             DestroySocietyButton.onClick.RemoveAllListeners();
             PermitAscensionToggle.onValueChanged.RemoveAllListeners();
         }
 
+        /// <inheritdoc/>
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
                 LocationIDField.text = CurrentSummary.Location != null ? CurrentSummary.Location.ID.ToString() : "";
@@ -98,6 +105,7 @@ namespace Assets.UI.Societies {
             }
         }
 
+        /// <inheritdoc/>
         public override void ClearDisplay() {
             CurrentSummary = null;
 
@@ -128,9 +136,9 @@ namespace Assets.UI.Societies {
                 shiftSummary.gameObject.SetActive(false);
             }
             while(DescentComplexityShiftDisplays.Count < CurrentSummary.DescentComplexities.Count) {
-                var newTextPrefab = Instantiate(DescentComplexityShiftDisplayPrefab);
-                newTextPrefab.transform.SetParent(DescentComplexitySection, false);
-                DescentComplexityShiftDisplays.Add(newTextPrefab.GetComponent<ComplexityShiftDisplay>());
+                var newShiftPrefab = Instantiate(DescentComplexityShiftDisplayPrefab);
+                newShiftPrefab.transform.SetParent(DescentComplexitySection, false);
+                DescentComplexityShiftDisplays.Add(newShiftPrefab.GetComponent<ComplexityShiftDisplay>());
             }
 
             for(int i = 0; i < CurrentSummary.DescentComplexities.Count; ++i) {

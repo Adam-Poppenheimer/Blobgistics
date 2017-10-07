@@ -12,16 +12,22 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Highways {
 
+    /// <summary>
+    /// Standard implementation of BlobHighwayGhostBase, which helps show the player
+    /// where the highway they are drawing will go and whether it's valid.
+    /// </summary>
     public class BlobHighwayGhost : BlobHighwayGhostBase {
 
         #region instance fields and properties
 
         #region from BlobHighwayGhostBase
 
+        /// <inheritdoc/>
         public override bool IsActivated {
             get { return gameObject.activeInHierarchy; }
         }
 
+        /// <inheritdoc/>
         public override MapNodeUISummary FirstEndpoint  {
             get { return _firstEndpoint; }
             set {
@@ -31,6 +37,7 @@ namespace Assets.UI.Highways {
         }
         private MapNodeUISummary _firstEndpoint;
 
+        /// <inheritdoc/>
         public override MapNodeUISummary SecondEndpoint  {
             get { return _secondEndpoint; }
             set {
@@ -40,6 +47,7 @@ namespace Assets.UI.Highways {
         }
         private MapNodeUISummary _secondEndpoint;
 
+        /// <inheritdoc/>
         public override bool GhostIsBuildable {
             get { return _ghostIsBuildable; }
             set {
@@ -65,10 +73,12 @@ namespace Assets.UI.Highways {
 
         #region from BlobHighwayGhostBase
 
+        /// <inheritdoc/>
         public override void Activate() {
             gameObject.SetActive(true);
         }
 
+        /// <inheritdoc/>
         public override void Clear() {
             FirstEndpoint = null;
             SecondEndpoint = null;
@@ -76,10 +86,12 @@ namespace Assets.UI.Highways {
             GhostIsBuildable = false;
         }
 
+        /// <inheritdoc/>
         public override void Deactivate() {
             gameObject.SetActive(false);
         }
 
+        /// <inheritdoc/>
         public override void UpdateWithEventData(PointerEventData eventData) {
             lastEventData = eventData;
             UpdateAppearance();

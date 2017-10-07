@@ -14,81 +14,116 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Scoring {
 
+    /// <summary>
+    /// The standard implementation for VictoryManagerBase. Determines victory conditions,
+    /// defeat conditions, and is responsible for triggering victory or defeat.
+    /// </summary>
     public class VictoryManager : VictoryManagerBase {
 
         #region instance fields and properties
 
         #region from VictoryManagerBase
 
+        /// <inheritdoc/>
         public override int TierOneSocietiesToWin {
             get { return _tierOneSocietiesToWin; }
             set { _tierOneSocietiesToWin = value; }
         }
         [SerializeField] private int _tierOneSocietiesToWin;
 
+        /// <inheritdoc/>
         public override int TierTwoSocietiesToWin {
             get { return _tierTwoSocietiesToWin; }
             set { _tierTwoSocietiesToWin = value; }
         }
         [SerializeField] private int _tierTwoSocietiesToWin;
 
+        /// <inheritdoc/>
         public override int TierThreeSocietiesToWin {
             get { return _tierThreeSocietiesToWin; }
             set { _tierThreeSocietiesToWin = value; }
         }
         [SerializeField] private int _tierThreeSocietiesToWin;
 
+        /// <inheritdoc/>
         public override int TierFourSocietiesToWin {
             get { return _tierFourSocietiesToWin; }
             set { _tierFourSocietiesToWin = value; }
         }
         [SerializeField] private int _tierFourSocietiesToWin;
 
+        /// <inheritdoc/>
         public override int CurrentTierOneSocieties   { get; protected set; }
+
+        /// <inheritdoc/>
         public override int CurrentTierTwoSocieties   { get; protected set; }
+
+        /// <inheritdoc/>
         public override int CurrentTierThreeSocieties { get; protected set; }
+
+        /// <inheritdoc/>
         public override int CurrentTierFourSocieties  { get; protected set; }
 
+        /// <inheritdoc/>
         public override float SecondsOfStabilityToWin {
             get { return _secondsOfStabilityToWin; }
             set { _secondsOfStabilityToWin = value; }
         }
         [SerializeField] private float _secondsOfStabilityToWin;
 
+        /// <inheritdoc/>
         public override bool IsCheckingForVictory { get; set; }
 
+        /// <inheritdoc/>
         public override bool VictoryClockIsTicking { get; protected set; }
 
+        /// <inheritdoc/>
         public override float CurrentVictoryClockValue { get; set; }
 
         private bool IsPaused = false;
 
         #endregion
 
+        /// <summary>
+        /// The UIControl to send commands to in the event of victory or defeat.
+        /// </summary>
         public UIControlBase UIControl {
             get { return _uiControl; }
             set { _uiControl= value; }
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        /// <summary>
+        /// The SimulationControl to send commands to in the event of victory or defeat.
+        /// </summary>
         public SimulationControlBase SimulationControl {
             get { return _simulationControl; }
             set { _simulationControl= value; }
         }
         [SerializeField] private SimulationControlBase _simulationControl;
 
+        /// <summary>
+        /// The SessionManager that stores information about the current map.
+        /// </summary>
         public SessionManagerBase SessionManager {
             get { return _sessionManager; }
             set { _sessionManager= value; }
         }
         [SerializeField] private SessionManagerBase _sessionManager;
 
+        /// <summary>
+        /// The MapPermissionManager that needs to be told when certain maps have been cleared.
+        /// </summary>
         public MapPermissionManagerBase MapPermissionManager {
             get { return _mapPermissionManager; }
             set { _mapPermissionManager= value; }
         }
         [SerializeField] private MapPermissionManagerBase _mapPermissionManager;
 
+        /// <summary>
+        /// The SocietyFactory this object uses to determine how many societies exist
+        /// of each tier.
+        /// </summary>
         public SocietyFactoryBase SocietyFactory {
             get { return _societyFactory; }
             set {
@@ -98,6 +133,10 @@ namespace Assets.Scoring {
         }
         [SerializeField] private SocietyFactoryBase _societyFactory;
 
+        /// <summary>
+        /// The active ladder that's being used by this object to determine the tier of
+        /// various complexities.
+        /// </summary>
         public ComplexityLadderBase ActiveLadder {
             get { return _activeLadder; }
             set { _activeLadder = value; }
@@ -119,9 +158,11 @@ namespace Assets.Scoring {
             Tick(Time.deltaTime);
         }
 
+        //The manager needs to pay attention to every society to know how close the player is to victory.
+        //Thus it needs to listen in on every new society and every need satisfaction and complexity change.
         private void OnDestroy() {
             IsCheckingForVictory = false;
-            if(SocietyFactory == null) {
+            if(SocietyFactory != null) {
                 foreach(var society in SocietyFactory.Societies) {
                     society.NeedsAreSatisfiedChanged -= Society_NeedsAreSatisfiedChanged;
                     society.CurrentComplexityChanged   -= Society_CurrentComplexityChanged;
@@ -135,12 +176,14 @@ namespace Assets.Scoring {
 
         #region from VictoryManagerBase
 
+        /// <inheritdoc/>
         public override void TriggerDefeat() {
             SimulationControl.PerformDefeatTasks();
             UIControl.PerformDefeatTasks();
             IsCheckingForVictory = false;
         }
 
+        /// <inheritdoc/>
         public override void TriggerVictory() {
             SimulationControl.PerformVictoryTasks();
             UIControl.PerformVictoryTasks();
@@ -150,14 +193,17 @@ namespace Assets.Scoring {
             IsCheckingForVictory = false;
         }
 
+        /// <inheritdoc/>
         public override void Pause() {
             IsPaused = true;
         }
 
+        /// <inheritdoc/>
         public override void Unpause() {
             IsPaused = false;
         }
 
+        /// <inheritdoc/>
         public override bool HasAllRequisiteSocieties() {
             return (
                 CurrentTierOneSocieties   >= TierOneSocietiesToWin   &&
@@ -167,6 +213,10 @@ namespace Assets.Scoring {
             );
         }
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// This implementation returns the highest-tiered society that is unstable.
+        /// </remarks>
         public override SocietyBase GetMostPressingUnstableSociety() {
             var unstableSocieties = new List<SocietyBase>(SocietyFactory.Societies.Where(society => !society.NeedsAreSatisfied));
             unstableSocieties.Sort(delegate(SocietyBase societyOne, SocietyBase societyTwo) {
@@ -179,6 +229,7 @@ namespace Assets.Scoring {
 
         #endregion
 
+        /// <inheritdoc/>
         public void Tick(float secondsPassed) {
             if(IsCheckingForVictory && VictoryClockIsTicking && GetVictoryConditionsAreSatisfied()) {
                 if(!IsPaused) {

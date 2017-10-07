@@ -11,6 +11,9 @@ using Assets.UI.Session;
 
 namespace Assets.UI.TitleScreen {
 
+    /// <summary>
+    /// A class that controls the load session panel within the title screen.
+    /// </summary>
     public class LoadSessionDisplay : MonoBehaviour {
 
         #region instance fields and properties
@@ -49,15 +52,28 @@ namespace Assets.UI.TitleScreen {
 
         #region events
 
+        /// <summary>
+        /// Fires when the display requests its own deactivation.
+        /// </summary>
         public event EventHandler<EventArgs> DeactivationRequested;
+
+        /// <summary>
+        /// Fires when the session has loaded and play should begin.
+        /// </summary>
         public event EventHandler<EventArgs> SessionLoaded;
 
+        /// <summary>
+        /// Fires the DeactivationRequested event.
+        /// </summary>
         protected void RaiseDeactivationRequested() {
             if(DeactivationRequested != null) {
                 DeactivationRequested(this, EventArgs.Empty);
             }
         }
 
+        /// <summary>
+        /// Fires the SessionLoaded event.
+        /// </summary>
         protected void RaiseSessionLoaded() {
             if(SessionLoaded != null) {
                 SessionLoaded(this, EventArgs.Empty);

@@ -17,76 +17,122 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Session {
 
+    /// <summary>
+    /// The standard implementation of SessionManagerBase. It handles the conversion
+    /// of the main game's current state into a serializable format at either play time
+    /// or design time.
+    /// </summary>
+    /// <remarks>
+    /// While this class contains a lot of code, most of its complexity boils down to
+    /// carefully recording and then reconstructing various objects. Order is somewhat
+    /// important here, as is generating a mapping between the old IDs of various
+    /// gameplay elements and their new IDs (since the IDs are liable to change when
+    /// the new, equivalent object is constructed).
+    /// 
+    /// This elaborate process is necessary in order to allow serialization during
+    /// gameplay, but has also been repurposed to save maps at design time for the sake
+    /// of simplicity.
+    /// </remarks>
+    /// 
     public class SessionManager : SessionManagerBase {
 
         #region instance fields and properties
 
+        #region from SessionManagerBase
+
+        /// <inheritdoc/>
         public override SerializableSession CurrentSession {
             get { return _currentSession; }
             set { _currentSession = value; }
         }
         [SerializeField] private SerializableSession _currentSession;
 
+        #endregion
+
+        /// <summary>
+        /// The MapGraph to push from and pull into. 
+        /// </summary>
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
             set { _mapGraph = value; }
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
+        /// <summary>
+        /// The ConstructionZoneFactory to push from and pull into. 
+        /// </summary>
         public ConstructionZoneFactoryBase ConstructionZoneFactory {
             get { return _constructionZoneFactory; }
             set { _constructionZoneFactory = value; }
         }
         [SerializeField] private ConstructionZoneFactoryBase _constructionZoneFactory;
 
+        /// <summary>
+        /// The HighwayManagerFactory to push from and pull into. 
+        /// </summary>
         public HighwayManagerFactoryBase HighwayManagerFactory {
             get { return _highwayManagerFactory; }
             set { _highwayManagerFactory = value; }
         }
         [SerializeField] private HighwayManagerFactoryBase _highwayManagerFactory;
 
+        /// <summary>
+        /// The HighwayFactory to push from and pull into. 
+        /// </summary>
         public BlobHighwayFactoryBase HighwayFactory {
             get { return _highwayFactory; }
             set { _highwayFactory = value; }
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
+        /// <summary>
+        /// The ResourceDepotFactory to push from and pull into. 
+        /// </summary>
         public ResourceDepotFactoryBase ResourceDepotFactory {
             get { return _resourceDepotFactory; }
             set { _resourceDepotFactory = value; }
         }
         [SerializeField] private ResourceDepotFactoryBase _resourceDepotFactory;
 
+        /// <summary>
+        /// The SocietyFactory to push from and pull into. 
+        /// </summary>
         public SocietyFactoryBase SocietyFactory {
             get { return _societyFactory; }
             set { _societyFactory = value; }
         }
         [SerializeField] private SocietyFactoryBase _societyFactory;
 
+        /// <summary>
+        /// The BlobFactory to push from and pull into. 
+        /// </summary>
         public ResourceBlobFactoryBase BlobFactory {
             get { return _blobFactory; }
             set { _blobFactory = value; }
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
-        public FileSystemLiaison FileSystemLiaison {
-            get { return _fileSystemLiaison; }
-            set { _fileSystemLiaison = value; }
-        }
-        [SerializeField] private FileSystemLiaison _fileSystemLiaison;
-
+        /// <summary>
+        /// The VictoryManager to push from and pull into. 
+        /// </summary>
         public VictoryManagerBase VictoryManager {
             get { return _victoryManager; }
             set { _victoryManager = value; }
         }
         [SerializeField] private VictoryManagerBase _victoryManager;
 
+        /// <summary>
+        /// The TerrainGrid to push from and pull into. 
+        /// </summary>
         public TerrainGridBase TerrainGrid {
             get { return _terrainGrid; }
             set { _terrainGrid = value; }
         }
         [SerializeField] private TerrainGridBase _terrainGrid;
 
+        /// <summary>
+        /// The Camera to push from and pull into. 
+        /// </summary>
         public Camera MainCamera {
             get { return _mainCamera; }
             set { _mainCamera = value; }
@@ -97,6 +143,7 @@ namespace Assets.Session {
 
         #region instance methods
 
+        /// <inheritdoc/>
         public override void PushRuntimeIntoCurrentSession() {
             if(CurrentSession == null) {
                 throw new InvalidOperationException("CurrentSession must be initialized in order to push the session into it");
@@ -114,6 +161,7 @@ namespace Assets.Session {
             CurrentSession.CameraData = new SerializableCameraData(MainCamera);
         }
 
+        /// <inheritdoc/>
         public override void PullRuntimeFromCurrentSession() {
             if(CurrentSession == null) {
                 throw new InvalidOperationException("CurrentSession must be initialized in order to pull the session from it");
@@ -257,6 +305,7 @@ namespace Assets.Session {
             Dictionary<int, MapEdgeBase> mapEdgeIDMapping) {
             foreach(var neighborhoodData in session.Neighborhoods) {
                 var newNeighborhood = (new GameObject()).AddComponent<Neighborhood>();
+
                 newNeighborhood.gameObject.name = neighborhoodData.Name;
                 var neigborhoodTransform = newNeighborhood.transform;
                 neigborhoodTransform.SetParent(MapGraph.transform);

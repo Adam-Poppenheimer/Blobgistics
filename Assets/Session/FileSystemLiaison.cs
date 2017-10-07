@@ -12,43 +12,71 @@ using System.Text;
 using UnityEngine;
 
 using Assets.Blobs;
-using Assets.Map;
 
 using UnityCustomUtilities.Extensions;
 
 namespace Assets.Session {
 
+    /// <summary>
+    /// A class that handles all interaction between the rest of the game and the file system.
+    /// </summary>
+    /// <remarks>
+    /// Saved games and maps are both stored as SerializableSession objects written to an XML
+    /// file via a DataContractSerializer.
+    /// 
+    /// All paths are relative to either Application.persistentDataPath or Application.streamingAssetsPath.
+    /// 
+    /// This class is the main reason why this game does not deploy as a web application very
+    /// well. If you wanted to make it compatible with browsers, you'd need to change
+    /// the way FileSystemLiaison implements persistence.
+    /// </remarks>
     public class FileSystemLiaison : MonoBehaviour {
 
         #region instance fields and properties        
 
+        /// <summary>
+        /// The path to all saved games, relative to <see cref="Application.persistentDataPath"/>.
+        /// </summary>
         public string SavedGameStoragePath {
             get { return _savedGameStoragePath; }
         }
         [SerializeField] private string _savedGameStoragePath;
 
+        /// <summary>
+        /// The path to all stored maps, relative to <see cref="Application.streamingAssetsPath"/>.
+        /// </summary>
         public string MapStoragePath {
             get { return _mapStoragePath; }
         }
         [SerializeField] private string _mapStoragePath;
 
+        /// <summary>
+        /// The path to all victory data, relative to <see cref="Application.persistentDataPath"/>.
+        /// </summary>
         public string VictoryDataPath {
             get { return _victoryDataPath; }
         }
         [SerializeField] private string _victoryDataPath;
 
+        /// <summary>
+        /// The extension to the victory data file.
+        /// </summary>
         public string VictoryDataExtension {
             get { return _victoryDataExtension; }
         }
         [SerializeField] private string _victoryDataExtension;
 
-        [SerializeField] private string RegistryAssetBundleName;
-
+        /// <summary>
+        /// All of the saved games that this FileSystemLiaison has loaded and are ready to use.
+        /// </summary>
         public ReadOnlyCollection<SerializableSession> LoadedSavedGames {
             get { return loadedSavedGames.AsReadOnly(); }
         }
         private List<SerializableSession> loadedSavedGames = new List<SerializableSession>();
 
+        /// <summary>
+        /// All of the maps that this FileSystemLiaison has loaded and are ready to use.
+        /// </summary>
         public ReadOnlyCollection<SerializableSession> LoadedMaps {
             get { return loadedMaps.AsReadOnly(); }
         }
@@ -59,20 +87,17 @@ namespace Assets.Session {
 
         #endregion
 
-        #region events
-
-        public event EventHandler<SerializableSessionEventArgs> MapAsynchronouslyAdded;
-
-        protected void RaiseMapAsynchronouslyAdded(SerializableSession session) {
-            if(MapAsynchronouslyAdded != null) {
-                MapAsynchronouslyAdded(this, new SerializableSessionEventArgs(session));
-            }
-        }
-
-        #endregion
-
         #region instance methods
 
+        /// <summary>
+        /// Writes the given session to a file.
+        /// </summary>
+        /// <remarks>
+        /// The file is stored in the SavedGamesStoragePath, which is relative
+        /// to Application.persistentDataPath. The name of the file is the name of the
+        /// session.
+        /// </remarks>
+        /// <param name="session"></param>
         public void WriteSavedGameToFile(SerializableSession session) {
             if(!loadedSavedGames.Contains(session)) {
                 string path = string.Format("{0}/{1}/{2}.xml", Application.persistentDataPath, SavedGameStoragePath,
@@ -82,6 +107,10 @@ namespace Assets.Session {
             }
         }
 
+        /// <summary>
+        /// Deletes the saved game file with the given name.
+        /// </summary>
+        /// <param name="savedGameName">The name of the file to remove without the extension</param>
         public void DeleteSavedGame(string savedGameName) {
             var filesToDelete = SavedGameDirectory.GetFiles(savedGameName + ".xml");
             foreach(var file in filesToDelete) {
@@ -89,6 +118,10 @@ namespace Assets.Session {
             }
         }
 
+        /// <summary>
+        /// Refreshes all of the loaded saved games, searching for files in
+        /// the SavedGameStoragePath and using them to populate the LoadedSavedGames property.
+        /// </summary>
         public void RefreshLoadedSavedGames() {
             if(string.IsNullOrEmpty(SavedGameStoragePath)) {
                 throw new SessionException("Cannot refresh loaded saved games: SavedGameStoragePath must not be empty");
@@ -103,6 +136,14 @@ namespace Assets.Session {
             }
         }
 
+        /// <summary>
+        /// Writes the given session as a map to a file.
+        /// </summary>
+        /// <remarks>
+        /// The file is stored in the MapStoragePath, which is relative to <see cref="Application.streamingAssetsPath"/>.
+        /// The name of the file is the name of the session.
+        /// </remarks>
+        /// <param name="session">The session to write as a map</param>
         public void WriteMapToFile(SerializableSession session) {
             if(!loadedMaps.Contains(session)) {
                 string path = string.Format("{0}/{1}/{2}.xml", Application.streamingAssetsPath, MapStoragePath,
@@ -112,6 +153,10 @@ namespace Assets.Session {
             }
         }
 
+        /// <summary>
+        /// Deletes the map of the given name from the map storage directory.
+        /// </summary>
+        /// <param name="mapName"></param>
         public void DeleteMap(string mapName) {
             var filesToDelete = MapDirectory.GetFiles(mapName + ".xml");
             foreach(var file in filesToDelete) {
@@ -119,42 +164,34 @@ namespace Assets.Session {
             }
         }
 
+        /// <summary>
+        /// Refreshes all loaded maps, searching for files in the map storage directory
+        /// and using them to populate the LoadedMaps property.
+        /// </summary>
         public void RefreshLoadedMaps() {
             if(string.IsNullOrEmpty(MapStoragePath)) {
                 throw new SessionException("Cannot refresh loaded maps: MapStoragePath must not be empty");
             }
             loadedMaps.Clear();
-            if(Application.platform == RuntimePlatform.WebGLPlayer) {
-                StartCoroutine(PerformMapRegistryTasks());
-            }else {
-                MapDirectory = Directory.CreateDirectory(Application.streamingAssetsPath + @"\" + MapStoragePath);
+            MapDirectory = Directory.CreateDirectory(Application.streamingAssetsPath + @"\" + MapStoragePath);
 
-                foreach(var file in MapDirectory.GetFiles("*.xml")) {
-                    if(file.Extension.Equals(".xml")) {
-                        loadedMaps.Add(LoadSessionFromFile(file));
-                    }
+            foreach(var file in MapDirectory.GetFiles("*.xml")) {
+                if(file.Extension.Equals(".xml")) {
+                    loadedMaps.Add(LoadSessionFromFile(file));
                 }
             }
         }
 
-        private IEnumerator PerformMapRegistryTasks() {
-            var registryWWW = new WWW(string.Format("{0}/{1}/{2}", Application.streamingAssetsPath, MapStoragePath, RegistryAssetBundleName));
-            yield return registryWWW;
-            var mapRegistry = registryWWW.assetBundle.LoadAsset("MapRegistry") as MapFileDirectoryRegistry;
-
-            foreach(var mapName in mapRegistry.MapNamesWithExtensions) {
-                StartCoroutine(PerformWWWMapDeserializationTasks(mapName));
-            }
-        }
-
-        private IEnumerator PerformWWWMapDeserializationTasks(string mapName) {
-            var mapWWW = new WWW(string.Format("{0}/{1}/{2}", Application.streamingAssetsPath, MapStoragePath, mapName));
-            yield return mapWWW;
-            var sessionInFile = LoadSessionFromBytes(mapWWW.bytes);
-            loadedMaps.Add(sessionInFile);
-            RaiseMapAsynchronouslyAdded(sessionInFile);
-        }
-
+        /// <summary>
+        /// Writes victory data, consisting of a series of map names, to the victory
+        /// data file, so that future executions of the program know which maps have
+        /// been beaten on this computer.
+        /// </summary>
+        /// <remarks>
+        /// The victory data file is located at the VictoryDataPath, which is relative
+        /// to Application.persistentDataPath.
+        /// </remarks>
+        /// <param name="victoryData"></param>
         public void WriteVictoryDataToFile(List<string> victoryData) {
             string fullPath = string.Format("{0}/{1}.{2}", Application.persistentDataPath, VictoryDataPath, VictoryDataExtension);
 
@@ -164,6 +201,15 @@ namespace Assets.Session {
             }
         }
 
+        /// <summary>
+        /// Reads victory data, consisting of a series of map names, from the
+        /// victory data file, and returns the data.
+        /// </summary>
+        /// <remarks>
+        /// The victory data file is located at the VictoryDataPath, which is relative
+        /// to Application.persistentDataPath.
+        /// </remarks>
+        /// <returns>A list of map names that have been cleared on this system</returns>
         public List<string> ReadVictoryDataFromFile() {
             string fullPath = string.Format("{0}/{1}.{2}", Application.persistentDataPath, VictoryDataPath, VictoryDataExtension);
             if(!File.Exists(fullPath)) {

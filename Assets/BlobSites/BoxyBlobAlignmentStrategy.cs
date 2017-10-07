@@ -9,6 +9,10 @@ using Assets.Blobs;
 
 namespace Assets.BlobSites {
 
+    /// <summary>
+    /// An alignment strategy that arranges blobs in a box of a certain width and height,
+    /// with a certain number of blobs per row and column within the box.
+    /// </summary>
     public class BoxyBlobAlignmentStrategy : BlobAlignmentStrategyBase {
 
         #region instance fields and properties
@@ -19,30 +23,9 @@ namespace Assets.BlobSites {
         [SerializeField, Range(0f, 10000)] private int BlobsPerRow = 5;
         [SerializeField, Range(0f, 10000)] private int BlobsPerColumn = 5;
 
+        //The centering vector defines alignment in terms of the center of the box,
+        //rather than its corners, and makes some calculations a bit easier.
         [SerializeField] private Vector2 CenteringVector;
-
-        #endregion
-
-        #region constructors
-
-        public BoxyBlobAlignmentStrategy(float boundingWidth, float boundingHeight,
-            int blobsPerRow, int blobsPerColumn) {
-            if(boundingWidth < 0f) {
-                throw new ArgumentOutOfRangeException("boundingWidth must be greater than or equal to zero");
-            }else if(boundingHeight < 0f) {
-                throw new ArgumentOutOfRangeException("boundingHeight must be greater than or equal to zero");
-            }else if(blobsPerRow == 0) {
-                throw new ArgumentOutOfRangeException("blobsPerRow must be greater than zero");
-            }else if(blobsPerColumn == 0) {
-                throw new ArgumentOutOfRangeException("blobsPerColumn must be greater than zero");
-            }
-            BoundingWidth  = boundingWidth;
-            BoundingHeight = boundingHeight;
-            BlobsPerRow    = blobsPerRow;
-            BlobsPerColumn = blobsPerColumn;
-
-            
-        }
 
         #endregion
 
@@ -58,6 +41,13 @@ namespace Assets.BlobSites {
 
         #region from BlobAlignmentStrategyBase
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Note that when the number of blobs in blobsToAlign is greater than BlobsPerRow * BlobsPerColumn, 
+        /// all remaining blobs will not be moved. This is a problem with the alignment strategy that was of
+        /// so little consequence to the end user experience that its resolution was never a priority. It
+        /// remains a valid target for refactoring, however.
+        /// </remarks>
         public override void RealignBlobs(IEnumerable<ResourceBlobBase> blobsToAlign, Vector2 centerPosition,
             float realignmentSpeedPerSecond) {
             int blobIndex = 0;
@@ -78,7 +68,7 @@ namespace Assets.BlobSites {
                             ResourceBlobBase.DesiredZPositionOfAllBlobs
                         ) + (Vector3)CenteringVector + (Vector3)centerPosition;
 
-                        blobToPlace.PushNewMovementGoal(new MovementGoal(newBlobLocation, realignmentSpeedPerSecond));
+                        blobToPlace.EnqueueNewMovementGoal(new MovementGoal(newBlobLocation, realignmentSpeedPerSecond));
                     }
                 }
             }

@@ -1,0 +1,56 @@
+﻿<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="shortcut icon" href="../icons/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/branding-en-US.css" />
+    <script type="text/javascript" src="../scripts/branding.js"> </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>HexGridBase(T).GetTilesInRing Method (T, Int32, Predicate(T))</title>
+    <meta name="Language" content="en-us" />
+    <meta name="Microsoft.Help.Id" content="M:UnityCustomUtilities.Grids.HexGridBase`1.GetTilesInRing(`0,System.Int32,System.Predicate{`0})" />
+    <meta name="Description" content="Get all tiles whose distance is exactly the given radius from the given center tile, and who meet the given condition." />
+    <meta name="Microsoft.Help.ContentType" content="Reference" />
+    <meta name="BrandingAware" content="true" />
+    
+    <meta name="container" content="UnityCustomUtilities.Grids" />
+    <meta name="file" content="13487a2a-c5eb-d2d5-a373-89f09dc4ed5d" />
+    <meta name="guid" content="13487a2a-c5eb-d2d5-a373-89f09dc4ed5d" />
+    
+    <link rel="stylesheet" type="text/css" href="../styles/branding-Website.css" />
+    <script type="text/javascript" src="../scripts/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../scripts/branding-Website.js"></script>
+    <script type="text/javascript" src="../scripts/clipboard.min.js"></script>
+  </head>
+  <body onload="OnLoad('cs')">
+    <input type="hidden" id="userDataCache" class="userDataStyle" />
+    <div class="pageHeader" id="PageHeader">Blobgistics Documentation<form id="SearchForm" method="get" action="#" onsubmit="javascript:TransferToSearchPage(); return false;"><input id="SearchTextBox" type="text" maxlength="200" /><button id="SearchButton" type="submit"></button></form></div>
+    <div class="pageBody">
+      <div class="leftNav" id="leftNav"><div id="tocNav"><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="463a75fb-6fc5-4df5-b0d6-b421fb703e89.htm" title="Blobgistics Documentation" tocid="roottoc">Blobgistics Documentation</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="889f7441-d4b7-11b9-329f-3af7e7afc5ab.htm" title="Namespaces" tocid="889f7441-d4b7-11b9-329f-3af7e7afc5ab">Namespaces</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="ce8ef490-1f27-ec01-12dd-5baa4ca1e23b.htm" title="UnityCustomUtilities.Grids" tocid="ce8ef490-1f27-ec01-12dd-5baa4ca1e23b">UnityCustomUtilities.Grids</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="c17068fb-ae2a-bbab-3e35-30f619c2397f.htm" title="HexGridBase(T) Class" tocid="c17068fb-ae2a-bbab-3e35-30f619c2397f">HexGridBase(T) Class</a></div><div class="toclevel0" data-toclevel="0"><a class="tocCollapsed" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="898df620-2846-4d6e-7a62-67f9fa96e301.htm" title="HexGridBase(T) Methods" tocid="898df620-2846-4d6e-7a62-67f9fa96e301">HexGridBase(T) Methods</a></div><div class="toclevel1" data-toclevel="1" data-childrenloaded="true"><a class="tocExpanded" onclick="javascript: Toggle(this);" href="#!" /><a data-tochassubtree="true" href="7dc09969-4077-369e-d7d8-c4ae7e52dabf.htm" title="GetTilesInRing Method " tocid="7dc09969-4077-369e-d7d8-c4ae7e52dabf">GetTilesInRing Method </a></div><div class="toclevel2" data-toclevel="2"><a data-tochassubtree="false" href="2a610cea-15d8-e0e7-c6d3-fa923343425f.htm" title="GetTilesInRing Method (T, Int32)" tocid="2a610cea-15d8-e0e7-c6d3-fa923343425f">GetTilesInRing Method (T, Int32)</a></div><div class="toclevel2 current" data-toclevel="2"><a data-tochassubtree="false" href="13487a2a-c5eb-d2d5-a373-89f09dc4ed5d.htm" title="GetTilesInRing Method (T, Int32, Predicate(T))" tocid="13487a2a-c5eb-d2d5-a373-89f09dc4ed5d">GetTilesInRing Method (T, Int32, Predicate(T))</a></div></div><div id="tocResizableEW" onmousedown="OnMouseDown(event);"></div><div id="TocResize" class="tocResize"><img id="ResizeImageIncrease" src="../icons/TocOpen.gif" onclick="OnIncreaseToc()" alt="Click or drag to resize" title="Click or drag to resize" /><img id="ResizeImageReset" src="../icons/TocClose.gif" style="display:none" onclick="OnResetToc()" alt="Click or drag to resize" title="Click or drag to resize" /></div></div><div class="topicContent" id="TopicContent">
+        <table class="titleTable">
+          <tr>
+            <td class="logoColumn">
+              <img src="../icons/Help.png" />
+            </td>
+            <td class="titleColumn">
+              <h1>HexGridBase<span id="LSTB8697E59_0"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_0?cs=&lt;|vb=(Of |cpp=&lt;|fs=&lt;'|nu=(");</script><span class="typeparameter">T</span><span id="LSTB8697E59_1"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_1?cs=&gt;|vb=)|cpp=&gt;|fs=&gt;|nu=)");</script><span id="LSTB8697E59_2"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_2?cpp=::|nu=.");</script>GetTilesInRing Method (<span class="typeparameter">T</span>, Int32, Predicate<span id="LSTB8697E59_3"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_3?cs=&lt;|vb=(Of |cpp=&lt;|fs=&lt;'|nu=(");</script><span class="typeparameter">T</span><span id="LSTB8697E59_4"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_4?cs=&gt;|vb=)|cpp=&gt;|fs=&gt;|nu=)");</script>)</h1>
+            </td>
+          </tr>
+        </table>
+        <span class="introStyle"></span> <div class="summary">
+            Get all tiles whose distance is exactly the given radius from the given center tile,
+            and who meet the given condition.
+            </div><p> </p>
+    <strong>Namespace:</strong> 
+   <a href="ce8ef490-1f27-ec01-12dd-5baa4ca1e23b.htm">UnityCustomUtilities.Grids</a><br />
+    <strong>Assembly:</strong>
+   UnityCustomUtilities (in UnityCustomUtilities.dll) Version: 1.0.0.0 (1.0.0.0)<div class="collapsibleAreaRegion"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID1RB')" onkeypress="SectionExpandCollapse_CheckKey('ID1RB', event)" tabindex="0"><img id="ID1RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />Syntax</span></div><div id="ID1RBSection" class="collapsibleSection"><div class="codeSnippetContainer"><div class="codeSnippetContainerTabs"><div id="ID0EACA_tab1" class="codeSnippetContainerTabSingle">C#</div></div><div class="codeSnippetContainerCodeContainer"><div class="codeSnippetToolBar"><div class="codeSnippetToolBarText"><a id="ID0EACA_copyCode" href="#" class="copyCodeSnippet" onclick="javascript:CopyToClipboard('ID0EACA');return false;" title="Copy">Copy</a></div></div><div id="ID0EACA_code_Div1" class="codeSnippetContainerCode" style="display: block"><pre xml:space="preserve"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="identifier">ReadOnlyCollection</span>&lt;T&gt; <span class="identifier">GetTilesInRing</span>(
+	T <span class="parameter">center</span>,
+	<span class="identifier">int</span> <span class="parameter">radius</span>,
+	<span class="identifier">Predicate</span>&lt;T&gt; <span class="parameter">condition</span>
+)</pre></div></div></div><script type="text/javascript">AddLanguageTabSet("ID0EACA");</script><h4 class="subHeading">Parameters</h4><dl><dt><span class="parameter">center</span></dt><dd>Type: <a href="c17068fb-ae2a-bbab-3e35-30f619c2397f.htm"><span class="typeparameter">T</span></a><br />The center tile to consider</dd><dt><span class="parameter">radius</span></dt><dd>Type: <a href="http://msdn2.microsoft.com/en-us/library/td2s409d" target="_blank">System<span id="LSTB8697E59_5"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_5?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Int32</a><br />The radius of the desired ring</dd><dt><span class="parameter">condition</span></dt><dd>Type: <a href="http://msdn2.microsoft.com/en-us/library/bfcke1bz" target="_blank">System<span id="LSTB8697E59_6"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_6?cs=.|vb=.|cpp=::|nu=.|fs=.");</script>Predicate</a><span id="LSTB8697E59_7"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_7?cs=&lt;|vb=(Of |cpp=&lt;|fs=&lt;'|nu=(");</script><a href="c17068fb-ae2a-bbab-3e35-30f619c2397f.htm"><span class="typeparameter">T</span></a><span id="LSTB8697E59_8"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_8?cs=&gt;|vb=)|cpp=&gt;|fs=&gt;|nu=)");</script><br />The condition to meet</dd></dl><h4 class="subHeading">Return Value</h4>Type: <a href="http://msdn2.microsoft.com/en-us/library/ms132474" target="_blank">ReadOnlyCollection</a><span id="LSTB8697E59_9"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_9?cs=&lt;|vb=(Of |cpp=&lt;|fs=&lt;'|nu=(");</script><a href="c17068fb-ae2a-bbab-3e35-30f619c2397f.htm"><span class="typeparameter">T</span></a><span id="LSTB8697E59_10"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_10?cs=&gt;|vb=)|cpp=&gt;|fs=&gt;|nu=)");</script><br />All tiles whose distance from the center is exactly the given radius
+            And that meet the given condition</div><div class="collapsibleAreaRegion" id="seeAlsoSection"><span class="collapsibleRegionTitle" onclick="SectionExpandCollapse('ID2RB')" onkeypress="SectionExpandCollapse_CheckKey('ID2RB', event)" tabindex="0"><img id="ID2RBToggle" class="collapseToggle" src="../icons/SectionExpanded.png" />See Also</span></div><div id="ID2RBSection" class="collapsibleSection"><h4 class="subHeading">Reference</h4><div class="seeAlsoStyle"><a href="c17068fb-ae2a-bbab-3e35-30f619c2397f.htm">HexGridBase<span id="LSTB8697E59_11"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_11?cs=&lt;|vb=(Of |cpp=&lt;|nu=(|fs=&lt;'");</script>T<span id="LSTB8697E59_12"></span><script type="text/javascript">AddLanguageSpecificTextSet("LSTB8697E59_12?cs=&gt;|vb=)|cpp=&gt;|nu=)|fs=&gt;");</script> Class</a></div><div class="seeAlsoStyle"><a href="7dc09969-4077-369e-d7d8-c4ae7e52dabf.htm">GetTilesInRing Overload</a></div><div class="seeAlsoStyle"><a href="ce8ef490-1f27-ec01-12dd-5baa4ca1e23b.htm">UnityCustomUtilities.Grids Namespace</a></div></div></div>
+    </div>
+    <div id="pageFooter" class="pageFooter"> </div>
+  </body>
+</html>

@@ -16,6 +16,10 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.UI.Highways {
 
+    /// <summary>
+    /// The standard implementation of BlobHighwaySummaryDisplayBase, which gives players information
+    /// and commands relating to highways.
+    /// </summary>
     [ExecuteInEditMode]
     public class BlobHighwaySummaryDisplay : BlobHighwaySummaryDisplayBase {
 
@@ -23,6 +27,7 @@ namespace Assets.UI.Highways {
 
         #region from BlobHighwaySummaryDisplayBase
 
+        /// <inheritdoc/>
         public override BlobHighwayUISummary CurrentSummary {
             get { return _currentSummary; }
             set { _currentSummary = value; }
@@ -39,10 +44,10 @@ namespace Assets.UI.Highways {
 
         [SerializeField] private MaterialPerResourceDictionary MaterialsForResourceTypes;
 
-        [SerializeField] private ToggleResourceSummary FirstEndpointTogglesForResourceTypes;
-        [SerializeField] private ToggleResourceSummary SecondEndpointTogglesForResourceTypes;
+        [SerializeField] private TogglePerResourceDictionary FirstEndpointTogglesForResourceTypes;
+        [SerializeField] private TogglePerResourceDictionary SecondEndpointTogglesForResourceTypes;
 
-        [SerializeField] private ToggleResourceSummary UpkeepRequestTogglesForResourceTypes;
+        [SerializeField] private TogglePerResourceDictionary UpkeepRequestTogglesForResourceTypes;
 
         #endregion
 
@@ -50,6 +55,7 @@ namespace Assets.UI.Highways {
 
         #region Unity event methods
 
+        /// <inheritdoc/>
         protected override void DoOnUpdate() {
             if(CurrentSummary != null) {
                 FirstEndpointPane.transform.position  = Camera.main.WorldToScreenPoint(CurrentSummary.FirstEndpoint);
@@ -57,6 +63,15 @@ namespace Assets.UI.Highways {
             }
         }
 
+        /*
+         * This block of code modifies the colors of the various permission and upkeep
+         * toggles to match those defined by MaterialsForResourceTypes. To change those
+         * colors, it makes some very specific assumptions about the form the toggles
+         * have taken. If you wanted to decouple this code from the component structure
+         * surrounding the Toggle elements, you'd probably want to create a new class
+         * (say, HighwayToggle) that obscures these details and modify the color through
+         * that.
+         */
         private void OnValidate() {
             if(MaterialsForResourceTypes != null) {
                 foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
@@ -93,6 +108,7 @@ namespace Assets.UI.Highways {
 
         #region from IntelligentPanel
 
+        /// <inheritdoc/>
         protected override void DoOnActivate() {
             AlignPermissionPanes();
 
@@ -129,6 +145,7 @@ namespace Assets.UI.Highways {
             }
         }
 
+        /// <inheritdoc/>
         protected override void DoOnDeactivate() {
             gameObject.SetActive(false);
 
@@ -150,6 +167,7 @@ namespace Assets.UI.Highways {
             }
         }
 
+        /// <inheritdoc/>
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
                 EfficiencyField.text = CurrentSummary.Efficiency.ToString();
@@ -157,12 +175,12 @@ namespace Assets.UI.Highways {
                 foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
                     var firstEndpointToggle = FirstEndpointTogglesForResourceTypes[resourceType];
                     if(firstEndpointToggle != null) {
-                        firstEndpointToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint1[resourceType];
+                        firstEndpointToggle.isOn = CurrentSummary.ResourcePermissionsForFirstEndpoint[resourceType];
                     }
 
                     var secondEndpointToggle = SecondEndpointTogglesForResourceTypes[resourceType];
                     if(secondEndpointToggle != null) {
-                        secondEndpointToggle.isOn = CurrentSummary.ResourcePermissionsForEndpoint2[resourceType];
+                        secondEndpointToggle.isOn = CurrentSummary.ResourcePermissionsForSecondEndpoint[resourceType];
                     }
 
                     var upkeepRequestToggle = UpkeepRequestTogglesForResourceTypes[resourceType];
@@ -170,10 +188,10 @@ namespace Assets.UI.Highways {
                         upkeepRequestToggle.isOn = CurrentSummary.IsRequestingUpkeepForResource[resourceType];
                     }
                 }
-
             }
         }
 
+        /// <inheritdoc/>
         public override void ClearDisplay() {
             CurrentSummary = null;
 
@@ -199,6 +217,19 @@ namespace Assets.UI.Highways {
 
         #endregion
 
+        /// <summary>
+        /// Aligns the permissions panes so that they lie next to the
+        /// endpoints they refer to, but offset enough so that they don't obscure the
+        /// highway itself.
+        /// </summary>
+        /// <remarks>
+        /// This implementation tries to match the appropriate corner of the endpoint
+        /// panes to their corresponding endpoints. It does this by determining the
+        /// orientation of the two endpoints and then changing the pivots of the
+        /// endpoint panes so that the panes bracket the highway without overlapping
+        /// it very much. Since the positions of the endpoint panes has already been
+        /// set to the endpoints themselves, this is sufficient for a reasonable behavior.
+        /// </remarks>
         private void AlignPermissionPanes() {
             if(CurrentSummary == null) {
                 return;

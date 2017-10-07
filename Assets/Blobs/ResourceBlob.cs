@@ -8,12 +8,26 @@ using UnityEngine;
 
 namespace Assets.Blobs {
 
+    /// <summary>
+    /// The standard implementation for ResourceBlobBase. These objects represent the
+    /// products and needs of societies, and their manipulation represents the bulk of
+    /// gameplay.
+    /// </summary>
     public class ResourceBlob : ResourceBlobBase {
 
         #region instance fields and properties
 
+        #region from ResourceBlobBase
+        /// <inheritdoc/>
         public override ResourceType BlobType { get; set; }
 
+        #endregion
+
+        /// <summary>
+        /// The factory that created this ResourceBlob. Is used for graceful destruction,
+        /// though it's possible to remove this dependency by making such destruction the
+        /// responsibility of the factory itself.
+        /// </summary>
         public ResourceBlobFactoryBase ParentFactory { get; set; }
 
         private Vector3 ScaleToPopTo;
@@ -33,7 +47,7 @@ namespace Assets.Blobs {
         }
 
         private void OnEnable() {
-            CurrentScaleVelocity = new Vector3(StartingVelocity.x, StartingVelocity.y, StartingVelocity.z);
+            CurrentScaleVelocity = new Vector3(StartingScaleVelocity.x, StartingScaleVelocity.y, StartingScaleVelocity.z);
             StartCoroutine(PopIn());
         }
 
@@ -46,14 +60,31 @@ namespace Assets.Blobs {
 
         #endregion
 
-        public override void PushNewMovementGoal(MovementGoal goal) {
+        /// <inheritdoc/>
+        public override void EnqueueNewMovementGoal(MovementGoal goal) {
             PendingMovementGoals.Enqueue(goal);
         }
 
+        /// <inheritdoc/>
         public override void ClearAllMovementGoals() {
             PendingMovementGoals.Clear();
         }
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Movement is performed via Vector3.MoveTowards, which performs linear interpolation
+        /// between the two locations and guarantees no overshoot. This could ostensibly be
+        /// replaced by another similar method, like Vector3.SmoothDamp, without changing the
+        /// underlying structure of the method.
+        /// </remarks>
+        // The complexity of this method arises from two main areas. One is the possibility
+        // of floating point errors causing us some problems. It mitigates that possibility by comparing
+        // distances against DestinationSnapDelta. The other possibility is that the loop might
+        // need to execute several movement goals in a single tick, if secondsPassed is very
+        // large. Thus it needs to keep track of how many seconds it's already spent pursuing
+        // the current goal, and can't discard the loop until all of those seconds have been
+        // eaten up. It's not clear that this process is efficient, but it's also not a performance
+        // bottleneck so improving this method wasn't a priority during production.
         public override void Tick(float secondsPassed) {
             float secondsLeftToIncrementOn = secondsPassed;
             while(PendingMovementGoals.Count > 0 && secondsLeftToIncrementOn > 0) {
@@ -94,25 +125,6 @@ namespace Assets.Blobs {
                     yield return null;
                 }
             }
-        }
-
-        private IEnumerator ExecutePendingMovementGoals() {
-            while(PendingMovementGoals.Count > 0) {
-                var goalToExecute = PendingMovementGoals.Peek();
-                float currentDistance = Vector3.Distance(transform.position, goalToExecute.DesiredLocation);
-                while(currentDistance > DestinationSnapDelta) {
-                    transform.position = Vector3.MoveTowards(transform.position, goalToExecute.DesiredLocation, 
-                        goalToExecute.SpeedPerSecond * Time.deltaTime);
-                    currentDistance = Vector3.Distance(transform.position, goalToExecute.DesiredLocation);
-                    yield return null;
-                }
-                transform.position = goalToExecute.DesiredLocation;
-                if(goalToExecute.ActionToPerformOnTermination != null) {
-                    goalToExecute.ActionToPerformOnTermination();
-                }
-                PendingMovementGoals.Dequeue();
-            }
-            yield break;
         }
 
         #endregion

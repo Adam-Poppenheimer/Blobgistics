@@ -11,24 +11,6 @@ namespace Assets.Core.ForTesting {
 
     public class MockBlobDistributor : BlobDistributorBase {
 
-        #region instance fields and properties
-
-        #region from BlobDistributorBase
-
-        public override float EdgePullCooldownInSeconds {
-            get {
-                throw new NotImplementedException();
-            }
-
-            set {
-                throw new NotImplementedException();
-            }
-        }
-
-        #endregion
-
-        #endregion
-
         #region events
 
         public event EventHandler<FloatEventArgs> Ticked;

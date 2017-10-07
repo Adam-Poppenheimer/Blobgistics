@@ -14,18 +14,32 @@ using Assets.Highways;
 
 namespace Assets.Map {
 
-    [ExecuteInEditMode]
+    /// <summary>
+    /// The standard implementation for MapGraphBase, which represents the game map as an
+    /// undirected graph. Acts as the factory, adjacency canon, and pathfinder for all
+    /// nodes and edges.
+    /// </summary>
+    /// <remarks>
+    /// MapGraphs generate new Nodes and Edges through prefabs, configured in the inspector,
+    /// that are then instantiated and provided with their dependencies from the runtime.
+    /// 
+    /// MapGraphs also operate in EditMode, which means that they make use of DestroyImmediate
+    /// instead of Destroy and contend with Unity's serializer and transfers between runtime
+    /// environments.
+    /// </remarks>
+    [ExecuteInEditMode]    
     public class MapGraph : MapGraphBase {
 
         #region instance fields and properties
 
         #region from MapGraphBase
-
+        /// <inheritdoc/>
         public override ReadOnlyCollection<MapNodeBase> Nodes {
             get { return nodes.AsReadOnly(); }
         }
         private List<MapNodeBase> nodes = new List<MapNodeBase>();
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<MapEdgeBase> Edges {
             get { return edges.AsReadOnly(); }
         }
@@ -33,30 +47,48 @@ namespace Assets.Map {
 
         #endregion
 
+        /// <summary>
+        /// A dependency that must be injected into all newly subscribed nodes.
+        /// </summary>
         public UIControlBase UIControl {
             get { return _uiControl; }
             set { _uiControl = value; }
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        /// <summary>
+        /// A dependency that must be injected into all newly subscribed nodes.
+        /// </summary>
         public TerrainMaterialRegistry TerrainMaterialRegistry {
             get { return _terrainMaterialRegistry; }
             set { _terrainMaterialRegistry = value; }
         }
         [SerializeField] private TerrainMaterialRegistry _terrainMaterialRegistry;
 
+        /// <summary>
+        /// A dependency that must be injected into all newly subscribed nodes.
+        /// </summary>
         public TerrainGrid TerrainTileGrid {
             get { return _terrainTileGrid; }
             set { _terrainTileGrid = value; }
         }
         [SerializeField] private TerrainGrid _terrainTileGrid;
 
+        /// <summary>
+        /// An object containing implementations for a number of graph traversal algorithms the
+        /// MapGraph will use to determine paths and the nearest nodes and edges with certain
+        /// conditions.
+        /// </summary>
         public MapGraphAlgorithmSetBase AlgorithmSet {
             get { return _algorithmSet; }
             set { _algorithmSet = value; }
         }
         [SerializeField] private MapGraphAlgorithmSetBase _algorithmSet;
 
+        /// <summary>
+        /// A depndency that must be injected into the BlobSites of all newly subscribed nodes.
+        /// Is also placed into the now-obsolete BlobSites on all subsribed MapEdges.
+        /// </summary>
         public BlobSiteConfigurationBase BlobSiteConfiguration {
             get { return _blobSiteConfiguration; }
             set { _blobSiteConfiguration = value; }
@@ -66,6 +98,8 @@ namespace Assets.Map {
         [SerializeField] private GameObject NodePrefab;
         [SerializeField] private GameObject EdgePrefab;
 
+        /// <remarks>
+        /// </remarks>
         private DictionaryOfLists<MapNodeBase, MapNodeBase> NeighborsOfNode = 
             new DictionaryOfLists<MapNodeBase, MapNodeBase>();
 
@@ -74,6 +108,10 @@ namespace Assets.Map {
         #region instance methods
 
         #region Unity event methods
+
+        //These methods are hedges against possible state inconsistency. The current implementation
+        //Requires MapGraph to be subscribed to every Node and Edge in the runtime in order for those
+        //nodes and edges to function.
 
         private void OnDestroy() {
             foreach(var node in new List<MapNodeBase>(nodes)) {
@@ -99,10 +137,12 @@ namespace Assets.Map {
 
         #region from MapGraphBase
 
+        /// <inheritdoc/>
         public override MapNodeBase BuildNode(Vector3 localPosition) {
             return BuildNode(localPosition, TerrainType.Grassland);
         }
 
+        /// <inheritdoc/>
         public override MapNodeBase BuildNode(Vector3 localPosition, TerrainType startingTerrain) {
             MapNode newNode = null;
             if(NodePrefab != null) {
@@ -126,6 +166,7 @@ namespace Assets.Map {
             return newNode;
         }
 
+        /// <inheritdoc/>
         public override void DestroyNode(MapNodeBase node) {
             if(node == null) {
                 throw new ArgumentNullException("node");
@@ -134,6 +175,7 @@ namespace Assets.Map {
             DestroyImmediate(node.gameObject);
         }
 
+        /// <inheritdoc/>
         public override void SubscribeNode(MapNodeBase node) {
             if(node == null) {
                 throw new ArgumentNullException("node");
@@ -155,6 +197,7 @@ namespace Assets.Map {
             }
         }
 
+        /// <inheritdoc/>
         public override void UnsubscribeNode(MapNodeBase nodeToRemove) {
             if(nodeToRemove == null) {
                 throw new ArgumentNullException("node");
@@ -183,6 +226,7 @@ namespace Assets.Map {
             RaiseMapNodeUnsubscribed(nodeToRemove);
         }
 
+        /// <inheritdoc/>
         public override MapEdgeBase BuildMapEdge(MapNodeBase first, MapNodeBase second) {
             if(first == null) {
                 throw new ArgumentNullException("first");
@@ -200,7 +244,6 @@ namespace Assets.Map {
                 var hostingObject = new GameObject();
                 newEdge = hostingObject.AddComponent<MapEdge>();
                 newEdge.DisplayComponent = new GameObject().transform;
-                newEdge.SetBlobSite(newEdge.gameObject.AddComponent<BlobSite>());
             }
 
             newEdge.transform.position += Vector3.forward;
@@ -215,6 +258,7 @@ namespace Assets.Map {
             return newEdge;
         }
 
+        /// <inheritdoc/>
         public override void DestroyMapEdge(MapNodeBase first, MapNodeBase second) {
             if(first == null) {
                 throw new ArgumentNullException("first");
@@ -229,6 +273,7 @@ namespace Assets.Map {
             
         }
 
+        /// <inheritdoc/>
         public override void DestroyMapEdge(MapEdgeBase edge) {
             if(edge == null) {
                 throw new ArgumentNullException("edge");
@@ -238,6 +283,7 @@ namespace Assets.Map {
             DestroyImmediate(edge.gameObject);
         }
 
+        /// <inheritdoc/>
         public override void SubscribeMapEdge(MapEdgeBase edge) {
             if(edge == null) {
                 throw new ArgumentNullException("edge");
@@ -248,13 +294,11 @@ namespace Assets.Map {
                 NeighborsOfNode.AddElementToList(edge.FirstNode,  edge.SecondNode);
                 NeighborsOfNode.AddElementToList(edge.SecondNode, edge.FirstNode );
                 edge.ParentGraph = this;
-                if(edge.BlobSite != null) {
-                    edge.BlobSite.Configuration = BlobSiteConfiguration;
-                }
                 edge.gameObject.SetActive(true);
             }
         }
 
+        /// <inheritdoc/>
         public override void UnsubscribeMapEdge(MapEdgeBase edge) {
             if(edge == null) {
                 throw new ArgumentNullException("edge");
@@ -267,16 +311,15 @@ namespace Assets.Map {
                 NeighborsOfNode[edge.SecondNode].Remove(edge.FirstNode );
             }
             edge.ParentGraph = null;
-            if(edge.BlobSite != null) {
-                edge.BlobSite.Configuration = null;
-            }
             RaiseMapEdgeUnsubscribed(edge);
         }
 
+        /// <inheritdoc/>
         public override MapNodeBase GetNodeOfID(int id) {
             return nodes.Find(node => node.ID == id);
         }
 
+        /// <inheritdoc/>
         public override MapEdgeBase GetEdge(MapNodeBase first, MapNodeBase second) {
             if(first == null) {
                 throw new ArgumentNullException("first");
@@ -287,6 +330,7 @@ namespace Assets.Map {
             return validEdges.FirstOrDefault();
         }
 
+        /// <inheritdoc/>
         public  override IEnumerable<MapNodeBase> GetNeighborsOfNode(MapNodeBase node) {
             if(node == null) {
                 throw new ArgumentNullException("node");
@@ -300,6 +344,7 @@ namespace Assets.Map {
             }
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<MapEdgeBase> GetEdgesAttachedToNode(MapNodeBase node) {
             if(node == null) {
                 throw new ArgumentNullException("node");
@@ -311,6 +356,7 @@ namespace Assets.Map {
             return retval;
         }
 
+        /// <inheritdoc/>
         public override int GetDistanceBetweenNodes(MapNodeBase nodeOne, MapNodeBase nodeTwo) {
             if(nodeOne == null) {
                 throw new ArgumentNullException("node1");
@@ -320,6 +366,7 @@ namespace Assets.Map {
             return AlgorithmSet.GetDistanceBetweenNodes(nodeOne, nodeTwo, Nodes);
         }
 
+        /// <inheritdoc/>
         public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase nodeOne, MapNodeBase nodeTwo) {
             if(nodeOne == null) {
                 throw new ArgumentNullException("start");
@@ -329,6 +376,7 @@ namespace Assets.Map {
             return AlgorithmSet.GetShortestPathBetweenNodes(nodeOne, nodeTwo, Nodes);
         }
 
+        /// <inheritdoc/>
         public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin,
             Predicate<MapNodeBase> condition, int maxDistance = int.MaxValue) {
             if(edgeOfOrigin == null) {

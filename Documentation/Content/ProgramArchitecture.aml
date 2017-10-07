@@ -1,0 +1,328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="463a75fb-6fc5-4df5-b0d6-b421fb703e89" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+
+    <introduction>
+      <para>
+        There are some aspects of the program's architecture that require explanation,
+        to make it clear why they are the way they are. I've also discussed whether or not
+        I think these solutions are good, and any alternatives that might work better.
+      </para>
+
+      <autoOutline />      
+    </introduction>
+
+    <section>
+      <title>Abstract base classes inheriting from MonoBehaviour</title>
+      
+      <content>
+        <para>
+          There are a large number of classes (MapGridBase, SocietyBase, ResourceDepotBase, etc)
+          that are abstract base classes deriving from MonoBehaviour that are essentially interfaces.
+          They don't define many of their members and often have only one production-ready implementation
+          (MapGrid, Society, ResourceDepot, etc).
+          These abstract base classes are like this so they can interact well with Unity's internal serialization.
+          Most of the classes that exhibit this pattern are either well-understood as components or require references
+          to other components that exist in the runtime. This is a problem when one considers that Unity's serializer
+          doesn't support references for types other
+          than those that inherit from UnityEngine.Object. Generic C# classes are serialized only by value, which can
+          generate duplicate information and break references. In order to prevent this, I opted to make most objects
+          inherit from MonoBehaviour so they could reference each other when needed and persist those references
+          between runtimes.
+        </para>
+        <para>
+          But why the abstract base classes? Why not have classes like Society inherit directly from MonoBehaviour?
+          I did this for a few reasons. One was for the purposes of unit testing. Since many of the more central
+          classes in the codebase (Society, BlobHighway, MapNode, etc) require references to other objects, I needed
+          some way of mocking dependencies so that I could focus entirely on the unit under test. this meant that I
+          needed to separate the interface that consumers depend on from the implementation of said dependency. That
+          left me with two options: pass dependencies in as interfaces, or pass them in as abstract base classes.
+          Since Unity's serializer doesn't handle interfaces properly, that left me with only abstract base classes
+          to work with.
+        </para>
+        <para>
+          Another was to try and obscure the complexity of a given implementation from possible consumers via
+          encapsulation. A lot of the more central classes require enough initialization to make the Factory pattern
+          very useful. But using the Factory pattern required making public dependencies and initialization properties
+          on the implementation. Had I passed the implementation directly to consumers, then consumers could modify
+          those dependencies and thus break the object. For instance, Society has a property Location that needs to be
+          initialized by SocietyFactory but should never change beyond initialization. To prevent such modification,
+          I defined a read-only property in SocietyBase that is set by a public method in Society that only the factory
+          is ever to use. In a different environment I might've solved that problem with constructors, but MonoBehaviour
+          can't be constructed normally because it's entangled with Unity's internals and is thus forbidden from using
+          the new keyword.
+        </para>
+      </content>
+    </section>
+    
+    <section>
+      <title>Mock structure and messy unit tests</title>
+      <content>
+        <para>
+          Since I was trying to use Test-Driven Development to manager my project, I decided to put the majority of
+          my codebase under unit tests, both to determine what exactly I needed and to have regression tests to
+          make refactoring easier. Since a lot of my classes had several dependencies, this necessitated a considerable
+          amount of dependency mocking. The proliferation of abstract base classes described above existed primarily
+          for this purpose.
+        </para>
+        <para>
+          One efficient way of doing mocks is to use a substitution engine like NSubstitute to create versions of a
+          particular object that can be manipulated directly. Unfortunately, such mocking does not work well for objects
+          deriving from UnityEngine.Object, of which MonoBehaviour is a child. In the same way that the new keyword
+          is forbidden on MonoBehaviours, using substitution libraries vomits errors into the log, as such objects
+          are supposed to be constructed within Unity's internal environment, which I can't imagine the substitution
+          libraries have access to.
+        </para>
+        <para>
+          This reality, as well as my lack of experience with unit testing, forced me to develop mocks manually, which
+          ended up ballooning the number of classes in the project and eating up a lot of my time. It also made the
+          codebase inconvenient to change, as modifying a major abstract interface (like MapNodeBase) necessitated
+          changing all of the mocks. This was especially a problem when I wanted different mocks to do different
+          things, as it forced me to create an entirely different class with the requisite behavior. It was not an
+          efficient solution.
+        </para>
+        <para>
+          The unit test code itself is also fairly messy. It did not occur to me until later in development that I
+          should've created common initialization methods for the unit under test. This means that my unit tests
+          make heavy use of the Copy/Paste antipattern to initialize the unit under test. This emerged purely from
+          my inexperience with unit tests and a lack of foresight, and remains in the codebase because refactoring
+          the tests wasn't deemed a priority.
+        </para>
+        <para>
+          Tests also do not make use of test cases (multiple executions of the same test on different data), nor is
+          it clear that any given test is sufficient to prove the functionality of the behavior under test.
+        </para>
+        <para>
+          I have ideas about how to resolve these problems. By far the simplest solution is to use less dependencies.
+          One idea I've begun incorporating in other projects is use of the Humble Object pattern. In this pattern,
+          a large and complex object is decomposed into a large number of stateless (or at least immutable)
+          logical classes that consume the object's state and produce the results of the operation upon that state.
+          The complex object then just becomes a series of connections between state, dependencies, and the logical
+          classes that do the bulk of the work.
+        </para>
+        <para>
+          This pattern can address several problems. For starters, it allows the Humble Object to store dependencies
+          as MonoBehaviours but pass them into the logical methods as interfaces, which can be manipulated properly
+          by substitution libraries. It also gives me the option to pass in only and exactly the amount of information
+          a given operation needs, which might not even involve complex dependencies. Making the logical methods 
+          statless also makes configuring them at test time trivial. It's my belief that the Humble Object pattern
+          resolves most of the issues I've had with unit testing up to this point.
+        </para>
+      </content>
+    </section>
+
+    <section>
+      <title>Properties with Get accessors and Set methods</title>
+      <content>
+        <para>
+          One common pattern that appears throughout the codebase is for an abstract base class to define a read-only property
+          and for its standard implementation to provide a similarly named method for setting that property. I've been using the
+          term "externalized Set method" to describe this in the documentation. I did this so that factories (which this codebase
+          uses frequently) could initialize important values without giving such access to consumers. 
+          Ideally I would've built this into the property itself, but when overriding a property you can't add
+          additional accessors. To reflect this link, I've placed such set methods in the fields and properties region beside their
+          corresponding read-only property, rather than in the instance methods section.
+        </para>
+      </content>
+    </section>
+    
+    <section>
+      <title>Major, layer-like abstraction between the UI and the simulation</title>
+      <content>
+        <para>
+          I've been trying for a while now to figure out exactly when, where, and why abstraction and
+          indirection are useful. I know generally that the less a class knows about external factors,
+          less those external factors can affect it. And I know that relying less on other entities 
+          makes it easier to move a particular class around. But it's not always clear how those
+          principles manifest into actual engineering decisions.
+        </para>
+        <para>
+          I used the UI for this game to test one of the hypotheses I had about indirection. Namely,
+          I wanted to see if creating major abstraction between the UI and the simulation, to the
+          point of creating a layer-like boundary between the two entities that completely decoupled
+          them, would make it easier to make changes to one without affecting the other.
+        </para>
+        <para>
+          This indirection manifests itself in two major ways, all operating through the Core namespace.
+          The first is a collection of objects called UI summaries (with names like SocietyUISummary,
+          MapNodeUISummary, etc). These classes hold information about a given object in the simulation
+          that the UI needs to know about and nothing else. Whenever something happens (usually a
+          UnityEngine.EventSystem event like OnPointerClick and the like) to a simulation object that requires
+          action in the UI, the simulation object creates a summary object from itself and sends it into
+          UIControl, which delegates it to whatever areas of the UI require the information. This has the
+          effect of establishing conceptual ideas of gameplay elements (societies, map nodes, highways)
+          accessible to the player that are completely separate from the classes (Society, MapNode, BlobHighway)
+          that implement them.
+        </para>
+        <para>
+          The other piece of abstraction goes in the opposite direction, when the player needs to give
+          a command to the simulation. For that, I created a collection of classes suffixed with the word
+          Control (HighwayControl, ResourceDepotControl, SocietyControl) that define all of the commands
+          a player can give to the simulation. These classes act as a Facade upon the simulation, obscuring
+          its details from the UI.
+        </para>
+        <para>
+          Object references in this paradigm are usually ID numbers pushed into the UISummaries and passed
+          into the various Control classes, which are converted back into references in the simulation. By
+          policy, UI elements must only accept UISummary data from the simulation, and must only access the
+          simulation through Control classes.
+        </para>
+        <para>
+          This permits several things. First, it logically separates the objects and understanding the player
+          has access to from the objects and understanding the simulation has, which means the two can change
+          independently of each other. Second, it gives me a place to fully define the verbs and commands
+          a player has access to. Third, it gives me a place to define high-level policies that only make sense
+          when the entire simulation is considered from a distance. For instance, SocietyFactory doesn't and
+          shouldn't concern itself with ResourceDepots, HighwayManagers, or ConstructionZones, as those aren't
+          its responsibility to keep track of. Doing so would entangle Society with all those other components
+          and make the codebase less maintainable. However, I don't want to let the player place a society
+          on a node with a resource depot, highway manager, or construction zone. Really, I don't never want
+          more than one of any of these objects on a single MapNode at a given time. With the architecture I've
+          set up, I can instead enforce this policy at the player command level, rejecting requests to place
+          a society on a node with a resource depot before that request ever reaches the simulation.
+        </para>
+        <para>
+          While I think these are useful ideas, I'm not enamored with my implementation. Many simulation elements
+          are currently coupled to UIControl, which they really shouldn't be. And all of this indirection
+          adds a lot of extra classes and code that don't do much. I might consider replacing the coupling
+          between my simulation objects and UIControl by routing UI events through the factories and coupling to
+          the UI there. I could also replace the many UISummary classes with a standard way of conveying
+          information (say a Dictionary[string, object]) that the UI can pull relevant data from.
+        </para>
+        <para>
+          It might also be that the gains of this layer-like separation are not worth the development costs
+          and I should just connect objects to each other directly. This seems unlikely given a more efficient
+          implementation of the idea than I have here, but I won't know for sure until I've tried this model
+          out in other environments, or else taken a look at other ways of doing things.
+        </para>
+      </content>
+    </section>
+    
+    <section>
+      <title>Control classes and UI log errors rather than throw exceptions</title>
+      <content>
+        <para>
+          One of the more questionable policies I decided upon was how I handled errors in the UI
+          and control classes. I treated errors in these classes as non-critical, and displayed
+          error messages rather than throwing exceptions. At some point, I got it into my head that
+          problems with the user interface were less catastrophic than problems in the simulation
+          and should be treated as such. It also followed from my layer-like separation between
+          UI and simulation that the simulation facades should be able to tolerate meaningless
+          requests from the UI. I have not the slightest idea if that's true or what I gained from
+          avoiding exceptions in that code. I don't think this is a meaningful or useful policy.
+        </para>
+      </content>
+    </section>
+    
+    <section>
+      <title>Heavy use of complex factories</title>
+      <content>
+        <para>
+          This codebase had a high degree of object interrelation from a very early stage in development.
+          It's always been necessary for a Society to know about the MapNode on which it's located, or
+          for a Highway to be aware of the MapNodes at its endpoints. The more central gameplay elements
+          also had a lot of things that needed to be configured. For this reason, the main gameplay elements
+          are constructed primarily through factories, which helps hide the complexity of object creation.
+          When it came time to do introspection on entire collections of objects (finding all highways
+          connected to a particular MapNode, for instance), it seemed natural to assign recordkeeping to 
+          the entities that were creating all of the objects in the first place. For this reason, factories
+          began keeping track of all of a certain type of object on the map.
+        </para>
+        <para>
+          This paradigm worked well until I started working on editor functionality. Building all of a 
+          particular object (Society, MapNode, Highway, etc) through a factory worked until I started
+          contending with copy/paste operations. When you copy and paste a GameObject in Unity, the copy
+          maintains a lot of the data associated with the original. If many objects are copied, they even
+          maintain their relationships to one another. But they aren't instantiated through the factory,
+          which means that the factory is not aware of (and cannot configure) any objects that are copied
+          and pasted through the scene view.
+        </para>
+        <para>
+          In order to get around that problem, I added a new semantic to my factories: subscription.
+          When an object (say a Society) comes into existence, the first thing it does is try to subscribe
+          itself to its parent factory, so that the factory is aware of its existence and can report it
+          to the rest of the codebase. When the object is getting destroyed, it must also unsubscribe
+          itself from its parent factory so that factory can let go of it.
+        </para>
+        <para>
+          There exist other methods for instantiating complex objects in Unity that I could've used. The
+          standard is to use prefabs, which I was already using in my factory constructions to create larger
+          complexes of components. But prefabs are only useful for design-time initialization. Because of
+          my desire to have multiple maps that players could switch between, and because of my desire
+          to let players save their sessions, I needed to be able to instantiate objects at runtime from
+          a relatively simple (and thus serializable) set of data. This necessitates some sort of 
+          factory, and my factories proved incredibly useful for loading saved maps and games.
+        </para>
+        <para>
+          There was also the matter of object pooling, which I'd built the factories in anticipation of.
+          While I never ended up using object pooling (it wasn't a performance bottleneck) the current
+          structure of the factories makes a future implementation easier, though it remains to be seen
+          how such pooling would interact with copy/paste, prefab instantiation, and object deletion at
+          edit time.
+        </para>
+        <para>
+          While there are almost certainly ways I could improve my current factories, I think having factories
+          is necessary for the sorts of things I need to accomplish. I don't like the subscription semantics,
+          but they are neither programmatically inefficient nor a heavy burden on implementers, and so
+          their existence is not considered an issue of major importance.
+        </para>
+      </content>
+    </section>
+    
+    <section>
+      <title>Use of Tick methods instead of the Update pattern</title>
+      <content>
+        <para>
+          In Unity, the traditional way of implementing time-dependent behaviors in a MonoBehaviour-derived
+          class is to use the Update method, which is called once per frame render. You can determine how
+          much time has passed since the last frame by calling Time.deltaTime and thus create
+          framerate-independent behavior. I opted not to use this pattern, instead defining Tick methods that
+          take a secondsPassed field. There are a few reasons for this. The first was for unit testing.
+          The default unit test is assumed to happen within the space of a single frame. Update is either
+          called once or not at all, and it's not clear to me what Time.deltaTime would mean in that context.
+          While there do exist special tests that allow for frame simulation, I did not learn about these
+          until very late in the development cycle. Instead, I opted to use Tick() as a way of testing the
+          time-sensitive behavior of various modules.
+        </para>
+        <para>
+          Earlier on, there was also the matter of execution order. Update methods are not called in any
+          particular order, and I wanted to make sure that I could increment various parts of the simulation
+          in some specified order. But this was not a reasonable consideration. For starters, Unity allows
+          developers to manually control script execution order via other means. Beyond that, it's not clear
+          that my game relies on any particular order of execution for the Tick methods.
+        </para>
+        <para>
+          Lastly was the notion of pausing. The traditional method of pausing the game in Unity is to set 
+          the Time.timeScale field to zero. While this doesn't suppress calls to Update, it does set
+          Time.deltaTime to zero on successive frames. However, modifying Time.timeScale alters every
+          Update method that implements framerate independent behavior. I was concerned that pausing the
+          simulation in this manner might end up pausing the execution of other Update loops that should
+          not be paused. The only example I know of in the codebase is in the Update method of MapNodeStandardEventReceiver,
+          where Time.deltaTime is used to modify the highway-drawing audio. This behavior shouldn't be
+          paused when the simulation is. I use Tick to implement this behavior, of pausing only the
+          simulation and nothing else, by calling into all Tick methods from SimulationControl. That class,
+          in turn, has Pause and Unpause methods and will simply not call into the Tick methods of
+          simulation objects when it is paused. It remains to be seen if this was a good enough reason
+          to create an alternate structure, though at the very least it reduces the amount of global
+          state in the program.
+        </para>
+        <para>
+          An alternative to the Tick() solution is to use Time.unscaledDeltaTime in non-simulation methods,
+          which is not modified by Time.timeScale. I did not learn about that option until Tick() was
+          already the modus operandi, and refactoring it hasn't been a priority.
+        </para>
+      </content>
+    </section>
+    <relatedTopics>
+      
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

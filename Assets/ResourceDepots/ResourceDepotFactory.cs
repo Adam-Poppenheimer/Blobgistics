@@ -11,6 +11,9 @@ using System.Collections.ObjectModel;
 
 namespace Assets.ResourceDepots {
 
+    /// <summary>
+    /// The standard implementation for ResourceDepotFactoryBase.
+    /// </summary>
     [ExecuteInEditMode]
     public class ResourceDepotFactory : ResourceDepotFactoryBase {
 
@@ -18,6 +21,7 @@ namespace Assets.ResourceDepots {
 
         #region from ResourceDepotFactoryBase
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ResourceDepotBase> ResourceDepots {
             get { return resourceDepots.AsReadOnly(); }
         }
@@ -25,6 +29,9 @@ namespace Assets.ResourceDepots {
 
         #endregion
 
+        /// <summary>
+        /// The UIControl that should be given to all created resource depots.
+        /// </summary>
         public UIControlBase UIControl {
             get { return _uiControl; }
             set { _uiControl = value; }
@@ -32,9 +39,7 @@ namespace Assets.ResourceDepots {
         [SerializeField] private UIControlBase _uiControl;
 
         [SerializeField] private GameObject ResourceDepotPrefab;
-        [SerializeField] private ResourceDepotProfile StartingProfile;
-
-        
+        [SerializeField] private ResourceDepotProfile StartingProfile;        
 
         #endregion
 
@@ -42,18 +47,22 @@ namespace Assets.ResourceDepots {
 
         #region from ResourceDepotFactoryBase
 
+        /// <inheritdoc/>
         public override ResourceDepotBase GetDepotOfID(int id) {
             return resourceDepots.Find(depot => depot.ID == id);
         }
 
+        /// <inheritdoc/>
         public override ResourceDepotBase GetDepotAtLocation(MapNodeBase location) {
             return resourceDepots.Find(depot => depot.Location == location);
         }
 
+        /// <inheritdoc/>
         public override bool HasDepotAtLocation(MapNodeBase location) {
             return resourceDepots.Exists(depot => depot.Location == location);
         }
 
+        /// <inheritdoc/>
         public override ResourceDepotBase ConstructDepotAt(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
@@ -62,7 +71,7 @@ namespace Assets.ResourceDepots {
             }
             ResourceDepot newDepot = null;
             if(ResourceDepotPrefab != null) {
-                var newGameObject = Instantiate<GameObject>(ResourceDepotPrefab);
+                var newGameObject = Instantiate(ResourceDepotPrefab);
                 newDepot = newGameObject.GetComponent<ResourceDepot>();
                 if(newDepot == null) {
                     throw new ResourceDepotException("ResourceDepotPrefab does not contain a ResourceDepot component on it");
@@ -88,11 +97,13 @@ namespace Assets.ResourceDepots {
             return newDepot;
         }
 
+        /// <inheritdoc/>
         public override void DestroyDepot(ResourceDepotBase depot) {
             UnsubscribeDepot(depot);
             DestroyImmediate(depot.gameObject);
         }
 
+        /// <inheritdoc/>
         public override void UnsubscribeDepot(ResourceDepotBase depot) {
             resourceDepots.Remove(depot);
             depot.Location.BlobSite.ClearContents();

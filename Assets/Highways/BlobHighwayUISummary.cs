@@ -11,48 +11,91 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Highways {
 
+    /// <summary>
+    /// A class containing information that BlobHighway should pass into UIControl whenever it catches user input.
+    /// </summary>
     public class BlobHighwayUISummary {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// Equivalent to <see cref="BlobHighway.ID"/>.
+        /// </summary>
         public int ID { get; set; }
 
+        /// <summary>
+        /// Equivalent to <see cref="BlobHighway.Priority"/>.
+        /// </summary>
         public int Priority { get; set; }
 
+        /// <summary>
+        /// Equivalent to <see cref="BlobHighway.Efficiency"/>.
+        /// </summary>
         public float Efficiency { get; set; }
 
+        /// <summary>
+        /// The transform attached to the BlobHighway.
+        /// </summary>
         public Transform Transform { get; set; }
 
-        public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint1 { get; set; }
-        public Dictionary<ResourceType, bool> ResourcePermissionsForEndpoint2 { get; set; }
-        public Dictionary<ResourceType, bool> IsRequestingUpkeepForResource   { get; set; }
+        /// <summary>
+        /// The permissions for pulling from FirstEndpoint.
+        /// </summary>
+        public Dictionary<ResourceType, bool> ResourcePermissionsForFirstEndpoint  { get; set; }
 
+        /// <summary>
+        /// The permissions for pulling from SecondEndpoint.
+        /// </summary>
+        public Dictionary<ResourceType, bool> ResourcePermissionsForSecondEndpoint { get; set; }
+
+        /// <summary>
+        /// The upkeep requests by resource.
+        /// </summary>
+        public Dictionary<ResourceType, bool> IsRequestingUpkeepForResource { get; set; }
+
+
+        /// <summary>
+        /// The profile the highway is using.
+        /// </summary>
         public BlobHighwayProfile Profile { get; set; }
 
-        public bool IsBeingUpgraded { get; set; }
 
+        /// <summary>
+        /// The location of the first endpoint.
+        /// </summary>
         public Vector3 FirstEndpoint  { get; set; }
+
+        /// <summary>
+        /// The location of the second endpoint.
+        /// </summary>
         public Vector3 SecondEndpoint { get; set; }
 
         #endregion
 
         #region constructors
 
+        /// <summary>
+        /// Creates an empty summary.
+        /// </summary>
         public BlobHighwayUISummary() {}
 
+        /// <summary>
+        /// Creates a summary from the information contained in a given highway.
+        /// </summary>
+        /// <param name="highwayToSummarize">The highway the summary will summarize</param>
         public BlobHighwayUISummary(BlobHighwayBase highwayToSummarize) {
             ID = highwayToSummarize.ID;
             Priority = highwayToSummarize.Priority;
             Efficiency = highwayToSummarize.Efficiency;
             Transform = highwayToSummarize.transform;
 
-            ResourcePermissionsForEndpoint1 = new Dictionary<ResourceType, bool>();
-            ResourcePermissionsForEndpoint2 = new Dictionary<ResourceType, bool>();
+            ResourcePermissionsForFirstEndpoint = new Dictionary<ResourceType, bool>();
+            ResourcePermissionsForSecondEndpoint = new Dictionary<ResourceType, bool>();
             IsRequestingUpkeepForResource = new Dictionary<ResourceType, bool>();
 
             foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-                ResourcePermissionsForEndpoint1[resourceType] = highwayToSummarize.GetPullingPermissionForFirstEndpoint (resourceType);
-                ResourcePermissionsForEndpoint2[resourceType] = highwayToSummarize.GetPullingPermissionForSecondEndpoint(resourceType);
+                ResourcePermissionsForFirstEndpoint[resourceType] = highwayToSummarize.GetPullingPermissionForFirstEndpoint (resourceType);
+                ResourcePermissionsForSecondEndpoint[resourceType] = highwayToSummarize.GetPullingPermissionForSecondEndpoint(resourceType);
                 IsRequestingUpkeepForResource  [resourceType] = highwayToSummarize.GetUpkeepRequestedForResource        (resourceType);
             }
 

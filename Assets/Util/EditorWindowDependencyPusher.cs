@@ -11,25 +11,41 @@ using Assets.Session;
 
 namespace Assets.Util {
 
+    /// <summary>
+    /// Makes certain objects in the scene available to the MapEditorWindow and its
+    /// subsidiaries.
+    /// </summary>
     public class EditorWindowDependencyPusher : MonoBehaviour {
 
         #region static fields and properties
 
+        /// <summary>
+        /// The HighwayFactory made available to EditorWindows.
+        /// </summary>
         public static BlobHighwayFactoryBase HighwayFactory {
             get { return StaticHighwayFactory; }
         }
         private static BlobHighwayFactoryBase StaticHighwayFactory;
 
+        /// <summary>
+        /// The HighwayFactory made available to MapGraph.
+        /// </summary>
         public static MapGraphBase MapGraph {
             get { return StaticMapGraph; }
         }
         private static MapGraphBase StaticMapGraph;
 
+        /// <summary>
+        /// The SessionManager made available to EditorWindows.
+        /// </summary>
         public static SessionManagerBase SessionManager {
             get { return StaticSessionManager; }
         }
         private static SessionManagerBase StaticSessionManager;
 
+        /// <summary>
+        /// The FileSystemLiaison made available to EditorWindows.
+        /// </summary>
         public static FileSystemLiaison FileSystemLiaison {
             get { return StaticFileSystemLiaison; }
         }

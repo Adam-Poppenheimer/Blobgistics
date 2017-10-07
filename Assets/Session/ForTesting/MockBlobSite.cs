@@ -15,6 +15,8 @@ namespace Assets.Session.ForTesting {
 
         #region from BlobSiteBase
 
+        public override int TotalCapacity { get; set; }
+
         public override BlobSiteConfigurationBase Configuration {
             get {
                 throw new NotImplementedException();

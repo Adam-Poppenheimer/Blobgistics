@@ -10,12 +10,16 @@ using System.Collections.ObjectModel;
 
 namespace Assets.Blobs {
 
+    /// <summary>
+    /// The standard implementation for ResourceBlobFactoryBase, which creates and ticks all blobs.
+    /// </summary>
     public class ResourceBlobFactory : ResourceBlobFactoryBase {
 
         #region instance fields and properties
 
         #region from ResourceBlobFactoryBase
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ResourceBlobBase> Blobs {
             get { return blobs.AsReadOnly(); }
         }
@@ -31,10 +35,18 @@ namespace Assets.Blobs {
 
         #region instance methods
 
+        #region from ResourceBlobFactoryBase
+
+        /// <inheritdoc/>
         public override ResourceBlobBase BuildBlob(ResourceType typeOfResource) {
             return BuildBlob(typeOfResource, Vector2.zero);
         }
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// BuildBlob operates primarily by instantiating a prefab that is assumed to contain
+        /// a ResourceBlob component.
+        /// </remarks>
         public override ResourceBlobBase BuildBlob(ResourceType typeOfResource, Vector2 startingXYCoordinates) {
             var prefabClone = Instantiate<GameObject>(BlobPrefab);
             var newBlob = prefabClone.GetComponent<ResourceBlob>();
@@ -56,6 +68,7 @@ namespace Assets.Blobs {
             return newBlob;
         }
 
+        /// <inheritdoc/>
         public override void DestroyBlob(ResourceBlobBase blob) {
             UnsubscribeBlob(blob);
             if(Application.isPlaying) {
@@ -65,16 +78,20 @@ namespace Assets.Blobs {
             }
         }
 
+        /// <inheritdoc/>
         public override void UnsubscribeBlob(ResourceBlobBase blob) {
             blobs.Remove(blob);
         }
 
+        /// <inheritdoc/>
         public override void TickAllBlobs(float secondsPassed) {
             var blobsToTick = new List<ResourceBlobBase>(blobs);
             foreach(var blob in blobsToTick) {
                 blob.Tick(secondsPassed);
             }
         }
+
+        #endregion
 
         #endregion
 

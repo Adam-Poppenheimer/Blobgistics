@@ -11,6 +11,10 @@ using Assets.Highways;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard implementation of HighwayControlBase. It acts as a facade by which the UI can
+    /// access parts of the simulation.
+    /// </summary>
     public class HighwayControl : HighwayControlBase {
 
         #region static fields and properties
@@ -22,12 +26,18 @@ namespace Assets.Core {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// A dependency necessary for the class to function.
+        /// </summary>
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
             set { _mapGraph = value; }
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
+        /// <summary>
+        /// A dependency necessary for the class to function.
+        /// </summary>
         public BlobHighwayFactoryBase HighwayFactory {
             get { return _highwayFactory; }
             set { _highwayFactory = value; }
@@ -40,6 +50,7 @@ namespace Assets.Core {
 
         #region from HighwayControlBase
 
+        /// <inheritdoc/>
         public override bool CanConnectNodesWithHighway(int node1ID, int node2ID) {
             var node1 = MapGraph.GetNodeOfID(node1ID);
             var node2 = MapGraph.GetNodeOfID(node2ID);
@@ -55,6 +66,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void ConnectNodesWithHighway(int node1ID, int node2ID) {
             var node1 = MapGraph.GetNodeOfID(node1ID);
             var node2 = MapGraph.GetNodeOfID(node2ID);
@@ -70,6 +82,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void DestroyHighway(int highwayID) {
             var highwayToDestroy = HighwayFactory.GetHighwayOfID(highwayID);
             if(highwayToDestroy != null) {
@@ -79,6 +92,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void SetHighwayPullingPermissionOnFirstEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
             var highwayToChange = HighwayFactory.GetHighwayOfID(highwayID);
             if(highwayToChange != null) {
@@ -88,6 +102,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void SetHighwayPullingPermissionOnSecondEndpointForResource(int highwayID, ResourceType resourceType, bool isPermitted) {
             var highwayToChange = HighwayFactory.GetHighwayOfID(highwayID);
             if(highwayToChange != null) {
@@ -97,15 +112,7 @@ namespace Assets.Core {
             }
         }
 
-        public override void SetHighwayPriority(int highwayID, int newPriority) {
-            var highwayToChange = HighwayFactory.GetHighwayOfID(highwayID);
-            if(highwayToChange != null) {
-                highwayToChange.Priority = newPriority;
-            }else {
-                Debug.LogErrorFormat(HighwayIDErrorMessage, highwayID);
-            }
-        }
-
+        /// <inheritdoc/>
         public override void SetHighwayUpkeepRequest(int highwayID, ResourceType resourceToChange, bool isBeingRequested) {
             var highwayToChange = HighwayFactory.GetHighwayOfID(highwayID);
             if(highwayToChange != null) {

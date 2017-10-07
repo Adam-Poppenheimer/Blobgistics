@@ -13,16 +13,29 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard event receiver for all events propagating from societies.
+    /// </summary>
+    /// <remarks>
+    /// Currently, the main purpose of this class is to connect the SocietyUISummaryDisplay
+    /// panel to the rest of the codebase.
+    /// </remarks>
     public class SocietyStandardEventReceiver : TargetedEventReceiverBase<SocietyUISummary> {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// The simulation facade this event receiver interacts with.
+        /// </summary>
         public SocietyControlBase SocietyControl {
             get { return _societyControl; }
             set { _societyControl = value; }
         }
         [SerializeField] private SocietyControlBase _societyControl;  
 
+        /// <summary>
+        /// The display the event receiver serves.
+        /// </summary>
         public SocietyUISummaryDisplayBase SocietySummaryDisplay {
             get { return _societySummaryDisplay; }
             set {
@@ -63,18 +76,25 @@ namespace Assets.Core {
 
         #region from TargetedEventReceiverBase<SocietyUISummary>
 
+        /// <inheritdoc/>
         public override void PushBeginDragEvent(SocietyUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDragEvent(SocietyUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushEndDragEvent(SocietyUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerClickEvent(SocietyUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerEnterEvent(SocietyUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerExitEvent(SocietyUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushSelectEvent(SocietyUISummary source, BaseEventData eventData) {
             if(SocietySummaryDisplay != null) {
                 SocietySummaryDisplay.CurrentSummary = source as SocietyUISummary;
@@ -82,10 +102,13 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushUpdateSelectedEvent(SocietyUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDeselectEvent(SocietyUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushObjectDestroyedEvent(SocietyUISummary source) {
             if(source == SocietySummaryDisplay.CurrentSummary) {
                 SocietySummaryDisplay.Deactivate();

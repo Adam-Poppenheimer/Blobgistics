@@ -8,6 +8,15 @@ using UnityEngine;
 
 namespace Assets.Session {
 
+    /// <summary>
+    /// The standard implementation of MapPermissionManagerBase. This class determines
+    /// what order maps must be cleared in and whether or not a given map can be played.
+    /// </summary>
+    /// <remarks>
+    /// This class uses FileSystemLiaison to persist victory data across sessions. There
+    /// is not currently a player-accessible way of clearing such data, though there exist
+    /// methods for doing so.
+    /// </remarks>
     public class MapPermissionManager : MapPermissionManagerBase {
 
         #region internal types
@@ -55,6 +64,7 @@ namespace Assets.Session {
 
         #endregion
 
+        /// <inheritdoc/>
         public override void FlagMapAsHavingBeenWon(string mapName) {
             if(!LastCalculatedVictoryData.Contains(mapName)) {
                 LastCalculatedVictoryData.Add(mapName);
@@ -62,15 +72,18 @@ namespace Assets.Session {
             }
         }
 
+        /// <inheritdoc/>
         public override bool GetMapHasBeenWon(string mapName) {
             return LastCalculatedVictoryData.Contains(mapName);
         }
 
+        /// <inheritdoc/>
         public override void ClearAllVictoryInformation() {
             LastCalculatedVictoryData.Clear();
             FileSystemLiaison.WriteVictoryDataToFile(LastCalculatedVictoryData);
         }
 
+        /// <inheritdoc/>
         public override bool GetMapIsPermittedToBePlayed(string mapName) {
             if(IgnorePermissions) {
                 return true;
@@ -88,6 +101,7 @@ namespace Assets.Session {
             }
         }
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<string> GetAllMapsRequiredToPlayMap(string mapName) {
             var permissionsForMap = MapPermissions.Where(permissions => permissions.MapName.Equals(mapName)).FirstOrDefault();
             if(permissionsForMap != null) {
@@ -97,6 +111,7 @@ namespace Assets.Session {
             }
         }
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<string> GetMapsLeftToWinRequiredToPlayMap(string mapName) {
             var retval = new List<string>();
 

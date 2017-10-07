@@ -1,0 +1,2588 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Assembly-CSharp</name>
+    </assembly>
+    <members>
+        <member name="T:Assets.BlobDistributors.BlobDistributor">
+            <summary>
+            The standard implementation for BlobDistributorBase. Handles the distribution of blobs from
+            blob sites into blob highways.
+            </summary>
+            <remarks>
+            This distributor attempts to distribute blobs in a round-robin fashion, giving each highway
+            at each site approximately the same number of chances to receive each blob. This notion is
+            complicated considerably by placement and extraction permissions on both the blob sites and
+            the highways themselves.
+            
+            This class asserts that blob distribution isn't a responsibility of individual highways, but rather
+            belongs entirely to the BlobDistributor. It thus stores state about individual highways that in an
+            alternate design might belong to the highways themselves. I considered it necessary to record this
+            state within BlobDistributor because the desired round-robin distribution implies the need to consider
+            highways in groups rather than individually.
+            </remarks>
+        </member>
+        <member name="P:Assets.BlobDistributors.BlobDistributor.MapGraph">
+            <summary>
+            The MapGraph this distributor will pull map nodes (and thus blob sites) from
+            </summary>
+        </member>
+        <member name="P:Assets.BlobDistributors.BlobDistributor.HighwayFactory">
+            <summary>
+            The Highway factory this distributor will pull highways from
+            </summary>
+        </member>
+        <member name="M:Assets.BlobDistributors.BlobDistributor.Tick(System.Single)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.BlobDistributors.BlobDistributorBase">
+            <summary>
+            The abstract base class that manages the distribution of blobs from blob sites into
+            blob highways.
+            </summary>
+        </member>
+        <member name="M:Assets.BlobDistributors.BlobDistributorBase.Tick(System.Single)">
+            <summary>
+            Increments the blob distribution simulation by some number of seconds
+            </summary>
+            <param name="secondsPassed">The number of seconds that have passed since the last call to Tick</param>
+        </member>
+        <member name="T:Assets.BlobSites.BlobAlignmentStrategyBase">
+            <summary>
+            The abstract base class for all blob alignment strategies, which manage the
+            positioning of resource blobs contained within a BlobSiteBase
+            </summary>
+        </member>
+        <member name="M:Assets.BlobSites.BlobAlignmentStrategyBase.RealignBlobs(System.Collections.Generic.IEnumerable{Assets.Blobs.ResourceBlobBase},UnityEngine.Vector2,System.Single)">
+            <summary>
+            Realigns the specified blobs around the given centerPosition by enqueueing new movement
+            goals to various locations
+            </summary>
+            <param name="blobsToAlign">All the blobs that must be aligned</param>
+            <param name="centerPosition">The center position from which the alignment will be determined</param>
+            <param name="realignmentSpeedPerSecond">How fast the blobs will move to their assigned locations</param>
+        </member>
+        <member name="T:Assets.BlobSites.BlobSite">
+            <summary>
+            An entity capable of having resource blobs placed into or extracted from it,
+            and having its placement permissions, extraction permissions, and capacity changed.
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSite.TotalCapacity">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSite.Contents">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSite.TotalSpaceLeft">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSite.IsAtCapacity">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSite.Configuration">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetPointOfConnectionFacingPoint(UnityEngine.Vector3)">
+            <inheritdoc/>
+            <remarks>
+            This implementation returns the nearest point to the specified point on some circle,
+            centered around the BlobSite, whose radius is defined by a BlobSiteConfigurationBase
+            object
+            </remarks>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.CanExtractAnyBlob">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.ExtractAnyBlob">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.CanExtractBlobOfType(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.ExtractBlobOfType(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.CanExtractBlob(Assets.Blobs.ResourceBlobBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.ExtractBlob(Assets.Blobs.ResourceBlobBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.CanPlaceBlobInto(Assets.Blobs.ResourceBlobBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.CanPlaceBlobOfTypeInto(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.PlaceBlobInto(Assets.Blobs.ResourceBlobBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetExtractableTypes">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetCapacityForResourceType(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.SetCapacityForResourceType(Assets.Blobs.ResourceType,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetPlacementPermissionForResourceType(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.SetPlacementPermissionForResourceType(Assets.Blobs.ResourceType,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetExtractionPermissionForResourceType(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.SetExtractionPermissionForResourceType(Assets.Blobs.ResourceType,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.SetPlacementPermissionsAndCapacity(Assets.Blobs.IntPerResourceDictionary)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.ClearPermissionsAndCapacity">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetContentsOfType(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetCountOfContentsOfType(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetSpaceLeftOfType(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.GetIsAtCapacityForResource(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSite.ClearContents">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.BlobSites.BlobSiteBase">
+            <summary>
+            The abstract base class for all blob sites, which are were all resource blobs are created,
+            and also where they're stored when not traveling through highways.
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteBase.TotalCapacity">
+            <summary>
+            The total number of blobs that can be in this blob site
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteBase.Configuration">
+            <summary>
+            Configuration data that tells this blob site how it should organize and destroy blobs
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteBase.TotalSpaceLeft">
+            <summary>
+            The total amount of space left in this blob site
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteBase.IsAtCapacity">
+            <summary>
+            Whether the blob site can accept any additional blobs or not
+            </summary>
+        </member>
+        <member name="E:Assets.BlobSites.BlobSiteBase.BlobPlacedInto">
+            <summary>
+            Fires whenever a new blob is placed into the blob site
+            </summary>
+        </member>
+        <member name="E:Assets.BlobSites.BlobSiteBase.BlobExtractedFrom">
+            <summary>
+            Fires whenever a blob is extracted from the blob site
+            </summary>
+        </member>
+        <member name="E:Assets.BlobSites.BlobSiteBase.AllBlobsCleared">
+            <summary>
+            Fires whenever the entire blob site is cleared
+            </summary>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.RaiseBlobPlacedInto(Assets.Blobs.ResourceBlobBase)">
+            <summary>
+            Fires the BlobPlacedInto event
+            </summary>
+            <param name="blob">The blob that was just placed</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.RaiseBlobExtractedFrom(Assets.Blobs.ResourceBlobBase)">
+            <summary>
+            Fires the BlobExtractedFrom event
+            </summary>
+            <param name="blob">The blob that was just extracted</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.RaiseAllBlobsCleared">
+            <summary>
+            Fires the AllBlobsCleared event
+            </summary>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.RaiseEvent``1(System.EventHandler{``0},``0)">
+            <summary>
+            Helper method for raising events
+            </summary>
+            <typeparam name="T">The EventArgs type of the event</typeparam>
+            <param name="handler">The event handler itself</param>
+            <param name="e">The event args to be passed to the handler</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetPointOfConnectionFacingPoint(UnityEngine.Vector3)">
+            <summary>
+            Gets the point that resources coming from a given location should arrive at.
+            This is mostly used to determine where highway endpoints should end up.
+            </summary>
+            <param name="point">The point the hypothetical resources are arriving from</param>
+            <returns>The location that those hypothetical resources should go to</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.CanPlaceBlobInto(Assets.Blobs.ResourceBlobBase)">
+            <summary>
+            Determines whether the given blob can be placed in this blob site
+            </summary>
+            <param name="blob">The blob to consider</param>
+            <returns>Whether or not the blob site can accept the blob</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.PlaceBlobInto(Assets.Blobs.ResourceBlobBase)">
+            <summary>
+            Places the given blob into the blob site.
+            </summary>
+            <param name="blob">The blob to place into</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.CanPlaceBlobOfTypeInto(Assets.Blobs.ResourceType)">
+            <summary>
+            Determines whether some blob of the given type can be placed into this blob site
+            </summary>
+            <param name="type">The type of blob we're concerned with</param>
+            <returns>Whether a blob of such a type could be placed in the blob site</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.CanExtractAnyBlob">
+            <summary>
+            Determines whether there is some extractable blob within the blob site
+            </summary>
+            <returns>Whether the blob site contains an extractable blob</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.ExtractAnyBlob">
+            <summary>
+            Extracts some extractable blob from the blob site
+            </summary>
+            <returns>The blob that was extracted</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.CanExtractBlobOfType(Assets.Blobs.ResourceType)">
+            <summary>
+            Determines whether some blob of a given type can be extracted from the blob site
+            </summary>
+            <param name="type">The type of blob we want to extract</param>
+            <returns>Whether it can be extracted</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.ExtractBlobOfType(Assets.Blobs.ResourceType)">
+            <summary>
+            Extracts some blob of the given type from the blob site
+            </summary>
+            <param name="type">the type of blob we want to extract</param>
+            <returns>the blob that was extracted</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.CanExtractBlob(Assets.Blobs.ResourceBlobBase)">
+            <summary>
+            Determines whether we can extract a specific blob from the blob site
+            </summary>
+            <param name="blob">The blob we want to extract</param>
+            <returns>Whether we can extract it</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.ExtractBlob(Assets.Blobs.ResourceBlobBase)">
+            <summary>
+            Extracts a particular blob from the blob site
+            </summary>
+            <param name="blob">The blob we want to extract</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetExtractableTypes">
+            <summary>
+            Provides all of the types of blobs that can be extracted
+            </summary>
+            <returns>The ResourceTypes for which <see cref="M:Assets.BlobSites.BlobSiteBase.CanExtractBlobOfType(Assets.Blobs.ResourceType)"/> returns true</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetContentsOfType(Assets.Blobs.ResourceType)">
+            <summary>
+            Returns all of the blobs within the blob site that have the specified type
+            </summary>
+            <param name="type">The type we're matching against</param>
+            <returns>All blobs that match that type</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetCountOfContentsOfType(Assets.Blobs.ResourceType)">
+            <summary>
+            Returns the number of blobs within the blob site that have the specified type
+            </summary>
+            <param name="type">The type we're matching against</param>
+            <returns>The number of blobs that match that type</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetSpaceLeftOfType(Assets.Blobs.ResourceType)">
+            <summary>
+            Returns the amount of space left for blobs of a given type
+            </summary>
+            <param name="type">The type we're inquiring about</param>
+            <returns>The amount of space left for that type</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetPlacementPermissionForResourceType(Assets.Blobs.ResourceType)">
+            <summary>
+            Gets whether this blob site is permitting the placement of blobs of a particular type
+            </summary>
+            <param name="type">The type we're inquiring about</param>
+            <returns>Whether the blob site permits placement of that type</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.SetPlacementPermissionForResourceType(Assets.Blobs.ResourceType,System.Boolean)">
+            <summary>
+            Sets the placement permission for the given resource to the given value
+            </summary>
+            <param name="type">The ResourceType we're changing</param>
+            <param name="isPermitted">Whether it's now permitted</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetExtractionPermissionForResourceType(Assets.Blobs.ResourceType)">
+            <summary>
+            Gets whether this blob site is permitting the extraction of blobs of a particular type
+            </summary>
+            <param name="type">The type we're inquiring about</param>
+            <returns>Whether the blob site permits extraction of that type</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.SetExtractionPermissionForResourceType(Assets.Blobs.ResourceType,System.Boolean)">
+            <summary>
+            Sets the extraction permission for the given resource to the given value
+            </summary>
+            <param name="type">The ResourceType we're changing</param>
+            <param name="isPermitted">Whether it's now permitted</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetCapacityForResourceType(Assets.Blobs.ResourceType)">
+            <summary>
+            Gets the per-resource capacity of a particular resource type
+            </summary>
+            <param name="type">The ResourceType we're inquiring about</param>
+            <returns>Its specified capacity</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.SetCapacityForResourceType(Assets.Blobs.ResourceType,System.Int32)">
+            <summary>
+            Sets the per-resource capacity of a particular resource type
+            </summary>
+            <param name="type">The resource whose capacity we want to change</param>
+            <param name="newCapacity">The new capacity</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.GetIsAtCapacityForResource(Assets.Blobs.ResourceType)">
+            <summary>
+            Determines whether the blob site is at capacity for a given resource type
+            </summary>
+            <param name="type">The resource type we're inquiring about</param>
+            <returns>Whether the blob site is at capacity for that resource</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.SetPlacementPermissionsAndCapacity(Assets.Blobs.IntPerResourceDictionary)">
+            <summary>
+            Sets the placement permissions, extraction permissions, per-resource capacity,
+            and total capacity the align with the values defined by some <see cref="T:Assets.Blobs.IntPerResourceDictionary"/>
+            </summary>
+            <param name="placementSummary">The dictionary we're configuring the blob site with</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.ClearPermissionsAndCapacity">
+            <summary>
+            Clears all permissions and capacities on the blob site
+            </summary>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteBase.ClearContents">
+            <summary>
+            Destroys all contents of the blob site and clears any record of them
+            </summary>
+        </member>
+        <member name="T:Assets.BlobSites.BlobSiteConfiguration">
+            <summary>
+            The standard implementation for BlobSiteConfigurationBase
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteConfiguration.BlobFactory">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteConfiguration.SetBlobFactory(Assets.Blobs.ResourceBlobFactoryBase)">
+            <summary>
+            The externalized Set method for BlobFactory
+            </summary>
+            <param name="value">The new value of BlobFactory</param>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteConfiguration.ConnectionCircleRadius">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteConfiguration.SetConnectionCircleRadius(System.Single)">
+            <summary>
+            The externalized Set method for ConnectionCircleRadius
+            </summary>
+            <param name="value">The new value of ConnectionCircleRadius</param>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteConfiguration.AlignmentStrategy">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteConfiguration.SetAlignmentStrategy(Assets.BlobSites.BlobAlignmentStrategyBase)">
+            <summary>
+            The externalized Set method for AlignmentStrategy
+            </summary>
+            <param name="value">The new value of AlignmentStrategy</param>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteConfiguration.BlobRealignmentSpeedPerSecond">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteConfiguration.SetBlobRealignmentSpeedPerSecond(System.Single)">
+            <summary>
+            The externalized Set method for BlobRealignmentSpeedPerSecond
+            </summary>
+            <param name="value">The new value of BlobRealignmentSpeedPerSecond</param>
+        </member>
+        <member name="T:Assets.BlobSites.BlobSiteConfigurationBase">
+            <summary>
+            The abstract base class for all blob site configurations, which instruct blob sites
+            where to destroy their blobs and how to organize their contents in space
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteConfigurationBase.BlobFactory">
+            <summary>
+            The factory the blob site should use to destroy its blobs on a ClearBlobs operation
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteConfigurationBase.ConnectionCircleRadius">
+            <summary>
+            The radius of the circle that highways should connect to the edge of
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteConfigurationBase.AlignmentStrategy">
+            <summary>
+            The alignment strategy that will orchestrate blob movements for the blob site
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteConfigurationBase.BlobRealignmentSpeedPerSecond">
+            <summary>
+            The speed at which blobs, when within the blob site, will realign themselves to
+            the instructions of the alignment strategy
+            </summary>
+        </member>
+        <member name="T:Assets.BlobSites.BlobSiteException">
+            <summary>
+            The exception class for errors related to blob sites that don't fit under
+            the standard exceptions
+            </summary>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteException.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteException.#ctor(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteException.#ctor(System.String,System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.BlobSites.BlobSitePermissionProfile">
+            <summary>
+            A POD class that stores BlobSite placement permission, extraction permission,
+            per resource capacity, and total capacity in a more portable form.
+            </summary>
+            <remarks>
+            This data structure can't be used to underpin blob sites because dictionaries
+            don't serialize well, though there could be a useful refactor that reduces
+            redundancy between the two classes.
+            </remarks>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSitePermissionProfile.AllPermissiveProfile">
+            <summary>
+            Represents the least restrictive possible profile: one ith all permissions set to true
+            and all capacities set to int.MaxValue
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSitePermissionProfile.TotalCapacity">
+            <summary>
+            The total capacity of the profile
+            </summary>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSitePermissionProfile.BuildFromBlobSite(Assets.BlobSites.BlobSiteBase)">
+            <summary>
+            Creates a permission profile out of the permissions and capacities of a specified blob site
+            </summary>
+            <param name="site">The site to construct the profile with</param>
+            <returns>The profile constructed from the site</returns>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSitePermissionProfile.SetPlacementPermission(Assets.Blobs.ResourceType,System.Boolean)">
+            <summary>
+            Changes the placement permission for the specified ResourceType to the specified value.
+            </summary>
+            <param name="type">The ResourceType whose permission is changing</param>
+            <param name="isPermitted">Whether or not it is now permitted</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSitePermissionProfile.SetExtractionPermission(Assets.Blobs.ResourceType,System.Boolean)">
+            <summary>
+            Changes the extraction permission for the specified ResourceType to the specified value.
+            </summary>
+            <param name="type">The ResourceType whose permission is changing</param>
+            <param name="isPermitted">Whether or not it is now permitted</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSitePermissionProfile.SetCapacity(Assets.Blobs.ResourceType,System.Int32)">
+            <summary>
+            Changes the per-resource capacity for the specified ResourceType to the specified value
+            </summary>
+            <param name="type">The ResourceType whose capacity is changing</param>
+            <param name="newCapacity">That ResourceType's new capacity</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSitePermissionProfile.SetTotalCapacity(System.Int32)">
+            <summary>
+            Modifies the total capacity
+            </summary>
+            <param name="newTotalCapacity">The new total capacity of the profile</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSitePermissionProfile.InsertProfileIntoBlobSite(Assets.BlobSites.BlobSiteBase)">
+            <summary>
+            Takes the data contained within the profile and modifies the permissions and capacities
+            of the given blob site to match them.
+            </summary>
+            <param name="blobSite">The blob site to be modified</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSitePermissionProfile.Clear">
+            <summary>
+            Clears all permissions and capacities in the profile
+            </summary>
+        </member>
+        <member name="T:Assets.BlobSites.BlobSiteUISummary">
+            <summary>
+            A class containing information that BlobSite should pass into UIControl whenever it catches user input.
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteUISummary.ConnectionCircleRadius">
+            <summary>
+            Equivalent to BlobSite.Configuration.ConnectionCircleRadius
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteUISummary.TotalCapacity">
+            <summary>
+            Equivalent to <see cref="P:Assets.BlobSites.BlobSite.TotalCapacity"/>
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteUISummary.TotalSpaceLeft">
+            <summary>
+            Equivalent to <see cref="P:Assets.BlobSites.BlobSite.TotalSpaceLeft"/>
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteUISummary.Contents">
+            <summary>
+            A copied equivalent of <see cref="P:Assets.BlobSites.BlobSite.Contents"/>
+            </summary>
+        </member>
+        <member name="P:Assets.BlobSites.BlobSiteUISummary.Transform">
+            <summary>
+            The Transform object associated with the original BlobSite
+            </summary>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteUISummary.#ctor(Assets.BlobSites.BlobSiteBase)">
+            <summary>
+            Creates a BlobSiteUISummary that summarizes the given BlobSiteBase
+            </summary>
+            <param name="siteToSummarize">The site that should be summarized</param>
+        </member>
+        <member name="M:Assets.BlobSites.BlobSiteUISummary.GetPointOfConnectionFacingPoint(UnityEngine.Vector3)">
+            <summary>
+            Analogous to <see cref="M:Assets.BlobSites.BlobSite.GetPointOfConnectionFacingPoint(UnityEngine.Vector3)"/>
+            </summary>
+            <remarks>
+            This method is perhaps an instance of the copy/paste antipattern and should
+            be consolidated with <see cref="M:Assets.BlobSites.BlobSite.GetPointOfConnectionFacingPoint(UnityEngine.Vector3)"/>
+            into a single utility method
+            </remarks>
+            <param name="point">The point from which hypothetical resources are coming</param>
+            <returns></returns>
+        </member>
+        <member name="T:Assets.BlobSites.BoxyBlobAlignmentStrategy">
+            <summary>
+            An alignment strategy that arranges blobs in a box of a certain width and height,
+            with a certain number of blobs per row and column within the box.
+            </summary>
+        </member>
+        <member name="M:Assets.BlobSites.BoxyBlobAlignmentStrategy.RealignBlobs(System.Collections.Generic.IEnumerable{Assets.Blobs.ResourceBlobBase},UnityEngine.Vector2,System.Single)">
+            <inheritdoc/>
+            <remarks>
+            Note that when the number of blobs in blobsToAlign is greater than BlobsPerRow * BlobsPerColumn, 
+            all remaining blobs will not be moved. This is a problem with the alignment strategy that was of
+            so little consequence to the end user experience that its resolution was never a priority. It
+            remains a valid target for refactoring, however.
+            </remarks>
+        </member>
+        <member name="T:Assets.Blobs.BlobEventArgs">
+            <summary>
+            An EventArgs class for events that involve ResourceBlobBases
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.BlobEventArgs.Blob">
+            <summary>
+            The blob that triggered the event
+            </summary>
+        </member>
+        <member name="M:Assets.Blobs.BlobEventArgs.#ctor(Assets.Blobs.ResourceBlobBase)">
+            <summary/>
+        </member>
+        <member name="T:Assets.Blobs.BlobException">
+            <summary>
+            An exception for errors that arise when processing blobs and don't fit into standard
+            exception types.
+            </summary>
+        </member>
+        <member name="M:Assets.Blobs.BlobException.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.BlobException.#ctor(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.BlobException.#ctor(System.String,System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.BlobException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.Blobs.BoolPerResourceDictionary">
+            <summary>
+            A PerResourceDictionary that accepts bools
+            </summary>
+            <remarks>
+            Since Unity doesn't permit generic MonoBehaviours, it's necessary to create separate
+            classes for every desirable PerResourceDictionary type. This might not hold true if
+            PerResourceDictionaryBase was a ScriptableObject.
+            </remarks>
+        </member>
+        <member name="P:Assets.Blobs.BoolPerResourceDictionary.DefaultValue">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.Blobs.ColorPerResourceDictionary">
+            <summary>
+            A PerResourceDictionary that accepts colors
+            </summary>
+            <remarks>
+            Since Unity doesn't permit generic MonoBehaviours, it's necessary to create separate
+            classes for every desirable PerResourceDictionary type. This might not hold true if
+            PerResourceDictionaryBase was a ScriptableObject.
+            </remarks>
+        </member>
+        <member name="P:Assets.Blobs.ColorPerResourceDictionary.DefaultValue">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.Blobs.IntPerResourceDictionary">
+            <summary>
+            A PerResourceDictionary that accepts ints
+            </summary>
+            <remarks>
+            Since Unity doesn't permit generic MonoBehaviours, it's necessary to create separate
+            classes for every desirable PerResourceDictionary type. This might not hold true if
+            PerResourceDictionaryBase was a ScriptableObject.
+            </remarks>
+        </member>
+        <member name="P:Assets.Blobs.IntPerResourceDictionary.DefaultValue">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.IntPerResourceDictionary.BuildSummary(UnityEngine.GameObject)">
+            <summary>
+            Adds a summary to a given GameObject that contains only default values.
+            </summary>
+            <param name="objectToAddTo">The game object that will gain the dictionary as a new component</param>
+            <returns>The created dictionary</returns>
+        </member>
+        <member name="M:Assets.Blobs.IntPerResourceDictionary.BuildSummary(UnityEngine.GameObject,System.Collections.Generic.Dictionary{Assets.Blobs.ResourceType,System.Int32})">
+            <summary>
+            Adds a summary to a given game object whose values are informed by a dictionary of resource types
+            </summary>
+            <param name="objectToAddTo">The game object that will gain the dictionary as a new component</param>
+            <param name="resourceCountByType">The dictionary to extract values from</param>
+            <returns>The created dictionary</returns>
+        </member>
+        <member name="M:Assets.Blobs.IntPerResourceDictionary.BuildSummary(UnityEngine.GameObject,System.Collections.Generic.KeyValuePair{Assets.Blobs.ResourceType,System.Int32}[])">
+            <summary>
+            Adds a summary to a given game object whose values are informed by a list of KeyValuePairs
+            </summary>
+            <param name="objectToAddTo">The game object that will gain the dictionary as a new component</param>
+            <param name="resourcePairs">A parameter list of KeyValuePairs that will inform the values of the dictionary</param>
+            <returns>The created dictionary</returns>
+        </member>
+        <member name="M:Assets.Blobs.IntPerResourceDictionary.GetTotalResourceCount">
+            <summary>
+            Gets the total amount of resoruces contained within the dictioanry
+            </summary>
+            <returns>The sum of the dictionary's resource counts</returns>
+        </member>
+        <member name="M:Assets.Blobs.IntPerResourceDictionary.IsContainedWithinBlobSite(Assets.BlobSites.BlobSiteBase)">
+            <summary>
+            Determines whether the resources specified by the dictionary are contained within a given blob site
+            </summary>
+            <param name="site">The site to be queried</param>
+            <returns>Whether or not all the resources in the dictionary could be extracted from the blob site</returns>
+        </member>
+        <member name="M:Assets.Blobs.IntPerResourceDictionary.GetSummaryString">
+            <summary>
+            Creates a human-readable string that summarizes the contents of the dictionary
+            </summary>
+            <returns>A string that summarizes the contents of the dictionary</returns>
+        </member>
+        <member name="T:Assets.Blobs.MaterialPerResourceDictionary">
+            <summary>
+            A PerResourceDictionary that accepts ints
+            </summary>
+            <remarks>
+            Since Unity doesn't permit generic MonoBehaviours, it's necessary to create separate
+            classes for every desirable PerResourceDictionary type. This might not hold true if
+            PerResourceDictionaryBase was a ScriptableObject.
+            </remarks>
+        </member>
+        <member name="P:Assets.Blobs.MaterialPerResourceDictionary.DefaultValue">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.MaterialPerResourceDictionary.BuildSummary(UnityEngine.GameObject)">
+            <summary>
+            Adds a summary to a given GameObject that contains only default values.
+            </summary>
+            <param name="objectToAddTo">The game object that will gain the dictionary as a new component</param>
+            <returns>The created dictionary</returns>
+        </member>
+        <member name="M:Assets.Blobs.MaterialPerResourceDictionary.BuildSummary(UnityEngine.GameObject,System.Collections.Generic.Dictionary{Assets.Blobs.ResourceType,UnityEngine.Material})">
+            <summary>
+            Adds a summary to a given game object whose values are informed by a dictionary of resource types
+            </summary>
+            <param name="objectToAddTo">The game object that will gain the dictionary as a new component</param>
+            <param name="resourceCountByType">The dictionary to extract values from</param>
+            <returns>The created dictionary</returns>
+        </member>
+        <member name="M:Assets.Blobs.MaterialPerResourceDictionary.BuildSummary(UnityEngine.GameObject,System.Collections.Generic.KeyValuePair{Assets.Blobs.ResourceType,UnityEngine.Material}[])">
+            <summary>
+            Adds a summary to a given game object whose values are informed by a list of KeyValuePairs
+            </summary>
+            <param name="objectToAddTo">The game object that will gain the dictionary as a new component</param>
+            <param name="resourcePairs">A parameter list of KeyValuePairs that will inform the values of the dictionary</param>
+            <returns>The created dictionary</returns>
+        </member>
+        <member name="T:Assets.Blobs.MovementGoal">
+            <summary>
+            POD class for recording the movement goals of ResourceBlobs
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.MovementGoal.DesiredLocation">
+            <summary>
+            The location the ResourceBlob should reach
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.MovementGoal.SpeedPerSecond">
+            <summary>
+            The speed the ResourceBlob is instructed to travel at
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.MovementGoal.ActionToPerformOnTermination">
+            <summary>
+            The action that the ResourceBlob should call when it's reached its destination
+            </summary>
+        </member>
+        <member name="M:Assets.Blobs.MovementGoal.#ctor(UnityEngine.Vector3,System.Single)">
+            <summary>
+            Creates a new movement goal to reach a desired location at a desired speed
+            </summary>
+            <param name="desiredLocation">The location to travel to</param>
+            <param name="speedPerSecond">The speed at which the ResourceBlob should travel</param>
+        </member>
+        <member name="M:Assets.Blobs.MovementGoal.#ctor(UnityEngine.Vector3,System.Single,System.Action)">
+            <summary>
+            Creates a new movement goal to reach a desired location at a desired speed, and an action
+            to be performed on arrival
+            </summary>
+            <param name="desiredLocation">The location to travel to</param>
+            <param name="speedPerSecond">The speed at which the ResourceBlob should travel</param>
+            <param name="actionToPerformOnTermination">The action that should be called when the ResourceBlob reaches its destination</param>
+        </member>
+        <member name="T:Assets.Blobs.PerResourceDictionaryBase`1">
+            <summary>
+            An abstract base class for a dictionary on the ResourceType enum that plays
+            well with Unity's serialization
+            </summary>
+            <remarks>
+            Since Unity doesn't serialize Dictionaries but I needed to establish several
+            mappings between ResourceType and other values, I decided to use the equivalence
+            of enums and ints to fudge a dictionary-like object into existence.
+            
+            This implementation is not robust to modifications on ResourceType. Changing
+            the ResourceType enum will likely break any instance of this class or any of
+            its subclasses.
+            </remarks>
+            <typeparam name="T">The value type of the dictionary</typeparam>
+        </member>
+        <member name="P:Assets.Blobs.PerResourceDictionaryBase`1.Item(Assets.Blobs.ResourceType)">
+            <summary>
+            Retrieves the value keyed to the given ResourceType
+            </summary>
+            <remarks>
+            In order to prevent IndexOutOfRange exceptions from being thrown,
+            this class makes sure to initialize ValueList with a number of
+            values equal to the number of elements in ResourceType.
+            </remarks>
+            <param name="type">The ResourceType to be used as a key</param>
+            <returns>the value associated with the key</returns>
+        </member>
+        <member name="F:Assets.Blobs.PerResourceDictionaryBase`1.ValueList">
+            <summary>
+            The list used to store and simulate the class's dictionary-like properties
+            </summary>
+            <remarks>
+            Keep in mind that this list's length is equal to the number of distinct values
+            defined in ResourceType, and should be modified only with great care
+            </remarks>
+        </member>
+        <member name="P:Assets.Blobs.PerResourceDictionaryBase`1.DefaultValue">
+            <summary>
+            The default value that every entry in the ValueList will be initialized to.
+            </summary>
+            <remarks>
+            Note that the PerResourceDictionary defines some value for every single ResourceType.
+            There are no empty entries.
+            </remarks>
+        </member>
+        <member name="M:Assets.Blobs.PerResourceDictionaryBase`1.GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.PerResourceDictionaryBase`1.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.PerResourceDictionaryBase`1.TryGetValue(Assets.Blobs.ResourceType,`0@)">
+            <summary>
+            Presents a safer way to access values. Ideally this method should be unnecessary, but
+            since certain operations require revealing the ValueList to subclasses, it's still
+            possible that we won't have a value for a given key.
+            </summary>
+            <param name="key">The resource type whose value we want to retrieve</param>
+            <param name="value">where we will store the value we find, if any</param>
+            <returns>True if there was a value associated with our key, and false otherwise</returns>
+        </member>
+        <member name="M:Assets.Blobs.PerResourceDictionaryBase`1.ToReadOnlyDictionary">
+            <summary>
+            Retrieves a ReadOnlyDictionary whose values are equivalent to those in the
+            PerResourceDictionary, unless ValueList has been manipulated.
+            </summary>
+            <returns>An equivalent ReadOnlyDictionary</returns>
+        </member>
+        <member name="T:Assets.Blobs.ResourceBlob">
+            <summary>
+            The standard implementation for ResourceBlobBase. These objects represent the
+            products and needs of societies, and their manipulation represents the bulk of
+            gameplay.
+            </summary>
+        </member>
+        <member name="P:Assets.Blobs.ResourceBlob.BlobType">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Blobs.ResourceBlob.ParentFactory">
+            <summary>
+            The factory that created this ResourceBlob. Is used for graceful destruction,
+            though it's possible to remove this dependency by making such destruction the
+            responsibility of the factory itself.
+            </summary>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlob.EnqueueNewMovementGoal(Assets.Blobs.MovementGoal)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlob.ClearAllMovementGoals">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlob.Tick(System.Single)">
+            <inheritdoc/>
+            <remarks>
+            Movement is performed via Vector3.MoveTowards, which performs linear interpolation
+            between the two locations and guarantees no overshoot. This could ostensibly be
+            replaced by another similar method, like Vector3.SmoothDamp, without changing the
+            underlying structure of the method.
+            </remarks>
+        </member>
+        <member name="T:Assets.Blobs.ResourceBlobBase">
+            <summary>
+            The abstract base class for all resource blobs, objects which are the
+            products and needs of societies and whose manipulation represents the
+            bulk of gameplay.
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.ResourceBlobBase.DesiredZPositionOfAllBlobs">
+            <summary>
+            A common Z position that all blobs should occupy
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.ResourceBlobBase.RadiusOfBlobs">
+            <summary>
+            The radius that all blobs should have, used primarily by blob alignment strategies
+            to organize blobs
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.ResourceBlobBase.SecondsToPopIn">
+            <summary>
+            The amount of time it takes for a newly-created blob to pop into existence up to
+            its normal size.
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.ResourceBlobBase.StartingScaleVelocity">
+            <summary>
+            The starting velocity of a ResourceBlob's scale change, which determines how it
+            pops into existence
+            </summary>
+        </member>
+        <member name="F:Assets.Blobs.ResourceBlobBase.DestinationSnapDelta">
+            <summary>
+            When a resource blob is within this distance of its destination, it should consider
+            itself as having arrived and should snap to the location proper.
+            </summary>
+        </member>
+        <member name="P:Assets.Blobs.ResourceBlobBase.BlobType">
+            <summary>
+            The type of blob this ResourceBlob is
+            </summary>
+        </member>
+        <member name="E:Assets.Blobs.ResourceBlobBase.BeingDestroyed">
+            <summary>
+            Fires whenever the ResourceBlob is in the process of being destroyed, primarily
+            used to help BlobTube remove references to blobs as they're being destroyed
+            </summary>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobBase.RaiseBeingDestroyed">
+            <summary>
+            Used to signal the ResourceBlob's imminent demise
+            </summary>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobBase.EnqueueNewMovementGoal(Assets.Blobs.MovementGoal)">
+            <summary>
+            Adds the given movement goal to the end of its queue of pending movement goals
+            </summary>
+            <param name="goal">The goal to be enqueued</param>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobBase.ClearAllMovementGoals">
+            <summary>
+            Clears all pending movement goals
+            </summary>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobBase.Tick(System.Single)">
+            <summary>
+            Advances the simulation of this ResourceBlob some number of seconds
+            </summary>
+            <param name="secondsPassed">The number of seconds that have passed since the last simulation update</param>
+        </member>
+        <member name="T:Assets.Blobs.ResourceBlobFactory">
+            <summary>
+            The standard implementation for ResourceBlobFactoryBase, which creates and ticks all blobs.
+            </summary>
+        </member>
+        <member name="P:Assets.Blobs.ResourceBlobFactory.Blobs">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactory.BuildBlob(Assets.Blobs.ResourceType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactory.BuildBlob(Assets.Blobs.ResourceType,UnityEngine.Vector2)">
+            <inheritdoc/>
+            <remarks>
+            BuildBlob operates primarily by instantiating a prefab that is assumed to contain
+            a ResourceBlob component.
+            </remarks>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactory.DestroyBlob(Assets.Blobs.ResourceBlobBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactory.UnsubscribeBlob(Assets.Blobs.ResourceBlobBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactory.TickAllBlobs(System.Single)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.Blobs.ResourceBlobFactoryBase">
+            <summary>
+            The abstract base class for all resource blob factories.
+            </summary>
+            <remarks>
+            Note the presence of an unsubscribe method but the lack of a subscribe method.
+            Since blobs are not manipulated at design time, we don't need to manually subscribe
+            them. We only need to hedge against the possibility of Destroy being called inappropriately.
+            </remarks>
+        </member>
+        <member name="P:Assets.Blobs.ResourceBlobFactoryBase.Blobs">
+            <summary>
+            All of the extant blobs the factory has created
+            </summary>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactoryBase.BuildBlob(Assets.Blobs.ResourceType)">
+            <summary>
+            Create a new ResourceBlobBase with a given BlobType
+            </summary>
+            <param name="typeOfResource">The BlobType of the new blob</param>
+            <returns>The blob created</returns>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactoryBase.BuildBlob(Assets.Blobs.ResourceType,UnityEngine.Vector2)">
+            <summary>
+            Create a new ResourceBlobBase with a given BlobType at the specified 2D position
+            </summary>
+            <param name="typeOfResource">The BlobType of the new blob</param>
+            <param name="startingPosition">The starting position of the new blob</param>
+            <returns>The blob created</returns>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactoryBase.DestroyBlob(Assets.Blobs.ResourceBlobBase)">
+            <summary>
+            Unsubscribes and then destroys a given blob
+            </summary>
+            <param name="blob">The blob to destroy</param>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactoryBase.UnsubscribeBlob(Assets.Blobs.ResourceBlobBase)">
+            <summary>
+            Unsubscribes the blob, removing it from the factory's records
+            </summary>
+            <param name="blob">The blob to unsubscribe</param>
+        </member>
+        <member name="M:Assets.Blobs.ResourceBlobFactoryBase.TickAllBlobs(System.Single)">
+            <summary>
+            Ticks all blobs in the factory's records, causing them to simulate their behavior
+            </summary>
+            <param name="secondsPassed">The number of seconds that've passed since the last tick</param>
+        </member>
+        <member name="T:Assets.Blobs.ResourceType">
+            <summary>
+            Defines all of the possible resource types.
+            </summary>
+            <remarks>
+            Be wary when modifying this enum. PerResourceDictionaryBase relies on the precise
+            order of these values in order to function. You can add values to the end of the
+            enum, but if you interject new values in the middle or change the order, it's very
+            likely that you'll break every serialized per-resource dictionary in the project.
+            </remarks>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.Food">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.Wood">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.Ore">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.Cotton">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.Textiles">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.Steel">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.Lumber">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.ServiceGoods">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.HeavyMachinery">
+            <summary/>
+        </member>
+        <member name="F:Assets.Blobs.ResourceType.HiTechGoods">
+            <summary/>
+        </member>
+        <member name="T:Assets.ConstructionZones.ClearForestConstructionProject">
+            <summary>
+            Defines and executes the clearing of forests
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ClearForestConstructionProject.IsValidAtLocation(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ClearForestConstructionProject.BlobSiteContainsNecessaryResources(Assets.BlobSites.BlobSiteBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ClearForestConstructionProject.ExecuteBuild(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ClearForestConstructionProject.SetSiteForProject(Assets.BlobSites.BlobSiteBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ClearForestConstructionProject.GetCostInfo">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.ConstructionZones.ConstructionProjectBase">
+            <summary>
+            The abstract base class for all construction projects, which do the main work of
+            determining what gets built, what it costs, and where it can go.
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionProjectBase.IsValidAtLocation(Assets.Map.MapNodeBase)">
+            <summary>
+            Determines whether this construction project is valid at the given location.
+            </summary>
+            <param name="location">The location under consideration</param>
+            <returns>Whether or not the construction project is valid at the location</returns>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionProjectBase.ExecuteBuild(Assets.Map.MapNodeBase)">
+            <summary>
+            Executes whatever actions follow from completing the construction project.
+            </summary>
+            <param name="location">The map node where the build will be executed</param>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionProjectBase.SetSiteForProject(Assets.BlobSites.BlobSiteBase)">
+            <summary>
+            Modifies the permissions and capacities of the given blob site to fit the
+            needs of this construction project, and also clears its contents.
+            </summary>
+            <param name="site">The site to be modified</param>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionProjectBase.BlobSiteContainsNecessaryResources(Assets.BlobSites.BlobSiteBase)">
+            <summary>
+            Determines whether the given blob site has the right collection of resources
+            for the construction project to get considered fulfilled
+            </summary>
+            <param name="site">The site under consideration</param>
+            <returns>Whether ExecuteBuild is mechanically valid on the location containing this blob site</returns>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionProjectBase.GetCostInfo">
+            <summary>
+            Gets a representation of the cost of this construction project
+            </summary>
+            <returns>A ResourceDisplayInfo object representing the cost of the construction project</returns>
+        </member>
+        <member name="T:Assets.ConstructionZones.ConstructionProjectUISummary">
+            <summary>
+            A class containing information that the UI might need to know about a given construction project
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionProjectUISummary.Name">
+            <summary>
+            The name of the construction project
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionProjectUISummary.Cost">
+            <summary>
+            Information about how to display its cost
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionProjectUISummary.#ctor">
+            <summary>
+            Initializes an empty summary
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionProjectUISummary.#ctor(System.String,Assets.UI.Blobs.ResourceDisplayInfo)">
+            <summary>
+            Initializes a summary with the specified name and costDisplayInfo
+            </summary>
+            <param name="name">The name to send to the UI</param>
+            <param name="costDisplayInfo">The cost summary info to send to the UI</param>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionProjectUISummary.#ctor(Assets.ConstructionZones.ConstructionProjectBase)">
+            <summary>
+            Creates a summary from the given construction project
+            </summary>
+            <param name="projectToSummarize">The project the summary should summarize</param>
+        </member>
+        <member name="T:Assets.ConstructionZones.ConstructionZone">
+            <summary>
+            The standard implementation for ConstructionZoneBase. It enable the creation of societies,
+            resource depots, highway managers, and the addition and removal of forests by the player.
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZone.ID">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZone.CurrentProject">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZone.Location">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZone.SetLocation(Assets.Map.MapNodeBase)">
+            <summary>
+            Externalized Set method for Location
+            </summary>
+            <param name="value">The new value of Location</param>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZone.ProjectHasBeenCompleted">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZone.ParentFactory">
+            <summary>
+            The factory that is supposed to manage this ConstructionZone
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZone.UIControl">
+            <summary>
+            The UIControlBase that this ConstructionZone should send player input events to
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZone.ProjectCompletionAudio">
+            <summary>
+            The audio to play when the project is completed
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZone.OnPointerClick(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZone.OnPointerEnter(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZone.OnPointerExit(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZone.OnSelect(UnityEngine.EventSystems.BaseEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.ConstructionZones.ConstructionZoneBase">
+            <summary>
+            The abstract base class for all construction zones, which enable the creation of societies, resource depots,
+            highway managers, and the addition and removal of forests by the player.
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneBase.ID">
+            <summary>
+            An ID unique among all ConstructionZoneBases
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneBase.Location">
+            <summary>
+            The map node the construction zone is placed upon
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneBase.CurrentProject">
+            <summary>
+            The construction project this construction zone is trying to complete
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneBase.ProjectHasBeenCompleted">
+            <summary>
+            Whether or not the current project has been completed
+            </summary>
+        </member>
+        <member name="T:Assets.ConstructionZones.ConstructionZoneException">
+            <summary>
+            An exception for communicating errors involving construction zones that aren't
+            covered by the standard exceptions
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneException.#ctor">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneException.#ctor(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneException.#ctor(System.String,System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.ConstructionZones.ConstructionZoneFactory">
+            <summary>
+            The standard implementation for ConstructionZoneFactoryBase. Handles creation and destruction
+            of construction zones, keeps a record of available construction projects, and maintains
+            construction zone placement restrictions.
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneFactory.AvailableProjects">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneFactory.ConstructionZones">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneFactory.UIControl">
+            <summary>
+            The UIControlBase to inject into all created construction zones
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneFactory.ProjectCompletionAudio">
+            <summary>
+            The ProjectCompletionAudio to inject into all created construction zones
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.GetConstructionZoneOfID(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.HasConstructionZoneAtLocation(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.GetConstructionZoneAtLocation(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.CanBuildConstructionZone(Assets.Map.MapNodeBase,Assets.ConstructionZones.ConstructionProjectBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.BuildConstructionZone(Assets.Map.MapNodeBase,Assets.ConstructionZones.ConstructionProjectBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.DestroyConstructionZone(Assets.ConstructionZones.ConstructionZoneBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.UnsubsribeConstructionZone(Assets.ConstructionZones.ConstructionZoneBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.TryGetProjectOfName(System.String,Assets.ConstructionZones.ConstructionProjectBase@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactory.GetAvailableProjects">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.ConstructionZones.ConstructionZoneFactoryBase">
+            <summary>
+            The abstract base class for all construction zone factories. Handles creation and destruction
+            of construction zones, keeps a record of available construction projects, and maintains
+            construction zone placement restrictions.
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneFactoryBase.ConstructionZones">
+            <summary>
+            All the construction zones created by this factory
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.GetConstructionZoneOfID(System.Int32)">
+            <summary>
+            Retrieves the construction zone with the given ID
+            </summary>
+            <param name="id">The id of the construction zone we wish to find</param>
+            <returns>The construction zone with the given ID, or null if none exists</returns>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.HasConstructionZoneAtLocation(Assets.Map.MapNodeBase)">
+            <summary>
+            Determines whether or not a construction zone already exists at the given location
+            </summary>
+            <param name="location">The location to check</param>
+            <returns>Whether there is a construction zone there</returns>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.GetConstructionZoneAtLocation(Assets.Map.MapNodeBase)">
+            <summary>
+            Finds the construction zone at the given location
+            </summary>
+            <param name="location">The location to check</param>
+            <returns>The construction zone at that location</returns>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.CanBuildConstructionZone(Assets.Map.MapNodeBase,Assets.ConstructionZones.ConstructionProjectBase)">
+            <summary>
+            Determines whether or not a construction zone with a given project can be built at the given location
+            </summary>
+            <param name="location">The desired location for the construction zone</param>
+            <param name="project">The desired project for the construction zone</param>
+            <returns>Whether or not the desired construction zone is valid</returns>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.BuildConstructionZone(Assets.Map.MapNodeBase,Assets.ConstructionZones.ConstructionProjectBase)">
+            <summary>
+            Builds a construction zone with the given project at the given location.
+            </summary>
+            <param name="location">The location to build the construction zone</param>
+            <param name="project">The active project that construction zone will contain</param>
+            <returns>The newly created construction zone</returns>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.DestroyConstructionZone(Assets.ConstructionZones.ConstructionZoneBase)">
+            <summary>
+            Unsubscribes and destroys the speicifed construction zone
+            </summary>
+            <param name="constructionZone">The construction zone to destroy</param>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.UnsubsribeConstructionZone(Assets.ConstructionZones.ConstructionZoneBase)">
+            <summary>
+            Unsubscribes the given construction zone, so that the factory no longer considers its existence
+            </summary>
+            <param name="constructionZone">The construction zone to unsubscribe</param>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.TryGetProjectOfName(System.String,Assets.ConstructionZones.ConstructionProjectBase@)">
+            <summary>
+            Attempts to acquire a project with a given name.
+            </summary>
+            <param name="projectName">The name of the project we wish to find</param>
+            <param name="project">The project of that name that the method found, or null if it found none</param>
+            <returns>A value representing whether the operation was successful or not</returns>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneFactoryBase.GetAvailableProjects">
+            <summary>
+            Gets all projects that are available for construction
+            </summary>
+            <returns>All of the construction projects this factory recognizes</returns>
+        </member>
+        <member name="T:Assets.ConstructionZones.ConstructionZoneUISummary">
+            <summary>
+            A class containing information that ConstructionZoneBase should pass into UIControl whenever
+            it catches user input.
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneUISummary.ID">
+            <summary>
+            The ConstructionZoneBase-unique ID of the underlying ConstructionZoneBase
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneUISummary.Project">
+            <summary>
+            Summary information about construction project of the construction zone
+            </summary>
+        </member>
+        <member name="P:Assets.ConstructionZones.ConstructionZoneUISummary.Transform">
+            <summary>
+            The transform associated with the construction zone
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneUISummary.#ctor">
+            <summary>
+            Creates an empty summary
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ConstructionZoneUISummary.#ctor(Assets.ConstructionZones.ConstructionZoneBase)">
+            <summary>
+            Creates a summary with appropriate information supplied from a given construction zone
+            </summary>
+            <param name="zoneToSummarize">The construction zone the summary should summarize</param>
+        </member>
+        <member name="T:Assets.ConstructionZones.FlexibleCostConstructionProjectBase">
+            <summary>
+            The abstract base class for construction projects who have flexible costs.
+            </summary>
+            <remarks>
+            Flexibility is defined by a total number of resources required and a collection of resource types
+            that can be used to satisfy that number. For instance, "10 of any combination of Food, Wood, and Steel"
+            is a flexible cost, while "10 Food, 10 Wood, and 10 Steel" is not.
+            </remarks>
+        </member>
+        <member name="F:Assets.ConstructionZones.FlexibleCostConstructionProjectBase.NumberOfResourcesRequired">
+            <summary>
+            The total number of resources that must be acquired to complete the project
+            </summary>
+        </member>
+        <member name="F:Assets.ConstructionZones.FlexibleCostConstructionProjectBase.ResourceTypesAccepted">
+            <summary>
+            The types of resources that are accepted by this project
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.FlexibleCostConstructionProjectBase.SetSiteForProject(Assets.BlobSites.BlobSiteBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.FlexibleCostConstructionProjectBase.BlobSiteContainsNecessaryResources(Assets.BlobSites.BlobSiteBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.FlexibleCostConstructionProjectBase.GetCostInfo">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.ConstructionZones.HighwayManagerConstructionProject">
+            <summary>
+            Defines and executs the construction of a highway manager
+            </summary>
+        </member>
+        <member name="F:Assets.ConstructionZones.HighwayManagerConstructionProject.Cost">
+            <summary>
+            The fixed cost of the project
+            </summary>
+        </member>
+        <member name="F:Assets.ConstructionZones.HighwayManagerConstructionProject.HighwayManagerFactory">
+            <summary>
+            The factory that should be used to construct the highway manager
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.HighwayManagerConstructionProject.IsValidAtLocation(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.HighwayManagerConstructionProject.BlobSiteContainsNecessaryResources(Assets.BlobSites.BlobSiteBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.HighwayManagerConstructionProject.ExecuteBuild(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.HighwayManagerConstructionProject.SetSiteForProject(Assets.BlobSites.BlobSiteBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.HighwayManagerConstructionProject.GetCostInfo">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.ConstructionZones.PlantForestConstructionProject">
+            <summary>
+            Defines and executes the planting of forests on grassland
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.PlantForestConstructionProject.IsValidAtLocation(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.PlantForestConstructionProject.BlobSiteContainsNecessaryResources(Assets.BlobSites.BlobSiteBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.PlantForestConstructionProject.ExecuteBuild(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.PlantForestConstructionProject.SetSiteForProject(Assets.BlobSites.BlobSiteBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.PlantForestConstructionProject.GetCostInfo">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.ConstructionZones.ResourceDepotConstructionProject">
+            <summary>
+            Defines and executes the construction of a resource depot
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.ResourceDepotConstructionProject.IsValidAtLocation(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.ResourceDepotConstructionProject.ExecuteBuild(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.ConstructionZones.TierOneSocietyConstructionProject">
+            <summary>
+            Defines and executes the construction of a particular tier 1 society
+            </summary>
+        </member>
+        <member name="F:Assets.ConstructionZones.TierOneSocietyConstructionProject.SocietyFactory">
+            <summary>
+            The factory that should be used to construct the society
+            </summary>
+        </member>
+        <member name="F:Assets.ConstructionZones.TierOneSocietyConstructionProject.ComplexityToBuild">
+            <summary>
+            The complexity to construct when ExecuteBuild is called
+            </summary>
+        </member>
+        <member name="F:Assets.ConstructionZones.TierOneSocietyConstructionProject.LadderOfComplexity">
+            <summary>
+            The complexity ladder that the constructed society should be placed upon
+            </summary>
+        </member>
+        <member name="M:Assets.ConstructionZones.TierOneSocietyConstructionProject.IsValidAtLocation(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.ConstructionZones.TierOneSocietyConstructionProject.ExecuteBuild(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.Highways.EdgeOrientationUtil">
+            <summary>
+            A simple utility class that's used to help align map edges with their
+            endpoints.
+            </summary>
+            <remarks>
+            MapEdges are rendered by rotating the edge's transform so that
+            it's perpendicular to the line between its endpoints, and then scaling its
+            visual component to stretch it out. This method performs that operation.
+            </remarks>
+        </member>
+        <member name="M:Assets.Highways.EdgeOrientationUtil.AlignTransformWithEndpoints(UnityEngine.Transform,UnityEngine.Vector3,UnityEngine.Vector3,System.Boolean)">
+            <summary>
+            Rotates the transform so that its Up vector is perpendicular (in 2D space) to the
+            vector between endpoint1 and endpoint2. The method can be told to change the scale
+            of the transform to match the distance between the endpoints.
+            </summary>
+            <param name="transform">The transform to be modified</param>
+            <param name="endpoint1">The first endpoint to be aligned with</param>
+            <param name="endpoint2">The second endpoint to be aligned with</param>
+            <param name="changeScale">Should the method change the X-scale of the transform to match the distance between the endpoints?</param>
+        </member>
+        <member name="T:Assets.Map.MapEdge">
+            <summary>
+            The standard implementation of MapEdgeBase.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapEdge.ID">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapEdge.FirstNode">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapEdge.SecondNode">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapEdge.ParentGraph">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapEdge.DisplayComponent">
+            <summary>
+            The display component of the MapEdge, which is intended to be a child
+            object that holds only the logic for the display of the MapEdge
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapEdge.RefreshOrientation">
+            <inheritdoc/>
+            <remarks>
+            In the standard implementation, refreshing the orientation means rotating
+            the MapEdge, while rotating and scaling its display component, via 
+            <see cref="M:Assets.Map.EdgeOrientationUtil.AlignTransformWithEndpoints(UnityEngine.Transform,UnityEngine.Vector3,UnityEngine.Vector3,System.Boolean)"/>.
+            This separated method was important for a previous implementation of the game and may
+            now be unnecessary.
+            </remarks>
+        </member>
+        <member name="M:Assets.Map.MapEdge.SetNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <summary>
+            Convenience method to modify both nodes at once
+            </summary>
+            <param name="firstNode">The new value for the first node</param>
+            <param name="secondNode">The new value for the second node</param>
+        </member>
+        <member name="T:Assets.Map.MapEdgeBase">
+            <summary>
+            The abstract base class from which all map edges derive. A map edge is a connection between
+            two map nodes upon which highways can be built. The MapEdgeBase class is provided
+            primarily for convenience, and a more performant Map paradigm would likely not
+            include them in their current form.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapEdgeBase.ID">
+            <summary>
+            A unique ID that the UI can use to identify instances without accessing them directly
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapEdgeBase.FirstNode">
+            <summary>
+            The first endpoint of the edge. Endpoint order is largely irrelevant.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapEdgeBase.SecondNode">
+            <summary>
+            The second endpoint of the edge. Endpoint order is largely irrelevant.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapEdgeBase.ParentGraph">
+            <summary>
+            The MapGraphBase that's supposed to be managing this edge.
+            </summary>
+            <remarks>
+            Because of complications arising from prefab instantiating and design-time
+            copying, it's sometimes necessary for MapEdgeBases to be subscribed upon their
+            creation. Since MapGraphBase has no way of knowing when a new MapEdgeBase
+            has been created, it's up to the MapEdgeBase itself to subscribe itself.
+            </remarks>
+        </member>
+        <member name="M:Assets.Map.MapEdgeBase.RefreshOrientation">
+            <summary>
+            Modifies the MapEdgeBase so that it's algined with its endpoints.
+            </summary>
+        </member>
+        <member name="T:Assets.Map.MapEdgeEventArgs">
+            <summary>
+            An EventArgs class used during events involving map edges
+            </summary>
+        </member>
+        <member name="F:Assets.Map.MapEdgeEventArgs.Edge">
+            <summary>
+            The MapEdgeBase that triggered the event
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapEdgeEventArgs.#ctor(Assets.Map.MapEdgeBase)">
+            <summary>
+            Constructs a new MapEdgeEventArgs from a given edge
+            </summary>
+            <param name="edge"></param>
+        </member>
+        <member name="T:Assets.Map.MapGraph">
+            <summary>
+            The standard implementation for MapGraphBase, which represents the game map as an
+            undirected graph. Acts as the factory, adjacency canon, and pathfinder for all
+            nodes and edges.
+            </summary>
+            <remarks>
+            MapGraphs generate new Nodes and Edges through prefabs, configured in the inspector,
+            that are then instantiated and provided with their dependencies from the runtime.
+            
+            MapGraphs also operate in EditMode, which means that they make use of DestroyImmediate
+            instead of Destroy and contend with Unity's serializer and transfers between runtime
+            environments
+            </remarks>
+        </member>
+        <member name="P:Assets.Map.MapGraph.Nodes">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapGraph.Edges">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapGraph.UIControl">
+            <summary>
+            A dependency that must be injected into all newly subscribed nodes
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapGraph.TerrainMaterialRegistry">
+            <summary>
+            A dependency that must be injected into all newly subscribed nodes
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapGraph.TerrainTileGrid">
+            <summary>
+            A dependency that must be injected into all newly subscribed nodes
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapGraph.AlgorithmSet">
+            <summary>
+            An object containing implementations for a number of graph traversal algorithms the
+            MapGraph will use to determine paths and the nearest nodes and edges with certain
+            conditions.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapGraph.BlobSiteConfiguration">
+            <summary>
+            A depndency that must be injected into the BlobSites of all newly subscribed nodes.
+            Is also placed into the now-obsolete BlobSites on all subsribed MapEdges
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapGraph.BuildNode(UnityEngine.Vector3)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.BuildNode(UnityEngine.Vector3,Assets.Map.TerrainType)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.DestroyNode(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.SubscribeNode(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.UnsubscribeNode(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.BuildMapEdge(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.DestroyMapEdge(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.DestroyMapEdge(Assets.Map.MapEdgeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.SubscribeMapEdge(Assets.Map.MapEdgeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.UnsubscribeMapEdge(Assets.Map.MapEdgeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.GetNodeOfID(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.GetEdge(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.GetNeighborsOfNode(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.GetEdgesAttachedToNode(Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.GetDistanceBetweenNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.GetShortestPathBetweenNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraph.GetNearestNodeToEdgeWhere(Assets.Map.MapEdgeBase,System.Predicate{Assets.Map.MapNodeBase},System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.Map.MapGraphAlgorithmSet">
+            <summary>
+            The standard implementation of MapGraphAlgorithmSetBase, which uses Djikstra's and
+            BFS to compute its values.
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapGraphAlgorithmSet.GetDistanceBetweenNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase,System.Collections.Generic.IEnumerable{Assets.Map.MapNodeBase})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraphAlgorithmSet.GetShortestPathBetweenNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase,System.Collections.Generic.IEnumerable{Assets.Map.MapNodeBase})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraphAlgorithmSet.GetNearestNodeToEdgeWhere(Assets.Map.MapEdgeBase,System.Predicate{Assets.Map.MapNodeBase},System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapGraphAlgorithmSet.GetNearestNodeToNodeWhere(Assets.Map.MapNodeBase,System.Predicate{Assets.Map.MapNodeBase},System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Assets.Map.MapGraphAlgorithmSetBase">
+            <summary>
+            An abstract base class that defines a set of algorithms MapGraph needs in order to function correctly.
+            </summary>
+            <remarks>
+            These algorithms are separated into a different class in order to keep MapGraph clean,
+            to make re-use easier, and to hedge against the possibility of multiple implementations.
+            It also encourages the implementation of stateless algorithms, which makes testing easier.
+            </remarks>
+        </member>
+        <member name="M:Assets.Map.MapGraphAlgorithmSetBase.GetDistanceBetweenNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase,System.Collections.Generic.IEnumerable{Assets.Map.MapNodeBase})">
+            <summary>
+            Gets the distance, in edges, between a pair of given nodes if a connection exists between them.
+            Unlike in MapGraph, this method considers only the neighbor relations defined on the various nodes
+            </summary>
+            <param name="node1">The first node to consider</param>
+            <param name="node2">The second node to consider</param>
+            <param name="allNodes">A record of all nodes to be considered for the path</param>
+            <returns>The distance, in edges, between the two endpoints, or int.MaxValue if no path exists</returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphAlgorithmSetBase.GetShortestPathBetweenNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase,System.Collections.Generic.IEnumerable{Assets.Map.MapNodeBase})">
+            <summary>
+            Gets the shortest path between the starting and ending nodes, traversing only the nodes specified
+            in allNodes. If a path exists, returns a list whose first and last elements are the starting and ending points,
+            with a number of intervening nodes that represent a valid path. Otherwise, the list is just the starting node.
+            </summary>
+            <param name="start">The node to begin traversal from</param>
+            <param name="end">The desired node to reach</param>
+            <param name="allNodes">All nodes to consider for the path ahead</param>
+            <returns>A list containing the path from start to end (capped by those two values) if a path exists.
+            Otherwise, a list containing only start</returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphAlgorithmSetBase.GetNearestNodeToEdgeWhere(Assets.Map.MapEdgeBase,System.Predicate{Assets.Map.MapNodeBase},System.Int32)">
+            <summary>
+            Gets the nearest node to the endpoints of a given edge of origin that satisfies a specified condition.
+            Will only return nodes within a specified maximum distance, and reports the shortest distance from one
+            of the two endpoints without specifying which endpoint is closer.
+            </summary>
+            <remarks>
+            Note that this method extracts neighbors directly from the MapNodes rather than routing through MapGraph.
+            </remarks>
+            <param name="edgeOfOrigin">The edge whose endpoints are the centers of the search</param>
+            <param name="condition">The condition that the nearest node must satisfy</param>
+            <param name="maxDistance">The maximum distance the method will search to find a node meeting the conditions</param>
+            <returns>
+            A NodeDistanceSummary containing the nearest valid node and its distance from one of the
+            endpoints of the edgeOfOrigin, or null and some arbitrary number of none was found
+            </returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphAlgorithmSetBase.GetNearestNodeToNodeWhere(Assets.Map.MapNodeBase,System.Predicate{Assets.Map.MapNodeBase},System.Int32)">
+            <summary>
+            Gets the nearest node to the given node that satisfies a specified condition.
+            Will only return nodes within a specified maximum distance, and reports the 
+            shortest distance from the node.
+            </summary>
+            <param name="rootNode">The node that centers the search</param>
+            <param name="condition">The condition that the nearest node must satisfy</param>
+            <param name="maxDistance">The maximum distance the method will search to find a node meeting the conditions</param>
+            <returns>
+            A NodeDistanceSummary containing the nearest valid node and its distance from
+            the root node, or null and some arbitrary number of none was found
+            </returns>
+        </member>
+        <member name="T:Assets.Map.MapGraphBase">
+            <summary>
+            An abstract base class that manages the in-game map. Maps are represented as undirected graphs.
+            Acts as the factory, adjacency canon, and pathfinder for all nodes and edges.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapGraphBase.Nodes">
+            <summary>
+            Contains all of the nodes subscribed to the graph.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapGraphBase.Edges">
+            <summary>
+            Contains all of the edges subscribed to the graph.
+            </summary>
+        </member>
+        <member name="E:Assets.Map.MapGraphBase.MapNodeUnsubscribed">
+            <summary>
+            Fires whenever a MapNodeBase is unsubscribed from this MapGraphBase
+            </summary>
+        </member>
+        <member name="E:Assets.Map.MapGraphBase.MapEdgeUnsubscribed">
+            <summary>
+            Fires whenever a MapEdgeBase is unsubscribed from this MapGraphBase
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.RaiseMapNodeUnsubscribed(Assets.Map.MapNodeBase)">
+            <summary>
+            Called to invoke a MapNodeUnsubscribed event
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.RaiseMapEdgeUnsubscribed(Assets.Map.MapEdgeBase)">
+            <summary>
+            Called to invoke a MapEdgeUnsubscribed event
+            </summary>
+            <param name="edge"></param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.BuildNode(UnityEngine.Vector3)">
+            <summary>
+            Constructs a new node object at a given position, subscribes it, and returns it.
+            </summary>
+            <param name="localPosition">The position relative to this map graph where the new node will be located</param>
+            <returns></returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.BuildNode(UnityEngine.Vector3,Assets.Map.TerrainType)">
+            <summary>
+            As BuildNode(Vector3), but also sets the node with some starting terrain.
+            </summary>
+            <param name="localPosition"></param>
+            <param name="startingTerrain"></param>
+            <returns>The node just created with the specified local position and terrain</returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.DestroyNode(Assets.Map.MapNodeBase)">
+            <summary>
+            Unsubscribes and destroys the specified node.
+            </summary>
+            <param name="node">The node to destroy</param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.SubscribeNode(Assets.Map.MapNodeBase)">
+            <summary>
+                Subscribes an existing node to the graph. This will include it in the Nodes property
+                and make it a child to this MapGraph.
+                <remarks>
+                    This somewhat unusual addition to the class exists to handle nodes created
+                    through copy operations and prefab instantiations within the editor. If, for
+                    instance, a designer decided to copy a node, SubscribeNode must be called upon
+                    it in order to ensure that MapGraph becomes aware of the new element. There may
+                    exist cleaner ways of handling this possibility.
+                </remarks>
+            </summary>
+            <param name="node">The node to subscribe</param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.UnsubscribeNode(Assets.Map.MapNodeBase)">
+            <summary>
+            Unsubscribes an existing node to the graph. Unsubscribed nodes are not considered
+            in pathfinding and adjacency operations, and do not appear in the Nodes property.
+            See also <seealso cref="M:Assets.Map.MapGraphBase.SubscribeNode(Assets.Map.MapNodeBase)"/>
+            </summary>
+            <param name="node">The node to unsubscribe</param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.BuildMapEdge(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <summary>
+            Constructs a MapEdgeBase object whose endpoints are the specified arguments.
+            This operation must also subscribe the MapEdge.
+            </summary>
+            <remarks>
+            Note that unsubscribing a node also unsubscribes any edges that referenced it.
+            </remarks>
+            <param name="firstEndpoint">The first endpoint of the resulting edge</param>
+            <param name="secondEndpoint">The second endpoint of the resulting edge</param>
+            <returns>The edge created, which has been subscribed to the MapGraphBase</returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.DestroyMapEdge(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <summary>
+            Destroys some map edge lying between the two nodes if one exists, or does nothing
+            if the edge does not exist. The order of the endpoints does not matter.
+            Calls into <seealso cref="M:Assets.Map.MapGraphBase.DestroyMapEdge(Assets.Map.MapEdgeBase)"/>
+            </summary>
+            <param name="first">One of the endpoints for the hypothetical edge</param>
+            <param name="second">The other endpoint for the hypothetical edge</param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.DestroyMapEdge(Assets.Map.MapEdgeBase)">
+            <exception>ArgumentNullException if edge is null</exception>
+            <param name="edge">The edge to destroy</param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.SubscribeMapEdge(Assets.Map.MapEdgeBase)">
+            <summary>
+            Subscribes an existing edge to the MapGraphBase. Similar to <seealso cref="M:Assets.Map.MapGraphBase.SubscribeNode(Assets.Map.MapNodeBase)"/>
+            </summary>
+            <param name="edge">The edge to subscribe</param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.UnsubscribeMapEdge(Assets.Map.MapEdgeBase)">
+            <summary>
+            Unsubscribes an existing edge from MapGraphBase. Unsubscribed edges are not considered
+            in pathfinding and adjacency operations, and do not appear in the Edges property.
+            </summary>
+            <param name="edge">The edge to unusbscribe</param>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.GetNodeOfID(System.Int32)">
+            <summary>
+            Retrieves a node in the Nodes property with a given ID, if one exists.
+            </summary>
+            <param name="id">The node of the given ID, or null if non is found</param>
+            <returns></returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.GetEdge(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <summary>
+            Retrives an edge in the Edges property that contains both the specified endpoints,
+            or null if none exists. The order of the endpoints doesn't matter.
+            </summary>
+            <param name="endpointOne">One of the endpoints of the hypothetical edge</param>
+            <param name="endpointTwo">The other endpoint of the hypothetical edge</param>
+            <returns></returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.GetNeighborsOfNode(Assets.Map.MapNodeBase)">
+            <summary>
+            Retrieves all other nodes connected directly to this one by some edge in Edges
+            </summary>
+            <param name="node">The node to consider</param>
+            <returns>All of the nodes neighboring the specified node</returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.GetEdgesAttachedToNode(Assets.Map.MapNodeBase)">
+            <summary>
+            Retrieves all edges that contain the specified node as the endpoint
+            </summary>
+            <param name="node">The node to consider</param>
+            <returns>All edges that specify the node as an endpoint.</returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.GetDistanceBetweenNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <summary>
+            Returns the shortest distance, in edges, between two nodes. If there exists no path
+            between the nodes, or int.MaxValue if no path exists
+            </summary>
+            <param name="nodeOne"></param>
+            <param name="nodeTwo"></param>
+            <returns>The distance in edges between the two nodes, or int.MaxValue if no path exists</returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.GetShortestPathBetweenNodes(Assets.Map.MapNodeBase,Assets.Map.MapNodeBase)">
+            <summary>
+            Returns a list containing the shortest path between the given nodes. This list always contains the starting
+            element as its first entry. If there exists a path, the last element in the list is the terminating node.
+            If there is no path, the rest of the list is empty.
+            </summary>
+            <param name="nodeOne">The starting point, which will always appear at the start of the returned list</param>
+            <param name="nodeTwo">The terminating point</param>
+            <returns>A list of edge-connected nodes, starting with nodeOne, that represents the desired path,
+            or contains only nodeOne if no path exists</returns>
+        </member>
+        <member name="M:Assets.Map.MapGraphBase.GetNearestNodeToEdgeWhere(Assets.Map.MapEdgeBase,System.Predicate{Assets.Map.MapNodeBase},System.Int32)">
+            <summary>
+            Finds the closest node to some specified edge that satisfied the specified conditions within
+            some optional maximum distance. Distance is considered independently from each of the edge's
+            endpoints and will return the smaller value between the two.
+            </summary>
+            <param name="edgeOfOrigin">The edge that defines the starting nodes of our search</param>
+            <param name="condition">The condition that a given node must satisfy</param>
+            <param name="maxDistance">The maximum distance away from the edgeOfOrigin's endpoint that the 
+            method will check for.</param>
+            <returns>A record of which node we encountered and how far away it was</returns>
+        </member>
+        <member name="T:Assets.Map.MapGraphException">
+            <summary>
+            A general exception for all MapGraph-related errors that aren't
+            easily covered under one of the standard exceptions
+            (like ArgumentNullException)
+            </summary>
+        </member>
+        <member name="T:Assets.Map.MapNode">
+            <summary>
+            The standard implementation of MapNodeBase. Maps in the game are undirected graphs,
+            with highways situated along edges and all other features situated on nodes.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNode.ID">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapNode.ParentGraph">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapNode.BlobSite">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.SetBlobSite(Assets.BlobSites.BlobSiteBase)">
+            <summary>
+            The externalized Set function for BlobSite
+            </summary>
+            <param name="value">The new value for BlobSite</param>
+        </member>
+        <member name="P:Assets.Map.MapNode.Neighbors">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapNode.Terrain">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapNode.UIControl">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapNode.TerrainGrid">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapNode.TerrainMaterialRegistry">
+            <inheritdoc/>
+            <remarks>
+            MapNode subscribes to TerrainMaterialRegistry's OnTerrainMaterialChanged events in order to
+            make editing maps at design time easier.
+            </remarks>
+        </member>
+        <member name="P:Assets.Map.MapNode.AssociatedTiles">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.MapNode.TerrainOutlineRenderer">
+            <summary>
+            The LineRenderer used to create the thick outlines around the MapNode's associated terrain tiles
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapNode.OnBeginDrag(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.OnDrag(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.OnEndDrag(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.OnPointerClick(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.OnPointerEnter(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.OnPointerExit(UnityEngine.EventSystems.PointerEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.OnSelect(UnityEngine.EventSystems.BaseEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.OnDeselect(UnityEngine.EventSystems.BaseEventData)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.ClearAssociatedTiles">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.AddAssociatedTile(Assets.Map.TerrainHexTile)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.MapNode.RefreshOutline">
+            <inheritdoc/>
+            <remarks>
+            The RefreshOutline algorithm works in the following way. It calls GetFirstExtrenalTileAndNeighborIndex
+            to find some tile with an external edge, and also the edge that is external. If it finds no external
+            tile, that means there are no associated titles and there's nothing to do. If it does find an external
+            tile, it has work to do
+            
+            The main loop continuously considers the active tile and the active neighbor index. The active neighbor
+            index is a number, from 0 to 5, that are used by the internals of TerrainGrid to pull neighboring hexes.
+            Each side of the hexagon is numbered from 0 to 5, as well, and the ith neighbor index refers to the neighboring
+            hex bordering the current hex along its ith edge.
+            
+            First, the main loop checks the neighbor at the active neighbor index of the active tile. If the neighbor doesn't
+            exist or isn't associated with this MapNode, we consider it an external edge and draw a line along it (by defining
+            the line's endpoints). Then we increment activeNeighborIndex by 1 (which rotates us around the hex counterclockwise)
+            and repeat the process. If the neighbor we find at the active neighbor index is associated with this MapNode, then
+            the edge is internal. We then set the active tile to the neighbor we found and repeat the process.
+            
+            The loop continues to run until the active tile equals the starting tile and the active neighbor index equals the
+            starting neighbor index. This has the effect of running us along the outside of the associated hexes of the MapNode
+            counterclockwise, drawing lines along all the external edges. This algorithm is sufficient because we can guarantee
+            a contiguous block of adjacent hexes with no gaps or holes based on how associated tiles are assigned.
+            
+            It might be wise to gather this algorithm and place it in TerrainGrid entirely, as the algorithm
+            relies on facts established by TerrainGrid in order to function.
+            </remarks>
+        </member>
+        <member name="T:Assets.Map.MapNodeBase">
+            <summary>
+            The abstract base class that defines a map node. Maps in the game are undirected graphs,
+            with highways situated along edges and all other features situated on nodes.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.ID">
+            <summary>
+            An ID number unique across all other map nodes. This value is not guaranteed to be a
+            unique key against other object types.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.ParentGraph">
+            <summary>
+            The MapGraphBase that's supposed to be managing this edge.
+            </summary>
+            <remarks>
+            Because of complications arising from prefab instantiating and design-time
+            copying, it's sometimes necessary for MapNodeBases to be subscribed upon their
+            creation. Since MapGraphBase has no way of knowing when a new MapEdgeBase
+            has been created, it's up to the MapNodeBase itself to subscribe itself.
+            </remarks>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.BlobSite">
+            <summary>
+            The BlobSite that defines the resource contents of this node.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.Neighbors">
+            <summary>
+            The neighbors directly connected to this node by a single edge.
+            </summary>
+            <remarks>
+            This method is present primarily for convenience. Neighbor calculations are
+            expected to be performed by MapGraphBase and its subclasses. It's not clear
+            that this is a clean or efficient implementation, but that is how the codebase
+            currently operates.
+            </remarks>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.Terrain">
+            <summary>
+            The terrain of the node, which affects appearance, society complexification,
+            and construction project placement.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.UIControl">
+            <summary>
+            The UIControlBase that this node should send input events (like PointerDown) to
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.TerrainMaterialRegistry">
+            <summary>
+            The TerrainMaterialRegistry that the MapNodeBase should use to inform its appearance
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.TerrainGrid">
+            <summary>
+            The TerrainGridBase that the MapNodeBase should use to define its region in the world.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeBase.AssociatedTiles">
+            <summary>
+            The tiles in the TerrainGridBase that are associated with this MapNodeBase. Association
+            is determined by distance.
+            </summary>
+        </member>
+        <member name="E:Assets.Map.MapNodeBase.TransformChanged">
+            <summary>
+            Fires whenever the transform changes. This should only ever occur
+            during design time, since MapNodeBases are intended to be static objects
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapNodeBase.RaiseTransformChanged">
+            <summary>
+            Calls the TransformChanged event
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapNodeBase.ToString">
+            <inheritdoc/>
+            <returns></returns>
+        </member>
+        <member name="M:Assets.Map.MapNodeBase.ClearAssociatedTiles">
+            <summary>
+            Clears all associated tiles from the MapNodeBase.
+            </summary>
+            <remarks>
+            This method is intended to be called from within TerrainGridBase in order to control
+            what tiles the MapNodeBase should manipulate when its terrain changes;
+            </remarks>
+        </member>
+        <member name="M:Assets.Map.MapNodeBase.AddAssociatedTile(Assets.Map.TerrainHexTile)">
+            <summary>
+            Tells the MapNodeBase to associate itself with a new tile
+            </summary>
+            <remarks>
+            This method is intended to be called from within TerrainGridBase in order to control
+            what tiles the MapNodeBase should manipulate when its terrain changes;
+            </remarks>
+            <param name="tile">The tile the MapNodeBase should associate itself with</param>
+        </member>
+        <member name="M:Assets.Map.MapNodeBase.RefreshOutline">
+            <summary>
+            Refreshes the outline drawn around the contiguous region of tiles associated with this MapNodeBase
+            </summary>
+        </member>
+        <member name="T:Assets.Map.MapNodeEventArgs">
+            <summary>
+            A simple EventArgs class that returns Nodes on events that trigger in relation to them
+            </summary>
+        </member>
+        <member name="F:Assets.Map.MapNodeEventArgs.Node">
+            <summary>
+            The Node the event triggered in relation to
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapNodeEventArgs.#ctor(Assets.Map.MapNodeBase)">
+            <summary>
+            Constructs a new MapNodeEventArgs with the given node
+            </summary>
+            <param name="node">The node that triggered the event</param>
+        </member>
+        <member name="T:Assets.Map.MapNodeException">
+            <summary>
+            An exception class for errors related to MapNodes that don't fall easily
+            into more standard categories
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapNodeException.#ctor">
+            <summary></summary>
+        </member>
+        <member name="M:Assets.Map.MapNodeException.#ctor(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:Assets.Map.MapNodeException.#ctor(System.String,System.Exception)">
+            <summary></summary>
+        </member>
+        <member name="M:Assets.Map.MapNodeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary></summary>
+        </member>
+        <member name="T:Assets.Map.MapNodeUISummary">
+            <summary>
+            A class containing information that MapNode should pass into UIControl whenever
+            it catches user input.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeUISummary.ID">
+            <summary>
+            The MapNodeBase-unique ID of the underlying MapNodeBase
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeUISummary.BlobSite">
+            <summary>
+            A similarly indirected block of data representing the MapNodeBase's BlobSite
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeUISummary.Terrain">
+            <summary>
+            The TerrainType of the MapNodeBase
+            </summary>
+        </member>
+        <member name="P:Assets.Map.MapNodeUISummary.Transform">
+            <summary>
+            the transform of the MapNodeBase.
+            </summary>
+            <remarks>
+            The necessity of properties like this put into question the value of creating such
+            drastic indirection between the UI and the simulation.
+            </remarks>
+        </member>
+        <member name="M:Assets.Map.MapNodeUISummary.#ctor">
+            <summary>
+            Creates an empty MapNodeUISummary
+            </summary>
+        </member>
+        <member name="M:Assets.Map.MapNodeUISummary.#ctor(Assets.Map.MapNodeBase)">
+            <summary>
+            Creates a MapNodeUISummary that adequately summarizes the specified MapNodeBase
+            </summary>
+            <param name="nodeToSummarize">The MapNodeBase to summarize</param>
+        </member>
+        <member name="T:Assets.Map.Neighborhood">
+            <summary>
+            A class used to facilitate the use of prefabs in map creation at design time.
+            </summary>
+            <remarks>
+            Neighborhoods were originally conceived as ways of storing chunks of maps as
+            prefabs that could then be loaded and manipulated as cohesive objects. It became
+            necessary to add the Neighborhood class in order to deal with the peculiarities of
+            session saving and loading (in the Assets.Session namespace), though over time the
+            idea of modular level design fell out of favor. It's not clear if Neighborhoods
+            are a meaningful tool any longer.
+            </remarks>
+        </member>
+        <member name="M:Assets.Map.Neighborhood.SpreadParentChangeToChildren">
+            <summary>
+            Facilitates subscription of child MapNodeBases and MapEdgeBases, since the current
+            methods of handling prefab instantiations only work when the ParentGraph is a direct
+            parent of the subscribing elements.
+            </summary>
+        </member>
+        <member name="T:Assets.Map.NodeDistanceSummary">
+            <summary>
+            Used to return results on some MapGraphBase and MapGraphAlgorithmSetBase methods
+            </summary>
+        </member>
+        <member name="F:Assets.Map.NodeDistanceSummary.Node">
+            <summary>
+            The node that was found
+            </summary>
+        </member>
+        <member name="F:Assets.Map.NodeDistanceSummary.Distance">
+            <summary>
+            The distance of the discovered node from the starting element
+            </summary>
+        </member>
+        <member name="M:Assets.Map.NodeDistanceSummary.#ctor(Assets.Map.MapNodeBase,System.Int32)">
+            <summary>
+            Creates a NodeDistanceSummary with the given node and distance
+            </summary>
+            <param name="node">The node that was found</param>
+            <param name="distance">The distance of the discovered node from the starting element</param>
+        </member>
+        <member name="T:Assets.Map.TerrainGrid">
+            <summary>
+            The standard implementation of TerrainGridBase.
+            This is used in tandem with MapGraphBase to define and display a cohesive map.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainGrid.Radius">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.TerrainGrid.MaxAcquisitionDistance">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.TerrainGrid.Bounds">
+            <inheritdoc/>
+        </member>
+        <member name="P:Assets.Map.TerrainGrid.MapGraph">
+            <summary>
+            The MapGraphBase whose nodes will receive associativity data from this TerrainGrid
+            </summary>
+        </member>
+        <member name="M:Assets.Map.TerrainGrid.ClearMap">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.TerrainGrid.CreateMap">
+            <inheritdoc/>
+        </member>
+        <member name="M:Assets.Map.TerrainGrid.RefreshMapTerrains">
+            <inheritdoc/>
+            <remarks>
+            This method assigns every TerrainHexTile to its nearest MapNodeBase. It also tells every MapNodeBase 
+            whichTerrainHexTiles it should associate with, and then to refresh its outlines.
+            </remarks>
+        </member>
+        <member name="T:Assets.Map.TerrainGridBase">
+            <summary>
+            Abstract base class for handling the generation of visible terrain in the form of a hex grid.
+            This is used in tandem with MapGraphBase to define and display a cohesive map.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainGridBase.Radius">
+            <summary>
+            The radius of the generated hex grid
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainGridBase.MaxAcquisitionDistance">
+            <summary>
+            The maximum distance that a TerrainHexTile can be from a MapNodeBase to be eligible for association
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainGridBase.Bounds">
+            <summary>
+            The bounds of the generated TerrainGrid, used to inform the bounds of the CameraLogic
+            </summary>
+        </member>
+        <member name="M:Assets.Map.TerrainGridBase.ClearMap">
+            <summary>
+            Clears the map of all its tiles
+            </summary>
+        </member>
+        <member name="M:Assets.Map.TerrainGridBase.CreateMap">
+            <summary>
+            Generates a new map with the preconfigured dimensions that has no association data
+            </summary>
+        </member>
+        <member name="M:Assets.Map.TerrainGridBase.RefreshMapTerrains">
+            <summary>
+            Establishes association data between TerrainHexTiles and refreshes the appearance of the
+            map
+            </summary>
+        </member>
+        <member name="T:Assets.Map.TerrainHexTile">
+            <summary>
+            A hexagonal tile used by TerrainGrid to visualize the map defined in MapGraphBase.
+            </summary>
+            <remarks>
+            See http://www.redblobgames.com/grids/hexagons/ for a description of
+            the math the hex grids are based on.
+            </remarks>
+        </member>
+        <member name="P:Assets.Map.TerrainHexTile.Coordinates">
+            <summary>
+            The cubic coordinates of the hex tile in its ParentGrid.
+            </summary>
+        </member>
+        <member name="M:Assets.Map.TerrainHexTile.SetCoordinates(UnityCustomUtilities.Grids.HexCoords)">
+            <summary>
+            The setter method for the Coordinates property.
+            </summary>
+            <remarks>
+            Normally, the set method for a property would be defined within the property itself.
+            However, Coordinates should be a read-only value at all times except for initialization.
+            Since properties do not let you declare the new keyword on their accessors
+            or add additional accessors when inheriting, it was necessary to separate the set accessor.
+            </remarks>
+            <param name="value"></param>
+        </member>
+        <member name="P:Assets.Map.TerrainHexTile.TerrainMaterialRegistry">
+            <summary>
+            The TerrainMaterialRegsitry that the TerrainHexTile will use to inform its appearance
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainHexTile.Terrain">
+            <summary>
+            The terrain of the tile
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainHexTile.ParentGrid">
+            <summary>
+            The grid in which this tile lies
+            </summary>
+        </member>
+        <member name="M:Assets.Map.TerrainHexTile.RefreshMeshRenderer">
+            <summary>
+            Updates the material in the attached MeshRenderer component to reflect the tile's
+            current terrain type.
+            </summary>
+        </member>
+        <member name="T:Assets.Map.TerrainMaterialRegistry">
+            <summary>
+            A simple class that manages the materials for each terrain type.
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainMaterialRegistry.GrasslandMaterial">
+            <summary>
+            The material that MeshRenderers on grassland tiles should use
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainMaterialRegistry.ForestMaterial">
+            <summary>
+            The material that MeshRenderers on forest tiles should use
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainMaterialRegistry.MountainsMaterial">
+            <summary>
+            The material that MeshRenderers on mountain tiles should use
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainMaterialRegistry.DesertMaterial">
+            <summary>
+            The material that MeshRenderers on desert tiles should use
+            </summary>
+        </member>
+        <member name="P:Assets.Map.TerrainMaterialRegistry.WaterMaterial">
+            <summary>
+            The material that MeshRenderers on water tiles should use
+            </summary>
+        </member>
+        <member name="E:Assets.Map.TerrainMaterialRegistry.TerrainMaterialChanged">
+            <summary>
+            Fires whenever one of the terrain materials has changed
+            </summary>
+            <remarks>
+            This event exists to make it easier for designers to modify the
+            material associated with a given terrain type. It allows terrain
+            tiles to automatically update their appearance when something has
+            changed
+            </remarks>
+        </member>
+        <member name="M:Assets.Map.TerrainMaterialRegistry.GetMaterialForTerrain(Assets.Map.TerrainType)">
+            <summary>
+            Retrieves the material that should be used to render a particular terrain
+            </summary>
+            <param name="terrain">The terrain type whose material should be retrieved</param>
+            <returns>The material to be used</returns>
+        </member>
+        <member name="T:Assets.Map.TerrainType">
+            <summary>
+            Declares the terrain types that a map node or a terrain tile can have 
+            </summary>
+        </member>
+        <member name="F:Assets.Map.TerrainType.Desert">
+            <summary/>
+        </member>
+        <member name="F:Assets.Map.TerrainType.Forest">
+            <summary/>
+        </member>
+        <member name="F:Assets.Map.TerrainType.Grassland">
+            <summary/>
+        </member>
+        <member name="F:Assets.Map.TerrainType.Mountains">
+            <summary/>
+        </member>
+        <member name="F:Assets.Map.TerrainType.Water">
+            <summary/>
+        </member>
+        <member name="F:Assets.UI.ModifiedStandAloneInputModule.m_VerticalAxis">
+            <summary>
+            Name of the vertical axis for movement (if axis events are used).
+            </summary>
+        </member>
+        <member name="F:Assets.UI.ModifiedStandAloneInputModule.m_SubmitButton">
+            <summary>
+            Name of the submit button.
+            </summary>
+        </member>
+        <member name="F:Assets.UI.ModifiedStandAloneInputModule.m_CancelButton">
+            <summary>
+            Name of the submit button.
+            </summary>
+        </member>
+        <member name="P:Assets.UI.ModifiedStandAloneInputModule.horizontalAxis">
+            <summary>
+            Name of the horizontal axis for movement (if axis events are used).
+            </summary>
+        </member>
+        <member name="P:Assets.UI.ModifiedStandAloneInputModule.verticalAxis">
+            <summary>
+            Name of the vertical axis for movement (if axis events are used).
+            </summary>
+        </member>
+        <member name="M:Assets.UI.ModifiedStandAloneInputModule.SendSubmitEventToSelectedObject">
+            <summary>
+            Process submit keys.
+            </summary>
+        </member>
+        <member name="M:Assets.UI.ModifiedStandAloneInputModule.SendMoveEventToSelectedObject">
+            <summary>
+            Process keyboard events.
+            </summary>
+        </member>
+        <member name="M:Assets.UI.ModifiedStandAloneInputModule.ProcessMouseEvent(System.Int32)">
+            <summary>
+            Process all mouse events.
+            </summary>
+        </member>
+        <member name="M:Assets.UI.ModifiedStandAloneInputModule.ProcessMousePress(UnityEngine.EventSystems.PointerInputModule.MouseButtonEventData)">
+            <summary>
+            Process the current mouse press.
+            </summary>
+        </member>
+    </members>
+</doc>

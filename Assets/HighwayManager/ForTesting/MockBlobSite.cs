@@ -15,6 +15,8 @@ namespace Assets.HighwayManager.ForTesting {
 
         #region from BlobSiteBase
 
+        public override int TotalCapacity { get; set; }
+
         public override ReadOnlyCollection<ResourceBlobBase> Contents {
             get {
                 throw new NotImplementedException();

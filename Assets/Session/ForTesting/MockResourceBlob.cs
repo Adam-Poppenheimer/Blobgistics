@@ -27,7 +27,7 @@ namespace Assets.Session.ForTesting {
             throw new NotImplementedException();
         }
 
-        public override void PushNewMovementGoal(MovementGoal goal) {
+        public override void EnqueueNewMovementGoal(MovementGoal goal) {
             throw new NotImplementedException();
         }
 

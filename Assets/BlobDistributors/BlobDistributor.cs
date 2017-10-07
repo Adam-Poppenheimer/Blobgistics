@@ -15,43 +15,57 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.BlobDistributors {
 
+    /// <summary>
+    /// The standard implementation for BlobDistributorBase. Handles the distribution of blobs from
+    /// blob sites into blob highways.
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// <para>
+    /// This distributor attempts to distribute blobs in a round-robin fashion, giving each highway
+    /// at each site approximately the same number of chances to receive each blob. This notion is
+    /// complicated considerably by placement and extraction permissions on both the blob sites and
+    /// the highways themselves.
+    /// </para>
+    /// <para>
+    /// This class asserts that blob distribution isn't a responsibility of individual highways, but rather
+    /// belongs entirely to the BlobDistributor. It thus stores state about individual highways that in an
+    /// alternate design might belong to the highways themselves. I considered it necessary to record this
+    /// state within BlobDistributor because the desired round-robin distribution implies the need to consider
+    /// highways in groups rather than individually.
+    /// </para> 
+    /// </remarks>
     public class BlobDistributor : BlobDistributorBase {
 
         #region instance fields and properties
 
-        #region from BlobDistributorBase
-
-        public override float EdgePullCooldownInSeconds {
-            get { return _edgePullCooldownInSeconds; }
-            set { _edgePullCooldownInSeconds = value; }
-        }
-        [SerializeField] private float _edgePullCooldownInSeconds;
-
-        #endregion
-
+        /// <summary>
+        /// The MapGraph this distributor will pull map nodes (and thus blob sites) from.
+        /// </summary>
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
             set { _mapGraph = value; }
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
+        /// <summary>
+        /// The Highway factory this distributor will pull highways from.
+        /// </summary>
         public BlobHighwayFactoryBase HighwayFactory {
             get { return _highwayFactory; }
             set { _highwayFactory = value; }
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
+        //These dictionaries store information about which highways are associated with which blob sites,
+        //and how long it's been since a given highway has pulled from a given blob site. This information
+        //is necessary to maintain a round robin distribution even while highways are being added and
+        //removed.
         private Dictionary<BlobSiteBase, BlobHighwayBase> LastServedHighwayOnBlobSite = 
             new Dictionary<BlobSiteBase, BlobHighwayBase>();
 
-        private Dictionary<BlobSiteBase, MapEdgeBase> LastServedEdgeOnBlobSite = 
-            new Dictionary<BlobSiteBase, MapEdgeBase>();
-
         private Dictionary<BlobSiteBase, Dictionary<BlobHighwayBase, float>> PullTimerForBlobHighwayOnSite =
             new Dictionary<BlobSiteBase, Dictionary<BlobHighwayBase, float>>();
-
-        private Dictionary<BlobSiteBase, Dictionary<MapEdgeBase, float>> PullTimerForMapEdgeOnSite = 
-            new Dictionary<BlobSiteBase, Dictionary<MapEdgeBase, float>>();
 
         #endregion
 
@@ -59,73 +73,21 @@ namespace Assets.BlobDistributors {
 
         #region from BlobDistributorBase
 
+        /// <inheritdoc/>
         public override void Tick(float secondsPassed) {
             foreach(var activeNode in MapGraph.Nodes) {
                 var adjacentHighways = HighwayFactory.GetHighwaysAttachedToNode(activeNode);
-
-                Profiler.BeginSample("Highway Distribution");
                 if(activeNode.BlobSite.Contents.Count > 0 && adjacentHighways.Count() > 0) {
                     DistributeFromSiteToHighways(activeNode.BlobSite, adjacentHighways, secondsPassed);
                 }
-                Profiler.EndSample();
             }
         }
 
         #endregion
 
-        private void DistributeFromSiteToEdges(BlobSiteBase site, List<MapEdgeBase> adjacentEdges, float secondsPassed) {
-            if(!PullTimerForMapEdgeOnSite.ContainsKey(site)) {
-                PullTimerForMapEdgeOnSite[site] = new Dictionary<MapEdgeBase, float>();
-            }
-
-            foreach(var edge in adjacentEdges) {
-                if(!PullTimerForMapEdgeOnSite[site].ContainsKey(edge)) {
-                    PullTimerForMapEdgeOnSite[site][edge] = secondsPassed;
-                }else {
-                    PullTimerForMapEdgeOnSite[site][edge] += secondsPassed;
-                }
-            }
-
-            
-
-            MapEdgeBase lastEdgeServed;
-            LastServedEdgeOnBlobSite.TryGetValue(site, out lastEdgeServed);
-
-            bool continueCycling = true;
-            while(continueCycling) {
-                continueCycling = false;
-
-                int indexOfLast = adjacentEdges.IndexOf(lastEdgeServed);
-                if(indexOfLast < 0) {
-                    foreach(var candidateEdge in adjacentEdges) {
-                        if(AttemptTransferIntoEdge(candidateEdge, site)) {
-                            lastEdgeServed = candidateEdge;
-                            continueCycling = true;
-                        }
-                    }
-                }else {
-                    for(int i = (indexOfLast + 1) % adjacentEdges.Count;
-                        i != indexOfLast;
-                        i = ++i % adjacentEdges.Count
-                    ){
-                        var candidateEdge = adjacentEdges[i];
-                        if(AttemptTransferIntoEdge(candidateEdge, site)) {
-                            lastEdgeServed = candidateEdge;
-                            continueCycling = true;
-                        }
-                    }
-
-                    if(AttemptTransferIntoEdge(lastEdgeServed, site)) {
-                        continueCycling = true;
-                    }
-                }
-            }
-
-            foreach(var edge in adjacentEdges) {
-                PullTimerForMapEdgeOnSite[site][edge] = Mathf.Clamp(PullTimerForMapEdgeOnSite[site][edge], 0f, EdgePullCooldownInSeconds);
-            }
-        }
-
+        // This method contains a holdover from a previous implementation. Highway priorities are no longer
+        //an element of the game, and so much of this method could be refactored to remove the redundant
+        //prioritization, though it wasn't considered a priority during production.
         private void DistributeFromSiteToHighways(BlobSiteBase site, IEnumerable<BlobHighwayBase> adjacentHighways, float secondsPassed) {
 
             var dictionaryOfPriorities = new SortedDictionary<int, List<BlobHighwayBase>>();
@@ -146,10 +108,15 @@ namespace Assets.BlobDistributors {
 
         }
 
+        /* This method does several things. For starters, it increments the pull timer for every highway on the
+         * site. Once that's happened, it goes through the highways, starting at the index after that of the
+         * last highway served, and gives it an opportunity to pull resources from the site. There are some
+         * complications when there was no last highway served, and also when the last highway served is the
+         * only valid highway that can pull blobs.
+         * 
+         */
         private void PerformRoundRobinDistributionOnHighways(BlobSiteBase site, List<BlobHighwayBase> highways,
             ref BlobHighwayBase lastHighwayServed, float secondsPassed) {
-            Profiler.BeginSample("Round-Robin Distribution");
-
             if(!PullTimerForBlobHighwayOnSite.ContainsKey(site)) {
                 PullTimerForBlobHighwayOnSite[site] = new Dictionary<BlobHighwayBase, float>();
             }
@@ -162,11 +129,22 @@ namespace Assets.BlobDistributors {
                 }
             }
 
+            //ContinueCycling is set to true (and thus permits the loop to keep spinning) if and only if
+            //some highway manages to pull some blob. Normally you'd expect this loop to cycle once (if no
+            //highway can pull any blob) or twice (if some highway can pull some blob) because secondsPassed
+            //is usually Time.deltaTime and thus very small. This loop would only cycle more than twice
+            //if secondsPassed was so large that a given highway would've pulled blobs more than once since
+            //the last time tick was called. This most often happens in unit testing, but could occur if
+            //framerates or highway pull cooldowns are very low.
+            //A given cycle might serve multiple highways if there are enough appropriate blobs in the
+            //blob site, or could serve none.
             bool continueCycling = true;
             while(continueCycling) {
                 continueCycling = false;
 
                 int indexOfLast = highways.IndexOf(lastHighwayServed);
+                //When there was no last highway served, or that highway is no longer
+                //attached to the site.
                 if(indexOfLast < 0) {
                     foreach(var candidateHighway in highways) {
                         if(AttemptPull(candidateHighway, site)) {
@@ -175,6 +153,7 @@ namespace Assets.BlobDistributors {
                         }
                     }
                 }else {
+                    //Try to pull from the highways following the last served highway.
                     for(int i = (indexOfLast + 1) % highways.Count;
                         i != indexOfLast;
                         i = ++i % highways.Count
@@ -186,20 +165,33 @@ namespace Assets.BlobDistributors {
                         }
                     }
 
+                    //Check the lastHighwayServed again, since the for loop skipped it.
                     if(AttemptPull(lastHighwayServed, site)) {
                         continueCycling = true;
                     }
                 }
             }
 
+            //This loop only comes into play when no highways were served. That only happens when
+            //there are no valid blobs to distribute into them. This line makes sure that, when there
+            //are blobs for the highways to pull, that they don't pull many at once. Without this line,
+            //long periods of drought followed by sudden abundance can cause highways to pull in many
+            //blobs at once, which compromises the notion of BlobPullCooldownInSeconds. This happens at the
+            //end in case the framerate is low and might actually require us to pull multiple blobs to
+            //keep up, though this is rare in the current implementation.
             foreach(var highway in highways) {
                 PullTimerForBlobHighwayOnSite[site][highway] = 
                     Mathf.Clamp(PullTimerForBlobHighwayOnSite[site][highway], 0f, highway.BlobPullCooldownInSeconds);
             }
-
-            Profiler.EndSample();
         }
 
+        /*Three conditions must be met in order for a pull to be successful. 
+            1. The pull timer for the highway on the blob site must be greater than its pull cooldown.
+            2. One of the highway's endpoints is the blob site in question.
+            3. The highway can pull from that endpoint.
+          if these conditions are met, the highway pulls from its corresponding endpoint and reduces
+          its pull timer on the current site by its cooldown.
+        */
         private bool AttemptPull(BlobHighwayBase highwayToPull, BlobSiteBase site) {
             bool retval = false;
 
@@ -219,31 +211,6 @@ namespace Assets.BlobDistributors {
             }
 
             PullTimerForBlobHighwayOnSite[site][highwayToPull] = highwayPullTimer;
-            return retval;
-        }
-
-        private bool AttemptTransferIntoEdge(MapEdgeBase edge, BlobSiteBase siteToTransferFrom) {
-            if(!PullTimerForMapEdgeOnSite[siteToTransferFrom].ContainsKey(edge)) {
-                PullTimerForMapEdgeOnSite[siteToTransferFrom][edge] = 0f;
-            }
-
-            bool retval = false;
-            var edgePullTimer = PullTimerForMapEdgeOnSite[siteToTransferFrom][edge];
-
-            var edgeSite = edge.BlobSite;
-            if(edgePullTimer >= EdgePullCooldownInSeconds) {
-                foreach(var transferCandidate in siteToTransferFrom.Contents) {
-                    if(siteToTransferFrom.CanExtractBlob(transferCandidate) && edgeSite.CanPlaceBlobInto(transferCandidate)) {
-                        siteToTransferFrom.ExtractBlob(transferCandidate);
-                        edgeSite.PlaceBlobInto(transferCandidate);
-                        edgePullTimer -= EdgePullCooldownInSeconds;
-                        retval = true;
-                        break;
-                    }
-                }
-            }
-
-            PullTimerForMapEdgeOnSite[siteToTransferFrom][edge] = edgePullTimer;
             return retval;
         }
 

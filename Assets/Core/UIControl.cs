@@ -20,40 +20,72 @@ using Assets.UI.Scoring;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard implementation for UIControlBase. This class exists to create a layer-like
+    /// boundary between the UI and the simulation code and thus decrease coupling.
+    /// </summary>
+    /// <remarks>
+    /// This class makes use of some FSM-like event and control flow programming that should probably be considered an
+    /// anti-pattern. Refactors of the UI module might consider using an FSM to switch between title screen, escape 
+    /// screen, and the main gameplay stance.
+    /// 
+    /// It's also worth noting that the various EventReceivers dodge around the type system. There's nothing to
+    /// guarantee that a MapNodeEventReceiver can even accept a MapNodeUISummary. This result followed from the difficulty
+    /// of generic MonoBehaviours, and may also have been indicative of fundamental structural problems  with this
+    /// architecture. More iteration may be needed.
+    /// </remarks>
     public class UIControl : UIControlBase {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// A list of all the event receivers that are interested in map node events.
+        /// </summary>
         public List<TargetedEventReceiverBase> MapNodeEventReceivers {
             get { return _mapNodeEventReceivers; }
             set { _mapNodeEventReceivers = value; }
         }
         [SerializeField] private List<TargetedEventReceiverBase> _mapNodeEventReceivers;
 
+        /// <summary>
+        /// A list of all the event receivers that are interested in highway events.
+        /// </summary>
         public List<TargetedEventReceiverBase> HighwayEventReceivers {
             get { return _highwayEventReceivers; }
             set { _highwayEventReceivers = value; }
         }
         [SerializeField] private List<TargetedEventReceiverBase> _highwayEventReceivers;
 
+        /// <summary>
+        /// A list of all the event receivers that are interested in society events.
+        /// </summary>
         public List<TargetedEventReceiverBase> SocietyEventReceivers {
             get { return _societyEventReceivers; }
             set { _societyEventReceivers = value; }
         }
         [SerializeField] private List<TargetedEventReceiverBase> _societyEventReceivers;
 
+        /// <summary>
+        /// A list of all the event receivers that are interested in construction zone events.
+        /// </summary>
         public List<TargetedEventReceiverBase> ConstructionZoneEventReceivers {
             get { return _constructionZoneEventReceivers; }
             set { _constructionZoneEventReceivers = value; }
         }
         [SerializeField] private List<TargetedEventReceiverBase> _constructionZoneEventReceivers;
 
+        /// <summary>
+        /// A list of all the event receivers that are interested in resource depot events.
+        /// </summary>
         public List<TargetedEventReceiverBase> ResourceDepotEventReceivers {
             get { return _resourceDepotEventReceivers; }
             set { _resourceDepotEventReceivers = value; }
         }
         [SerializeField] private List<TargetedEventReceiverBase> _resourceDepotEventReceivers;
 
+        /// <summary>
+        /// A list of all the event receivers that are interested in highway manager events.
+        /// </summary>
         public List<TargetedEventReceiverBase> HighwayManagerEventReceivers {
             get { return _highwayManagerEventReceivers; }
             set { _highwayManagerEventReceivers = value; }
@@ -80,6 +112,8 @@ namespace Assets.Core {
 
         #region Unity message methods
 
+        //It's easier to send events to the right receivers by populating a dictionary of types and then
+        //using the type parameter of the generic methods below as a key into that dictionary.
         private void Start() {
             EventReceiversByType[typeof(MapNodeUISummary         )] = MapNodeEventReceivers;
             EventReceiversByType[typeof(BlobHighwayUISummary     )] = HighwayEventReceivers;
@@ -116,6 +150,7 @@ namespace Assets.Core {
 
         #region from UIControlBase
 
+        /// <inheritdoc/>
         public override void PushBeginDragEvent<T>(T source, PointerEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -124,6 +159,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushDragEvent<T>(T source, PointerEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -132,6 +168,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushEndDragEvent<T>(T source, PointerEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -140,6 +177,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushPointerClickEvent<T>(T source, PointerEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -148,6 +186,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushPointerEnterEvent<T>(T source, PointerEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -156,6 +195,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushPointerExitEvent<T>(T source, PointerEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -164,6 +204,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushSelectEvent<T>(T source, BaseEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -172,6 +213,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushUpdateSelectedEvent<T>(T source, BaseEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -180,6 +222,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushDeselectEvent<T>(T source, BaseEventData eventData) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -188,6 +231,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushObjectDestroyedEvent<T>(T source) {
             if(EventReceiversByType.ContainsKey(typeof(T))) {
                 foreach(var receiver in EventReceiversByType[typeof(T)]) {
@@ -196,6 +240,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PerformVictoryTasks() {
             Debug.Log("Victory!");
             foreach(var hudElement in HUDElements) {
@@ -204,6 +249,10 @@ namespace Assets.Core {
             VictorySplashScreen.Activate();
         }
 
+        /// <inheritdoc/>
+        /// <remarks>
+        /// Defeat conditions are not currently implemented in or used by the game.
+        /// </remarks>
         public override void PerformDefeatTasks() {
             Debug.Log("Defeat!");
         }

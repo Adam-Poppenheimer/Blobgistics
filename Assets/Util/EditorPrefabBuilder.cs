@@ -12,10 +12,24 @@ using Assets.Highways;
 using Assets.Map;
 using Assets.Societies;
 using Assets.ResourceDepots;
-using Assets.Generator;
 
 namespace Assets.Util {
 
+    /// <summary>
+    /// A class that facilitates the creation of various gameplay elements during design time.
+    /// It provides menu and context options for creating societies, resource depots, and map
+    /// graphs.
+    /// </summary>
+    /// <remarks>
+    /// The structure of this class results from how menu items are implemented. A menu item
+    /// requires a pair of static methods in order to function. These commands require information
+    /// from the scene in order to function properly, which means that this must transfer factories
+    /// and complexities from some component into static variables before they can be used to
+    /// create gameplay elements. That's why there are instance duplicates of all the static
+    /// properties in this class.
+    /// 
+    /// There should never be more than one EditorPrefabBuilder in a given scene at a time.
+    /// </remarks>
     [ExecuteInEditMode]
     public class EditorPrefabBuilder : MonoBehaviour {
 
@@ -26,7 +40,6 @@ namespace Assets.Util {
         private static MapGraphBase             StaticMapGraph             { get; set; }
         private static SocietyFactoryBase       StaticSocietyFactory       { get; set; }
         private static ResourceDepotFactoryBase StaticResourceDepotFactory { get; set; }
-        private static ResourceGeneratorFactory StaticGeneratorFactory     { get; set; }
 
         private static ComplexityDefinitionBase StaticFarmlandComplexity         { get; set; }
         private static ComplexityDefinitionBase StaticLumberCampComplexity       { get; set; }
@@ -49,7 +62,6 @@ namespace Assets.Util {
         [SerializeField] private MapGraphBase             MapGraph;
         [SerializeField] private SocietyFactoryBase       SocietyFactory;
         [SerializeField] private ResourceDepotFactoryBase ResourceDepotFactory;
-        [SerializeField] private ResourceGeneratorFactory GeneratorFactory;
 
         [SerializeField] private ComplexityDefinitionBase FarmlandComplexity;
         [SerializeField] private ComplexityDefinitionBase LumberCampComplexity;
@@ -222,22 +234,6 @@ namespace Assets.Util {
             }
         }
 
-        [MenuItem("Strategy Blobs/Construct Generator At Location")]
-        private static void ConstructGeneratorAtLocation() {
-            var locationToConstruct = Selection.activeTransform.GetComponent<MapNodeBase>();
-            StaticGeneratorFactory.ConstructGeneratorAtLocation(locationToConstruct);
-        }
-
-        [MenuItem("Strategy Blobs/Construct Generator At Location", true)]
-        private static bool ValidateConstructGeneratorAtLocation() {
-            if(Selection.activeTransform != null) {
-                var locationToBuild = Selection.activeTransform.GetComponent<MapNodeBase>();
-                return locationToBuild != null && StaticGeneratorFactory.CanConstructGeneratorAtLocation(locationToBuild);
-            }else {
-                return false;
-            }
-        }
-
         [MenuItem("GameObject/Strategy Blobs/Map Node", false, 10)]
         private static void CreateMapNode(MenuCommand command) {
             Vector3 positionOfNode;
@@ -266,7 +262,6 @@ namespace Assets.Util {
             StaticMapGraph             = MapGraph;
             StaticSocietyFactory       = SocietyFactory;
             StaticResourceDepotFactory = ResourceDepotFactory;
-            StaticGeneratorFactory     = GeneratorFactory;
 
             StaticFarmlandComplexity         = FarmlandComplexity;
             StaticLumberCampComplexity       = LumberCampComplexity;

@@ -13,16 +13,29 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard event receiver for all events propagating from construction zones.
+    /// </summary>
+    /// <remarks>
+    /// Currently, this class mostly connects the ConstructionZoneSummaryDisplay panel to the
+    /// rest of the codebase.
+    /// </remarks>
     public class ConstructionZoneStandardEventReceiver : TargetedEventReceiverBase<ConstructionZoneUISummary> {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// The simulation facade this event receiver interacts with.
+        /// </summary>
         public ConstructionZoneControlBase ConstructionZoneControl {
             get { return _constructionZoneControl; }
             set { _constructionZoneControl = value; }
         }
         [SerializeField] private ConstructionZoneControlBase _constructionZoneControl;  
 
+        /// <summary>
+        /// The display the event receiver serves.
+        /// </summary>
         public ConstructionZoneSummaryDisplayBase ConstructionZoneSummaryDisplay {
             get { return _constructionZoneSummaryDisplay; }
             set {
@@ -59,18 +72,25 @@ namespace Assets.Core {
 
         #region from TargetedEventReceiverBase<ConstructionZoneUISummary>
 
+        /// <inheritdoc/>
         public override void PushBeginDragEvent(ConstructionZoneUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDragEvent(ConstructionZoneUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushEndDragEvent(ConstructionZoneUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerClickEvent(ConstructionZoneUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerEnterEvent(ConstructionZoneUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerExitEvent(ConstructionZoneUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushSelectEvent(ConstructionZoneUISummary source, BaseEventData eventData) {
             if(ConstructionZoneSummaryDisplay != null) {
                 ConstructionZoneSummaryDisplay.CurrentSummary = source as ConstructionZoneUISummary;
@@ -78,10 +98,13 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushUpdateSelectedEvent(ConstructionZoneUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDeselectEvent(ConstructionZoneUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushObjectDestroyedEvent(ConstructionZoneUISummary source) {
             if(source == ConstructionZoneSummaryDisplay.CurrentSummary) {
                 ConstructionZoneSummaryDisplay.Deactivate();

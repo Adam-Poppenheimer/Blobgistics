@@ -8,15 +8,25 @@ using UnityEngine.EventSystems;
 
 using Assets.Highways;
 using Assets.UI.Highways;
-
-using UnityCustomUtilities.Extensions;
+using Assets.Util;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard event receiver for all events propagating from highways and all commands made to them.
+    /// </summary>
+    /// <remarks>
+    /// The main purpose of this class is to connect HighwaySummaryDisplay to the UI and to the simulation.
+    /// It could ostensibly be used for other purposes as well. It's not clear if its relatively simple
+    /// activity justifies its existence. 
+    /// </remarks>
     public class BlobHighwayStandardEventReceiver : TargetedEventReceiverBase<BlobHighwayUISummary> {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// The main display that this class is transferring information for.
+        /// </summary>
         public BlobHighwaySummaryDisplayBase HighwaySummaryDisplay {
             get { return _highwayDisplay; }
             set {
@@ -36,6 +46,9 @@ namespace Assets.Core {
         }
         [SerializeField] private BlobHighwaySummaryDisplayBase _highwayDisplay;
 
+        /// <summary>
+        /// The facade into the simulation that this class needs to access in order to function.
+        /// </summary>
         public HighwayControlBase HighwayControl {
             get { return _highwayControl; }
             set { _highwayControl = value; }
@@ -64,18 +77,25 @@ namespace Assets.Core {
 
         #region from TargetedEventReceiverBase<BlobHighwayUISummary>
 
+        /// <inheritdoc/>
         public override void PushBeginDragEvent(BlobHighwayUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDragEvent(BlobHighwayUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushEndDragEvent(BlobHighwayUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerClickEvent(BlobHighwayUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerEnterEvent(BlobHighwayUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerExitEvent(BlobHighwayUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushSelectEvent(BlobHighwayUISummary source, BaseEventData eventData) {
             if(HighwaySummaryDisplay != null) {
                 HighwaySummaryDisplay.CurrentSummary = source;
@@ -83,21 +103,20 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushUpdateSelectedEvent(BlobHighwayUISummary source, BaseEventData eventData) {
             if(source == HighwaySummaryDisplay.CurrentSummary) {
                 HighwaySummaryDisplay.Deactivate();
             }
         }
 
+        /// <inheritdoc/>
         public override void PushDeselectEvent(BlobHighwayUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushObjectDestroyedEvent(BlobHighwayUISummary source) { }
 
         #endregion
-
-        private void HighwaySummaryDisplay_PriorityChanged(object sender, IntEventArgs e) {
-            HighwayControl.SetHighwayPriority(HighwaySummaryDisplay.CurrentSummary.ID, e.Value);
-        }
 
         private void HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged(object sender, ResourcePermissionEventArgs e) {
             HighwayControl.SetHighwayPullingPermissionOnFirstEndpointForResource(
@@ -110,7 +129,7 @@ namespace Assets.Core {
         }
 
         private void HighwayDisplay_ResourceRequestedForUpkeep(object sender, UpkeepRequestEventArgs e) {
-            HighwayControl.SetHighwayUpkeepRequest(HighwaySummaryDisplay.CurrentSummary.ID, e.Type, e.IsBeingRequested);
+            HighwayControl.SetHighwayUpkeepRequest(HighwaySummaryDisplay.CurrentSummary.ID, e.TypeChanged, e.IsBeingRequested);
         }
 
         #endregion

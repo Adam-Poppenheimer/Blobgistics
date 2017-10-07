@@ -9,6 +9,10 @@ using Assets.ResourceDepots;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard implementation of ResourceDepotControlBase. It acts as a facade
+    /// by which the UI can acccess parts of the simulation relating to resource depots.
+    /// </summary>
     public class ResourceDepotControl : ResourceDepotControlBase {
 
         #region static fields and properties
@@ -19,6 +23,9 @@ namespace Assets.Core {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// The resource depot factory used to destroy resource depots.
+        /// </summary>
         public ResourceDepotFactoryBase ResourceDepotFactory {
             get { return _resourceDepotFactory; }
             set { _resourceDepotFactory = value; }
@@ -31,6 +38,7 @@ namespace Assets.Core {
 
         #region from ResourceDepotControlBase
 
+        /// <inheritdoc/>
         public override void DestroyResourceDepotOfID(int depotID) {
             var depotToDestroy = ResourceDepotFactory.GetDepotOfID(depotID);
             if(depotToDestroy != null) {

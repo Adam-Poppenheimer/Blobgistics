@@ -25,7 +25,7 @@ namespace Assets.Highways.ForTesting {
 
         #region from ResourceBlobBase
 
-        public override void PushNewMovementGoal(MovementGoal goal) {
+        public override void EnqueueNewMovementGoal(MovementGoal goal) {
             PushedGoals.Add(goal);
         }
 

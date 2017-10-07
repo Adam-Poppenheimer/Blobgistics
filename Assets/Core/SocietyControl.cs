@@ -10,6 +10,10 @@ using Assets.Map;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard implementation of SocietyControlBase. It acts as a facade
+    /// by which the UI can access parts of the simulation relating to societies.
+    /// </summary>
     public class SocietyControl : SocietyControlBase {
 
         #region static fields and properties
@@ -20,12 +24,18 @@ namespace Assets.Core {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// The society factory this class uses to destroy societies.
+        /// </summary>
         public SocietyFactoryBase SocietyFactory {
             get { return _societyFactory; }
             set { _societyFactory = value; }
         }
         [SerializeField] private SocietyFactoryBase _societyFactory;
 
+        /// <summary>
+        /// Currently a redundant field that should be removed in the next refactor.
+        /// </summary>
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
             set { _mapGraph = value; }
@@ -38,6 +48,7 @@ namespace Assets.Core {
 
         #region from SocietyControlBase
 
+        /// <inheritdoc/>
         public override void DestroySociety(int societyID) {
             var societyToDestroy = SocietyFactory.GetSocietyOfID(societyID);
             if(societyToDestroy != null) {
@@ -47,6 +58,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void SetGeneralAscensionPermissionForSociety(int societyID, bool ascensionPermitted) {
             var societyToChange = SocietyFactory.GetSocietyOfID(societyID);
             if(societyToChange != null) {
@@ -56,6 +68,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void SetSpecificAscensionPermissionForSociety(int societyID, ComplexityDefinitionBase complexity, bool ascensionPermitted) {
             var societyToChange = SocietyFactory.GetSocietyOfID(societyID);
             if(societyToChange != null) {

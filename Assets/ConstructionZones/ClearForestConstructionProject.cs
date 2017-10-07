@@ -13,6 +13,9 @@ using Assets.UI.Blobs;
 
 namespace Assets.ConstructionZones {
 
+    /// <summary>
+    /// Defines and executes the clearing of forests.
+    /// </summary>
     public class ClearForestConstructionProject : ConstructionProjectBase {
 
         #region instance fields and properties
@@ -25,22 +28,27 @@ namespace Assets.ConstructionZones {
 
         #region from ConstructionProjectBase
 
+        /// <inheritdoc/>
         public override bool IsValidAtLocation(MapNodeBase location) {
             return location.Terrain == TerrainType.Forest;
         }
 
+        /// <inheritdoc/>
         public override bool BlobSiteContainsNecessaryResources(BlobSiteBase site) {
             return Cost.IsContainedWithinBlobSite(site);
         }
 
+        /// <inheritdoc/>
         public override void ExecuteBuild(MapNodeBase location) {
             location.Terrain = TerrainType.Grassland;
         }
 
+        /// <inheritdoc/>
         public override void SetSiteForProject(BlobSiteBase site) {
             site.SetPlacementPermissionsAndCapacity(Cost);
         }
 
+        /// <inheritdoc/>
         public override ResourceDisplayInfo GetCostInfo() {
             return new ResourceDisplayInfo(Cost);
         }

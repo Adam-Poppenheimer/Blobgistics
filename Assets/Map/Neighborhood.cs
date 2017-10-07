@@ -7,6 +7,17 @@ using UnityEngine;
 
 namespace Assets.Map {
 
+    /// <summary>
+    /// A class used to facilitate the use of prefabs in map creation at design time.
+    /// </summary>
+    /// <remarks>
+    /// Neighborhoods were originally conceived as ways of storing chunks of maps as
+    /// prefabs that could then be loaded and manipulated as cohesive objects. It became
+    /// necessary to add the Neighborhood class in order to deal with the peculiarities of
+    /// session saving and loading (in the Assets.Session namespace), though over time the
+    /// idea of modular level design fell out of favor. It's not clear if Neighborhoods
+    /// are a meaningful tool any longer.
+    /// </remarks>
     [ExecuteInEditMode]
     public class Neighborhood : MonoBehaviour {
 
@@ -42,6 +53,11 @@ namespace Assets.Map {
 
         #endregion
 
+        /// <summary>
+        /// Facilitates subscription of child MapNodeBases and MapEdgeBases, since the current
+        /// methods of handling prefab instantiations only work when the ParentGraph is a direct
+        /// parent of the subscribing elements.
+        /// </summary>
         public void SpreadParentChangeToChildren() {
             var mapAbove = gameObject.GetComponentInParent<MapGraphBase>();
             if(mapAbove == null) {

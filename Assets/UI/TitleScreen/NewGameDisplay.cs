@@ -9,8 +9,13 @@ using UnityEngine.UI;
 using Assets.Session;
 using Assets.Scoring;
 
+using Assets.UI.Session;
+
 namespace Assets.UI.TitleScreen {
 
+    /// <summary>
+    /// A class that controls the new game display within the title screen.
+    /// </summary>
     public class NewGameDisplay : MonoBehaviour {
 
         #region instance fields and properties
@@ -44,15 +49,28 @@ namespace Assets.UI.TitleScreen {
 
         #region events
 
+        /// <summary>
+        /// Fires when the player has requested to play the loaded map.
+        /// </summary>
         public event EventHandler<EventArgs> MapLoaded;
+
+        /// <summary>
+        /// Fires when the display requests its own deactivation.
+        /// </summary>
         public event EventHandler<EventArgs> DeactivationRequested;
 
+        /// <summary>
+        /// Fires the MapLoaded event.
+        /// </summary>
         protected void RaiseMapLoaded() {
             if(MapLoaded != null) {
                 MapLoaded(this, EventArgs.Empty);
             }
         }
 
+        /// <summary>
+        /// Fires the DeactivationRequested event.
+        /// </summary>
         protected void RaiseDeactivationRequested() {
             if(DeactivationRequested != null) { }
             DeactivationRequested(this, EventArgs.Empty);
@@ -65,7 +83,6 @@ namespace Assets.UI.TitleScreen {
         #region Unity message methods
 
         private void Start() {
-            FileSystemLiason.MapAsynchronouslyAdded += FileSystemLiason_MapAsynchronouslyAdded;
             FileSystemLiason.RefreshLoadedMaps();
             foreach(var session in FileSystemLiason.LoadedMaps) {
                 EstablishRecordForSession(session);
@@ -89,6 +106,10 @@ namespace Assets.UI.TitleScreen {
 
         #endregion
 
+        /// <summary>
+        /// Loads whatever map is in the current session into the runtime
+        /// and requests for the game to begin.
+        /// </summary>
         public void StartGameWithSelectedMap() {
             if(SelectedSession != null) {
                 SessionManager.CurrentSession = SelectedSession;
@@ -99,13 +120,13 @@ namespace Assets.UI.TitleScreen {
         }
 
         private void EstablishRecordForSession(SerializableSession session) {
-            var newSummary = Instantiate(MapSummaryPrefab).GetComponent<SerializableSessionSummary>();
-            newSummary.transform.SetParent(AvailableMapsSection, false);
-            newSummary.LoadSession(session);
-            newSummary.gameObject.SetActive(true);
+            var newRecord = Instantiate(MapSummaryPrefab).GetComponent<SessionRecord>();
+            newRecord.transform.SetParent(AvailableMapsSection, false);
+            newRecord.SessionToRecord = session;
+            newRecord.gameObject.SetActive(true);
             var cachedCurrentSession = session;
 
-            var summaryButton = newSummary.GetComponent<Button>();
+            var summaryButton = newRecord.GetComponent<Button>();
             summaryButton.onClick.AddListener(delegate() { SetSelectedSession(cachedCurrentSession); });            
         }
 
@@ -161,24 +182,34 @@ namespace Assets.UI.TitleScreen {
             }
         }
 
-        private void FileSystemLiason_MapAsynchronouslyAdded(object sender, SerializableSessionEventArgs e) {
-            EstablishRecordForSession(e.Session);
-        }
-
         private void SortAndEnableMapSummaries() {
-            var sessionSummaries = new List<SerializableSessionSummary>(GetComponentsInChildren<SerializableSessionSummary>());
-            sessionSummaries.Sort((summaryOne, summaryTwo) => SessionComparer(summaryOne.CurrentSession, summaryTwo.CurrentSession));
+            var sessionSummaries = new List<SessionRecord>(GetComponentsInChildren<SessionRecord>());
+            sessionSummaries.Sort((summaryOne, summaryTwo) => SessionComparer(summaryOne.SessionToRecord, summaryTwo.SessionToRecord));
 
             foreach(var sessionSummary in sessionSummaries) {
                 sessionSummary.transform.SetSiblingIndex(sessionSummaries.IndexOf(sessionSummary));
-                if(MapPermissionManager.GetMapIsPermittedToBePlayed(sessionSummary.CurrentSession.Name)) {
-                    sessionSummary.SelectionButton.interactable = true;
+                if(MapPermissionManager.GetMapIsPermittedToBePlayed(sessionSummary.SessionToRecord.Name)) {
+                    sessionSummary.MainButton.interactable = true;
                 }else {
-                    sessionSummary.SelectionButton.interactable = false;
+                    sessionSummary.MainButton.interactable = false;
                 }
             }
         }
 
+        /// <summary>
+        /// A comparer that can help sort our sessions.
+        /// </summary>
+        /// <remarks>
+        ///  With this method, any session with a
+        /// prerequisite session appears after its prerequisite session. Currently, this only
+        /// works when the prerequisite relationship is defined explicitly. For example, if A
+        /// is a prerequisite for B and B is a prerequisite for C, this comparer isn't guaranteed
+        /// to place A, B, and C in the right order. It will only work if A and B are both
+        /// declared prerequisites to C. This is something of a problem and should be fixed.
+        /// </remarks>
+        /// <param name="sessionOne">The first session to compare</param>
+        /// <param name="sessionTwo">The second session to compare</param>
+        /// <returns>A comparison between the two sessions</returns>
         private int SessionComparer(SerializableSession sessionOne, SerializableSession sessionTwo) {
             bool firstIsPermitted = MapPermissionManager.GetMapIsPermittedToBePlayed(sessionOne.Name);
             bool secondIsPermitted = MapPermissionManager.GetMapIsPermittedToBePlayed(sessionTwo.Name);

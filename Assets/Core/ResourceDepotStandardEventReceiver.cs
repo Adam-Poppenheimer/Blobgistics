@@ -11,16 +11,29 @@ using Assets.UI.ResourceDepots;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard event receiver for all events propagating from resource depots.
+    /// </summary>
+    /// <remarks>
+    /// Currently, this class mostly connects the ResourceDepotSummaryDisplay panel to the
+    /// rest of the codebase.
+    /// </remarks>
     public class ResourceDepotStandardEventReceiver : TargetedEventReceiverBase<ResourceDepotUISummary> {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// The resource depot control used to destroy resource depots.
+        /// </summary>
         public ResourceDepotControlBase ResourceDepotControl {
             get { return _resourceDepotControl; }
             set { _resourceDepotControl = value; }
         }
         [SerializeField] private ResourceDepotControlBase _resourceDepotControl; 
 
+        /// <summary>
+        /// The display the event receiver serves.
+        /// </summary>
         public ResourceDepotSummaryDisplayBase DepotSummaryDisplay {
             get { return _depotSummaryDisplay; }
             set {
@@ -53,18 +66,25 @@ namespace Assets.Core {
 
         #region from TargetedEventReceiverBase<ResourceDepotUISummary>
 
+        /// <inheritdoc/>
         public override void PushBeginDragEvent(ResourceDepotUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDragEvent(ResourceDepotUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushEndDragEvent(ResourceDepotUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerClickEvent(ResourceDepotUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerEnterEvent(ResourceDepotUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerExitEvent(ResourceDepotUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushSelectEvent(ResourceDepotUISummary source, BaseEventData eventData) {
             if(DepotSummaryDisplay != null) {
                 DepotSummaryDisplay.CurrentSummary = source as ResourceDepotUISummary;
@@ -72,10 +92,13 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushUpdateSelectedEvent(ResourceDepotUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDeselectEvent(ResourceDepotUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushObjectDestroyedEvent(ResourceDepotUISummary source) {
             if(source == DepotSummaryDisplay.CurrentSummary) {
                 DepotSummaryDisplay.Deactivate();

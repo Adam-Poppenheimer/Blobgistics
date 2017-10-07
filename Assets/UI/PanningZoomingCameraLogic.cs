@@ -7,12 +7,27 @@ using UnityEngine;
 
 namespace Assets.UI {
 
+    /// <summary>
+    /// The logic for the game's camera, which pans with WASD or the right/middle mouse buttons,
+    /// and zooms with the scroll wheel.
+    /// </summary>
+    /// <remarks>
+    /// This class assumes the existence of a mouse with three buttons on it and accesses those
+    /// buttons directly. One might consider a refactor that makes more thorough use of virtual
+    /// buttons.
+    /// </remarks>
     public class PanningZoomingCameraLogic : MonoBehaviour {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// Whether or not the logic is receiving input and updating the camera.
+        /// </summary>
         public bool IsReceivingInput { get; set; }
 
+        /// <summary>
+        /// The bounds that constrain how far the camera can move.
+        /// </summary>
         public Rect Bounds { get; set; }
 
         [SerializeField] private Camera CameraToControl;
@@ -76,6 +91,9 @@ namespace Assets.UI {
                 ref CurrentScrollVelocity, BaseSecondsToZoom);
         }
 
+        //The bounds to not take into account the zoom level of the camera, which means that
+        //a zoomed out camera can see more outside of the camera bounds than one that is
+        //zoomed in.
         private void ConstrainCameraToBounds() {
             var cameraPosition = CameraToControl.transform.position;
 

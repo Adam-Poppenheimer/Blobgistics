@@ -9,6 +9,15 @@ using Assets.Highways;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard implementation for HighwayHighlighterControlBase. Acts as  a simulation facade
+    /// that gives the UI the ability to highlight and unhighlight highways.
+    /// </summary>
+    /// <remarks>
+    /// This class currently functions by swapping out materials, which is a quick but less than stellar
+    /// implementation. Ideally, this class would create glowing outlines around affected highways or
+    /// apply some other, more visually appealing effect.
+    /// </remarks>
     public class HighwayHighlighterControl : HighwayHighlighterControlBase {
 
         #region instance fields and properties
@@ -26,6 +35,7 @@ namespace Assets.Core {
 
         #region from HighwayHighlighterControlBase
 
+        /// <inheritdoc/>
         public override void HighlightHighway(int highwayID) {
             var highwayToHighlight = HighwayFactory.GetHighwayOfID(highwayID);
             if(highwayToHighlight != null && !HighlightedHighways.Contains(highwayToHighlight)) {
@@ -41,6 +51,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void UnhighlightHighway(int highwayID) {
             var highwayToUnhighlight = HighwayFactory.GetHighwayOfID(highwayID);
             if(highwayToUnhighlight != null) {
@@ -48,6 +59,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void UnhighlightAllHighways() {
             foreach(var highway in new List<BlobHighwayBase>(HighlightedHighways)) {
                 UnhighlightHighway(highway);

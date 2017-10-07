@@ -47,7 +47,7 @@ namespace Assets.Core.ForTesting {
 
         #region from HighwayManagerBase
 
-        public override void TickConsumption(float secondsPassed) {
+        public override void Tick(float secondsPassed) {
             throw new NotImplementedException();
         }
 

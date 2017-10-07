@@ -61,10 +61,6 @@ namespace Assets.Session.ForTesting {
 
         #region from SocietyBase
 
-        public override IReadOnlyDictionary<ResourceType, int> GetResourcesUntilSocietyAscent() {
-            throw new NotImplementedException();
-        }
-
         public override void TickConsumption(float secondsPassed) {
             throw new NotImplementedException();
         }

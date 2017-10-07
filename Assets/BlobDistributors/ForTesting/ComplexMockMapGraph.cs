@@ -67,7 +67,6 @@ namespace Assets.BlobDistributors.ForTesting {
 
             var newBlobSite = hostingObject.AddComponent<BlobSite>();
             newBlobSite.Configuration = hostingObject.AddComponent<MockBlobSitePrivateData>();
-            newEdge.SetBlobSite(newBlobSite);
             edges.Add(newEdge);
 
             return newEdge;

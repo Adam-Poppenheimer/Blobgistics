@@ -10,6 +10,10 @@ using Assets.Highways;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard implementation of HighwayManagerControlBase. It acts as a facade
+    /// by which the UI can access parts of the simulation relating to highway managers.
+    /// </summary>
     public class HighwayManagerControl : HighwayManagerControlBase {
 
         #region static fields and properties
@@ -20,6 +24,9 @@ namespace Assets.Core {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// A dependency necessary for the class to function.
+        /// </summary>
         public HighwayManagerFactoryBase HighwayManagerFactory {
             get { return _highwayManagerFactory; }
             set { _highwayManagerFactory = value; }
@@ -32,6 +39,7 @@ namespace Assets.Core {
 
         #region from HighwayManagerControlBase
 
+        /// <inheritdoc/>
         public override void DestroyHighwayManagerOfID(int managerID) {
             var managerToDestroy = HighwayManagerFactory.GetHighwayManagerOfID(managerID);
             if(managerToDestroy != null) {
@@ -41,6 +49,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<BlobHighwayUISummary> GetHighwaysManagedByManagerOfID(int managerID) {
             var managerToConsider = HighwayManagerFactory.GetHighwayManagerOfID(managerID);
             if(managerToConsider != null) {

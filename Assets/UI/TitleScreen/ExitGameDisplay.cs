@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 namespace Assets.UI.TitleScreen {
 
+    /// <summary>
+    /// A class that controls the exit game display within the title screen.
+    /// </summary>
     public class ExitGameDisplay : MonoBehaviour {
 
         #region instance fields and properties
@@ -19,15 +22,28 @@ namespace Assets.UI.TitleScreen {
 
         #region events
 
+        /// <summary>
+        /// Fires when the player confirms the exit.
+        /// </summary>
         public event EventHandler<EventArgs> ExitConfirmed;
+
+        /// <summary>
+        /// Fires when the player rejects the exit.
+        /// </summary>
         public event EventHandler<EventArgs> ExitRejected;
 
+        /// <summary>
+        /// Fires the ExitConfirmed event.
+        /// </summary>
         protected void RaiseExitConfirmed() {
             if(ExitConfirmed != null) {
                 ExitConfirmed(this, EventArgs.Empty);
             }
         }
 
+        /// <summary>
+        /// Fires the ExitRejected event.
+        /// </summary>
         protected void RaiseExitRejected() {
             if(ExitRejected != null) {
                 ExitRejected(this, EventArgs.Empty);

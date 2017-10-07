@@ -15,12 +15,21 @@ using System.Collections.ObjectModel;
 
 namespace Assets.HighwayManager {
 
+    /// <summary>
+    /// The standard implementation of HighwayManagerFactoryBase. This class builds and destroys
+    /// highway managers, ticks them, and deteremines which highways are served by which managers.
+    /// </summary>
+    /// <remarks>
+    /// By policy, every highway is assigned to the nearest highway manager within a certain range,
+    /// or null if no such manager exists.
+    /// </remarks>
     public class HighwayManagerFactory : HighwayManagerFactoryBase {
 
         #region instance fields and properties
 
         #region from HighwayManagerFactoryBase
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<HighwayManagerBase> Managers {
             get { return managers.AsReadOnly(); }
         }
@@ -28,18 +37,27 @@ namespace Assets.HighwayManager {
 
         #endregion
 
+        /// <summary>
+        /// The maximum range from which a highway can be managed by a highway manager.
+        /// </summary>
         public uint ManagementRadius {
             get { return _managementRadius; }
             set { _managementRadius = value; }
         }
         [SerializeField] private uint _managementRadius;
 
+        /// <summary>
+        /// The MapGraph this manager uses to find the closest node containing some highway manager.
+        /// </summary>
         public MapGraphBase MapGraph {
             get { return _mapGraph; }
             set { _mapGraph = value; }
         }
         [SerializeField] private MapGraphBase _mapGraph;
 
+        /// <summary>
+        /// The highway factory this manager uses in order to update service relations.
+        /// </summary>
         public BlobHighwayFactoryBase HighwayFactory {
             get { return _highwayFactory; }
             set {
@@ -56,6 +74,9 @@ namespace Assets.HighwayManager {
         }
         [SerializeField] private BlobHighwayFactoryBase _highwayFactory;
 
+        /// <summary>
+        /// The private data that every highway manager subscribed to this factory is configured with.
+        /// </summary>
         public HighwayManagerPrivateDataBase ManagerPrivateData {
             get { return _privateData; }
             set { _privateData = value; }
@@ -64,6 +85,8 @@ namespace Assets.HighwayManager {
 
         [SerializeField] private GameObject ManagerPrefab;
 
+        //Caches for service relations, so that they only have to be recalculated when highways or highway managers
+        //are created or destroyed.
         private DictionaryOfLists<HighwayManagerBase, BlobHighwayBase> HighwaysServedByManager =
             new DictionaryOfLists<HighwayManagerBase, BlobHighwayBase>();
 
@@ -88,10 +111,12 @@ namespace Assets.HighwayManager {
 
         #region from HighwayManagerFactoryBase
 
+        /// <inheritdoc/>
         public override HighwayManagerBase GetHighwayManagerOfID(int id) {
             return managers.Find(manager => manager.ID == id);
         }
 
+        /// <inheritdoc/>
         public override IEnumerable<BlobHighwayBase> GetHighwaysServedByManager(HighwayManagerBase manager) {
             if(manager == null) {
                 throw new ArgumentNullException("manager");
@@ -105,6 +130,7 @@ namespace Assets.HighwayManager {
             }
         }
 
+        /// <inheritdoc/>
         public override HighwayManagerBase GetManagerServingHighway(BlobHighwayBase highway) {
             if(highway == null) {
                 throw new ArgumentNullException("highway");
@@ -114,6 +140,7 @@ namespace Assets.HighwayManager {
             return retval;
         }
 
+        /// <inheritdoc/>
         public override HighwayManagerBase GetHighwayManagerAtLocation(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
@@ -121,6 +148,7 @@ namespace Assets.HighwayManager {
             return managers.Find(manager => manager.Location == location);
         }
 
+        /// <inheritdoc/>
         public override bool CanConstructHighwayManagerAtLocation(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
@@ -128,6 +156,7 @@ namespace Assets.HighwayManager {
             return GetHighwayManagerAtLocation(location) == null;
         }
 
+        /// <inheritdoc/>
         public override HighwayManagerBase ConstructHighwayManagerAtLocation(MapNodeBase location) {
             if(location == null) {
                 throw new ArgumentNullException("location");
@@ -156,6 +185,7 @@ namespace Assets.HighwayManager {
             return newManager;
         }
 
+        /// <inheritdoc/>
         public override void DestroyHighwayManager(HighwayManagerBase manager) {
             if(manager == null) {
                 throw new ArgumentNullException("manager");
@@ -168,6 +198,7 @@ namespace Assets.HighwayManager {
             }
         }
 
+        /// <inheritdoc/>
         public override void UnsubscribeHighwayManager(HighwayManagerBase manager) {
             if(manager == null) {
                 throw new ArgumentNullException("manager");
@@ -177,9 +208,10 @@ namespace Assets.HighwayManager {
             RefreshServiceDict();
         }
 
+        /// <inheritdoc/>
         public override void TickAllManangers(float secondsPassed) {
             foreach(var manager in managers) {
-                manager.TickConsumption(secondsPassed);
+                manager.Tick(secondsPassed);
             }
         }
 
@@ -193,6 +225,9 @@ namespace Assets.HighwayManager {
             RefreshServiceDict();
         }
 
+        //For performance reasons, the factory calculates the management relations for every highway and manager
+        //and then caches the results. These relations are refreshed every time a highway or a highway
+        //manager is created or destroyed.
         private void RefreshServiceDict() {
             HighwaysServedByManager.Clear();
 

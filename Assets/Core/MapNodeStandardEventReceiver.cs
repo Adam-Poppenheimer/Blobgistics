@@ -17,28 +17,48 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard event receiver for all events propagating from map nodes.
+    /// </summary>
+    /// <remarks>
+    /// Currently, this class connects to the construction panel and controls how highways
+    /// are drawn by the player. It also handles the audio for drawing highways.
+    /// </remarks>
     public class MapNodeStandardEventReceiver : TargetedEventReceiverBase<MapNodeUISummary> {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// A highway ghost, used to show the player where their currently-dragged highway will
+        /// end up, and whether it's a valid placement.
+        /// </summary>
         public BlobHighwayGhostBase HighwayGhost {
             get { return _highwayGhost; }
             set { _highwayGhost = value; }
         }
         [SerializeField] private BlobHighwayGhostBase _highwayGhost;
 
+        /// <summary>
+        /// The highway control the class is to send highway construction events to.
+        /// </summary>
         public HighwayControlBase HighwayControl {
             get { return _highwayControl; }
             set { _highwayControl = value; }
         }
         [SerializeField] private HighwayControlBase _highwayControl;
 
+        /// <summary>
+        /// The construction zone control the classes uses to inform the construction panel.
+        /// </summary>
         public ConstructionZoneControlBase ConstructionZoneControl {
             get { return _constructionZoneControl; }
             set { _constructionZoneControl = value; }
         }
         [SerializeField] private ConstructionZoneControlBase _constructionZoneControl;
 
+        /// <summary>
+        /// The construction panel that the class feeds information to and extracts commands from.
+        /// </summary>
         public ConstructionPanelBase ConstructionPanel {
             get { return _constructionPanel; }
             set {
@@ -80,6 +100,8 @@ namespace Assets.Core {
             }
         }
 
+        //The sound for highway drawing is a click whose volume is modulated based on whether the
+        //mouse is currently being dragged.
         private void Update() {
             if(ReceivedDragEventLastFrame) {
                 ReceivedDragEventLastFrame = false;
@@ -99,6 +121,8 @@ namespace Assets.Core {
 
         #region from TargetedEventReceiverBase<MapNodeUISummary>
 
+        //Highway drawing logic is split between the BeginDrag, Drag, and EndDrag events.
+        /// <inheritdoc/>
         public override void PushBeginDragEvent(MapNodeUISummary source, PointerEventData eventData) {
             HighwayGhost.Clear();
             HighwayGhost.FirstEndpoint = source;
@@ -109,11 +133,13 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushDragEvent(MapNodeUISummary source, PointerEventData eventData) {
             HighwayGhost.UpdateWithEventData(eventData);
             ReceivedDragEventLastFrame = true;
         }
 
+        /// <inheritdoc/>
         public override void PushEndDragEvent(MapNodeUISummary source, PointerEventData eventData) {
             var firstEndpoint = HighwayGhost.FirstEndpoint;
             var secondEndpoint = HighwayGhost.SecondEndpoint;
@@ -130,8 +156,10 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushPointerClickEvent(MapNodeUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerEnterEvent(MapNodeUISummary source, PointerEventData eventData) {
             if(HighwayGhost.IsActivated) {
                 HighwayGhost.SecondEndpoint = source;
@@ -140,6 +168,7 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushPointerExitEvent(MapNodeUISummary source, PointerEventData eventData) {
             if(HighwayGhost.IsActivated) {
                 HighwayGhost.SecondEndpoint = null;
@@ -147,16 +176,20 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushSelectEvent(MapNodeUISummary source, BaseEventData eventData) {
             ConstructionPanel.LocationToConstruct = source;
             ConstructionPanel.SetPermittedProjects(ConstructionZoneControl.GetAllPermittedConstructionZoneProjectsOnNode(source.ID));
             ConstructionPanel.Activate();
         }
 
+        /// <inheritdoc/>
         public override void PushUpdateSelectedEvent(MapNodeUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDeselectEvent(MapNodeUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushObjectDestroyedEvent(MapNodeUISummary source) { }
 
         #endregion

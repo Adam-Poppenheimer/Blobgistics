@@ -541,7 +541,7 @@ namespace Assets.HighwayManager.Editor {
             var managerToTest = managerFactory.ConstructHighwayManagerAtLocation(node1);
 
             //Execution
-            managerToTest.TickConsumption(1f);
+            managerToTest.Tick(1f);
 
             //Validation
             Assert.AreEqual(1, managerToTest.LastCalculatedUpkeep[ResourceType.Food        ], "Manager records an incorrect Food upkeep"        );
@@ -606,9 +606,9 @@ namespace Assets.HighwayManager.Editor {
             var managerAtNode2 = managerFactory.ConstructHighwayManagerAtLocation(node5);
 
             //Execution
-            managerAtNode1.TickConsumption(10f);
+            managerAtNode1.Tick(10f);
             privateData.SetSecondsToPerformConsumption(2f);
-            managerAtNode2.TickConsumption(10f);
+            managerAtNode2.Tick(10f);
 
             //Validation
             Assert.AreEqual(90, node1.BlobSite.GetCountOfContentsOfType(ResourceType.Food), "Node1 has an incorrect amount of food remaining");
@@ -687,7 +687,7 @@ namespace Assets.HighwayManager.Editor {
             var managerToTest = managerFactory.ConstructHighwayManagerAtLocation(node1);
 
             //Execution
-            managerToTest.TickConsumption(1f);
+            managerToTest.Tick(1f);
 
             //Validation
             Assert.AreEqual(1 + privateData.EfficiencyGainFromResource[ResourceType.Food        ], highway1.Efficiency, "Highway1 has an incorrect efficiency");

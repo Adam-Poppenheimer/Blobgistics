@@ -14,12 +14,17 @@ using UnityCustomUtilities.Meshes;
 
 namespace Assets.Highways {
 
+    /// <summary>
+    /// The standard implementation of BlobTubeBase. This class handles the transit of resources
+    /// from one point to another.
+    /// </summary>
     public class BlobTube : BlobTubeBase {
 
         #region instance fields and properties
 
         #region from BlobTubeBase
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ResourceBlobBase> Contents {
             get { return contents.AsReadOnly(); }
         }
@@ -27,26 +32,34 @@ namespace Assets.Highways {
 
         private List<ResourceBlobBase> BlobsAtEnd = new List<ResourceBlobBase>();
 
+        /// <inheritdoc/>
         public override Vector3 SourceLocation {
             get { return sourceLocation; }
         }
         [SerializeField] private Vector3 sourceLocation;
 
+        /// <inheritdoc/>
         public override Vector3 TargetLocation {
             get { return targetLocation; }
         }
         [SerializeField] private Vector3 targetLocation;
 
+        /// <inheritdoc/>
         [SerializeField] public override int Capacity { get; set; }
 
+        /// <inheritdoc/>
         public override int SpaceLeft {
             get { return Capacity - contents.Count; }
         }
 
+        /// <inheritdoc/>
         [SerializeField] public override float TransportSpeedPerSecond { get; set; }
 
         #endregion
 
+        /// <summary>
+        /// Configuration data for the tube.
+        /// </summary>
         public BlobTubePrivateDataBase PrivateData {
             get {
                 if(_privateData == null) {
@@ -65,6 +78,16 @@ namespace Assets.Highways {
         }
         [SerializeField] private BlobTubePrivateDataBase _privateData;
 
+        /// <summary>
+        /// The pulling permissions of the various resource types.
+        /// </summary>
+        /// <remarks>
+        /// Permissions must be stored as a BoolPerResourceDictionary because this information
+        /// needs to persist between runtimes. Highway permissions are an important tool for
+        /// designing maps, especially tutorial maps. It could be argued that this serialization
+        /// is redundant with the classes in the Session namespace that require it, making it a
+        /// possible refactoring candidate.
+        /// </remarks>
         public BoolPerResourceDictionary PermissionsForBlobTypes {
             get { return _permissionsForBlobTypes; }
             set { _permissionsForBlobTypes = value; }
@@ -79,6 +102,7 @@ namespace Assets.Highways {
 
         #region from BlobTubeBase
 
+        /// <inheritdoc/>
         public override bool CanPullBlobFrom(ResourceBlobBase blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
@@ -88,6 +112,7 @@ namespace Assets.Highways {
             return BlobsAtEnd.Contains(blob) && contents.Contains(blob);
         }
 
+        /// <inheritdoc/>
         public override void PullBlobFrom(ResourceBlobBase blob) {
             if(CanPullBlobFrom(blob)) {
                 contents.Remove(blob);
@@ -97,6 +122,7 @@ namespace Assets.Highways {
             }
         }
 
+        /// <inheritdoc/>
         public override bool CanPushBlobInto(ResourceBlobBase blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
@@ -106,6 +132,7 @@ namespace Assets.Highways {
             return blobTypeIsPermitted && contents.Count < Capacity && !contents.Contains(blob);
         }
 
+        /// <inheritdoc/>
         public override void PushBlobInto(ResourceBlobBase blob) {
             if(CanPushBlobInto(blob)) {
                 contents.Add(blob);
@@ -114,12 +141,13 @@ namespace Assets.Highways {
                 blob.transform.SetParent(transform, true);
                 blob.transform.rotation = Quaternion.identity;
 
+                //The Z position of the blobs should not change, since the game is 2D.
                 var zOffsetSource = new Vector3(SourceLocation.x, SourceLocation.y, ResourceBlob.DesiredZPositionOfAllBlobs);
                 var zOffsetTarget = new Vector3(TargetLocation.x, TargetLocation.y, ResourceBlob.DesiredZPositionOfAllBlobs);
 
                 blob.ClearAllMovementGoals();
-                blob.PushNewMovementGoal(new MovementGoal(zOffsetSource, TransportSpeedPerSecond));
-                blob.PushNewMovementGoal(new MovementGoal(zOffsetTarget, TransportSpeedPerSecond, delegate() {
+                blob.EnqueueNewMovementGoal(new MovementGoal(zOffsetSource, TransportSpeedPerSecond));
+                blob.EnqueueNewMovementGoal(new MovementGoal(zOffsetTarget, TransportSpeedPerSecond, delegate() {
                     BlobsAtEnd.Add(blob);
                     RaiseBlobReachedEndOfTube(blob);
                 }));
@@ -128,6 +156,7 @@ namespace Assets.Highways {
             }
         }
 
+        /// <inheritdoc/>
         public override bool RemoveBlobFrom(ResourceBlobBase blob) {
             if(blob == null) {
                 throw new ArgumentNullException("blob");
@@ -142,6 +171,7 @@ namespace Assets.Highways {
             return retval;
         }
 
+        /// <inheritdoc/>
         public override void Clear() {
             var blobsToRemove = new List<ResourceBlobBase>(contents);
             for(int i = blobsToRemove.Count - 1; i >= 0; --i) {
@@ -150,6 +180,7 @@ namespace Assets.Highways {
             contents.Clear();
         }
 
+        /// <inheritdoc/>
         public override void SetEndpoints(Vector3 newSourceLocation, Vector3 newTargetLocation) {
             sourceLocation = newSourceLocation;
             targetLocation = newTargetLocation;
@@ -162,12 +193,14 @@ namespace Assets.Highways {
             }
         }
 
+        /// <inheritdoc/>
         public override bool GetPermissionForResourceType(ResourceType type) {
             bool retval;
             PermissionsForBlobTypes.TryGetValue(type, out retval);
             return retval;
         }
 
+        /// <inheritdoc/>
         public override void SetPermissionForResourceType(ResourceType type, bool isPermitted) {
             PermissionsForBlobTypes[type] = isPermitted;
         }

@@ -11,6 +11,13 @@ using Assets.UI.Session;
 
 namespace Assets.UI.EscapeMenu {
 
+    /// <summary>
+    /// A class that controls the load session panel within the escape menu.
+    /// </summary>
+    /// <remarks>
+    /// This class might be redundant with <see cref="Assets.UI.TitleScreen.LoadSessionDisplay"/>.
+    /// Consider combining the two.
+    /// </remarks>
     public class EscapeMenuLoadSessionDisplay : PanelBase {
 
         #region instance fields and properties
@@ -42,8 +49,14 @@ namespace Assets.UI.EscapeMenu {
 
         #region events
 
+        /// <summary>
+        /// Fires whenever the display loads a map.
+        /// </summary>
         public event EventHandler<EventArgs> MapLoaded;
 
+        /// <summary>
+        /// Fires the MapLoaded event.
+        /// </summary>
         protected void RaiseMapLoaded() {
             if(MapLoaded != null) {
                 MapLoaded(this, EventArgs.Empty);
@@ -61,6 +74,9 @@ namespace Assets.UI.EscapeMenu {
             CancelButton.onClick.AddListener(delegate() { RaiseDeactivationRequested(); });
         }
 
+        //Loads are performed during the update loop for error detection purposes.
+        //Errors that occur in the UI thread will sometimes not display messages to
+        //the log.
         private void Update() {
             if(PerformLoadOnNextUpdate) {
                 PerformLoad();
@@ -72,6 +88,7 @@ namespace Assets.UI.EscapeMenu {
 
         #region from PanelBase
 
+        /// <inheritdoc/>
         protected override void DoOnActivate() {
             SelectedSession = null;
             RefreshSessionList();

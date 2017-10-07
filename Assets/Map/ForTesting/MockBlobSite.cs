@@ -15,6 +15,8 @@ namespace Assets.Map.ForTesting {
 
         #region BlobSiteBase
 
+        public override int TotalCapacity { get; set; }
+
         public override BlobSiteConfigurationBase Configuration { get; set; }
 
         public override ReadOnlyCollection<ResourceBlobBase> Contents {

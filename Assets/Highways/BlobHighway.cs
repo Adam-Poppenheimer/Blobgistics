@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using UnityEngine;
@@ -10,20 +10,27 @@ using UnityEngine.EventSystems;
 using Assets.Map;
 using Assets.Blobs;
 using Assets.BlobSites;
-
-using UnityCustomUtilities.Extensions;
-using System.Collections.ObjectModel;
 using Assets.Core;
 
 namespace Assets.Highways {
 
+    /// <summary>
+    /// The standard implementation for BlobHighwayBase, a gameplay element that transfers
+    /// blobs between map nodes.
+    /// </summary>
+    /// <remarks>
+    /// BlobHighway operates primarily through the use of two BlobTube objects, each of which handles
+    /// resource flows going in one direction.
+    /// </remarks>
     [ExecuteInEditMode]
     public class BlobHighway : BlobHighwayBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler,
         IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler {
 
         #region static fields and properties
 
-        public static readonly float HighwayCollisionWidth = 0.6f;
+        /// <summary>
+        /// The distance between the two tubes that make up a highway.
+        /// </summary>
         public static readonly float TubeCenterOffset = 0.2f;
 
         #endregion
@@ -32,58 +39,69 @@ namespace Assets.Highways {
 
         #region from BlobHighwayBase
 
+        /// <inheritdoc/>
         public override int ID {
             get { return GetInstanceID(); }
         }
 
+        /// <inheritdoc/>
         public override ResourceBlobFactoryBase BlobFactory {
             get { return _blobFactory; }
             set { _blobFactory = value; }
         }
         [SerializeField] private ResourceBlobFactoryBase _blobFactory;
 
+        /// <inheritdoc/>
         public override BlobHighwayFactoryBase ParentFactory {
             get { return _parentFactory; }
             set { _parentFactory = value; }
         }
         [SerializeField] private BlobHighwayFactoryBase _parentFactory;
 
+        /// <inheritdoc/>
         public override UIControlBase UIControl {
             get { return _uiControl; }
             set { _uiControl = value; }
         }
         [SerializeField] private UIControlBase _uiControl;
 
+        /// <inheritdoc/>
         public override int Priority {
             get { return _priority; }
             set { _priority = value; }
         }
         [SerializeField] private int _priority = Int32.MaxValue;
 
+        /// <inheritdoc/>
         public override MapNodeBase FirstEndpoint {
             get { return firstEndpoint; }
         }
         [SerializeField] private MapNodeBase firstEndpoint;
 
+        /// <inheritdoc/>
         public override MapNodeBase SecondEndpoint {
             get { return secondEndpoint; }
         }
         [SerializeField] private MapNodeBase secondEndpoint;
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromFirstEndpoint {
             get { return TubePullingFromFirstEndpoint.Contents; }
         }
 
+        /// <inheritdoc/>
         public override ReadOnlyCollection<ResourceBlobBase> ContentsPulledFromSecondEndpoint {
             get { return TubePullingFromSecondEndpoint.Contents; }
         }
 
+        /// <inheritdoc/>
         public override BlobHighwayProfile Profile {
             get { return _profile; }
             set { _profile = value; }
         }
         [SerializeField] private BlobHighwayProfile _profile;
 
+        /// <inheritdoc/>
         public override float Efficiency {
             get { return _efficiency; }
             set {
@@ -93,12 +111,20 @@ namespace Assets.Highways {
         }
         private float _efficiency = 1f;
 
+        /// <inheritdoc/>
         public override float BlobPullCooldownInSeconds {
             get { return Profile.BlobPullCooldownInSeconds / Efficiency; }
         }
 
         #endregion
 
+        /// <summary>
+        /// The tube that handles all resource transfers from the first endpoint to the second endpoint.
+        /// </summary>
+        /// <remarks>
+        /// This property might represent too much calculation to fit the semantics of a property. It might
+        /// be wise to convert it into a method to emphasize the presence of additional calculations.
+        /// </remarks>
         public BlobTubeBase TubePullingFromFirstEndpoint {
             get { return _tubePullingFromFirstEndpoint; }
             set {
@@ -112,6 +138,13 @@ namespace Assets.Highways {
         }
         [SerializeField] private BlobTubeBase _tubePullingFromFirstEndpoint;
 
+        /// <summary>
+        /// The tube that handles all resource transfers from the second endpoint to the first endpoint.
+        /// </summary>
+        /// <remarks>
+        /// This property might represent too much calculation to fit the semantics of a property. It might
+        /// be wise to convert it into a method to emphasize the presence of additional calculations.
+        /// </remarks>
         public BlobTubeBase TubePullingFromSecondEndpoint {
             get { return _tubePullingFromSecondEndpoint; }
             set {
@@ -134,6 +167,8 @@ namespace Assets.Highways {
 
         #region Unity event methods
 
+        //As with other classes, it's important to make sure that the ParentFactory is aware of the state
+        //of this highway even if it was copied into existence at design time.
         private void Start() {
             UpdateTubeSpeedAndCapacity();
             if(ParentFactory != null && ParentFactory.GetHighwayOfID(ID) == null) {
@@ -161,35 +196,43 @@ namespace Assets.Highways {
 
         #region EventSystem interface implementations
 
+        /// <inheritdoc/>
         public void OnBeginDrag(PointerEventData eventData) {
             UIControl.PushBeginDragEvent(new BlobHighwayUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnDrag(PointerEventData eventData) {
             UIControl.PushDragEvent(new BlobHighwayUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnEndDrag(PointerEventData eventData) {
             UIControl.PushEndDragEvent(new BlobHighwayUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnPointerClick(PointerEventData eventData) {
             UIControl.PushPointerClickEvent(new BlobHighwayUISummary(this), eventData);
             EventSystem.current.SetSelectedGameObject(gameObject);
         }
 
+        /// <inheritdoc/>
         public void OnPointerEnter(PointerEventData eventData) {
             UIControl.PushPointerEnterEvent(new BlobHighwayUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnPointerExit(PointerEventData eventData) {
             UIControl.PushPointerExitEvent(new BlobHighwayUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnSelect(BaseEventData eventData) {
             UIControl.PushSelectEvent(new BlobHighwayUISummary(this), eventData);
         }
 
+        /// <inheritdoc/>
         public void OnDeselect(BaseEventData eventData) {
             UIControl.PushDeselectEvent(new BlobHighwayUISummary(this), eventData);
         }
@@ -197,13 +240,14 @@ namespace Assets.Highways {
         #endregion
 
         #region from BlobHighwayBase
-
+        /// <inheritdoc/>
         public override void SetEndpoints(MapNodeBase firstEndpoint, MapNodeBase secondEndpoint) {
             this.firstEndpoint = firstEndpoint;
             this.secondEndpoint = secondEndpoint;
             UpdateTubeEndpoints();
         }
 
+        /// <inheritdoc/>
         public override bool CanPullFromFirstEndpoint() {
             if(TubePullingFromFirstEndpoint.SpaceLeft > 0) {
                 foreach(var blob in FirstEndpoint.BlobSite.Contents) {
@@ -218,6 +262,7 @@ namespace Assets.Highways {
             return false;
         }
 
+        /// <inheritdoc/>
         public override void PullFromFirstEndpoint() {
             if(TubePullingFromFirstEndpoint.SpaceLeft > 0) {
                 foreach(var blob in FirstEndpoint.BlobSite.Contents) {
@@ -235,6 +280,7 @@ namespace Assets.Highways {
             throw new BlobHighwayException("Cannot pull from this BlobHighway's FirstEndpoint");
         }
 
+        /// <inheritdoc/>
         public override bool CanPullFromSecondEndpoint() {
             if(TubePullingFromSecondEndpoint.SpaceLeft > 0) {
                 foreach(var blob in SecondEndpoint.BlobSite.Contents) {
@@ -251,6 +297,7 @@ namespace Assets.Highways {
             return false;
         }
 
+        /// <inheritdoc/>
         public override void PullFromSecondEndpoint() {
             if(TubePullingFromSecondEndpoint.SpaceLeft > 0) {
                 foreach(var blob in SecondEndpoint.BlobSite.Contents) {
@@ -268,32 +315,39 @@ namespace Assets.Highways {
             throw new BlobHighwayException("Cannot pull from this BlobHighway's FirstEndpoint");
         }
 
+        /// <inheritdoc/>
         public override bool GetPullingPermissionForFirstEndpoint(ResourceType type) {
             return TubePullingFromFirstEndpoint.GetPermissionForResourceType(type);
         }
 
+        /// <inheritdoc/>
         public override void SetPullingPermissionForFirstEndpoint(ResourceType type, bool isPermitted) {
             TubePullingFromFirstEndpoint.SetPermissionForResourceType(type, isPermitted);
         }
 
+        /// <inheritdoc/>
         public override bool GetPullingPermissionForSecondEndpoint(ResourceType type) {
             return TubePullingFromSecondEndpoint.GetPermissionForResourceType(type);
         }
 
+        /// <inheritdoc/>
         public override void SetPullingPermissionForSecondEndpoint(ResourceType type, bool isPermitted) {
             TubePullingFromSecondEndpoint.SetPermissionForResourceType(type, isPermitted);
         }
 
+        /// <inheritdoc/>
         public override bool GetUpkeepRequestedForResource(ResourceType type) {
             bool retval;
             UpkeepRequestedForResource.TryGetValue(type, out retval);
             return retval;
         }
 
+        /// <inheritdoc/>
         public override void SetUpkeepRequestedForResource(ResourceType type, bool isBeingRequested) {
             UpkeepRequestedForResource[type] = isBeingRequested;
         }
 
+        /// <inheritdoc/>
         public override void Clear() {
             TubePullingFromFirstEndpoint.Clear();
             TubePullingFromSecondEndpoint.Clear();
@@ -322,6 +376,12 @@ namespace Assets.Highways {
             }
         }
 
+        /*
+         * This method makes sure that both tubes have the correct connection points and the correct
+         * rotation. Most of the math in this method is to figure out how to keep a small separation
+         * between the two tubes and also make sure that parenting relations and collider dimensions
+         * are correct.
+         */
         private void UpdateTubeEndpoints() {
             if( FirstEndpoint == null || SecondEndpoint == null ||
                 TubePullingFromFirstEndpoint == null || TubePullingFromSecondEndpoint == null ){
@@ -353,6 +413,9 @@ namespace Assets.Highways {
             );
         }
 
+        //When a blob reaches the end of the tube, the highway checks to see if the blob can be placed in the corresponding
+        //endpoint's BlobSite. This must be done because the state of the BlobSite the blob is heading towards could've
+        //changed since the blob began its journey. If it can't be placed, the blob is destroyed.
         private void TubePullingFromFirstEndpoint_BlobReachedEndOfTube(object sender, BlobEventArgs e) {
             if(SecondEndpoint.BlobSite.CanPlaceBlobInto(e.Blob)) {
                 TubePullingFromFirstEndpoint.PullBlobFrom(e.Blob);

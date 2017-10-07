@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- The configuration and platform will be used to determine which assemblies to include from solution and
+				 project documentation sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>c5bcae2d-4f73-4b1c-9a4d-deb78db3caea</ProjectGuid>
+    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
+    <AssemblyName>Documentation1</AssemblyName>
+    <RootNamespace>Documentation1</RootNamespace>
+    <Name>BlobgisticsDocumentation</Name>
+    <!-- SHFB properties -->
+    <FrameworkVersion>.NET Framework 3.5</FrameworkVersion>
+    <OutputPath>.\Help\</OutputPath>
+    <HtmlHelpName>BlobgisticsDocumentation</HtmlHelpName>
+    <Language>en-US</Language>
+    <TransformComponentArguments>
+      <Argument Key="logoFile" Value="Help.png" xmlns="" />
+      <Argument Key="logoHeight" Value="" xmlns="" />
+      <Argument Key="logoWidth" Value="" xmlns="" />
+      <Argument Key="logoAltText" Value="" xmlns="" />
+      <Argument Key="logoPlacement" Value="left" xmlns="" />
+      <Argument Key="logoAlignment" Value="left" xmlns="" />
+      <Argument Key="maxVersionParts" Value="" xmlns="" />
+    </TransformComponentArguments>
+    <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
+    <BuildAssemblerVerbosity>OnlyErrors</BuildAssemblerVerbosity>
+    <HelpFileFormat>HtmlHelp1, MSHelpViewer, Website</HelpFileFormat>
+    <IndentHtml>True</IndentHtml>
+    <KeepLogFile>True</KeepLogFile>
+    <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
+    <CleanIntermediates>True</CleanIntermediates>
+    <HelpFileVersion>1.0.0.0</HelpFileVersion>
+    <MaximumGroupParts>2</MaximumGroupParts>
+    <NamespaceGrouping>False</NamespaceGrouping>
+    <SyntaxFilters>C#</SyntaxFilters>
+    <SdkLinkTarget>Blank</SdkLinkTarget>
+    <RootNamespaceContainer>True</RootNamespaceContainer>
+    <PresentationStyle>VS2013</PresentationStyle>
+    <Preliminary>False</Preliminary>
+    <NamingMethod>Guid</NamingMethod>
+    <HelpTitle>Blobgistics Documentation</HelpTitle>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="..\Blobgistics.CSharp.csproj" />
+      <DocumentationSource sourceFile="..\Assets\UnityCustomUtilities\UnityCustomUtilities.dll" />
+      <DocumentationSource sourceFile="..\Assets\UnityCustomUtilities\UnityCustomUtilities.xml" />
+    </DocumentationSources>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="(global)" isDocumented="False" />
+<NamespaceSummaryItem name="AssetBundles" isDocumented="False" />
+<NamespaceSummaryItem name="Assets.BlobDistributors" isDocumented="True">Contains the logic by which blobs are distributed from BlobSites.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.BlobDistributors.ForTesting" isDocumented="False">Contains mocks necessary to test the classes in the BlobDistributors namespace</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Blobs" isDocumented="True">Contains the logic for the ResourceBlobs themselves, including the available ResourceTypes.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.BlobSites" isDocumented="True">Contains the logic for storing and placing blobs in various locations. Every MapNode contains a BlobSite that manages its contents, placement permissions, extraction permissions, and capacities.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.BlobSites.ForTesting" isDocumented="False">Contains mocks necessary for testing elements in the BlobSites namespace</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.ConstructionZones" isDocumented="True">Contains the logic that handles ConstructionZones and the ConstructionProjects that control them. Elements in this namespace define the ways in which players can construct Societies, ResourceDepots, HighwayManagers, and clear and plant forests.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.ConstructionZones.ForTesting" isDocumented="False">Contains the mocks necessary to test the classes in ConstructionZones</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Core" isDocumented="True">Contains two types of classes: those that control the simulation (centered around SimulationControl) and those that control the UI (centered around UIControl). The classes in this module are designed to create a very thick layer of abstraction between player input/output and the code of the underlying simulation. Modules in Core are supposed to separate the UI code from any of the implementation details specified in other namespaces. Whether this was a beneficial decision remains to be seen.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Core.ForTesting" isDocumented="False">Contains all of the mocks necessary to test classes in the Core namespace</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Generator" isDocumented="True">Contains the logic for a blob generator that can arbitrarily produce ResourceBlobs. It's primarily a design-side tool and specifies no gameplay elements.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.HighwayManager" isDocumented="True">Defines the logic for the HighwayManager object, a gameplay element that the players can use to turn resources into highway throughput.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.HighwayManager.ForTesting" isDocumented="False">Contains the mocks necessary to test the classes in HighwayManager</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Highways" isDocumented="True">Contains the logic by which ResourceBlobs are moved between nodes on the map. Highways consist of a pair of BlobTubes, and have commands for pulling resources from and pushing resources into the BlobSites at their endpoints.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Highways.ForTesting" isDocumented="False">Contains the mocks necessary to test the classes in the Highways namespace</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Map" isDocumented="True">Contains the logic for the construction and maintenance of the map. This includes MapGraph, MapNode, and MapEdge, along with some graph traversal algorithms.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Map.ForTesting" isDocumented="False">Contains the mocks necessary to test classes in the Map namespace</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.ResourceDepots" isDocumented="True">Defines the logic for the ResourceDepot gameplay element, which is a place where resources can be stored and extracted with ease.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.ResourceDepots.ForTesting" isDocumented="False">Contains the mocks necessary to test the classes in the ResourceDepots namespace.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Scoring" isDocumented="True">Contains the logic for scoring a given map configuration, managing victory conditions, and flagging when victory should occur.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Scoring.ForTesting" isDocumented="False">Contains the mocks necessary to test the classes in the Scoring namespace</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Session" isDocumented="True">Contains all the logic associated with session, serializiable records of the state of a given map. Maps and saved games are stored as sessions, which are exchanged between persistent storage and the current runtime via the SessionManager class. This namespace also contains interaction with the file system through FileSystemLiasion.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Session.ForTesting" isDocumented="False">Contains the mocks</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Societies" isDocumented="True">Contains the logic that manages societies, by far the most complex gameplay elements in the game.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Societies.ForTesting" isDocumented="False" />
+<NamespaceSummaryItem name="Assets.UI" isDocumented="True">Contains numerous classes for all of the UI in the game, organized loosely by the non-UI modules they act as UI for. The classes in this namespace are largely servants to UIControl and its subservient modules, found in Assets.Core. These classes tend to be the most user-facing elements and the most subject to change. For this reason, this namespace is largely not covered by unit tests like the more simulation-focused namespaces are.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.Blobs" isDocumented="True">Contains UI elements associated with resource blobs.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.ConstructionZones" isDocumented="True">Contains UI elements associated with construction zones and construction projects.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.ConstructionZones.ForTesting" isDocumented="False" />
+<NamespaceSummaryItem name="Assets.UI.EscapeMenu" isDocumented="True">Contains UI elements for the Escape Screen, or the screen brought up while the game is running by pressing Escape. It defines several subscreens for saving and loading sessions as well as exiting the current session.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.HighwayManager" isDocumented="True">Contains UI elements associated with highway managers.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.Highways" isDocumented="True">Contains UI elements associated with highways.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.ResourceDepots" isDocumented="True">Contains UI elements associated with resource depots.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.Scoring" isDocumented="True">Contains UI elements associated with scoring, including victory.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.Societies" isDocumented="True">Contains UI elements associated with societies.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.TitleScreen" isDocumented="True">Contains all of the UI elements that manage everything that happens outside of the main execution of the game. This includes starting new games, loading saved sessions, the credits and attribution page, as well as a brief description of how to play the game.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.Util" isDocumented="True">A small namespace containing a handful of utilities that did not fit cleanly into another category.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Assets.UI.Session" isDocumented="True">Contains UI elements associated with serializable sessions.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="UnityCustomUtilities.Grids" isDocumented="True">Contains classes for a hexagonal grid of arbitrary tiles. This implementation is based off a detailed blog from Red Blob Games (http://www.redblobgames.com/grids/hexagons/), which was also source of much of the code here, though it's been modified since then.</NamespaceSummaryItem></NamespaceSummaries>
+    <ProjectSummary>
+    </ProjectSummary>
+    <VisibleItems>Attributes, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
+    <ApiFilter>
+      <Filter entryType="Namespace" fullName="Assets.BlobDistributors.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.BlobSites.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.ConstructionZones.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.Core.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.HighwayManager.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.Highways.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.Map.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.ResourceDepots.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.Scoring.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.Session.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.Societies.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="Assets.UI" isExposed="True">
+  <Filter entryType="Class" fullName="Assets.UI.ModifiedStandAloneInputModule" filterName="ModifiedStandAloneInputModule" isExposed="False" />
+</Filter>
+<Filter entryType="Namespace" fullName="Assets.UI.ConstructionZones.ForTesting" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.AI" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.Camera2D" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.Coroutine" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.DataStructures" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.Extensions" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.Graph" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.Meshes" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.Misc" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.UI" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityCustomUtilities.XML" isExposed="False" />
+<Filter entryType="Namespace" fullName="UnityEngine" isExposed="True">
+  <Filter entryType="Class" fullName="UnityEngine.Behaviour" filterName="Behaviour" isExposed="True">
+    <Filter entryType="Property" fullName="UnityEngine.Behaviour.enabled" filterName="enabled" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Behaviour.isActiveAndEnabled" filterName="isActiveAndEnabled" isExposed="False" />
+  </Filter>
+  <Filter entryType="Class" fullName="UnityEngine.Component" filterName="Component" isExposed="True">
+    <Filter entryType="Method" fullName="UnityEngine.Component.BroadcastMessage" filterName="BroadcastMessage" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.CompareTag" filterName="CompareTag" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.GetComponent" filterName="GetComponent" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.GetComponentInChildren" filterName="GetComponentInChildren" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.GetComponentInParent" filterName="GetComponentInParent" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.GetComponents" filterName="GetComponents" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.GetComponentsInChildren" filterName="GetComponentsInChildren" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.GetComponentsInParent" filterName="GetComponentsInParent" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.SendMessage" filterName="SendMessage" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Component.SendMessageUpwards" filterName="SendMessageUpwards" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.animation" filterName="animation" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.audio" filterName="audio" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.camera" filterName="camera" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.collider" filterName="collider" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.collider2D" filterName="collider2D" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.constantForce" filterName="constantForce" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.gameObject" filterName="gameObject" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.guiElement" filterName="guiElement" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.guiText" filterName="guiText" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.guiTexture" filterName="guiTexture" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.hingeJoint" filterName="hingeJoint" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.light" filterName="light" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.networkView" filterName="networkView" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.particleEmitter" filterName="particleEmitter" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.particleSystem" filterName="particleSystem" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.renderer" filterName="renderer" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.rigidbody" filterName="rigidbody" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.rigidbody2D" filterName="rigidbody2D" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.tag" filterName="tag" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Component.transform" filterName="transform" isExposed="False" />
+  </Filter>
+  <Filter entryType="Class" fullName="UnityEngine.MonoBehaviour" filterName="MonoBehaviour" isExposed="True">
+    <Filter entryType="Method" fullName="UnityEngine.MonoBehaviour.CancelInvoke" filterName="CancelInvoke" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.MonoBehaviour.Invoke" filterName="Invoke" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.MonoBehaviour.InvokeRepeating" filterName="InvokeRepeating" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.MonoBehaviour.IsInvoking" filterName="IsInvoking" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.MonoBehaviour.StartCoroutine" filterName="StartCoroutine" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.MonoBehaviour.StartCoroutine_Auto" filterName="StartCoroutine_Auto" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.MonoBehaviour.StopAllCoroutines" filterName="StopAllCoroutines" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.MonoBehaviour.StopCoroutine" filterName="StopCoroutine" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.MonoBehaviour.runInEditMode" filterName="runInEditMode" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.MonoBehaviour.useGUILayout" filterName="useGUILayout" isExposed="False" />
+  </Filter>
+  <Filter entryType="Class" fullName="UnityEngine.Object" filterName="Object" isExposed="True">
+    <Filter entryType="Method" fullName="UnityEngine.Object.Equals" filterName="Equals" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Object.GetHashCode" filterName="GetHashCode" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Object.GetInstanceID" filterName="GetInstanceID" isExposed="False" />
+    <Filter entryType="Method" fullName="UnityEngine.Object.ToString" filterName="ToString" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Object.hideFlags" filterName="hideFlags" isExposed="False" />
+    <Filter entryType="Property" fullName="UnityEngine.Object.name" filterName="name" isExposed="False" />
+  </Filter>
+</Filter></ApiFilter>
+  </PropertyGroup>
+  <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
+			 the build.  The others are optional common platform types that may appear. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Win32' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Content" />
+    <Folder Include="icons" />
+    <Folder Include="media" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\ProgramArchitecture.aml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ContentLayout Include="ContentLayout.content" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icons\Help.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <Name>System</Name>
+      <AssemblyName>System.dll</AssemblyName>
+      <HintPath>..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="UnityCustomUtilities, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Assets\UnityCustomUtilities\UnityCustomUtilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\Program Files\Unity\Editor\Data\Managed\UnityEditor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\Program Files\Unity\Editor\Data\Managed\UnityEngine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Blobgistics\Blobgistics.CSharp.csproj">
+      <Name>Blobgistics.CSharp</Name>
+      <Project>{edaa3e9d-9384-5055-cac4-b2aa30ff8c59}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+  <!-- The pre-build and post-build event properties must appear *after* the targets file import in order to be
+			 evaluated correctly. -->
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+</Project>

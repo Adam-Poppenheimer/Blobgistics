@@ -13,16 +13,25 @@ using UnityCustomUtilities.Extensions;
 
 namespace Assets.Core {
 
+    /// <summary>
+    /// The standard event receiver for all events propagating from highway managers.
+    /// </summary>
     public class HighwayManagerStandardEventReceiver : TargetedEventReceiverBase<HighwayManagerUISummary> {
 
         #region instance fields and properties
 
+        /// <summary>
+        /// The simulation facade this event receiver interacts with.
+        /// </summary>
         public HighwayManagerControlBase HighwayManagerControl {
             get { return _highwayManagerControl; }
             set { _highwayManagerControl = value; }
         }
         [SerializeField] private HighwayManagerControlBase _highwayManagerControl;
 
+        /// <summary>
+        /// The display the event receiver serves.
+        /// </summary>
         public HighwayManagerSummaryDisplayBase HighwayManagerDisplay {
             get { return _highwayManagerDisplay; }
             set {
@@ -55,18 +64,25 @@ namespace Assets.Core {
 
         #region from TargetedEventReceiverBase<HighwayManagerUISummary>
 
+        /// <inheritdoc/>
         public override void PushBeginDragEvent(HighwayManagerUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDragEvent(HighwayManagerUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushEndDragEvent(HighwayManagerUISummary source, PointerEventData eventData) { }  
 
+        /// <inheritdoc/>
         public override void PushPointerClickEvent(HighwayManagerUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerEnterEvent(HighwayManagerUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushPointerExitEvent(HighwayManagerUISummary source, PointerEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushSelectEvent(HighwayManagerUISummary source, BaseEventData eventData) {
             if(HighwayManagerDisplay != null) {
                 HighwayManagerDisplay.CurrentSummary = source;
@@ -74,10 +90,13 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
         public override void PushUpdateSelectedEvent(HighwayManagerUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushDeselectEvent(HighwayManagerUISummary source, BaseEventData eventData) { }
 
+        /// <inheritdoc/>
         public override void PushObjectDestroyedEvent(HighwayManagerUISummary source) {
             if(source == HighwayManagerDisplay.CurrentSummary) {
                 HighwayManagerDisplay.Deactivate();

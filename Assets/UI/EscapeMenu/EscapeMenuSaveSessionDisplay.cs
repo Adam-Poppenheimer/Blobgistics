@@ -12,6 +12,14 @@ using Assets.UI.Session;
 
 namespace Assets.UI.EscapeMenu {
 
+    /// <summary>
+    /// A class that controls the save session panel within the escape menu.
+    /// </summary>
+    /// <remarks>
+    /// This class functions by creating a number of session records that are populated with
+    /// information from FileSystemLiaison. Serialization is done with FileSystemLiaison and
+    /// SessionManager.
+    /// </remarks>
     public class EscapeMenuSaveSessionDisplay : PanelBase {
 
         #region instance fields and properties
@@ -28,6 +36,9 @@ namespace Assets.UI.EscapeMenu {
 
         private bool PerformSaveOnNextUpdate = false;
 
+        /// <summary>
+        /// The session records that've already been created, cached for future use.
+        /// </summary>
         private List<SessionRecord> InstantiatedRecords = new List<SessionRecord>();
 
         #endregion
@@ -53,6 +64,7 @@ namespace Assets.UI.EscapeMenu {
 
         #region from PanelBase
 
+        /// <inheritdoc/>
         protected override void DoOnActivate() {
             RefreshSessionList();
         }
@@ -89,6 +101,10 @@ namespace Assets.UI.EscapeMenu {
             RefreshSessionList();
         }
 
+        //This method occupies the shape it does because of the requirements of
+        //input validation in InputFields. Validation considers characters one at
+        //a time, removing any that aren't valid acceptable for either filenames
+        //or paths.
         private char ValidateFilenameInput(string input, int charIndex, char addedChar) {
             var invalidCharacters = new string(Path.GetInvalidPathChars()) + new string(Path.GetInvalidFileNameChars());
             if(invalidCharacters.Contains(addedChar)) {

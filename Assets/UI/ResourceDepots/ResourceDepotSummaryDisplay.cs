@@ -12,12 +12,17 @@ using Assets.ResourceDepots;
 
 namespace Assets.UI.ResourceDepots {
 
+    /// <summary>
+    /// The standard implementation of ResourceDepotSummaryDisplayBase, which provides information
+    /// and commands involving resource depots to the player.
+    /// </summary>
     public class ResourceDepotSummaryDisplay : ResourceDepotSummaryDisplayBase {
 
         #region instance fields and properties
 
         #region from ResourceDepotSummaryDisplayBase
 
+        /// <inheritdoc/>
         public override ResourceDepotUISummary CurrentSummary { get; set; }
 
         #endregion
@@ -38,6 +43,7 @@ namespace Assets.UI.ResourceDepots {
 
         #region from IntelligentPanel
 
+        /// <inheritdoc/>
         protected override void DoOnActivate() {
             DestroyButton.onClick.AddListener(delegate(){
                 RaiseDestructionRequested();
@@ -45,6 +51,7 @@ namespace Assets.UI.ResourceDepots {
             DesiredWorldPosition = CurrentSummary.Transform.position;
         }
 
+        /// <inheritdoc/>
         protected override void DoOnDeactivate() {
             DestroyButton.onClick.RemoveAllListeners();
         }

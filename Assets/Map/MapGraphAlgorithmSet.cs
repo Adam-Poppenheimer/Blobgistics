@@ -5,12 +5,17 @@ using System.Text;
 
 namespace Assets.Map {
 
+    /// <summary>
+    /// The standard implementation of MapGraphAlgorithmSetBase, which uses Djikstra's and
+    /// BFS to compute its values.
+    /// </summary>
     public class MapGraphAlgorithmSet : MapGraphAlgorithmSetBase {
 
         #region instance methods
 
         #region from MapGraphAlgorithmsBase
 
+        /// <inheritdoc/>
         public override int GetDistanceBetweenNodes(MapNodeBase node1, MapNodeBase node2, IEnumerable<MapNodeBase> allNodes) {
             if(node1 == null) {
                 throw new ArgumentNullException("node1");
@@ -21,6 +26,7 @@ namespace Assets.Map {
             return shortestPath != null ? shortestPath.Count - 1 : int.MaxValue;
         }
 
+        /// <inheritdoc/>
         public override List<MapNodeBase> GetShortestPathBetweenNodes(MapNodeBase start, MapNodeBase end, IEnumerable<MapNodeBase> allNodes) {
             if(start == null) {
                 throw new ArgumentNullException("start");
@@ -78,6 +84,7 @@ namespace Assets.Map {
             return path;
         }
 
+        /// <inheritdoc/>
         public override NodeDistanceSummary GetNearestNodeToEdgeWhere(MapEdgeBase edgeOfOrigin, Predicate<MapNodeBase> condition, int maxDistance) {
             
             var closestFromFirstEndpoint = GetNearestNodeToNodeWhere(edgeOfOrigin.FirstNode, condition, maxDistance);
@@ -94,6 +101,7 @@ namespace Assets.Map {
             }
         }
 
+        /// <inheritdoc/>
         public override NodeDistanceSummary GetNearestNodeToNodeWhere(MapNodeBase rootNode, Predicate<MapNodeBase> condition, int maxDistance) {
             var distanceSummariesToConsider = new Queue<NodeDistanceSummary>();
             var nodesAlreadyConsidered = new HashSet<MapNodeBase>();

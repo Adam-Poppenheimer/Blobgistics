@@ -269,38 +269,6 @@ namespace Assets.Core.Editor {
         }
 
         [Test]
-        public void OnSetHighwayPriorityIsCalled_SpecifiedHighwayReceivesTheSpecifiedPriority() {
-            //Setup
-            var controlToTest = BuildHighwayControl();
-
-            var mapGraph = controlToTest.MapGraph;
-            var highwayfactory = controlToTest.HighwayFactory;
-
-            var middleNode = mapGraph.BuildNode(Vector3.zero);
-            var rightNode  = mapGraph.BuildNode(Vector3.right);
-            var leftNode   = mapGraph.BuildNode(Vector3.left);
-            var upNode     = mapGraph.BuildNode(Vector3.up);
-
-            mapGraph.BuildMapEdge(middleNode, rightNode);
-            mapGraph.BuildMapEdge(middleNode, leftNode);
-            mapGraph.BuildMapEdge(middleNode, upNode);
-
-            var highway1 = highwayfactory.ConstructHighwayBetween(middleNode, rightNode);
-            var highway2 = highwayfactory.ConstructHighwayBetween(middleNode, leftNode);
-            var highway3 = highwayfactory.ConstructHighwayBetween(middleNode, upNode);
-
-            //Execution
-            controlToTest.SetHighwayPriority(highway1.ID, 11);
-            controlToTest.SetHighwayPriority(highway2.ID, 22);
-            controlToTest.SetHighwayPriority(highway3.ID, 33);
-
-            //Validation
-            Assert.AreEqual(11, highway1.Priority, "Highway1 has an incorrect priority");
-            Assert.AreEqual(22, highway2.Priority, "Highway2 has an incorrect priority");
-            Assert.AreEqual(33, highway3.Priority, "Highway3 has an incorrect priority");
-        }
-
-        [Test]
         public void OnDestroyHighwayIsCalled_SpecifiedHighwayObjectIsRemovedFromHierarchyAndAllRecords() {
             //Setup
             var controlToTest = BuildHighwayControl();
@@ -390,10 +358,6 @@ namespace Assets.Core.Editor {
             Assert.NotNull(lastMessage, "SetHighwayPullingPermissionOnSecondEndpointForResource did not display an error");
             insertionHandler.StoredMessages.Clear();
             lastMessage = null;
-
-            Assert.DoesNotThrow(delegate() {
-                controlToTest.SetHighwayPriority(42, 5);
-            }, "SetHighwayPriority threw an exception");
 
             lastMessage = insertionHandler.StoredMessages.LastOrDefault();
             Assert.NotNull(lastMessage, "SetHighwayPriority did not display an error");
