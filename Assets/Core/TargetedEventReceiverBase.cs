@@ -94,6 +94,13 @@ namespace Assets.Core {
         /// <param name="source">The nongeneric source that originally sent the event</param>
         public abstract void PushObjectDestroyedEvent(object source);
 
+        /// <summary>
+        /// Tells the event receiver to close any displays it has open and accepting input, and tell the
+        /// caller if any displays were closed.
+        /// </summary>
+        /// <returns>A value indicating whether any displays were closed</returns>
+        public abstract bool TryCloseAllOpenDisplays();
+
         #endregion
 
     }

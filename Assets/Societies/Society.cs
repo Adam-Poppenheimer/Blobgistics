@@ -185,6 +185,9 @@ namespace Assets.Societies {
         }
 
         private void OnDestroy() {
+            Location.BlobSite.ClearContents();
+            Location.BlobSite.ClearPermissionsAndCapacity();
+
             if(PrivateData != null) {
                 if(PrivateData.ParentFactory != null) {
                     PrivateData.ParentFactory.UnsubscribeSociety(this);
@@ -365,6 +368,7 @@ namespace Assets.Societies {
         /// <inheritdoc/>
         public override void SetAscensionPermissionForComplexity(ComplexityDefinitionBase complexity, bool isPermitted) {
             AscensionPermissionsForComplexity[complexity] = isPermitted;
+            RefreshBlobSitePermissionsAndCapacities();
         }
 
         #endregion
@@ -479,75 +483,76 @@ namespace Assets.Societies {
          */
         private void RefreshBlobSitePermissionsAndCapacities() {
             Location.BlobSite.ClearPermissionsAndCapacity();
-            ConsumptionProfile.Clear();
-            ProductionProfile.Clear();
-            DefaultProfile.Clear();
 
-            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
-
-                ProductionProfile.SetPlacementPermission(resourceType, true);
-                ProductionProfile.SetExtractionPermission(resourceType, true);
-                ConsumptionProfile.SetExtractionPermission(resourceType, true);
-
-                if(AscensionIsPermitted && DoesSomeValidAscensionRequireResource(resourceType)) {
-                    DefaultProfile.SetPlacementPermission(resourceType, true);
-                    DefaultProfile.SetExtractionPermission(resourceType, false);
-
-                    int capacityForResource = GetGreatestAscensionStockpileOfResource(resourceType);
-
-                    DefaultProfile.SetCapacity(resourceType, capacityForResource);
-                    DefaultProfile.TotalCapacity += capacityForResource;
-                    ProductionProfile.SetCapacity(resourceType, capacityForResource);
-                    ProductionProfile.TotalCapacity += capacityForResource;
-
-                }else if(DoesNeedOrSomeWantRequireResource(resourceType)){
-                    DefaultProfile.SetPlacementPermission(resourceType, true);
-                    DefaultProfile.SetExtractionPermission(resourceType, false);
-
-                    int capacityForResource = GetGreatestNeedOrWantStockpileOfResource(resourceType);
-
-                    DefaultProfile.SetCapacity(resourceType, capacityForResource);
-                    DefaultProfile.TotalCapacity += capacityForResource;
-                    ProductionProfile.SetCapacity(resourceType, capacityForResource);
-                    ProductionProfile.TotalCapacity += capacityForResource;
-
-                }else if(CurrentComplexity.Production[resourceType] > 0) {
-                    DefaultProfile.SetPlacementPermission(resourceType, false);
-                    DefaultProfile.SetExtractionPermission(resourceType, true);
-
-                    int capacityForResource = CurrentComplexity.Production[resourceType] * (int)CurrentComplexity.ProductionCapacityCoefficient;
-
-                    DefaultProfile.SetCapacity(resourceType, capacityForResource);
-                    DefaultProfile.TotalCapacity += capacityForResource;
-
-                    ProductionProfile.SetCapacity(resourceType, capacityForResource);
-                    ProductionProfile.TotalCapacity += capacityForResource;
-                }
-
-            }
+            RefreshDefaultProfile();
+            RefreshConsumptionProfile();
+            RefreshProductionProfile();
 
             DefaultProfile.InsertProfileIntoBlobSite(Location.BlobSite);
         }
 
-        private bool DoesSomeValidAscensionRequireResource(ResourceType resourceType) {
-            foreach(var ascension in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
-                if(ascension.PermittedTerrains.Contains(Location.Terrain) && ascension.CostToAscendInto[resourceType] > 0) {
-                    return true;
+        private void RefreshDefaultProfile() {
+            DefaultProfile.Clear();
+
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                int resourceCapacity = 0;
+
+                var validAscensions = ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity).Where(AscensionIsValidPredicate).ToList();
+                int maxAscensionStockpile = validAscensions.Count() > 0 ? validAscensions.Max(ascension => ascension.CostToAscendInto[resourceType]) : 0;
+
+                var needsStockpile = CurrentComplexity.Needs[resourceType] * (int)CurrentComplexity.NeedsCapacityCoefficient;
+
+                var maxWantsStockpile = CurrentComplexity.Wants.Count() > 0 ? CurrentComplexity.Wants.Max(want => want[resourceType]) : 0;
+                maxWantsStockpile *= (int)CurrentComplexity.WantsCapacityCoefficient;
+
+                resourceCapacity = new []{
+                    resourceCapacity, maxAscensionStockpile, needsStockpile, maxWantsStockpile
+                }.Max();
+
+                if(resourceCapacity > 0) {
+                    DefaultProfile.SetCapacity(resourceType, resourceCapacity);
+                    DefaultProfile.TotalCapacity += resourceCapacity;
+
+                    DefaultProfile.SetPlacementPermission(resourceType, true);
+                    DefaultProfile.SetExtractionPermission(resourceType, false);
+                }else {
+                    DefaultProfile.SetPlacementPermission(resourceType, false);
+                    DefaultProfile.SetExtractionPermission(resourceType, true);
                 }
             }
-            return false;
         }
 
-        private int GetGreatestAscensionStockpileOfResource(ResourceType resourceType) {
-            int retval = 0;
+        private void RefreshConsumptionProfile() {
+            ConsumptionProfile.Clear();
 
-            foreach(var ascension in ActiveComplexityLadder.GetAscentTransitions(CurrentComplexity)) {
-                if(ascension.PermittedTerrains.Contains(Location.Terrain)) {
-                    retval = Math.Max(retval, ascension.CostToAscendInto[resourceType]);
+            foreach(var resourceType in EnumUtil.GetValues<ResourceType>()) {
+                ConsumptionProfile.SetExtractionPermission(resourceType, true);
+            }
+        }
+
+        private void RefreshProductionProfile() {
+            ProductionProfile.Clear();
+
+            foreach(var resourceType in CurrentComplexity.Production) {
+                ProductionProfile.SetPlacementPermission(resourceType, true);
+
+                int capacityDesired = CurrentComplexity.Production[resourceType] * (int)CurrentComplexity.ProductionCapacityCoefficient;
+                ProductionProfile.SetCapacity(resourceType, capacityDesired);
+                ProductionProfile.TotalCapacity += capacityDesired;
+
+                if(CurrentComplexity.Wants.Any(want => want[resourceType] > 0)) {
+                    ProductionProfile.SetExtractionPermission(resourceType, true);
                 }
             }
+        }
 
-            return retval;
+        private bool AscensionIsValidPredicate(ComplexityDefinitionBase ascension) {
+            var isValidOnTerrain = ascension.PermittedTerrains.Contains(Location.Terrain);
+            bool isPermittedToAscend;
+
+            AscensionPermissionsForComplexity.TryGetValue(ascension, out isPermittedToAscend);
+
+            return AscensionIsPermitted && isValidOnTerrain && isPermittedToAscend;
         }
 
         private bool DoesNeedOrSomeWantRequireResource(ResourceType resourceType) {

@@ -117,11 +117,13 @@ namespace Assets.UI.TitleScreen {
         }
 
         private void OnEnable() {
-            MainCameraLogic.IsReceivingInput = false;
+            MainCameraLogic.enabled = false;
         }
 
         private void OnDisable() {
-            MainCameraLogic.IsReceivingInput = true;
+            if(MainCameraLogic != null) {
+                MainCameraLogic.enabled = true;
+            }            
         }
 
         #endregion

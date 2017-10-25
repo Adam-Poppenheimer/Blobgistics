@@ -103,6 +103,16 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
+        public override bool TryCloseAllOpenDisplays() {
+            if(HighwayManagerDisplay.gameObject.activeInHierarchy) {
+                HighwayManagerDisplay.Deactivate();
+                return true;
+            }else {
+                return false;
+            }            
+        }
+
         #endregion
 
         private void HighwayManagerDisplay_DestructionRequested(object sender, EventArgs e) {

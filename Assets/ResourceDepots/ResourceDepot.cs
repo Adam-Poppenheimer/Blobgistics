@@ -85,6 +85,9 @@ namespace Assets.ResourceDepots {
         }
 
         private void OnDestroy() {
+            Location.BlobSite.ClearContents();
+            Location.BlobSite.ClearPermissionsAndCapacity();
+
             if(ParentFactory != null) {
                 ParentFactory.UnsubscribeDepot(this);
             }

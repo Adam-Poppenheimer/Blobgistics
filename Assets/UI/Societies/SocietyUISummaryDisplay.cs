@@ -27,7 +27,6 @@ namespace Assets.UI.Societies {
 
         #endregion
 
-        [SerializeField] private Text   LocationIDField;
         [SerializeField] private Text   NeedsAreSatisfiedField;
         [SerializeField] private Text   SecondsOfUnsatisfiedNeedsField;
         [SerializeField] private Text   SecondsUntilComplexityDescentField;
@@ -38,8 +37,9 @@ namespace Assets.UI.Societies {
         [SerializeField] private Text CurrentComplexityNameField;
         [SerializeField] private ResourceDisplayBase CurrentComplexityProductionField;
         [SerializeField] private ResourceDisplayBase CurrentComplexityNeedsField;
-        [SerializeField] private Text CurrentComplexityWantsField;
         [SerializeField] private ResourceDisplayBase CurrentComplexityCostToAscendIntoField;
+
+        [SerializeField] private List<ResourceDisplayBase> WantSummaryDisplayFields;
 
         [SerializeField] private RectTransform DescentComplexitySection;
         [SerializeField] private RectTransform AscentComplexitySection;
@@ -91,8 +91,6 @@ namespace Assets.UI.Societies {
         /// <inheritdoc/>
         public override void UpdateDisplay() {
             if(CurrentSummary != null) {
-                LocationIDField.text = CurrentSummary.Location != null ? CurrentSummary.Location.ID.ToString() : "";
-
                 NeedsAreSatisfiedField.text = CurrentSummary.NeedsAreSatisfied.ToString();
                 SecondsOfUnsatisfiedNeedsField.text = CurrentSummary.SecondsOfUnsatisfiedNeeds.ToString("0.#");
                 SecondsUntilComplexityDescentField.text = CurrentSummary.SecondsUntilComplexityDescent.ToString("0.#");
@@ -108,8 +106,6 @@ namespace Assets.UI.Societies {
         /// <inheritdoc/>
         public override void ClearDisplay() {
             CurrentSummary = null;
-
-            LocationIDField.text = "";
                 
             CurrentComplexityNameField.text = "";
 
@@ -162,14 +158,17 @@ namespace Assets.UI.Societies {
             CurrentComplexityProductionField.PushAndDisplaySummary(currentComplexity.Production);
             CurrentComplexityNeedsField.PushAndDisplaySummary(currentComplexity.Needs);
 
-            CurrentComplexityWantsField.text = "";
-            foreach(var want in currentComplexity.Wants) {
-                if(want == currentComplexity.Wants.Last()) {
-                    CurrentComplexityWantsField.text += want.GetSummaryString();
-                }else {
-                    CurrentComplexityWantsField.text += want.GetSummaryString() + " OR ";
-                }
+            var wantList = currentComplexity.Wants.ToList();
+            int i = 0;
+
+            for(; i < wantList.Count; ++i) {
+                WantSummaryDisplayFields[i].PushAndDisplaySummary(wantList[i]);
+                WantSummaryDisplayFields[i].gameObject.SetActive(true);
             }
+            for(; i < WantSummaryDisplayFields.Count; ++i) {
+                WantSummaryDisplayFields[i].gameObject.SetActive(false);
+            }
+
             CurrentComplexityCostToAscendIntoField.PushAndDisplaySummary(currentComplexity.CostToAscendInto);
         }
 

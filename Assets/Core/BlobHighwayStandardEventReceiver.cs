@@ -116,6 +116,15 @@ namespace Assets.Core {
         /// <inheritdoc/>
         public override void PushObjectDestroyedEvent(BlobHighwayUISummary source) { }
 
+        /// <inheritdoc/>
+        public override bool TryCloseAllOpenDisplays() {
+            if(HighwaySummaryDisplay.gameObject.activeInHierarchy) {
+                HighwaySummaryDisplay.Deactivate();
+                return true;
+            }
+            return false;
+        }
+
         #endregion
 
         private void HighwaySummaryDisplay_FirstEndpointResourcePermissionChanged(object sender, ResourcePermissionEventArgs e) {

@@ -126,7 +126,7 @@ namespace Assets.Societies.Editor {
                 "Incorrect Food Capacity");
             Assert.AreEqual(100, newSociety.Location.BlobSite.GetSpaceLeftOfType(ResourceType.Textiles),
                 "Incorrect Textiles Capacity");
-            Assert.AreEqual(180, newSociety.Location.BlobSite.GetSpaceLeftOfType(ResourceType.ServiceGoods),
+            Assert.AreEqual(0, newSociety.Location.BlobSite.GetSpaceLeftOfType(ResourceType.ServiceGoods),
                 "Incorrect ServiceGoods Capacity");
         }
 
@@ -219,6 +219,7 @@ namespace Assets.Societies.Editor {
             //Execution
             var newSociety = BuildSociety(privateData, startingComplexity);
             newSociety.AscensionIsPermitted = true;
+            newSociety.SetAscensionPermissionForComplexity(ascentComplexity, true);
 
             //Validation
             Assert.IsTrue(newSociety.Location.BlobSite.GetPlacementPermissionForResourceType(ResourceType.Food),

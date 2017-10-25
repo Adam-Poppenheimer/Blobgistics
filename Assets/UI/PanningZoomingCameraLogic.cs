@@ -21,11 +21,6 @@ namespace Assets.UI {
         #region instance fields and properties
 
         /// <summary>
-        /// Whether or not the logic is receiving input and updating the camera.
-        /// </summary>
-        public bool IsReceivingInput { get; set; }
-
-        /// <summary>
         /// The bounds that constrain how far the camera can move.
         /// </summary>
         public Rect Bounds { get; set; }
@@ -52,16 +47,14 @@ namespace Assets.UI {
 
         #region Unity event methods
 
-        private void Start() {
+        private void OnEnable() {
             DesiredSize = CameraToControl.orthographicSize;
             StartingSize = DesiredSize;
         }
 
         private void Update() {
-            if(IsReceivingInput) {
-                HandleMovement();
-                HandleZooming();
-            }
+            HandleMovement();
+            HandleZooming();
         }
 
         #endregion

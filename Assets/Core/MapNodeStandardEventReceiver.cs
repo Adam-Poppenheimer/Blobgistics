@@ -192,6 +192,16 @@ namespace Assets.Core {
         /// <inheritdoc/>
         public override void PushObjectDestroyedEvent(MapNodeUISummary source) { }
 
+        /// <inheritdoc/>
+        public override bool TryCloseAllOpenDisplays() {
+            if(ConstructionPanel.gameObject.activeInHierarchy) {
+                ConstructionPanel.Deactivate();
+                return true;
+            }else {
+                return false;
+            }            
+        }
+
         #endregion
 
         private void ConstructionPanel_ConstructionRequested(object sender, StringEventArgs e) {

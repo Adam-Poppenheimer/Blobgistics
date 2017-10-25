@@ -137,10 +137,10 @@ namespace Assets.Core {
 
         private void Update() {
             if(Input.GetButtonDown("Cancel")) {
-                if(!EscapeMenuUI.gameObject.activeInHierarchy) {
+                if(!TryCloseAllOpenDisplays() && !EscapeMenuUI.gameObject.activeInHierarchy) {
                     SimulationControl.Pause();
                     EscapeMenuUI.gameObject.SetActive(true);
-                    CameraLogic.IsReceivingInput = false;
+                    CameraLogic.enabled = false;
                 }
             }
             CameraLogic.Bounds = TerrainGrid.Bounds;
@@ -259,6 +259,18 @@ namespace Assets.Core {
 
         #endregion
 
+        private bool TryCloseAllOpenDisplays() {
+            bool anyDisplaysWereClosed = false;
+
+            foreach(var eventReceiverList in EventReceiversByType.Values) {
+                foreach(var eventReceiver in eventReceiverList) {
+                    anyDisplaysWereClosed |= eventReceiver.TryCloseAllOpenDisplays();
+                }
+            }
+
+            return anyDisplaysWereClosed;
+        }
+
         private void ExitGame() {
             Application.Quit();
         }
@@ -277,7 +289,7 @@ namespace Assets.Core {
 
         private void EscapeMenuUI_GameResumeRequested(object sender, EventArgs e) {
             EscapeMenuUI.gameObject.SetActive(false);
-            CameraLogic.IsReceivingInput = true;
+            CameraLogic.enabled = true;
             SimulationControl.Resume();
         }
 

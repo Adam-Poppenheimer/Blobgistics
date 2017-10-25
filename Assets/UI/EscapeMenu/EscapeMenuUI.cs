@@ -50,7 +50,7 @@ namespace Assets.UI.EscapeMenu {
         /// <summary>
         /// Fires the GameResumeRequested event.
         /// </summary>
-        protected void RaiseGameResumeRequested() {
+        public void RaiseGameResumeRequested() {
             if(GameResumeRequested != null) {
                 GameResumeRequested(this, EventArgs.Empty);
             }
@@ -59,7 +59,7 @@ namespace Assets.UI.EscapeMenu {
         /// <summary>
         /// Fires the GameExitRequested event.
         /// </summary>
-        protected void RaiseGameExitRequested() {
+        public void RaiseGameExitRequested() {
             if(GameExitRequested != null) {
                 GameExitRequested(this, EventArgs.Empty);
             }
@@ -68,7 +68,7 @@ namespace Assets.UI.EscapeMenu {
         /// <summary>
         /// Fires the ReturnToMainMenuRequested event.
         /// </summary>
-        protected void RaiseReturnToMainMenuRequested() {
+        public void RaiseReturnToMainMenuRequested() {
             if(ReturnToMainMenuRequested != null) {
                 ReturnToMainMenuRequested(this, EventArgs.Empty);
             }

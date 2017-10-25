@@ -105,6 +105,16 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
+        public override bool TryCloseAllOpenDisplays() {
+            if(DepotSummaryDisplay.gameObject.activeInHierarchy) {
+                DepotSummaryDisplay.Deactivate();
+                return true;
+            }else {
+                return false;
+            }            
+        }
+
         #endregion
 
         private void DepotSummaryDisplay_DestructionRequested(object sender, EventArgs e) {

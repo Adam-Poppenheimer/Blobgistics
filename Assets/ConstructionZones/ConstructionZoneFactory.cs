@@ -129,6 +129,8 @@ namespace Assets.ConstructionZones {
 
             newConstructionZone.transform.SetParent(location.transform, false);
 
+            location.BlobSite.ClearContents();
+
             newConstructionZone.SetLocation(location);
             newConstructionZone.CurrentProject = project;
             newConstructionZone.ParentFactory = this;

@@ -1,0 +1,46 @@
+Mono path[0] = 'C:/Games/Blobgistics/Blobgistics_FinalBuild_Data/Managed'
+Mono path[1] = 'C:/Games/Blobgistics/Blobgistics_FinalBuild_Data/Mono'
+Mono config path = 'C:/Games/Blobgistics/Blobgistics_FinalBuild_Data/Mono/etc'
+PlayerConnection initialized from C:/Games/Blobgistics/Blobgistics_FinalBuild_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55149
+Multi-casting "[IP] 192.168.2.101 [Port] 55149 [Flags] 3 [Guid] 2924122383 [EditorId] 3903656586 [Version] 1048832 [Id] WindowsPlayer(TheDanputer) [Debug] 1" to [225.0.0.222:54997]...
+Waiting for connection from host on [0.0.0.0:55149]...
+PlayerConnection accepted from [192.168.2.101] handle:0x278
+Started listening to [0.0.0.0:55149]
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,defer=y,address=0.0.0.0:56383
+PlayerConnection already initialized - listening to [0.0.0.0:55149]
+Player data archive not found at `C:/Games/Blobgistics/Blobgistics_FinalBuild_Data/data.unity3d`, using local filesystemInitialize engine version: 5.6.3p2 (b3d7a6428558)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA Quadro 4000 (ID=0x6dd)
+    Vendor:   NVIDIA
+    VRAM:     2000 MB
+    Driver:   21.21.13.7735
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\UnityCustomUtilities.dll (this message is harmless)
+Loading C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\UnityCustomUtilities.dll into Unity Child Domain
+- Completed reload, in  0.053 seconds
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\System.dll (this message is harmless)
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\System.Runtime.Serialization.dll (this message is harmless)
+Platform assembly: C:\Games\Blobgistics\Blobgistics_FinalBuild_Data\Managed\System.Xml.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 3600x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 1.390737 ms
+Setting up 4 worker threads for Enlighten.
+  Thread -> id: 1a4 -> priority: 1 
+  Thread -> id: 2dc0 -> priority: 1 
+  Thread -> id: 2788 -> priority: 1 
+  Thread -> id: 1c84 -> priority: 1 
+Waiting for finish

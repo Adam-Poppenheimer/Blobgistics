@@ -115,6 +115,16 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
+        public override bool TryCloseAllOpenDisplays() {
+            if(SocietySummaryDisplay.gameObject.activeInHierarchy) {
+                SocietySummaryDisplay.Deactivate();
+                return true;
+            }else {
+                return false;
+            }            
+        }
+
         #endregion
 
         private void SocietySummaryDisplay_DestructionRequested(object sender, EventArgs e) {

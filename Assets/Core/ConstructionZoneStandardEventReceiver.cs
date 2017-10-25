@@ -111,6 +111,16 @@ namespace Assets.Core {
             }
         }
 
+        /// <inheritdoc/>
+        public override bool TryCloseAllOpenDisplays() {
+            if(ConstructionZoneSummaryDisplay.gameObject.activeInHierarchy) {
+                ConstructionZoneSummaryDisplay.Deactivate();
+                return true;
+            }else {
+                return false;
+            }            
+        }
+
         #endregion
 
         private void ConstructionZoneSummaryDisplay_CloseRequested(object sender, EventArgs e) {

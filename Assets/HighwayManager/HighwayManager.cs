@@ -78,6 +78,12 @@ namespace Assets.HighwayManager {
             }
         }
 
+        private void OnDestroy() {
+            if(PrivateData != null && PrivateData.ParentFactory != null) {
+                PrivateData.ParentFactory.UnsubscribeHighwayManager(this);
+            }
+        }
+
         #endregion
 
         #region Unity EventSystem interfaces
